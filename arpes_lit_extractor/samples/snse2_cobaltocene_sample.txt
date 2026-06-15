@@ -1,0 +1,6 @@
+Direct observation of band structure in cobaltocene-doped SnSe2
+DOI: 10.1234/example.2026.1
+
+Angle-resolved photoemission spectroscopy (ARPES) measurements were performed
+at 20 K with photon energy of 70 eV on beamline BL03U. Samples were grown by
+chemical vapor transport and doped by cobaltocene. The band gap of 0.8 eV was observed.
