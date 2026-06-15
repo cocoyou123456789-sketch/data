@@ -1,3 +1,4 @@
 output/
+data/imported_wos_articles.json
 __pycache__/
 *.pyc

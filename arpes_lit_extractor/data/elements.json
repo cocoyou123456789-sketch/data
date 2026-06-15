@@ -1,0 +1,89 @@
+[
+  {
+    "symbol": "Sn",
+    "name": "Tin",
+    "chinese_name": "锡",
+    "atomic_number": 50,
+    "relative_atomic_mass": 118.710,
+    "group": 14,
+    "period": 5,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 231.928,
+    "melting_point_k": 505.078,
+    "boiling_point_c": 2586,
+    "boiling_point_k": 2859,
+    "density_g_cm3": 7.287,
+    "electron_configuration": "[Kr] 4d10 5s2 5p2",
+    "electronegativity_pauling": 1.96,
+    "common_oxidation_states": ["4", "2"],
+    "appearance": "A soft, pliable metal; below 13°C it slowly changes to a powder form.",
+    "relevance": [
+      "Sn 是 SnSe2、SnSe、SnS2、SnS、SnSeS 的共同阳离子元素。",
+      "常见氧化态为 +2 和 +4，因此可形成 Sn(II) 与 Sn(IV) 硫/硒化物。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/50/tin",
+      "evidence": "RSC fact box lists atomic number 50, relative atomic mass 118.710, group 14, melting point 231.928°C, boiling point 2586°C, density 7.287 g cm−3, and common oxidation states 4, 2."
+    }
+  },
+  {
+    "symbol": "Se",
+    "name": "Selenium",
+    "chinese_name": "硒",
+    "atomic_number": 34,
+    "relative_atomic_mass": 78.971,
+    "group": 16,
+    "period": 4,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 220.8,
+    "melting_point_k": 494,
+    "boiling_point_c": 685,
+    "boiling_point_k": 958,
+    "density_g_cm3": 4.809,
+    "electron_configuration": "[Ar] 3d10 4s2 4p4",
+    "electronegativity_pauling": 2.55,
+    "common_oxidation_states": ["6", "4", "-2"],
+    "appearance": "A semi-metal that can exist as a silvery metal or as a red powder.",
+    "relevance": [
+      "Se 是 SnSe2、SnSe、SnSeS 的阴离子元素。",
+      "Se 与 S 同属 16 族，替换或合金化会影响能隙、价带位置和晶格。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/34/selenium",
+      "evidence": "RSC fact box lists atomic number 34, relative atomic mass 78.971, group 16, melting point 220.8°C, boiling point 685°C, density 4.809 g cm−3, and common oxidation states 6, 4, -2."
+    }
+  },
+  {
+    "symbol": "S",
+    "name": "Sulfur",
+    "chinese_name": "硫",
+    "atomic_number": 16,
+    "relative_atomic_mass": 32.06,
+    "group": 16,
+    "period": 3,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 115.21,
+    "melting_point_k": 388.36,
+    "boiling_point_c": 444.61,
+    "boiling_point_k": 717.76,
+    "density_g_cm3": 2.07,
+    "electron_configuration": "[Ne] 3s2 3p4",
+    "electronegativity_pauling": 2.58,
+    "common_oxidation_states": ["6", "4", "2", "-2"],
+    "appearance": "The most common allotrope appears as yellow crystals or powder.",
+    "relevance": [
+      "S 是 SnS2、SnS、SnSeS 的阴离子元素。",
+      "S 与 Se 同属 16 族，Sn-Se-S 合金中 S/Se 比例是判断材料的重要线索。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/16/sulfur",
+      "evidence": "RSC fact box lists atomic number 16, relative atomic mass 32.06, group 16, melting point 115.21°C, boiling point 444.61°C, density 2.07 g cm−3, and common oxidation states 6, 4, 2, -2."
+    }
+  }
+]
