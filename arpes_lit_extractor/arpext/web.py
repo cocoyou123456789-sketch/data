@@ -33,6 +33,9 @@ class ArpesWebHandler(BaseHTTPRequestHandler):
         if path == "/api/sources":
             self._send_json({"sources": _load_search_sources()})
             return
+        if path == "/api/elements":
+            self._send_json({"elements": load_elements(ROOT / "data" / "elements.json")})
+            return
         self.send_error(HTTPStatus.NOT_FOUND, "Not found")
 
     def do_POST(self) -> None:
@@ -558,9 +561,7 @@ INDEX_HTML = r"""<!doctype html>
         <input id="searchInput" type="search" placeholder="输入 Sn、Se、S、SnSe2、二茂钴、ARPES、band gap">
         <div class="row">
           <button class="primary" id="searchBtn" title="从文章数据中搜索">搜索数据库</button>
-          <button id="snBtn" title="搜索 Sn 相关材料">Sn</button>
-          <button id="seBtn" title="搜索 Se 相关材料">Se</button>
-          <button id="sBtn" title="搜索 S 相关材料">S</button>
+          <div id="elementButtons" class="row" aria-label="ARPES 常用元素"></div>
           <button id="snse2Btn" title="搜索 SnSe2">SnSe2</button>
         </div>
       </div>
@@ -655,6 +656,7 @@ INDEX_HTML = r"""<!doctype html>
     const importScholarBtn = document.querySelector("#importScholarBtn");
     const sourceList = document.querySelector("#sourceList");
     const sourceStatus = document.querySelector("#sourceStatus");
+    const elementButtons = document.querySelector("#elementButtons");
 
     const demoText = `Direct observation of band structure in cobaltocene-doped SnSe2
 DOI: 10.1234/example.2026.1
@@ -669,9 +671,6 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
       statusEl.textContent = "";
     });
 
-    document.querySelector("#snBtn").addEventListener("click", () => quickSearch("Sn"));
-    document.querySelector("#seBtn").addEventListener("click", () => quickSearch("Se"));
-    document.querySelector("#sBtn").addEventListener("click", () => quickSearch("S"));
     document.querySelector("#snse2Btn").addEventListener("click", () => quickSearch("SnSe2"));
 
     document.querySelector("#clearBtn").addEventListener("click", () => {
@@ -714,6 +713,30 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
       if (event.key === "Enter") searchCorpus();
     });
     loadSources();
+    loadElementButtons();
+
+    async function loadElementButtons() {
+      try {
+        const response = await fetch("/api/elements");
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "加载元素失败");
+        renderElementButtons(data.elements || []);
+      } catch (error) {
+        elementButtons.innerHTML = `<span class="status">${escapeHtml(error.message)}</span>`;
+      }
+    }
+
+    function renderElementButtons(elements) {
+      const priority = ["Sn", "Se", "S", "Bi", "Te", "Sb", "Pb", "W", "Mo", "Ti", "Fe", "Cu", "O", "Co", "C"];
+      const bySymbol = Object.fromEntries(elements.map(item => [item.symbol, item]));
+      elementButtons.innerHTML = priority
+        .filter(symbol => bySymbol[symbol])
+        .map(symbol => `<button class="element-btn" data-symbol="${escapeAttr(symbol)}" title="${escapeAttr(bySymbol[symbol].name)}">${escapeHtml(symbol)}</button>`)
+        .join("");
+      elementButtons.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => quickSearch(button.dataset.symbol));
+      });
+    }
 
     async function loadSources() {
       try {
@@ -938,9 +961,9 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
             ${fact("相对原子质量", item.relative_atomic_mass)}
             ${fact("族 / 周期", `${item.group} / ${item.period}`)}
             ${fact("20°C 状态", item.state_at_20c)}
-            ${fact("熔点", `${item.melting_point_c} °C`)}
-            ${fact("沸点", `${item.boiling_point_c} °C`)}
-            ${fact("密度", `${item.density_g_cm3} g/cm³`)}
+            ${fact("熔点", formatUnit(item.melting_point_c, "°C"))}
+            ${fact("沸点", formatUnit(item.boiling_point_c, "°C"))}
+            ${fact("密度", formatUnit(item.density_g_cm3, "g/cm³"))}
             ${fact("电负性", item.electronegativity_pauling)}
           </div>
           ${list(item.relevance || [])}
@@ -955,6 +978,10 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
 
     function fact(label, value) {
       return `<div class="fact"><span>${escapeHtml(label)}</span>${escapeHtml(value ?? "-")}</div>`;
+    }
+
+    function formatUnit(value, unit) {
+      return value === null || value === undefined || value === "" ? "-" : `${value} ${unit}`;
     }
 
     function candidateBlock(candidates) {

@@ -47,6 +47,78 @@ MATERIAL_PROPERTIES = {
         ],
         "watch": ["band gap", "valence band", "phase purity", "stoichiometry"],
     },
+    "Bi2Se3": {
+        "family": "topological insulator",
+        "traits": [
+            "Bi-Se 拓扑绝缘体经典体系",
+            "ARPES 中常关注 Dirac surface state、Dirac point 和体带贡献",
+        ],
+        "watch": ["Dirac point", "surface state", "bulk band", "Fermi level"],
+    },
+    "Bi2Te3": {
+        "family": "topological insulator / thermoelectric",
+        "traits": [
+            "Bi-Te 层状材料，常用于拓扑表面态和热电相关研究",
+            "Te 参与时需要关注强自旋轨道耦合和表面态色散",
+        ],
+        "watch": ["surface state", "spin-orbit coupling", "Dirac cone"],
+    },
+    "Sb2Te3": {
+        "family": "topological insulator",
+        "traits": [
+            "Sb-Te 拓扑绝缘体相关体系",
+            "常与 Bi2Te3/Bi2Se3 做合金化或能级调控比较",
+        ],
+        "watch": ["Dirac cone", "hole doping", "surface state"],
+    },
+    "WTe2": {
+        "family": "transition-metal dichalcogenide",
+        "traits": [
+            "W-Te 层状过渡金属硫族化物",
+            "ARPES 中常关注 Weyl/拓扑半金属、费米面和温度相变",
+        ],
+        "watch": ["Fermi surface", "Weyl points", "band inversion"],
+    },
+    "MoS2": {
+        "family": "transition-metal dichalcogenide",
+        "traits": [
+            "经典二维 TMD 半导体",
+            "ARPES 中常关注层数依赖、谷结构和价带自旋轨道劈裂",
+        ],
+        "watch": ["valley", "spin-orbit splitting", "layer dependence"],
+    },
+    "MoSe2": {
+        "family": "transition-metal dichalcogenide",
+        "traits": [
+            "Mo-Se 二维 TMD 半导体",
+            "常用于比较 Se/S/Te 替换对能带和激子物理的影响",
+        ],
+        "watch": ["valley", "band edge", "spin-orbit splitting"],
+    },
+    "FeSe": {
+        "family": "iron-based superconductor",
+        "traits": [
+            "铁基超导关键体系",
+            "ARPES 中常关注费米面、超导能隙、nematicity 和单层 FeSe/STO 界面效应",
+        ],
+        "watch": ["Fermi surface", "superconducting gap", "nematicity"],
+    },
+    "FeTe": {
+        "family": "iron chalcogenide",
+        "traits": [
+            "Fe-Te 铁硫族化物体系",
+            "常与 FeSe 或 FeSeTe 合金体系一起研究磁性和超导相关能带",
+        ],
+        "watch": ["magnetism", "Fermi surface", "band renormalization"],
+    },
+    "Bi2212": {
+        "family": "cuprate superconductor",
+        "traits": [
+            "铜氧化物高温超导 ARPES 经典体系",
+            "常用于研究 d-wave superconducting gap、pseudogap 和 nodal/antinodal 谱函数",
+        ],
+        "watch": ["superconducting gap", "pseudogap", "nodal dispersion", "antinodal spectra"],
+    },
 }
 
 

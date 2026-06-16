@@ -19,6 +19,7 @@ PYTHONPATH=. python3 -m arpext.web
 
 - 搜索材料或元素：输入 `Sn`、`Se`、`SnSe2`、`二茂钴` 等，会从 `data/articles.json` 里找相关文章数据，并生成候选材料、温度、光子能量、band gap、掺杂和文章证据对比。
 - 可信元素数据：`data/elements.json` 目前收录 Sn、Se、S，来源为 Royal Society of Chemistry Periodic Table。页面会显示来源链接。
+- ARPES 常用元素选择：网页会从元素库动态生成按钮，目前包括 Sn、Se、S、Bi、Te、Sb、Pb、W、Mo、Ti、Fe、Cu、O、Co、C。
 - Web of Science 导入：从 WoS 导出 CSV/TSV/TXT 后，在网页中粘贴或上传。建议导出字段包含 `Article Title`、`Abstract`、`Author Keywords`、`Keywords Plus`、`Publication Year`、`DOI`、`UT (Unique WOS ID)`、`Source Title`、`Authors`。
 - Google Scholar 导入：在 Scholar 结果页点击 `引用` -> `BibTeX`，复制 BibTeX 到网页导入区。网站会把题名、作者、期刊、年份、DOI/URL 解析成文献线索并参与材料搜索。
 - 可用搜索源说明：网页会展示 `data/search_sources.json` 中的来源清单，包括 OpenAlex、Crossref、Semantic Scholar、arXiv、Europe PMC、Web of Science、Google Scholar、Scopus、Materials Project 和 OPTIMADE，并明确标注官方 API、导入方式、授权限制和是否适合自动接入。

@@ -15,6 +15,15 @@ MATERIAL_ELEMENTS = {
     "SnS2": ["Sn", "S"],
     "SnSe": ["Sn", "Se"],
     "SnS": ["Sn", "S"],
+    "Bi2Se3": ["Bi", "Se"],
+    "Bi2Te3": ["Bi", "Te"],
+    "Sb2Te3": ["Sb", "Te"],
+    "WTe2": ["W", "Te"],
+    "MoS2": ["Mo", "S"],
+    "MoSe2": ["Mo", "Se"],
+    "FeSe": ["Fe", "Se"],
+    "FeTe": ["Fe", "Te"],
+    "Bi2212": ["Bi", "Sr", "Ca", "Cu", "O"],
 }
 
 
