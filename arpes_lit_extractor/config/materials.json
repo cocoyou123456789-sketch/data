@@ -1,0 +1,25 @@
+{
+  "materials": [
+    {
+      "name": "SnSe2",
+      "aliases": ["SnSe2", "SnSe₂", "tin diselenide"],
+      "dopants": ["cobaltocene", "CoCp2", "二茂钴", "cobaltocene-doped SnSe2"]
+    },
+    {
+      "name": "SnSeS",
+      "aliases": ["SnSeS", "SnSeS alloy", "SnSe1-xSx", "SnSe_{1-x}S_x"]
+    },
+    {
+      "name": "SnS2",
+      "aliases": ["SnS2", "SnS₂", "tin disulfide"]
+    },
+    {
+      "name": "SnSe",
+      "aliases": ["SnSe", "tin selenide"]
+    },
+    {
+      "name": "SnS",
+      "aliases": ["SnS", "tin sulfide"]
+    }
+  ]
+}

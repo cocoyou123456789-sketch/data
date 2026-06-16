@@ -1,0 +1,53 @@
+[
+  {
+    "material": "SnSe",
+    "title": "Photoemission Study of the Electronic Structure of Valence Band Convergent SnSe",
+    "url": "https://arxiv.org/abs/1804.04357",
+    "query": "\"SnSe\" \"angle-resolved photoemission\"",
+    "why": "明确使用 ARPES 研究 SnSe 价带结构，适合作为第一篇全文测试。"
+  },
+  {
+    "material": "SnSe",
+    "title": "Observation of non-trivial topological electronic structure of orthorhombic SnSe",
+    "url": "https://arxiv.org/abs/2204.07214",
+    "query": "\"orthorhombic SnSe\" \"angle-resolved photoemission\"",
+    "why": "同步辐射 ARPES + 计算，适合测试 beamline、能带、拓扑术语抽取。"
+  },
+  {
+    "material": "SnSe2",
+    "title": "Observation of quasi-steady dark excitons and gap phase in a doped semiconductor",
+    "url": "https://arxiv.org/abs/2507.08419",
+    "query": "\"doped semiconductor SnSe2\" \"angle-resolved photoemission\"",
+    "why": "SnSe2 掺杂半导体 ARPES 案例，适合测试掺杂、gap phase、光照条件字段。"
+  },
+  {
+    "material": "SnSe",
+    "query": "\"SnSe\" \"angle-resolved photoemission\"",
+    "why": "SnSe has published ARPES/topological or band-structure papers and is a good first parser test."
+  },
+  {
+    "material": "SnSe2",
+    "query": "\"SnSe2\" \"ARPES\" OR \"angle-resolved photoemission\"",
+    "why": "Target material. Search needs publisher/Crossref expansion because exact ARPES hits are sparser."
+  },
+  {
+    "material": "SnSe2 + cobaltocene",
+    "query": "\"SnSe2\" cobaltocene OR \"CoCp2\"",
+    "why": "Target doped system. May appear in surface electron doping or molecular dosing studies."
+  },
+  {
+    "material": "SnS2",
+    "query": "\"SnS2\" \"ARPES\" OR \"angle-resolved photoemission\"",
+    "why": "Layered tin dichalcogenide target; useful for testing material alias handling."
+  },
+  {
+    "material": "SnSeS",
+    "query": "\"SnSeS\" \"ARPES\" OR \"SnSe1-xSx\" \"photoemission\"",
+    "why": "Alloy notation varies, so aliases are important."
+  },
+  {
+    "material": "SnS",
+    "query": "\"SnS\" \"angle-resolved photoemission\"",
+    "why": "Binary IV-VI target; likely needs disambiguation from generic Sn-S chemistry."
+  }
+]

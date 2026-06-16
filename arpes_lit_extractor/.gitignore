@@ -1,0 +1,5 @@
+output/
+data/imported_wos_articles.json
+data/imported_scholar_articles.json
+__pycache__/
+*.pyc
