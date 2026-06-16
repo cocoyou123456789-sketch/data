@@ -10,6 +10,7 @@ from .config import load_materials
 from .corpus import load_articles, load_elements, search_articles, search_elements
 from .extract import extract_from_text
 from .knowledge import describe_materials
+from .scholar import parse_scholar_bibtex
 from .wos import load_imported_articles, parse_wos_export, save_imported_articles
 
 
@@ -33,7 +34,7 @@ class ArpesWebHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = urlparse(self.path).path
-        if path not in {"/api/analyze", "/api/search", "/api/import-wos"}:
+        if path not in {"/api/analyze", "/api/search", "/api/import-wos", "/api/import-scholar"}:
             self.send_error(HTTPStatus.NOT_FOUND, "Not found")
             return
 
@@ -51,6 +52,17 @@ class ArpesWebHandler(BaseHTTPRequestHandler):
                 self._send_json({"imported": len(articles), "articles": articles[:20]})
                 return
 
+            if path == "/api/import-scholar":
+                text = str(payload.get("text", ""))
+                source = str(payload.get("source_file", "google-scholar.bib"))
+                if not text.strip():
+                    self._send_json({"error": "请粘贴 Google Scholar BibTeX 内容。"}, HTTPStatus.BAD_REQUEST)
+                    return
+                articles = parse_scholar_bibtex(text, ROOT / "config" / "materials.json", source)
+                save_imported_articles(ROOT / "data" / "imported_scholar_articles.json", articles)
+                self._send_json({"imported": len(articles), "articles": articles[:20]})
+                return
+
             if path == "/api/search":
                 query = str(payload.get("query", ""))
                 if not query.strip():
@@ -58,6 +70,7 @@ class ArpesWebHandler(BaseHTTPRequestHandler):
                     return
                 articles = load_articles(ROOT / "data" / "articles.json")
                 articles += load_imported_articles(ROOT / "data" / "imported_wos_articles.json")
+                articles += load_imported_articles(ROOT / "data" / "imported_scholar_articles.json")
                 result = search_articles(query, articles)
                 result["trusted_elements"] = search_elements(query, load_elements(ROOT / "data" / "elements.json"))
                 result["data_note"] = (
@@ -527,6 +540,21 @@ INDEX_HTML = r"""<!doctype html>
         </div>
       </div>
     </section>
+
+    <section>
+      <div class="section-head">
+        <h2>导入 Google Scholar</h2>
+        <span class="status" id="scholarStatus"></span>
+      </div>
+      <div class="controls">
+        <textarea id="scholarInput" class="compact" spellcheck="false" placeholder="在 Google Scholar 点“引用”-> BibTeX，复制粘贴到这里。也可粘贴多条 BibTeX。"></textarea>
+        <div class="row">
+          <label class="file-label" for="scholarFile" title="读取 BibTeX 文件">选择 BibTeX</label>
+          <input id="scholarFile" type="file" accept=".bib,.txt">
+          <button id="importScholarBtn" title="导入 Google Scholar BibTeX">导入 Scholar</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <main>
@@ -561,6 +589,8 @@ INDEX_HTML = r"""<!doctype html>
     const searchInput = document.querySelector("#searchInput");
     const wosInput = document.querySelector("#wosInput");
     const wosFile = document.querySelector("#wosFile");
+    const scholarInput = document.querySelector("#scholarInput");
+    const scholarFile = document.querySelector("#scholarFile");
     const fileInput = document.querySelector("#fileInput");
     const fileName = document.querySelector("#fileName");
     const statusEl = document.querySelector("#status");
@@ -571,6 +601,8 @@ INDEX_HTML = r"""<!doctype html>
     const searchStatus = document.querySelector("#searchStatus");
     const wosStatus = document.querySelector("#wosStatus");
     const importWosBtn = document.querySelector("#importWosBtn");
+    const scholarStatus = document.querySelector("#scholarStatus");
+    const importScholarBtn = document.querySelector("#importScholarBtn");
 
     const demoText = `Direct observation of band structure in cobaltocene-doped SnSe2
 DOI: 10.1234/example.2026.1
@@ -600,6 +632,7 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
       statusEl.textContent = "";
       searchStatus.textContent = "";
       wosStatus.textContent = "";
+      scholarStatus.textContent = "";
     });
 
     fileInput.addEventListener("change", async () => {
@@ -612,11 +645,18 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
     analyzeBtn.addEventListener("click", analyze);
     searchBtn.addEventListener("click", searchCorpus);
     importWosBtn.addEventListener("click", importWos);
+    importScholarBtn.addEventListener("click", importScholar);
     wosFile.addEventListener("change", async () => {
       const file = wosFile.files[0];
       if (!file) return;
       wosStatus.textContent = file.name;
       wosInput.value = await file.text();
+    });
+    scholarFile.addEventListener("change", async () => {
+      const file = scholarFile.files[0];
+      if (!file) return;
+      scholarStatus.textContent = file.name;
+      scholarInput.value = await file.text();
     });
     searchInput.addEventListener("keydown", event => {
       if (event.key === "Enter") searchCorpus();
@@ -677,20 +717,45 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
       }
     }
 
-    function renderImport(data) {
-      confidenceEl.textContent = `WoS ${data.imported} 条`;
+    async function importScholar() {
+      const text = scholarInput.value.trim();
+      if (!text) {
+        scholarStatus.textContent = "请粘贴 Scholar BibTeX";
+        return;
+      }
+      importScholarBtn.disabled = true;
+      scholarStatus.textContent = "导入中";
+      try {
+        const response = await fetch("/api/import-scholar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, source_file: scholarFile.files[0]?.name || "google-scholar.bib" })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "导入失败");
+        scholarStatus.textContent = `已导入 ${data.imported} 条`;
+        renderImport(data, "Google Scholar BibTeX");
+      } catch (error) {
+        scholarStatus.textContent = error.message;
+      } finally {
+        importScholarBtn.disabled = false;
+      }
+    }
+
+    function renderImport(data, sourceName = "Web of Science") {
+      confidenceEl.textContent = `${sourceName} ${data.imported} 条`;
       resultsEl.className = "results";
       resultsEl.innerHTML = `
         <div class="summary">
-          ${metric("导入来源", "Web of Science")}
+          ${metric("导入来源", sourceName)}
           ${metric("记录数", String(data.imported || 0))}
           ${metric("状态", "metadata only")}
         </div>
         <div class="block"><h3>导入记录预览</h3>${articleTable(data.articles || [])}</div>
         <div class="block"><h3>可信度说明</h3>${list([
-          "WoS 导入记录代表题录和摘要元数据来源较可信。",
+          "导入记录代表题录元数据来源，不等于全文实验指标已核验。",
           "温度、光子能量、band gap 等实验指标如果只来自摘要/关键词，仍需全文核验。",
-          "导入后可在上方搜索材料或元素，结果会合并 WoS 记录。"
+          "导入后可在上方搜索材料或元素，结果会合并这些记录。"
         ])}</div>
       `;
     }
@@ -899,6 +964,8 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
 
     function statusText(status) {
       if (status === "lead_needs_fulltext_check") return "文献线索，待全文核验";
+      if (status === "wos_metadata_only") return "Web of Science 元数据，待全文核验";
+      if (status === "google_scholar_bibtex_metadata") return "Google Scholar BibTeX 元数据，待全文核验";
       return status || "未标注";
     }
 
