@@ -30,6 +30,9 @@ class ArpesWebHandler(BaseHTTPRequestHandler):
         if path == "/health":
             self._send_json({"ok": True})
             return
+        if path == "/api/sources":
+            self._send_json({"sources": _load_search_sources()})
+            return
         self.send_error(HTTPStatus.NOT_FOUND, "Not found")
 
     def do_POST(self) -> None:
@@ -136,6 +139,10 @@ def _confidence(record: dict[str, object]) -> dict[str, object]:
         score += 15
         reasons.append("识别到物性参数")
     return {"score": min(score, 100), "reasons": reasons}
+
+
+def _load_search_sources() -> list[dict[str, object]]:
+    return json.loads((ROOT / "data" / "search_sources.json").read_text(encoding="utf-8"))
 
 
 def run(host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> None:
@@ -431,6 +438,38 @@ INDEX_HTML = r"""<!doctype html>
       gap: 10px;
     }
 
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .source-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+      padding: 12px;
+      min-height: 154px;
+    }
+
+    .source-title {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .source-title strong {
+      font-size: 15px;
+    }
+
+    .source-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
     .element-card {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -496,6 +535,7 @@ INDEX_HTML = r"""<!doctype html>
       textarea { min-height: 260px; }
       .summary { grid-template-columns: 1fr; }
       .element-grid { grid-template-columns: 1fr; }
+      .source-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -555,6 +595,16 @@ INDEX_HTML = r"""<!doctype html>
         </div>
       </div>
     </section>
+
+    <section>
+      <div class="section-head">
+        <h2>可用搜索源</h2>
+        <span class="status" id="sourceStatus"></span>
+      </div>
+      <div id="sourceList" class="controls">
+        <div class="status">加载中</div>
+      </div>
+    </section>
   </div>
 
   <main>
@@ -603,6 +653,8 @@ INDEX_HTML = r"""<!doctype html>
     const importWosBtn = document.querySelector("#importWosBtn");
     const scholarStatus = document.querySelector("#scholarStatus");
     const importScholarBtn = document.querySelector("#importScholarBtn");
+    const sourceList = document.querySelector("#sourceList");
+    const sourceStatus = document.querySelector("#sourceStatus");
 
     const demoText = `Direct observation of band structure in cobaltocene-doped SnSe2
 DOI: 10.1234/example.2026.1
@@ -661,6 +713,44 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
     searchInput.addEventListener("keydown", event => {
       if (event.key === "Enter") searchCorpus();
     });
+    loadSources();
+
+    async function loadSources() {
+      try {
+        const response = await fetch("/api/sources");
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "加载失败");
+        renderSources(data.sources || []);
+      } catch (error) {
+        sourceStatus.textContent = error.message;
+        sourceList.innerHTML = `<div class="status">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function renderSources(sources) {
+      sourceStatus.textContent = `${sources.length} 个来源`;
+      sourceList.innerHTML = `<div class="source-grid">${sources.map(sourceCard).join("")}</div>`;
+    }
+
+    function sourceCard(source) {
+      const statusTone = source.can_integrate_now ? "good" : "warn";
+      const statusText = source.can_integrate_now ? "可接入/已支持" : "需授权或后续接入";
+      return `
+        <div class="source-card">
+          <div class="source-title">
+            <strong>${escapeHtml(source.name)}</strong>
+            <span class="chip ${statusTone}">${escapeHtml(statusText)}</span>
+          </div>
+          <div class="source-meta">${escapeHtml(source.category)} · ${escapeHtml(source.access)} · ${escapeHtml(source.trust_level)}</div>
+          ${chips(source.best_for || [], "trusted")}
+          <ul>
+            <li>${escapeHtml(source.notes || "")}</li>
+            <li>${escapeHtml(source.limits || "")}</li>
+          </ul>
+          <a class="chip trusted link" href="${escapeAttr(source.official_url || "")}" target="_blank" rel="noreferrer">official source</a>
+        </div>
+      `;
+    }
 
     function quickSearch(query) {
       searchInput.value = query;
