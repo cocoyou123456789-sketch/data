@@ -14,6 +14,8 @@ https://cocoyou123456789-sketch.github.io/data/
 
 说明：公开静态版不运行 Python 后端，适合所有人打开查看元素/材料搜索、文献线索和搜索源说明；Web of Science / Google Scholar 导入和单篇文本抽取仍建议使用本地 Python 版。
 
+当前公开静态版默认展示 `Superconductivity` topic 模板，包含英文界面、周期表可点元素、灰色无数据元素、超导材料 family、Tc、ARPES 特异性质、q-dependent observables、photon-energy / polarization notes 和数据状态说明。
+
 启动本地网页：
 
 ```bash

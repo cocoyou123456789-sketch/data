@@ -1,0 +1,268 @@
+{
+  "topic": "Superconductivity",
+  "language": "en",
+  "template_status": "seed_template_not_exhaustive",
+  "columns": [
+    "family",
+    "material",
+    "elements",
+    "synthesized_or_discovered",
+    "transition_temperature_K",
+    "arpes_special_properties",
+    "q_dependent_observables",
+    "photon_arpes_notes",
+    "verification_status"
+  ],
+  "elements": [
+    "H", "B", "C", "N", "O", "F", "Mg", "Al", "Si", "P", "S", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Sr", "Y", "Zr", "Nb", "Mo", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "Ba", "La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Bi", "Hg", "Pb"
+  ],
+  "families": [
+    {
+      "id": "cuprate",
+      "name": "Cuprates",
+      "description": "Layered copper oxides; the core ARPES targets are Fermi arcs, pseudogap, d-wave gap, nodal/antinodal dichotomy, and q-dependent charge order."
+    },
+    {
+      "id": "iron-based",
+      "name": "Iron-based",
+      "description": "Fe pnictides/chalcogenides; ARPES often tracks multiband Fermi surfaces, orbital-selective behavior, nematicity, and superconducting gap anisotropy."
+    },
+    {
+      "id": "nickelate",
+      "name": "Nickelates",
+      "description": "Ni-based superconductors; a growing ARPES target for comparing cuprate-like and multiorbital physics."
+    },
+    {
+      "id": "conventional",
+      "name": "Conventional / BCS",
+      "description": "Elemental and intermetallic superconductors; useful Tc and gap calibration references."
+    },
+    {
+      "id": "tmd",
+      "name": "Transition-metal dichalcogenides",
+      "description": "Layered TMD superconductors; ARPES focuses on CDW, valley physics, Fermi surface nesting, and gap opening."
+    },
+    {
+      "id": "heavy-fermion",
+      "name": "Heavy fermion",
+      "description": "Strongly correlated f-electron superconductors; ARPES targets heavy bands and hybridization."
+    },
+    {
+      "id": "hydride",
+      "name": "Hydrides / high pressure",
+      "description": "High-pressure superconductors with high Tc; not usually routine ARPES because pressure cells limit photoemission."
+    }
+  ],
+  "materials": [
+    {
+      "family": "conventional",
+      "material": "Hg",
+      "display_name": "Mercury",
+      "elements": ["Hg"],
+      "synthesized_or_discovered": "1911 superconductivity discovery",
+      "transition_temperature_K": 4.2,
+      "tc_note": "Elemental superconductor; historical reference.",
+      "arpes_special_properties": ["BCS reference", "elemental metal"],
+      "q_dependent_observables": ["isotropic gap reference", "phonon-related pairing context"],
+      "photon_arpes_notes": "Useful as a historical reference, not a common modern ARPES target.",
+      "verification_status": "historical_reference",
+      "source_note": "Kamerlingh Onnes discovered superconductivity in mercury in 1911."
+    },
+    {
+      "family": "conventional",
+      "material": "Nb",
+      "display_name": "Niobium",
+      "elements": ["Nb"],
+      "synthesized_or_discovered": "elemental superconductor",
+      "transition_temperature_K": 9.2,
+      "tc_note": "Representative elemental superconductor.",
+      "arpes_special_properties": ["BCS gap", "calibration material"],
+      "q_dependent_observables": ["gap isotropy", "electron-phonon coupling context"],
+      "photon_arpes_notes": "Bulk metal; matrix elements depend strongly on photon energy.",
+      "verification_status": "template_reference",
+      "source_note": "Representative well-known elemental Tc; verify exact sample value before publication."
+    },
+    {
+      "family": "conventional",
+      "material": "Pb",
+      "display_name": "Lead",
+      "elements": ["Pb"],
+      "synthesized_or_discovered": "elemental superconductor",
+      "transition_temperature_K": 7.2,
+      "tc_note": "Strong-coupling conventional superconductor.",
+      "arpes_special_properties": ["strong electron-phonon coupling", "BCS reference"],
+      "q_dependent_observables": ["phonon kink", "gap size"],
+      "photon_arpes_notes": "Surface preparation matters strongly.",
+      "verification_status": "template_reference",
+      "source_note": "Representative well-known elemental Tc; verify exact sample value before publication."
+    },
+    {
+      "family": "conventional",
+      "material": "Nb3Sn",
+      "display_name": "Nb3Sn",
+      "elements": ["Nb", "Sn"],
+      "synthesized_or_discovered": "A15 intermetallic, historically important",
+      "transition_temperature_K": 18,
+      "tc_note": "A15 conventional superconductor.",
+      "arpes_special_properties": ["intermetallic band structure", "electron-phonon coupling"],
+      "q_dependent_observables": ["Fermi surface", "phonon-coupled renormalization"],
+      "photon_arpes_notes": "Harder surface preparation than layered materials.",
+      "verification_status": "template_reference",
+      "source_note": "Representative A15 superconductor; verify exact Tc and synthesis record before publication."
+    },
+    {
+      "family": "conventional",
+      "material": "MgB2",
+      "display_name": "MgB2",
+      "elements": ["Mg", "B"],
+      "synthesized_or_discovered": "2001 reported high-Tc conventional superconductor",
+      "transition_temperature_K": 39,
+      "tc_note": "Two-gap electron-phonon superconductor.",
+      "arpes_special_properties": ["two superconducting gaps", "sigma/pi bands"],
+      "q_dependent_observables": ["band-dependent gaps", "phonon kink"],
+      "photon_arpes_notes": "Photon energy can separate sigma and pi band weight.",
+      "verification_status": "literature_seed",
+      "source_note": "Discovery of superconductivity near 39 K in MgB2 was reported in 2001."
+    },
+    {
+      "family": "cuprate",
+      "material": "La2-xBaxCuO4",
+      "display_name": "La-Ba-Cu-O / LBCO",
+      "elements": ["La", "Ba", "Cu", "O"],
+      "synthesized_or_discovered": "1986 high-Tc cuprate breakthrough",
+      "transition_temperature_K": 35,
+      "tc_note": "First high-Tc cuprate family reported by Bednorz and Muller.",
+      "arpes_special_properties": ["pseudogap", "d-wave gap", "stripe physics"],
+      "q_dependent_observables": ["charge/spin stripe wave vector", "antinodal gap", "Fermi arc"],
+      "photon_arpes_notes": "Polarization and photon energy help separate orbital character.",
+      "verification_status": "historical_reference",
+      "source_note": "Bednorz and Muller discovered high-temperature superconductivity in Ba-La-Cu-O in 1986."
+    },
+    {
+      "family": "cuprate",
+      "material": "YBa2Cu3O7-d",
+      "display_name": "YBCO",
+      "elements": ["Y", "Ba", "Cu", "O"],
+      "synthesized_or_discovered": "1987",
+      "transition_temperature_K": 92,
+      "tc_note": "High-Tc cuprate above liquid nitrogen temperature.",
+      "arpes_special_properties": ["d-wave gap", "CuO chains complicate spectra", "bilayer physics"],
+      "q_dependent_observables": ["charge order q-vector", "nodal dispersion", "pseudogap"],
+      "photon_arpes_notes": "Surface polarity and chain states require careful photon-energy/polarization choices.",
+      "verification_status": "historical_reference",
+      "source_note": "YBCO around 92-93 K was reported in 1987."
+    },
+    {
+      "family": "cuprate",
+      "material": "Bi2Sr2CaCu2O8+d",
+      "display_name": "Bi2212",
+      "elements": ["Bi", "Sr", "Ca", "Cu", "O"],
+      "synthesized_or_discovered": "late 1980s cuprate family",
+      "transition_temperature_K": 90,
+      "tc_note": "Tc varies with doping; often near 90-95 K around optimal doping.",
+      "arpes_special_properties": ["canonical ARPES cuprate", "pseudogap", "d-wave superconducting gap"],
+      "q_dependent_observables": ["nodal/antinodal gap", "Fermi arc", "charge order q-vector"],
+      "photon_arpes_notes": "Matrix elements and superstructure replicas are major ARPES concerns.",
+      "verification_status": "template_reference",
+      "source_note": "Template entry; doping-specific Tc and synthesis source should be verified for each dataset."
+    },
+    {
+      "family": "iron-based",
+      "material": "Ba0.6K0.4Fe2As2",
+      "display_name": "BaK122",
+      "elements": ["Ba", "K", "Fe", "As"],
+      "synthesized_or_discovered": "2008 iron arsenide superconductor",
+      "transition_temperature_K": 38,
+      "tc_note": "Hole-doped 122 iron-based superconductor.",
+      "arpes_special_properties": ["multiband gaps", "hole/electron pockets", "orbital selectivity"],
+      "q_dependent_observables": ["nesting vector", "spin fluctuation q", "gap anisotropy"],
+      "photon_arpes_notes": "Photon energy maps kz and separates 3D hole pockets.",
+      "verification_status": "literature_seed",
+      "source_note": "Ba1-xKxFe2As2 with x around 0.4 was reported superconducting up to 38 K in 2008."
+    },
+    {
+      "family": "iron-based",
+      "material": "FeSe",
+      "display_name": "FeSe",
+      "elements": ["Fe", "Se"],
+      "synthesized_or_discovered": "iron chalcogenide family",
+      "transition_temperature_K": 8,
+      "tc_note": "Bulk FeSe around 8-9 K; monolayer/interface values differ.",
+      "arpes_special_properties": ["nematic band splitting", "small Fermi pockets", "superconducting gap"],
+      "q_dependent_observables": ["nematic q=0 order", "spin fluctuation vectors", "gap anisotropy"],
+      "photon_arpes_notes": "Low photon energy laser ARPES is often useful for small Fermi pockets.",
+      "verification_status": "template_reference",
+      "source_note": "Bulk FeSe Tc is sample dependent; monolayer FeSe/STO should be tracked separately."
+    },
+    {
+      "family": "nickelate",
+      "material": "Nd1-xSrxNiO2",
+      "display_name": "Infinite-layer nickelate",
+      "elements": ["Nd", "Sr", "Ni", "O"],
+      "synthesized_or_discovered": "2019 thin-film nickelate superconductivity reports",
+      "transition_temperature_K": 15,
+      "tc_note": "Approximate thin-film scale; strongly sample and synthesis dependent.",
+      "arpes_special_properties": ["Ni dx2-y2 band", "rare-earth pocket", "cuprate comparison"],
+      "q_dependent_observables": ["charge order q if present", "Fermi surface topology", "orbital occupancy"],
+      "photon_arpes_notes": "Thin films and polar surfaces make photon-energy/polarization control important.",
+      "verification_status": "topic_template_seed",
+      "source_note": "Template nickelate entry; use publication-specific Tc and synthesis details for curated data."
+    },
+    {
+      "family": "nickelate",
+      "material": "La3Ni2O7",
+      "display_name": "La3Ni2O7 under pressure",
+      "elements": ["La", "Ni", "O"],
+      "synthesized_or_discovered": "reported high-pressure nickelate superconductivity",
+      "transition_temperature_K": 80,
+      "tc_note": "High pressure; value depends on pressure/sample and is not routine ARPES-accessible.",
+      "arpes_special_properties": ["bilayer nickelate", "pressure-induced phase", "orbital-selective physics"],
+      "q_dependent_observables": ["structural/order wave vector", "bilayer splitting", "Fermi surface reconstruction"],
+      "photon_arpes_notes": "High-pressure state is difficult for standard ARPES; ambient/surface electronic structure may differ.",
+      "verification_status": "topic_template_seed",
+      "source_note": "Template high-pressure nickelate entry; verify pressure-specific data before use."
+    },
+    {
+      "family": "tmd",
+      "material": "2H-NbSe2",
+      "display_name": "2H-NbSe2",
+      "elements": ["Nb", "Se"],
+      "synthesized_or_discovered": "layered TMD superconductor",
+      "transition_temperature_K": 7.2,
+      "tc_note": "Coexists with charge-density wave order.",
+      "arpes_special_properties": ["CDW gap", "multiband superconducting gap", "layered Fermi surface"],
+      "q_dependent_observables": ["CDW q-vector", "gap anisotropy", "nesting"],
+      "photon_arpes_notes": "Photon energy helps separate kz dispersion and surface/bulk contributions.",
+      "verification_status": "template_reference",
+      "source_note": "Representative layered TMD; verify sample-specific Tc and CDW vector before publication."
+    },
+    {
+      "family": "heavy-fermion",
+      "material": "CeCoIn5",
+      "display_name": "CeCoIn5",
+      "elements": ["Ce", "Co", "In"],
+      "synthesized_or_discovered": "heavy-fermion superconductor",
+      "transition_temperature_K": 2.3,
+      "tc_note": "Strongly correlated f-electron superconductor.",
+      "arpes_special_properties": ["heavy bands", "f-electron hybridization", "small energy scales"],
+      "q_dependent_observables": ["hybridization momentum dependence", "magnetic fluctuation q"],
+      "photon_arpes_notes": "Resonant photon energies can enhance f-electron spectral weight.",
+      "verification_status": "template_reference",
+      "source_note": "Template heavy-fermion entry; verify sample-specific details before publication."
+    },
+    {
+      "family": "hydride",
+      "material": "H3S",
+      "display_name": "Compressed sulfur hydride",
+      "elements": ["H", "S"],
+      "synthesized_or_discovered": "high-pressure hydride superconductivity",
+      "transition_temperature_K": 200,
+      "tc_note": "High pressure; not a routine ARPES material.",
+      "arpes_special_properties": ["high-pressure phonon-mediated candidate", "not standard ARPES-accessible"],
+      "q_dependent_observables": ["phonon modes", "pressure-dependent structure"],
+      "photon_arpes_notes": "Diamond-anvil pressure environment prevents standard ARPES.",
+      "verification_status": "context_only",
+      "source_note": "Included for superconductivity history context; not suitable for ordinary ARPES workflow."
+    }
+  ]
+}
