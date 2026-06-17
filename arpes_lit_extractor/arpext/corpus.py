@@ -21,13 +21,7 @@ def search_elements(query: str, elements: list[dict[str, Any]]) -> list[dict[str
     terms = _terms(query)
     matches = []
     for element in elements:
-        fields = [
-            element.get("symbol", ""),
-            element.get("name", ""),
-            element.get("chinese_name", ""),
-            " ".join(element.get("relevance", [])),
-        ]
-        if any(term in str(field).lower() for term in terms for field in fields):
+        if any(_matches_element(element, term) for term in terms):
             matches.append(element)
     return matches
 
@@ -57,7 +51,35 @@ def _terms(query: str) -> list[str]:
 
 
 def _score_article(terms: list[str], article: dict[str, Any]) -> tuple[int, list[str]]:
-    haystacks = {
+    score = 0
+    reasons = []
+    for term in terms:
+        for label, values in _article_haystacks(article, term).items():
+            if any(_matches_value(value, term, label) for value in values):
+                score += _field_weight(label)
+                reasons.append(f"{label}匹配 {term}")
+    return score, _unique(reasons)
+
+
+def _matches_element(element: dict[str, Any], term: str) -> bool:
+    exact = [
+        element.get("symbol", ""),
+        element.get("name", ""),
+        element.get("chinese_name", ""),
+    ]
+    if len(term) <= 2:
+        return any(term == str(value).lower() for value in exact)
+    fields = exact + [" ".join(element.get("relevance", []))]
+    return any(term in str(value).lower() for value in fields)
+
+
+def _article_haystacks(article: dict[str, Any], term: str) -> dict[str, list[Any]]:
+    if len(term) <= 2:
+        return {
+            "材料": article.get("materials", []),
+            "元素": article.get("elements", []),
+        }
+    return {
         "材料": article.get("materials", []),
         "元素": article.get("elements", []),
         "掺杂": article.get("dopants", []),
@@ -66,14 +88,15 @@ def _score_article(terms: list[str], article: dict[str, Any]) -> tuple[int, list
         "标题": [article.get("title", "")],
         "证据": article.get("evidence", []),
     }
-    score = 0
-    reasons = []
-    for term in terms:
-        for label, values in haystacks.items():
-            if any(term in str(value).lower() for value in values):
-                score += _field_weight(label)
-                reasons.append(f"{label}匹配 {term}")
-    return score, _unique(reasons)
+
+
+def _matches_value(value: Any, term: str, label: str) -> bool:
+    clean = str(value).lower()
+    if len(term) <= 2 and label == "材料":
+        return clean.startswith(term)
+    if len(term) <= 2:
+        return clean == term
+    return term in clean
 
 
 def _field_weight(label: str) -> int:

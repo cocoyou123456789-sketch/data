@@ -20,6 +20,42 @@
     {
       "name": "SnS",
       "aliases": ["SnS", "tin sulfide"]
+    },
+    {
+      "name": "Bi2Se3",
+      "aliases": ["Bi2Se3", "Bi₂Se₃", "bismuth selenide"]
+    },
+    {
+      "name": "Bi2Te3",
+      "aliases": ["Bi2Te3", "Bi₂Te₃", "bismuth telluride"]
+    },
+    {
+      "name": "Sb2Te3",
+      "aliases": ["Sb2Te3", "Sb₂Te₃", "antimony telluride"]
+    },
+    {
+      "name": "WTe2",
+      "aliases": ["WTe2", "WTe₂", "tungsten ditelluride"]
+    },
+    {
+      "name": "MoS2",
+      "aliases": ["MoS2", "MoS₂", "molybdenum disulfide"]
+    },
+    {
+      "name": "MoSe2",
+      "aliases": ["MoSe2", "MoSe₂", "molybdenum diselenide"]
+    },
+    {
+      "name": "FeSe",
+      "aliases": ["FeSe", "iron selenide"]
+    },
+    {
+      "name": "FeTe",
+      "aliases": ["FeTe", "iron telluride"]
+    },
+    {
+      "name": "Bi2212",
+      "aliases": ["Bi2212", "Bi2Sr2CaCu2O8", "Bi₂Sr₂CaCu₂O₈"]
     }
   ]
 }

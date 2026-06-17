@@ -30,6 +30,12 @@ class ArpesWebHandler(BaseHTTPRequestHandler):
         if path == "/health":
             self._send_json({"ok": True})
             return
+        if path == "/api/sources":
+            self._send_json({"sources": _load_search_sources()})
+            return
+        if path == "/api/elements":
+            self._send_json({"elements": load_elements(ROOT / "data" / "elements.json")})
+            return
         self.send_error(HTTPStatus.NOT_FOUND, "Not found")
 
     def do_POST(self) -> None:
@@ -136,6 +142,10 @@ def _confidence(record: dict[str, object]) -> dict[str, object]:
         score += 15
         reasons.append("识别到物性参数")
     return {"score": min(score, 100), "reasons": reasons}
+
+
+def _load_search_sources() -> list[dict[str, object]]:
+    return json.loads((ROOT / "data" / "search_sources.json").read_text(encoding="utf-8"))
 
 
 def run(host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> None:
@@ -431,6 +441,38 @@ INDEX_HTML = r"""<!doctype html>
       gap: 10px;
     }
 
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .source-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+      padding: 12px;
+      min-height: 154px;
+    }
+
+    .source-title {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .source-title strong {
+      font-size: 15px;
+    }
+
+    .source-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
     .element-card {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -496,6 +538,7 @@ INDEX_HTML = r"""<!doctype html>
       textarea { min-height: 260px; }
       .summary { grid-template-columns: 1fr; }
       .element-grid { grid-template-columns: 1fr; }
+      .source-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -518,9 +561,7 @@ INDEX_HTML = r"""<!doctype html>
         <input id="searchInput" type="search" placeholder="输入 Sn、Se、S、SnSe2、二茂钴、ARPES、band gap">
         <div class="row">
           <button class="primary" id="searchBtn" title="从文章数据中搜索">搜索数据库</button>
-          <button id="snBtn" title="搜索 Sn 相关材料">Sn</button>
-          <button id="seBtn" title="搜索 Se 相关材料">Se</button>
-          <button id="sBtn" title="搜索 S 相关材料">S</button>
+          <div id="elementButtons" class="row" aria-label="ARPES 常用元素"></div>
           <button id="snse2Btn" title="搜索 SnSe2">SnSe2</button>
         </div>
       </div>
@@ -553,6 +594,16 @@ INDEX_HTML = r"""<!doctype html>
           <input id="scholarFile" type="file" accept=".bib,.txt">
           <button id="importScholarBtn" title="导入 Google Scholar BibTeX">导入 Scholar</button>
         </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>可用搜索源</h2>
+        <span class="status" id="sourceStatus"></span>
+      </div>
+      <div id="sourceList" class="controls">
+        <div class="status">加载中</div>
       </div>
     </section>
   </div>
@@ -603,6 +654,9 @@ INDEX_HTML = r"""<!doctype html>
     const importWosBtn = document.querySelector("#importWosBtn");
     const scholarStatus = document.querySelector("#scholarStatus");
     const importScholarBtn = document.querySelector("#importScholarBtn");
+    const sourceList = document.querySelector("#sourceList");
+    const sourceStatus = document.querySelector("#sourceStatus");
+    const elementButtons = document.querySelector("#elementButtons");
 
     const demoText = `Direct observation of band structure in cobaltocene-doped SnSe2
 DOI: 10.1234/example.2026.1
@@ -617,9 +671,6 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
       statusEl.textContent = "";
     });
 
-    document.querySelector("#snBtn").addEventListener("click", () => quickSearch("Sn"));
-    document.querySelector("#seBtn").addEventListener("click", () => quickSearch("Se"));
-    document.querySelector("#sBtn").addEventListener("click", () => quickSearch("S"));
     document.querySelector("#snse2Btn").addEventListener("click", () => quickSearch("SnSe2"));
 
     document.querySelector("#clearBtn").addEventListener("click", () => {
@@ -661,6 +712,68 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
     searchInput.addEventListener("keydown", event => {
       if (event.key === "Enter") searchCorpus();
     });
+    loadSources();
+    loadElementButtons();
+
+    async function loadElementButtons() {
+      try {
+        const response = await fetch("/api/elements");
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "加载元素失败");
+        renderElementButtons(data.elements || []);
+      } catch (error) {
+        elementButtons.innerHTML = `<span class="status">${escapeHtml(error.message)}</span>`;
+      }
+    }
+
+    function renderElementButtons(elements) {
+      const priority = ["Sn", "Se", "S", "Bi", "Te", "Sb", "Pb", "W", "Mo", "Ti", "Fe", "Cu", "O", "Co", "C"];
+      const bySymbol = Object.fromEntries(elements.map(item => [item.symbol, item]));
+      elementButtons.innerHTML = priority
+        .filter(symbol => bySymbol[symbol])
+        .map(symbol => `<button class="element-btn" data-symbol="${escapeAttr(symbol)}" title="${escapeAttr(bySymbol[symbol].name)}">${escapeHtml(symbol)}</button>`)
+        .join("");
+      elementButtons.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => quickSearch(button.dataset.symbol));
+      });
+    }
+
+    async function loadSources() {
+      try {
+        const response = await fetch("/api/sources");
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "加载失败");
+        renderSources(data.sources || []);
+      } catch (error) {
+        sourceStatus.textContent = error.message;
+        sourceList.innerHTML = `<div class="status">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function renderSources(sources) {
+      sourceStatus.textContent = `${sources.length} 个来源`;
+      sourceList.innerHTML = `<div class="source-grid">${sources.map(sourceCard).join("")}</div>`;
+    }
+
+    function sourceCard(source) {
+      const statusTone = source.can_integrate_now ? "good" : "warn";
+      const statusText = source.can_integrate_now ? "可接入/已支持" : "需授权或后续接入";
+      return `
+        <div class="source-card">
+          <div class="source-title">
+            <strong>${escapeHtml(source.name)}</strong>
+            <span class="chip ${statusTone}">${escapeHtml(statusText)}</span>
+          </div>
+          <div class="source-meta">${escapeHtml(source.category)} · ${escapeHtml(source.access)} · ${escapeHtml(source.trust_level)}</div>
+          ${chips(source.best_for || [], "trusted")}
+          <ul>
+            <li>${escapeHtml(source.notes || "")}</li>
+            <li>${escapeHtml(source.limits || "")}</li>
+          </ul>
+          <a class="chip trusted link" href="${escapeAttr(source.official_url || "")}" target="_blank" rel="noreferrer">official source</a>
+        </div>
+      `;
+    }
 
     function quickSearch(query) {
       searchInput.value = query;
@@ -848,9 +961,9 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
             ${fact("相对原子质量", item.relative_atomic_mass)}
             ${fact("族 / 周期", `${item.group} / ${item.period}`)}
             ${fact("20°C 状态", item.state_at_20c)}
-            ${fact("熔点", `${item.melting_point_c} °C`)}
-            ${fact("沸点", `${item.boiling_point_c} °C`)}
-            ${fact("密度", `${item.density_g_cm3} g/cm³`)}
+            ${fact("熔点", formatUnit(item.melting_point_c, "°C"))}
+            ${fact("沸点", formatUnit(item.boiling_point_c, "°C"))}
+            ${fact("密度", formatUnit(item.density_g_cm3, "g/cm³"))}
             ${fact("电负性", item.electronegativity_pauling)}
           </div>
           ${list(item.relevance || [])}
@@ -865,6 +978,10 @@ transport and doped by cobaltocene. The band gap of 0.8 eV was observed.`;
 
     function fact(label, value) {
       return `<div class="fact"><span>${escapeHtml(label)}</span>${escapeHtml(value ?? "-")}</div>`;
+    }
+
+    function formatUnit(value, unit) {
+      return value === null || value === undefined || value === "" ? "-" : `${value} ${unit}`;
     }
 
     function candidateBlock(candidates) {
