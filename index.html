@@ -198,6 +198,26 @@
     .chip.trusted { background: var(--blue-soft); color: #174ea6; }
     .chip.note { background: var(--warn-soft); color: var(--warn); }
 
+    .topic-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .topic-tab {
+      min-width: 184px;
+      min-height: 46px;
+      justify-content: center;
+      border-color: #c7d5dd;
+      background: #f8fafb;
+    }
+
+    .topic-tab.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #0b5f59;
+    }
+
     .periodic-wrap {
       overflow-x: auto;
       padding-bottom: 4px;
@@ -283,6 +303,124 @@
       align-items: start;
     }
 
+    .overview-visual {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .history-image {
+      min-height: 280px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(15,118,110,0.08) 1px, transparent 1px) 0 0 / 72px 100%,
+        linear-gradient(#ffffff, #f8fafb);
+      padding: 16px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+    }
+
+    .history-line {
+      position: relative;
+      min-height: 126px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      gap: 10px;
+    }
+
+    .history-line::before {
+      content: "";
+      position: absolute;
+      left: 4%;
+      right: 4%;
+      top: 50%;
+      height: 3px;
+      border-radius: 999px;
+      background: #b7c8d1;
+    }
+
+    .history-node {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .history-dot {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      background: var(--accent);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-weight: 760;
+      box-shadow: 0 8px 18px rgba(15, 118, 110, 0.22);
+    }
+
+    .figure-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .paper-figure {
+      min-height: 94px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 30% 35%, rgba(15,118,110,0.24), transparent 16%),
+        radial-gradient(circle at 72% 58%, rgba(23,78,166,0.18), transparent 20%),
+        linear-gradient(135deg, #ffffff, #edf4f7);
+      padding: 10px;
+      display: grid;
+      align-content: end;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .source-map {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .source-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+      padding: 12px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .source-card strong {
+      font-size: 14px;
+    }
+
+    .source-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .source-links a {
+      color: #174ea6;
+      font-size: 12px;
+      text-decoration: none;
+      font-weight: 680;
+    }
+
     .table-wrap {
       overflow-x: auto;
       border: 1px solid var(--line);
@@ -356,7 +494,7 @@
 
     @media (max-width: 980px) {
       header { align-items: flex-start; flex-direction: column; }
-      .metric-grid, .layout-two, .form-grid { grid-template-columns: 1fr; }
+      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip { grid-template-columns: 1fr; }
       .span-2, .span-4 { grid-column: auto; }
       input[type="search"] { width: 100%; }
     }
@@ -374,15 +512,25 @@
   <main>
     <section>
       <div class="section-head">
-        <h2>Superconductivity Topic</h2>
+        <h2>Topic / Elements / Search</h2>
         <span class="status" id="loadStatus">Loading</span>
       </div>
       <div class="content">
+        <div class="topic-tabs">
+          <button class="topic-tab active" id="superconductorBtn">Superconductor</button>
+          <button class="topic-tab" disabled>Topological materials</button>
+          <button class="topic-tab" disabled>Photonic crystals</button>
+        </div>
         <div class="toolbar">
-          <button class="super-button" id="superconductorBtn">Superconductor</button>
-          <input id="searchInput" type="search" placeholder="Search: cuprate, nickelate, FeSe, Bi2212, NbSe2, Tc, q-dependent">
+          <input id="searchInput" type="search" placeholder="Search material, element, region, light source: Shanghai, Beijing, NSRRC, arXiv, Cu, Ni">
           <select id="familyFilter" title="Family filter">
             <option value="">All families</option>
+          </select>
+          <select id="regionFilter" title="Region filter">
+            <option value="">All regions</option>
+          </select>
+          <select id="sourceTypeFilter" title="Light source / archive filter">
+            <option value="">All source types</option>
           </select>
           <button class="primary" id="searchBtn">Search</button>
           <button id="resetBtn">Reset</button>
@@ -410,6 +558,50 @@
             <p class="muted">This first template focuses on superconductivity. Other topics can later reuse the same layout.</p>
             <div class="chips" id="familyChips"></div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Overview: visual history and source comparison</h2>
+        <span class="status" id="sourceStatus">Waiting</span>
+      </div>
+      <div class="content">
+        <div class="overview-visual">
+          <div class="history-image" aria-label="Visual overview of superconductivity history">
+            <div>
+              <h3>History image</h3>
+              <p class="muted">A picture-first overview for comparing milestones, material families, article figures, and original data sources.</p>
+            </div>
+            <div class="history-line" id="historyLine"></div>
+            <div class="figure-strip" id="figureStrip"></div>
+          </div>
+          <div class="source-map" id="sourceCards"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Light source / archive directory</h2>
+        <span class="status">Search by region, source, paper figure, original data, or archive</span>
+      </div>
+      <div class="content">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Region</th>
+                <th>Light source / archive</th>
+                <th>Useful for ARPES data</th>
+                <th>Paper figure</th>
+                <th>Original data</th>
+                <th>Archive / search</th>
+              </tr>
+            </thead>
+            <tbody id="sourceBody"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -471,6 +663,18 @@
             <label>Tc (K)
               <input id="ourTc" type="number" step="0.01" placeholder="15">
             </label>
+            <label>Region / facility
+              <input id="ourRegion" placeholder="Shanghai SSRF, Beijing BSRF, NSRRC">
+            </label>
+            <label>Archive ID / URL
+              <input id="ourArchive" placeholder="arXiv, DOI, Web of Science, archive URL">
+            </label>
+            <label>Paper figure URL
+              <input id="ourFigure" placeholder="paper figure, supplementary figure, image URL">
+            </label>
+            <label>Original data URL
+              <input id="ourOriginalData" placeholder="supplementary data, repository, raw file">
+            </label>
             <label class="span-2">Special ARPES properties
               <textarea id="ourSpecial" placeholder="Ni dx2-y2 band; rare-earth pocket"></textarea>
             </label>
@@ -502,6 +706,7 @@
                 <th>q-dependent</th>
                 <th>Photon notes</th>
                 <th>Notes / source</th>
+                <th>Data links</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -543,6 +748,8 @@
 
     const searchInput = document.querySelector("#searchInput");
     const familyFilter = document.querySelector("#familyFilter");
+    const regionFilter = document.querySelector("#regionFilter");
+    const sourceTypeFilter = document.querySelector("#sourceTypeFilter");
     const searchBtn = document.querySelector("#searchBtn");
     const resetBtn = document.querySelector("#resetBtn");
     const superconductorBtn = document.querySelector("#superconductorBtn");
@@ -555,6 +762,11 @@
     const tableStatus = document.querySelector("#tableStatus");
     const materialsBody = document.querySelector("#materialsBody");
     const detailPanel = document.querySelector("#detailPanel");
+    const sourceStatus = document.querySelector("#sourceStatus");
+    const historyLine = document.querySelector("#historyLine");
+    const figureStrip = document.querySelector("#figureStrip");
+    const sourceCards = document.querySelector("#sourceCards");
+    const sourceBody = document.querySelector("#sourceBody");
     const ourDataStatus = document.querySelector("#ourDataStatus");
     const ourDataBody = document.querySelector("#ourDataBody");
     const saveOurDataBtn = document.querySelector("#saveOurDataBtn");
@@ -565,6 +777,10 @@
       family: document.querySelector("#ourFamily"),
       elements: document.querySelector("#ourElements"),
       tc: document.querySelector("#ourTc"),
+      region: document.querySelector("#ourRegion"),
+      archive: document.querySelector("#ourArchive"),
+      figure: document.querySelector("#ourFigure"),
+      originalData: document.querySelector("#ourOriginalData"),
       special: document.querySelector("#ourSpecial"),
       q: document.querySelector("#ourQ"),
       photon: document.querySelector("#ourPhoton"),
@@ -588,6 +804,103 @@
       Cs:["Caesium",55], Ba:["Barium",56], La:["Lanthanum",57], Ce:["Cerium",58], Pr:["Praseodymium",59], Nd:["Neodymium",60], Sm:["Samarium",62], Eu:["Europium",63], Gd:["Gadolinium",64], Dy:["Dysprosium",66], Hf:["Hafnium",72], Ta:["Tantalum",73], W:["Tungsten",74], Re:["Rhenium",75], Os:["Osmium",76], Ir:["Iridium",77], Pt:["Platinum",78], Au:["Gold",79], Hg:["Mercury",80], Tl:["Thallium",81], Pb:["Lead",82], Bi:["Bismuth",83]
     };
 
+    const historyMilestones = [
+      { year: "1911", label: "Hg superconductivity", family: "Conventional" },
+      { year: "1986", label: "Cuprates", family: "High Tc" },
+      { year: "2008", label: "Iron-based", family: "Multiband" },
+      { year: "2019", label: "Nickelates", family: "Ni-based" },
+      { year: "now", label: "ARPES + archives", family: "Data" }
+    ];
+
+    const paperFigureCards = [
+      { title: "Article figure", body: "Link to the figure panel from the paper, not a copied image unless open access allows it." },
+      { title: "Original data", body: "Supplementary CSV, image matrix, repository, beamline file, or lab-converted table." },
+      { title: "Comparison", body: "Tc, q-vector, photon energy, source region, material family, and data quality side by side." }
+    ];
+
+    const sourceEntries = [
+      {
+        region: "Shanghai, China",
+        source: "SSRF / Shanghai Synchrotron Radiation Facility",
+        type: "Synchrotron light source",
+        arpes: "Shanghai-region ARPES papers, beamline information, user publications, photon-energy notes.",
+        figure: "Paper figure URL / supplementary image",
+        originalData: "Supplementary data, lab export, or converted ARPES matrix",
+        archive: "https://www.ssrf.ac.cn/",
+        archiveLabel: "SSRF official site"
+      },
+      {
+        region: "Beijing, China",
+        source: "BSRF / Beijing Synchrotron Radiation Facility",
+        type: "Synchrotron light source",
+        arpes: "Beijing-region facility search; useful when the paper lists BSRF or IHEP beamline support.",
+        figure: "Paper figure URL / figure number",
+        originalData: "Supplementary data or repository link",
+        archive: "https://bsrf.ihep.cas.cn/",
+        archiveLabel: "BSRF official site"
+      },
+      {
+        region: "Hefei, China",
+        source: "NSRL / HLS-II",
+        type: "Synchrotron light source",
+        arpes: "Hefei Light Source entries, beamline notes, regional ARPES user成果.",
+        figure: "Article figure / supporting information",
+        originalData: "User data, supplementary files, converted spectra",
+        archive: "https://www.nsrl.ustc.edu.cn/",
+        archiveLabel: "NSRL official site"
+      },
+      {
+        region: "Hsinchu, Taiwan",
+        source: "NSRRC / TLS / TPS",
+        type: "Synchrotron light source",
+        arpes: "Taiwan light-source ARPES, beamline search, photon-energy and polarization records.",
+        figure: "Paper figure URL / image panel",
+        originalData: "Supplementary data or lab file",
+        archive: "https://www.nsrrc.org.tw/",
+        archiveLabel: "NSRRC official site"
+      },
+      {
+        region: "Berkeley, USA",
+        source: "ALS / Advanced Light Source",
+        type: "Synchrotron light source",
+        arpes: "High-resolution ARPES papers, beamline-related publication searches, source comparison.",
+        figure: "Paper figure URL",
+        originalData: "Supplementary data / archive repository",
+        archive: "https://als.lbl.gov/",
+        archiveLabel: "ALS official site"
+      },
+      {
+        region: "Stanford, USA",
+        source: "SSRL / Stanford Synchrotron Radiation Lightsource",
+        type: "Synchrotron light source",
+        arpes: "Stanford-region synchrotron publications and original data references.",
+        figure: "Paper figure URL",
+        originalData: "Supplementary data / raw data pointer",
+        archive: "https://www-ssrl.slac.stanford.edu/",
+        archiveLabel: "SSRL official site"
+      },
+      {
+        region: "Hyogo, Japan",
+        source: "SPring-8",
+        type: "Synchrotron light source",
+        arpes: "Japan-region ARPES / soft x-ray data source comparison.",
+        figure: "Paper figure URL",
+        originalData: "Supplementary data / institutional archive",
+        archive: "https://www.spring8.or.jp/",
+        archiveLabel: "SPring-8 official site"
+      },
+      {
+        region: "Global",
+        source: "arXiv",
+        type: "Archive / preprint search",
+        arpes: "Preprint discovery for material name, element, ARPES, q-dependent, photon energy, or superconductivity.",
+        figure: "arXiv paper PDF figure",
+        originalData: "Supplementary link inside paper, author repository, or later journal data",
+        archive: "https://arxiv.org/search/?query=ARPES+superconductivity&searchtype=all",
+        archiveLabel: "arXiv ARPES search"
+      }
+    ];
+
     init();
 
     superconductorBtn.addEventListener("click", () => {
@@ -603,9 +916,13 @@
       state.selectedElement = "";
       searchInput.value = "";
       familyFilter.value = "";
+      regionFilter.value = "";
+      sourceTypeFilter.value = "";
       applyFilters();
     });
     familyFilter.addEventListener("change", applyFilters);
+    regionFilter.addEventListener("change", applyFilters);
+    sourceTypeFilter.addEventListener("change", applyFilters);
     searchInput.addEventListener("keydown", event => {
       if (event.key === "Enter") applyFilters();
     });
@@ -618,6 +935,7 @@
         state.db = await loadJson("data/superconductivity.json");
         state.ourData = loadOurData();
         renderFamilyFilter();
+        renderSourceFilters();
         renderFamilyChips();
         renderPeriodicTable();
         applyFilters();
@@ -637,6 +955,17 @@
     function renderFamilyFilter() {
       familyFilter.innerHTML = `<option value="">All families</option>` + state.db.families
         .map(family => `<option value="${escapeAttr(family.id)}">${escapeHtml(family.name)}</option>`)
+        .join("");
+    }
+
+    function renderSourceFilters() {
+      const regions = unique(sourceEntries.map(entry => entry.region));
+      const types = unique(sourceEntries.map(entry => entry.type));
+      regionFilter.innerHTML = `<option value="">All regions</option>` + regions
+        .map(region => `<option value="${escapeAttr(region)}">${escapeHtml(region)}</option>`)
+        .join("");
+      sourceTypeFilter.innerHTML = `<option value="">All source types</option>` + types
+        .map(type => `<option value="${escapeAttr(type)}">${escapeHtml(type)}</option>`)
         .join("");
     }
 
@@ -683,6 +1012,8 @@
     function applyFilters() {
       const term = searchInput.value.trim().toLowerCase();
       const family = familyFilter.value;
+      const region = regionFilter.value;
+      const sourceType = sourceTypeFilter.value;
       state.filtered = state.db.materials.filter(row => {
         const elementOk = !state.selectedElement || row.elements.includes(state.selectedElement);
         const familyOk = !family || row.family === family;
@@ -698,6 +1029,8 @@
       renderMetrics();
       renderMaterialsTable();
       highlightPeriodicTable();
+      renderOverview();
+      renderSourceDirectory(term, region, sourceType);
     }
 
     function updateSelectedElement() {
@@ -735,6 +1068,67 @@
         metric("Elements", String(elements.length)),
         metric("Max Tc", maxTc === null ? "-" : `${maxTc} K`)
       ].join("");
+    }
+
+    function renderOverview() {
+      historyLine.innerHTML = historyMilestones.map(item => `
+        <div class="history-node">
+          <div class="history-dot">${escapeHtml(item.year)}</div>
+          <strong>${escapeHtml(item.label)}</strong>
+          <span>${escapeHtml(item.family)}</span>
+        </div>
+      `).join("");
+      figureStrip.innerHTML = paperFigureCards.map(card => `
+        <div class="paper-figure">
+          <strong>${escapeHtml(card.title)}</strong>
+          <span>${escapeHtml(card.body)}</span>
+        </div>
+      `).join("");
+
+      const topSources = filteredSourceEntries().slice(0, 4);
+      sourceCards.innerHTML = topSources.map(entry => `
+        <div class="source-card">
+          <strong>${escapeHtml(entry.source)}</strong>
+          <span class="muted">${escapeHtml(entry.region)} · ${escapeHtml(entry.type)}</span>
+          <span>${escapeHtml(entry.arpes)}</span>
+          <div class="source-links">
+            <a href="${escapeAttr(entry.archive)}" target="_blank" rel="noreferrer">${escapeHtml(entry.archiveLabel)}</a>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function filteredSourceEntries() {
+      const term = searchInput.value.trim().toLowerCase();
+      const region = regionFilter.value;
+      const sourceType = sourceTypeFilter.value;
+      return sourceEntries.filter(entry => {
+        const regionOk = !region || entry.region === region;
+        const typeOk = !sourceType || entry.type === sourceType;
+        const text = Object.values(entry).join(" ").toLowerCase();
+        const termOk = !term || text.includes(term);
+        return regionOk && typeOk && termOk;
+      });
+    }
+
+    function renderSourceDirectory() {
+      const rows = filteredSourceEntries();
+      sourceStatus.textContent = `${rows.length} source / archive entries`;
+      if (!rows.length) {
+        sourceBody.innerHTML = `<tr><td colspan="6" class="muted">No matching light source or archive entry.</td></tr>`;
+        sourceCards.innerHTML = `<div class="source-card"><strong>No source match</strong><span class="muted">Try Shanghai, Beijing, NSRRC, ALS, arXiv, or a broader search term.</span></div>`;
+        return;
+      }
+      sourceBody.innerHTML = rows.map(entry => `
+        <tr>
+          <td>${escapeHtml(entry.region)}</td>
+          <td><strong>${escapeHtml(entry.source)}</strong><br><span class="muted">${escapeHtml(entry.type)}</span></td>
+          <td>${escapeHtml(entry.arpes)}</td>
+          <td>${escapeHtml(entry.figure)}</td>
+          <td>${escapeHtml(entry.originalData)}</td>
+          <td><a href="${escapeAttr(entry.archive)}" target="_blank" rel="noreferrer">${escapeHtml(entry.archiveLabel)}</a></td>
+        </tr>
+      `).join("");
     }
 
     function renderMaterialsTable() {
@@ -798,6 +1192,10 @@
         family: ourFields.family.value.trim(),
         elements: ourFields.elements.value.split(/[,\s]+/).map(value => value.trim()).filter(Boolean),
         tc: ourFields.tc.value ? Number(ourFields.tc.value) : null,
+        region: ourFields.region.value.trim(),
+        archive: ourFields.archive.value.trim(),
+        figure: ourFields.figure.value.trim(),
+        originalData: ourFields.originalData.value.trim(),
         special: ourFields.special.value.trim(),
         q: ourFields.q.value.trim(),
         photon: ourFields.photon.value.trim(),
@@ -824,7 +1222,7 @@
       if (!state.ourData.length) {
         ourDataBody.innerHTML = `
           <tr>
-            <td colspan="9" class="muted">No personal records yet. Add one above; it will persist in this browser.</td>
+            <td colspan="10" class="muted">No personal records yet. Add one above; it will persist in this browser.</td>
           </tr>
         `;
         return;
@@ -838,7 +1236,16 @@
           <td>${escapeHtml(record.special || "-")}</td>
           <td>${escapeHtml(record.q || "-")}</td>
           <td>${escapeHtml(record.photon || "-")}</td>
-          <td>${escapeHtml(record.notes || "-")}<br><span class="muted">${escapeHtml(record.saved_at || "")}</span></td>
+          <td>
+            ${escapeHtml(record.notes || "-")}
+            ${record.region ? `<br><span class="muted">${escapeHtml(record.region)}</span>` : ""}
+            <br><span class="muted">${escapeHtml(record.saved_at || "")}</span>
+          </td>
+          <td>
+            ${record.figure ? linkChip(record.figure, "paper figure") : `<span class="muted">figure -</span>`}<br>
+            ${record.originalData ? linkChip(record.originalData, "original data") : `<span class="muted">data -</span>`}<br>
+            ${record.archive ? linkChip(record.archive, "archive") : `<span class="muted">archive -</span>`}
+          </td>
           <td><button data-delete="${escapeAttr(record.id)}">Delete</button></td>
         </tr>
       `).join("");
@@ -888,6 +1295,11 @@
 
     function list(values) {
       return `<ul>${(values || []).map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul>`;
+    }
+
+    function linkChip(url, label) {
+      const href = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+      return `<a class="chip trusted" href="${escapeAttr(href)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
     }
 
     function unique(values) {
