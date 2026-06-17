@@ -875,8 +875,9 @@
           <div class="super-button-wrap">
             <button class="super-button" id="superconductorBtn">⚡ SUPERCONDUCTOR ⚡</button>
           </div>
-          <button class="topic-tab" disabled>🔷 拓扑材料 Topological</button>
-          <button class="topic-tab" disabled>💎 光子晶体 Photonic</button>
+          <button class="topic-tab" data-topic="sc">⚡ 超导 Superconductor</button>
+          <button class="topic-tab" data-topic="topo">🔷 拓扑材料 Topological</button>
+          <button class="topic-tab" data-topic="photo">💎 光子晶体 Photonic</button>
         </div>
         <div class="toolbar">
           <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder">
@@ -1424,7 +1425,8 @@
       selectedElement: "",
       filtered: [],
       ourData: [],
-      compareSet: new Set()
+      compareSet: new Set(),
+      topic: "sc"
     };
 
     const STORAGE_KEY = "arpes-superconductivity-our-data-v1";
@@ -1690,7 +1692,31 @@
     init();
 
     // ===== 事件绑定 =====
+    // ===== 主题切换 =====
+    document.querySelectorAll(".topic-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        state.topic = tab.dataset.topic;
+        document.querySelectorAll(".topic-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        familyFilter.value = "";
+        searchInput.value = "";
+        state.selectedElement = "";
+        applyFilters();
+        if (state.topic === "sc") {
+          dancePeriodicTable();
+          spawnSparkles();
+          activateSoundBars();
+          periodicTable.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    });
+    // 默认激活超导tab
+    document.querySelector('.topic-tab[data-topic="sc"]').classList.add("active");
+
     superconductorBtn.addEventListener("click", () => {
+      state.topic = "sc";
+      document.querySelectorAll(".topic-tab").forEach(t => t.classList.remove("active"));
+      document.querySelector('.topic-tab[data-topic="sc"]').classList.add("active");
       familyFilter.value = "";
       searchInput.value = "";
       state.selectedElement = "";
@@ -1886,6 +1912,7 @@
       const family = familyFilter.value;
       const region = regionFilter.value;
       const sourceType = sourceTypeFilter.value;
+      const topic = state.topic || "sc";
 
       state.filtered = state.db.materials.filter(row => {
         const elemOk = !state.selectedElement || row.elements.includes(state.selectedElement);
@@ -1896,7 +1923,13 @@
           ...(row.q_dependent_observables || []), row.photon_arpes_notes, row.source_note
         ].join(" ").toLowerCase();
         const termOk = !expandedTerm || text.includes(expandedTerm);
-        return elemOk && famOk && termOk;
+        // 主题筛选
+        let topicOk = true;
+        if (topic === "topo") {
+          const topoKeywords = ["topological", "dirac", "weyl", "surface state", "topological insulator", "chern", "berry", "spin-momentum", "helical"];
+          topicOk = topoKeywords.some(kw => text.includes(kw));
+        }
+        return elemOk && famOk && termOk && topicOk;
       });
 
       updateSelectedElement();
