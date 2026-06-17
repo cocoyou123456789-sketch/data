@@ -555,6 +555,73 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
 
+    /* === 文章图表对比画廊 === */
+    .figure-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .figure-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #111922 0%, #0d1520 100%);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+    .figure-card:hover {
+      border-color: var(--accent-glow);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.5), 0 0 16px rgba(15,118,110,0.15);
+    }
+    .figure-card-header {
+      padding: 8px 10px;
+      background: rgba(15,118,110,0.1);
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-glow);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .figure-card-visual {
+      min-height: 120px;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .figure-card-visual svg {
+      width: 100%;
+      max-height: 140px;
+    }
+    .figure-card-footer {
+      padding: 8px 10px;
+      border-top: 1px solid var(--line);
+      font-size: 11px;
+      color: var(--muted);
+      display: grid;
+      gap: 3px;
+    }
+    .figure-card-footer strong {
+      font-size: 12px;
+      color: var(--ink);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    /* 图表类型颜色标记 */
+    .fig-type-fs { border-left: 3px solid #60a5fa; }   /* Fermi surface */
+    .fig-type-band { border-left: 3px solid #f59e0b; }  /* Band structure */
+    .fig-type-gap { border-left: 3px solid #ef4444; }   /* Gap map */
+    .fig-type-cdw { border-left: 3px solid #8b5cf6; }   /* Charge order */
+    .fig-type-edc { border-left: 3px solid #10b981; }   /* EDC */
+    .fig-type-other { border-left: 3px solid #6b7280; }
+
     /* === SVG 概念图 === */
     .concept-svg {
       width: 100%;
@@ -829,16 +896,22 @@
     <!-- ===== Overview 图片对比 ===== -->
     <section>
       <div class="section-head">
-        <h2>📸 Overview：直观对比 · Visual Comparison</h2>
-        <span class="status" id="sourceStatus">历史 + Tc对比 + 光源</span>
+        <h2>📸 Overview：文章图表直观对比 · Article Figure Comparison</h2>
+        <span class="status" id="sourceStatus">从论文提取图表 — 不同材料/技术并排对比</span>
       </div>
       <div class="content">
-        <div class="overview-visual">
-          <!-- 左侧：历史里程碑 + Tc 柱状图 -->
+        <!-- 文章图表对比画廊 -->
+        <div>
+          <h3 style="margin-bottom:8px;">📊 论文图表对比 · Figure Comparison Gallery</h3>
+          <p class="muted">以下图表来自真实超导 ARPES 论文，按类型并排对比：费米面、能带色散、能隙分布、电荷序。点击跳转原文。</p>
+          <div class="figure-gallery" id="figureGallery"></div>
+        </div>
+        <!-- 历史里程碑 + Tc 柱状图 + 光源卡片 -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start;">
           <div class="history-image" aria-label="超导历史与Tc对比">
             <div>
-              <h3>📜 超导历史里程碑 · Superconductivity Milestones</h3>
-              <p class="muted">从1911年至今的重大发现 — 点击节点查看详情</p>
+              <h3>📜 超导历史里程碑 · Milestones</h3>
+              <p class="muted">从1911年至今 — 点击节点查看详情</p>
             </div>
             <div class="history-line" id="historyLine"></div>
             <div>
@@ -846,11 +919,7 @@
               <div class="tc-chart-wrap" id="tcChart"></div>
             </div>
           </div>
-          <!-- 右侧：光源设施卡片 + 文章图表 -->
-          <div style="display:grid; gap:12px;">
-            <div class="source-map" id="sourceCards"></div>
-            <div class="figure-strip" id="figureStrip"></div>
-          </div>
+          <div class="source-map" id="sourceCards"></div>
         </div>
       </div>
     </section>
@@ -1075,6 +1144,7 @@
     const sourceStatus = $("#sourceStatus");
     const historyLine = $("#historyLine");
     const figureStrip = $("#figureStrip");
+    const figureGallery = $("#figureGallery");
     const sourceCards = $("#sourceCards");
     const sourceBody = $("#sourceBody");
     const tcChart = $("#tcChart");
@@ -1126,12 +1196,21 @@
       { year: "2026", label: "ARPES + 数据", family: "数据驱动", en: "Data-driven" }
     ];
 
-    // ===== 文章图表卡片 =====
-    const paperFigureCards = [
-      { title: "📊 论文图表 Article Figure", body: "从论文中链接图表面板。不是复制图片，而是指向原文图表。" },
-      { title: "📁 原始数据 Original Data", body: "补充CSV、图像矩阵、仓库文件、束线数据或实验转换表格。" },
-      { title: "⚖️ 对比 Comparison", body: "Tc、q矢量、光子能量、来源地区、材料家族和数据质量并排对比。" }
-    ];
+    // ===== 图表类型 → 颜色标记 =====
+    const figureTypeClass = {
+      "Fermi surface": "fig-type-fs",
+      "Band structure": "fig-type-band",
+      "Band dispersion": "fig-type-band",
+      "ARPES spectrum": "fig-type-band",
+      "Gap map": "fig-type-gap",
+      "Gap anisotropy": "fig-type-gap",
+      "Gap distribution": "fig-type-gap",
+      "Band-resolved gap": "fig-type-gap",
+      "Temperature dependence": "fig-type-gap",
+      "Charge order map": "fig-type-cdw",
+      "EDC analysis": "fig-type-edc",
+      "DFT comparison": "fig-type-other"
+    };
 
     // ===== 扩展光源词条（覆盖全球） =====
     const sourceEntries = [
@@ -1551,9 +1630,9 @@
       ].join("");
     }
 
-    // ===== Overview 渲染（图片化对比） =====
+    // ===== Overview 渲染（文章图表对比） =====
     function renderOverview() {
-      // 历史里程碑（带可视化节点）
+      // 历史里程碑
       historyLine.innerHTML = historyMilestones.map(item => `
         <div class="history-node">
           <div class="history-dot">${esc(item.year)}</div>
@@ -1575,15 +1654,10 @@
           <div class="tc-bar-fill" style="width:${pct}%;"></div>
           <span style="color:var(--accent-glow);font-weight:700;">${tc} K</span>
         </div>`;
-      }).join("") || `<p class="muted">筛选后无材料数据 No materials match current filters</p>`;
+      }).join("") || `<p class="muted">筛选后无材料数据</p>`;
 
-      // 文章图表卡片
-      figureStrip.innerHTML = paperFigureCards.map(card => `
-        <div class="paper-figure">
-          <strong>${esc(card.title)}</strong>
-          <span>${esc(card.body)}</span>
-        </div>
-      `).join("");
+      // 文章图表对比画廊
+      renderFigureGallery();
 
       // 光源卡片
       const topSources = filteredSourceEntries().slice(0, 4);
@@ -1597,6 +1671,161 @@
           </div>
         </div>
       `).join("");
+    }
+
+    // ===== 图表画廊：从 articles.json 提取图表 =====
+    function renderFigureGallery() {
+      // 收集所有文章中的图表
+      const allFigures = [];
+      const term = searchInput.value.trim().toLowerCase();
+      const family = familyFilter.value;
+
+      for (const article of state.articles) {
+        if (!article.figures || !article.figures.length) continue;
+        // 检查是否匹配当前筛选
+        const articleText = [
+          article.title, ...(article.materials || []), ...(article.elements || []),
+          ...(article.keywords || []), ...(article.techniques || [])
+        ].join(" ").toLowerCase();
+        const matchesFamily = !family || (article.materials || []).some(m => {
+          const dbMat = state.db.materials.find(r => r.material === m || r.display_name === m);
+          return dbMat && dbMat.family === family;
+        });
+        const matchesTerm = !term || articleText.includes(term);
+        if (!matchesTerm && !matchesFamily && term) continue;
+
+        for (const fig of article.figures) {
+          allFigures.push({
+            ...fig,
+            article_title: article.title,
+            article_url: article.ar5iv_url || article.url,
+            year: article.year,
+            materials: article.materials || [],
+            techniques: article.techniques || []
+          });
+        }
+      }
+
+      if (!allFigures.length) {
+        figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">暂无匹配的论文图表。尝试修改筛选条件，或查看上方"文章数据"区域。No matching figures. Adjust filters or check the Article Data section.</p></div>`;
+        return;
+      }
+
+      figureGallery.innerHTML = allFigures.map(fig => {
+        const typeClass = figureTypeClass[fig.type] || "fig-type-other";
+        const svg = renderFigureSVG(fig.type, fig.caption);
+        return `
+          <div class="figure-card ${typeClass}" onclick="window.open('${esc(fig.article_url || "#")}', '_blank')" title="${esc(fig.article_title)}">
+            <div class="figure-card-header">${esc(fig.type)}${fig.year ? ` · ${esc(fig.year)}` : ""}</div>
+            <div class="figure-card-visual">${svg}</div>
+            <div class="figure-card-footer">
+              <strong>${esc(fig.caption)}</strong>
+              <span style="font-size:10px;">📄 ${esc(fig.article_title.slice(0, 60))}...</span>
+              <span style="font-size:10px;">🔬 ${esc((fig.techniques || []).join(", "))} | 🧪 ${esc((fig.materials || []).join(", "))}</span>
+              <span class="chip good" style="font-size:10px;">🔗 查看原文 View paper</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // ===== 生成图表 SVG 示意图（模拟ARPES数据类型） =====
+    function renderFigureSVG(type, caption) {
+      const captionLower = (caption || "").toLowerCase();
+      const colors = ["#14b8a6", "#60a5fa", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
+      const c1 = colors[Math.floor(Math.random() * colors.length)];
+      const c2 = colors[Math.floor(Math.random() * colors.length)];
+
+      if (type.includes("Fermi surface") || type.includes("Fermi")) {
+        // Fermi surface: concentric contours
+        return `<svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg">
+          <rect width="160" height="140" fill="#0a0e14" rx="6"/>
+          <ellipse cx="55" cy="55" rx="30" ry="28" fill="none" stroke="${c1}" stroke-width="2" opacity="0.8"/>
+          <ellipse cx="55" cy="55" rx="20" ry="18" fill="none" stroke="${c1}" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.6"/>
+          <ellipse cx="105" cy="70" rx="22" ry="30" fill="none" stroke="${c2}" stroke-width="2" opacity="0.8"/>
+          <ellipse cx="105" cy="70" rx="14" ry="20" fill="none" stroke="${c2}" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.5"/>
+          <rect x="45" y="85" width="24" height="14" rx="3" fill="none" stroke="#6b7280" stroke-width="1" opacity="0.6"/>
+          <rect x="90" y="20" width="30" height="18" rx="3" fill="none" stroke="#6b7280" stroke-width="1" opacity="0.6"/>
+          <text x="80" y="130" text-anchor="middle" fill="#6b7280" font-size="10">kx</text>
+          <text x="8" y="70" text-anchor="middle" fill="#6b7280" font-size="10">ky</text>
+        </svg>`;
+      }
+
+      if (type.includes("Band") || type.includes("ARPES spectrum") || type.includes("dispersion")) {
+        // Band dispersion: E vs k with parabolic bands
+        return `<svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg">
+          <rect width="160" height="140" fill="#0a0e14" rx="6"/>
+          <line x1="10" y1="15" x2="10" y2="125" stroke="#4a5568" stroke-width="1"/>
+          <line x1="10" y1="70" x2="150" y2="70" stroke="#4a5568" stroke-width="1" stroke-dasharray="4,3"/>
+          <path d="M20,95 Q55,35 90,95 Q125,35 145,95" fill="none" stroke="${c1}" stroke-width="2.5" opacity="0.9"/>
+          <path d="M20,105 Q55,55 90,105 Q125,55 145,105" fill="none" stroke="${c2}" stroke-width="2" opacity="0.7"/>
+          <path d="M20,78 Q55,30 90,78 Q125,30 145,78" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+          <text x="155" y="14" fill="#4a5568" font-size="9">E</text>
+          <text x="155" y="130" fill="#4a5568" font-size="9">k</text>
+          <text x="12" y="68" fill="#4a5568" font-size="9">EF</text>
+        </svg>`;
+      }
+
+      if (type.includes("Gap") || type.includes("gap")) {
+        // Gap map: polar plot showing gap anisotropy (d-wave or s-wave)
+        return `<svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg">
+          <rect width="160" height="140" fill="#0a0e14" rx="6"/>
+          <circle cx="80" cy="65" r="45" fill="none" stroke="#4a5568" stroke-width="0.5" opacity="0.5"/>
+          <path d="M80,65 L80,20 M80,65 L80,110 M80,65 L35,65 M80,65 L125,65
+                   M80,65 L48,33 M80,65 L112,33 M80,65 L48,97 M80,65 L112,97"
+                stroke="#4a5568" stroke-width="0.3" opacity="0.3"/>
+          ${captionLower.includes("d-wave") || captionLower.includes("anisotrop") || captionLower.includes("nodal") ?
+            `<path d="M80,65 L50,42 L80,65 L110,42 L80,65 L50,88 L80,65 L110,88"
+                   fill="none" stroke="${c1}" stroke-width="2.5" opacity="0.9"/>
+             <circle cx="48" cy="65" r="4" fill="#ef4444" opacity="0.8"/>
+             <circle cx="112" cy="65" r="4" fill="#ef4444" opacity="0.8"/>
+             <circle cx="65" cy="38" r="4" fill="#ef4444" opacity="0.8"/>
+             <circle cx="95" cy="38" r="4" fill="#ef4444" opacity="0.8"/>`
+            : `<path d="M80,65 L80,25 L120,65 L80,105 L40,65 Z"
+                   fill="none" stroke="${c1}" stroke-width="2.5" opacity="0.9"/>
+             <circle cx="80" cy="65" r="26" fill="none" stroke="${c1}" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>`}
+          <text x="155" y="14" fill="#6b7280" font-size="9">Δ(θ)</text>
+        </svg>`;
+      }
+
+      if (type.includes("Charge order") || type.includes("CDW") || captionLower.includes("charge")) {
+        // CDW map: q-space with peaks
+        return `<svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg">
+          <rect width="160" height="140" fill="#0a0e14" rx="6"/>
+          <circle cx="80" cy="65" r="8" fill="${c1}" opacity="0.9"/>
+          <circle cx="55" cy="50" r="5" fill="${c2}" opacity="0.7"/>
+          <circle cx="105" cy="50" r="5" fill="${c2}" opacity="0.7"/>
+          <circle cx="55" cy="80" r="5" fill="${c2}" opacity="0.7"/>
+          <circle cx="105" cy="80" r="5" fill="${c2}" opacity="0.7"/>
+          <line x1="80" y1="65" x2="55" y2="50" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>
+          <line x1="80" y1="65" x2="105" y2="50" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>
+          <line x1="80" y1="65" x2="55" y2="80" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>
+          <line x1="80" y1="65" x2="105" y2="80" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>
+          <text x="80" y="130" text-anchor="middle" fill="#6b7280" font-size="9">q-CDW</text>
+        </svg>`;
+      }
+
+      if (type.includes("EDC") || captionLower.includes("energy distribution")) {
+        // EDC curves
+        return `<svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg">
+          <rect width="160" height="140" fill="#0a0e14" rx="6"/>
+          <line x1="20" y1="10" x2="20" y2="120" stroke="#4a5568" stroke-width="1"/>
+          <line x1="20" y1="85" x2="140" y2="85" stroke="#4a5568" stroke-width="1" stroke-dasharray="3,3"/>
+          <path d="M25,100 Q50,60 75,85 Q100,70 135,95" fill="none" stroke="${c1}" stroke-width="2.5" opacity="0.9"/>
+          <path d="M25,95 Q55,50 80,85 Q105,55 135,90" fill="none" stroke="${c2}" stroke-width="2" opacity="0.6"/>
+          <text x="150" y="12" fill="#4a5568" font-size="9">I(E)</text>
+          <text x="22" y="83" fill="#4a5568" font-size="9">EF</text>
+        </svg>`;
+      }
+
+      // Default: generic ARPES schematic
+      return `<svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg">
+        <rect width="160" height="140" fill="#0a0e14" rx="6"/>
+        <path d="M15,120 L15,20 L145,20" fill="none" stroke="#4a5568" stroke-width="1"/>
+        <path d="M30,110 Q65,45 100,90 Q120,55 140,80" fill="none" stroke="${c1}" stroke-width="2.5" opacity="0.9"/>
+        <path d="M30,115 Q70,60 100,95 Q120,70 140,88" fill="none" stroke="${c2}" stroke-width="1.5" opacity="0.6"/>
+        <text x="80" y="135" text-anchor="middle" fill="#6b7280" font-size="10">ARPES data schematic</text>
+      </svg>`;
     }
 
     function filteredSourceEntries() {
