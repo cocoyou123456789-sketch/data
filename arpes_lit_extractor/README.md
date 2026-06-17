@@ -6,6 +6,14 @@
 
 ## 快速运行
 
+公开静态版部署到 GitHub Pages 后的地址：
+
+```text
+https://cocoyou123456789-sketch.github.io/data/
+```
+
+说明：公开静态版不运行 Python 后端，适合所有人打开查看元素/材料搜索、文献线索和搜索源说明；Web of Science / Google Scholar 导入和单篇文本抽取仍建议使用本地 Python 版。
+
 启动本地网页：
 
 ```bash

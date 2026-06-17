@@ -1,0 +1,74 @@
+[
+  {
+    "id": "arxiv-1804-04357-snse",
+    "title": "Photoemission Study of the Electronic Structure of Valence Band Convergent SnSe",
+    "year": 2018,
+    "source": "arXiv literature lead",
+    "verification_status": "lead_needs_fulltext_check",
+    "url": "https://arxiv.org/abs/1804.04357",
+    "materials": ["SnSe"],
+    "elements": ["Sn", "Se"],
+    "dopants": [],
+    "techniques": ["ARPES", "photoemission"],
+    "keywords": ["valence band", "band convergence", "electronic structure"],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "band_gap_eV": null,
+    "fermi_velocity": null,
+    "beamline": "",
+    "properties": ["valence band convergence", "electronic structure"],
+    "evidence": [
+      "SnSe",
+      "Photoemission Study",
+      "Electronic Structure of Valence Band Convergent SnSe"
+    ]
+  },
+  {
+    "id": "arxiv-2204-07214-snse",
+    "title": "Observation of non-trivial topological electronic structure of orthorhombic SnSe",
+    "year": 2022,
+    "source": "arXiv literature lead",
+    "verification_status": "lead_needs_fulltext_check",
+    "url": "https://arxiv.org/abs/2204.07214",
+    "materials": ["SnSe"],
+    "elements": ["Sn", "Se"],
+    "dopants": [],
+    "techniques": ["ARPES"],
+    "keywords": ["topological electronic structure", "orthorhombic", "surface state"],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "band_gap_eV": null,
+    "fermi_velocity": null,
+    "beamline": "",
+    "properties": ["topological electronic structure", "orthorhombic structure"],
+    "evidence": [
+      "orthorhombic SnSe",
+      "non-trivial topological electronic structure",
+      "ARPES"
+    ]
+  },
+  {
+    "id": "arxiv-2507-08419-snse2",
+    "title": "Observation of quasi-steady dark excitons and gap phase in a doped semiconductor",
+    "year": 2025,
+    "source": "arXiv literature lead",
+    "verification_status": "lead_needs_fulltext_check",
+    "url": "https://arxiv.org/abs/2507.08419",
+    "materials": ["SnSe2"],
+    "elements": ["Sn", "Se"],
+    "dopants": ["doped semiconductor"],
+    "techniques": ["ARPES"],
+    "keywords": ["dark excitons", "gap phase", "doped semiconductor"],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "band_gap_eV": null,
+    "fermi_velocity": null,
+    "beamline": "",
+    "properties": ["dark excitons", "gap phase", "doped semiconductor"],
+    "evidence": [
+      "doped semiconductor",
+      "SnSe2 literature seed",
+      "gap phase"
+    ]
+  }
+]

@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ARPES Materials Explorer</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --muted: #637381;
+      --line: #d9e2e8;
+      --accent: #0f766e;
+      --accent-soft: #e6f4f1;
+      --warn: #8a4b00;
+      --warn-soft: #fff6df;
+      --blue-soft: #e8f0ff;
+      --shadow: 0 14px 34px rgba(31, 41, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 20px clamp(16px, 4vw, 56px);
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 36px);
+      letter-spacing: 0;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    main {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 22px clamp(14px, 3vw, 36px) 42px;
+      display: grid;
+      gap: 16px;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-head {
+      min-height: 54px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .content {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input[type="search"] {
+      width: min(680px, 100%);
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 16px;
+      color: var(--ink);
+      background: #fbfcfd;
+    }
+
+    button {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+      padding: 12px;
+      min-height: 120px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .metric .value {
+      font-size: 20px;
+      font-weight: 760;
+      overflow-wrap: anywhere;
+    }
+
+    .symbol {
+      font-size: 30px;
+      font-weight: 820;
+      line-height: 1;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 12px;
+      line-height: 1.15;
+      background: #eef2f4;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .chip.good {
+      background: var(--accent-soft);
+      color: #0b5f59;
+    }
+
+    .chip.note {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+
+    .chip.trusted {
+      background: var(--blue-soft);
+      color: #174ea6;
+    }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .fact {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 7px;
+    }
+
+    .fact span {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafb;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    a { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      header { align-items: flex-start; flex-direction: column; }
+      .grid, .grid.two, .metric-grid { grid-template-columns: 1fr; }
+      input[type="search"] { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>ARPES Materials Explorer</h1>
+      <p class="subtitle">公开静态版：元素/材料搜索、可信来源说明、文献线索对比</p>
+    </div>
+    <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">GitHub repository</a>
+  </header>
+
+  <main>
+    <section>
+      <div class="section-head">
+        <h2>搜索材料或元素</h2>
+        <span class="status" id="searchStatus">加载中</span>
+      </div>
+      <div class="content">
+        <div class="toolbar">
+          <input id="searchInput" type="search" placeholder="输入 Sn、Se、Bi2Se3、FeSe、MoS2、ARPES">
+          <button class="primary" id="searchBtn">搜索</button>
+        </div>
+        <div class="toolbar" id="elementButtons"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>结果</h2>
+        <span class="status" id="resultStatus">等待搜索</span>
+      </div>
+      <div class="content" id="results">
+        <div class="status">选择一个元素或输入材料名。</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>可用搜索源</h2>
+        <span class="status" id="sourceStatus">加载中</span>
+      </div>
+      <div class="content" id="sourceList"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>数据边界</h2>
+      </div>
+      <div class="content">
+        <div class="card">
+          <div class="chips">
+            <span class="chip trusted">元素数据有来源链接</span>
+            <span class="chip note">文献记录是线索</span>
+            <span class="chip note">实验指标需全文核验</span>
+          </div>
+          <p class="muted">
+            公开静态版不保存上传文件，也不自动爬 Google Scholar。Web of Science 和 Google Scholar 导入功能保留在本地 Python 版中。
+            温度、光子能量、band gap、Fermi velocity 等实验指标只有完成全文或实验数据核验后才应写入数据库。
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const state = { elements: [], articles: [], sources: [] };
+    const searchInput = document.querySelector("#searchInput");
+    const searchBtn = document.querySelector("#searchBtn");
+    const searchStatus = document.querySelector("#searchStatus");
+    const resultStatus = document.querySelector("#resultStatus");
+    const results = document.querySelector("#results");
+    const sourceStatus = document.querySelector("#sourceStatus");
+    const sourceList = document.querySelector("#sourceList");
+    const elementButtons = document.querySelector("#elementButtons");
+
+    const priority = ["Sn", "Se", "S", "Bi", "Te", "Sb", "Pb", "W", "Mo", "Ti", "Fe", "Cu", "O", "Co", "C"];
+
+    init();
+
+    searchBtn.addEventListener("click", () => runSearch(searchInput.value));
+    searchInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") runSearch(searchInput.value);
+    });
+
+    async function init() {
+      try {
+        const [elements, articles, sources] = await Promise.all([
+          loadJson("data/elements.json"),
+          loadJson("data/articles.json"),
+          loadJson("data/search_sources.json")
+        ]);
+        state.elements = elements;
+        state.articles = articles;
+        state.sources = sources;
+        renderElementButtons();
+        renderSources();
+        searchStatus.textContent = `${elements.length} 个元素`;
+      } catch (error) {
+        searchStatus.textContent = error.message;
+        results.innerHTML = `<div class="status">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    async function loadJson(path) {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`无法加载 ${path}`);
+      return response.json();
+    }
+
+    function renderElementButtons() {
+      const bySymbol = Object.fromEntries(state.elements.map(item => [item.symbol, item]));
+      elementButtons.innerHTML = priority
+        .filter(symbol => bySymbol[symbol])
+        .map(symbol => `<button data-symbol="${escapeAttr(symbol)}" title="${escapeAttr(bySymbol[symbol].name)}">${escapeHtml(symbol)}</button>`)
+        .join("");
+      elementButtons.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => {
+          searchInput.value = button.dataset.symbol;
+          runSearch(button.dataset.symbol);
+        });
+      });
+    }
+
+    function runSearch(query) {
+      const terms = query.trim().toLowerCase().split(/[\s,，]+/).filter(Boolean);
+      if (!terms.length) {
+        resultStatus.textContent = "请输入关键词";
+        return;
+      }
+      const matchedElements = state.elements.filter(item => {
+        return terms.some(term => matchesElement(item, term));
+      });
+      const matchedArticles = state.articles
+        .map(article => ({ ...article, matchScore: scoreArticle(article, terms) }))
+        .filter(article => article.matchScore > 0)
+        .sort((a, b) => b.matchScore - a.matchScore || String(a.title).localeCompare(String(b.title)));
+      const candidates = summarizeMaterials(matchedArticles);
+      resultStatus.textContent = `${matchedElements.length} 个元素 · ${matchedArticles.length} 条文献线索`;
+      renderResults(query, matchedElements, candidates, matchedArticles);
+    }
+
+    function scoreArticle(article, terms) {
+      return terms.reduce((sum, term) => sum + (matchesArticle(article, term) ? 1 : 0), 0);
+    }
+
+    function matchesElement(item, term) {
+      const exact = [item.symbol, item.name, item.chinese_name].filter(Boolean).map(value => String(value).toLowerCase());
+      if (term.length <= 2) return exact.includes(term);
+      const text = [item.symbol, item.name, item.chinese_name, ...(item.relevance || [])].join(" ").toLowerCase();
+      return text.includes(term);
+    }
+
+    function matchesArticle(article, term) {
+      const elements = (article.elements || []).map(value => String(value).toLowerCase());
+      const materials = (article.materials || []).map(value => String(value).toLowerCase());
+      if (term.length <= 2) {
+        return elements.includes(term) || materials.some(material => material.startsWith(term));
+      }
+      const fields = [
+        ...materials,
+        ...elements,
+        ...(article.dopants || []),
+        ...(article.techniques || []),
+        ...(article.keywords || []),
+        article.title || "",
+        ...(article.evidence || [])
+      ].join(" ").toLowerCase();
+      return fields.includes(term);
+    }
+
+    function summarizeMaterials(articles) {
+      const byMaterial = new Map();
+      for (const article of articles) {
+        for (const material of article.materials || []) {
+          if (!byMaterial.has(material)) byMaterial.set(material, []);
+          byMaterial.get(material).push(article);
+        }
+      }
+      return Array.from(byMaterial.entries()).map(([material, rows]) => ({
+        material,
+        articleCount: rows.length,
+        temperatures: range(rows.map(row => row.temperature_K)),
+        photons: range(rows.map(row => row.photon_energy_eV)),
+        gaps: range(rows.map(row => row.band_gap_eV)),
+        dopants: unique(rows.flatMap(row => row.dopants || [])),
+        properties: unique(rows.flatMap(row => row.properties || []))
+      })).sort((a, b) => b.articleCount - a.articleCount || a.material.localeCompare(b.material));
+    }
+
+    function renderResults(query, elements, candidates, articles) {
+      results.innerHTML = `
+        <div class="metric-grid">
+          ${metric("搜索", query)}
+          ${metric("候选材料", String(candidates.length))}
+          ${metric("文献线索", String(articles.length))}
+        </div>
+        ${renderElements(elements)}
+        ${renderCandidates(candidates)}
+        ${renderArticles(articles)}
+      `;
+    }
+
+    function renderElements(elements) {
+      if (!elements.length) return block("可信元素数据", `<span class="chip note">没有匹配元素</span>`);
+      return block("可信元素数据", `<div class="grid">${elements.map(elementCard).join("")}</div>`);
+    }
+
+    function elementCard(item) {
+      return `
+        <div class="card">
+          <div class="symbol">${escapeHtml(item.symbol)}</div>
+          <div class="muted">${escapeHtml(item.name)} / ${escapeHtml(item.chinese_name || "")}</div>
+          <div class="facts">
+            ${fact("原子序数", item.atomic_number)}
+            ${fact("相对原子质量", item.relative_atomic_mass)}
+            ${fact("族 / 周期", `${item.group} / ${item.period}`)}
+            ${fact("20°C 状态", item.state_at_20c)}
+            ${fact("熔点", unit(item.melting_point_c, "°C"))}
+            ${fact("沸点", unit(item.boiling_point_c, "°C"))}
+            ${fact("密度", unit(item.density_g_cm3, "g/cm³"))}
+            ${fact("电负性", item.electronegativity_pauling)}
+          </div>
+          <ul>${(item.relevance || []).map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul>
+          <a class="chip trusted" href="${escapeAttr(item.source?.url || "#")}" target="_blank" rel="noreferrer">${escapeHtml(item.source?.name || "source")}</a>
+        </div>
+      `;
+    }
+
+    function renderCandidates(candidates) {
+      if (!candidates.length) return block("指标对比", `<span class="chip note">没有候选材料</span>`);
+      const rows = candidates.map(item => `
+        <tr>
+          <td><strong>${escapeHtml(item.material)}</strong></td>
+          <td>${item.articleCount}</td>
+          <td>${rangeText(item.temperatures, "K")}</td>
+          <td>${rangeText(item.photons, "eV")}</td>
+          <td>${rangeText(item.gaps, "eV")}</td>
+          <td>${escapeHtml(item.dopants.join("、") || "-")}</td>
+          <td>${escapeHtml(item.properties.join("、") || "-")}</td>
+        </tr>
+      `).join("");
+      return block("指标对比", `<div class="table-wrap"><table>
+        <thead><tr><th>候选物质</th><th>记录数</th><th>温度</th><th>光子能量</th><th>band gap</th><th>掺杂</th><th>特征</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`);
+    }
+
+    function renderArticles(articles) {
+      if (!articles.length) return block("文献线索", `<span class="chip note">没有匹配文献</span>`);
+      const rows = articles.map(article => `
+        <tr>
+          <td>${escapeHtml((article.materials || []).join("、") || "-")}</td>
+          <td>${article.url ? `<a href="${escapeAttr(article.url)}" target="_blank" rel="noreferrer">${escapeHtml(article.title)}</a>` : escapeHtml(article.title)}</td>
+          <td>${escapeHtml(article.year || "-")}</td>
+          <td>${escapeHtml((article.techniques || []).join("、") || "-")}</td>
+          <td>${metricText(article.temperature_K, "K")}</td>
+          <td>${metricText(article.photon_energy_eV, "eV")}</td>
+          <td>${metricText(article.band_gap_eV, "eV")}</td>
+          <td>${escapeHtml(statusText(article.verification_status))}</td>
+        </tr>
+      `).join("");
+      return block("文献线索", `<div class="table-wrap"><table>
+        <thead><tr><th>材料</th><th>文章</th><th>年份</th><th>技术</th><th>温度</th><th>光子能量</th><th>band gap</th><th>状态</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`);
+    }
+
+    function renderSources() {
+      sourceStatus.textContent = `${state.sources.length} 个来源`;
+      sourceList.innerHTML = `<div class="grid two">${state.sources.map(source => `
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:start;">
+            <strong>${escapeHtml(source.name)}</strong>
+            <span class="chip ${source.can_integrate_now ? "good" : "note"}">${source.can_integrate_now ? "可接入/已支持" : "需授权"}</span>
+          </div>
+          <div class="muted">${escapeHtml(source.category)} · ${escapeHtml(source.access)} · ${escapeHtml(source.trust_level)}</div>
+          <div class="chips">${(source.best_for || []).map(value => `<span class="chip trusted">${escapeHtml(value)}</span>`).join("")}</div>
+          <ul>
+            <li>${escapeHtml(source.notes)}</li>
+            <li>${escapeHtml(source.limits)}</li>
+          </ul>
+          <a class="chip trusted" href="${escapeAttr(source.official_url)}" target="_blank" rel="noreferrer">official source</a>
+        </div>
+      `).join("")}</div>`;
+    }
+
+    function block(title, content) {
+      return `<section style="box-shadow:none;"><div class="section-head"><h2>${escapeHtml(title)}</h2></div><div class="content">${content}</div></section>`;
+    }
+
+    function metric(label, value) {
+      return `<div class="metric"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(value)}</div></div>`;
+    }
+
+    function fact(label, value) {
+      return `<div class="fact"><span>${escapeHtml(label)}</span>${escapeHtml(value ?? "-")}</div>`;
+    }
+
+    function range(values) {
+      const nums = values.filter(value => typeof value === "number");
+      if (!nums.length) return { count: 0 };
+      const min = Math.min(...nums);
+      const max = Math.max(...nums);
+      const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+      return { count: nums.length, min, max, avg: Math.round(avg * 1000) / 1000 };
+    }
+
+    function rangeText(value, suffix) {
+      if (!value.count) return "-";
+      if (value.min === value.max) return `${value.min} ${suffix}`;
+      return `${value.min}-${value.max} ${suffix}; avg ${value.avg}`;
+    }
+
+    function metricText(value, suffix) {
+      return typeof value === "number" ? `${value} ${suffix}` : "-";
+    }
+
+    function unit(value, suffix) {
+      return value === null || value === undefined || value === "" ? "-" : `${value} ${suffix}`;
+    }
+
+    function unique(values) {
+      return Array.from(new Set(values.filter(Boolean).map(String)));
+    }
+
+    function statusText(status) {
+      if (status === "lead_needs_fulltext_check") return "文献线索，待全文核验";
+      if (status === "wos_metadata_only") return "Web of Science 元数据，待全文核验";
+      if (status === "google_scholar_bibtex_metadata") return "Google Scholar BibTeX 元数据，待全文核验";
+      return status || "未标注";
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      }[char]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, "&#096;");
+    }
+  </script>
+</body>
+</html>
