@@ -132,6 +132,20 @@
       color: #ffffff;
     }
 
+    .super-button {
+      min-height: 54px;
+      padding: 12px 18px;
+      border-color: #0b5f59;
+      background: #0f766e;
+      color: #ffffff;
+      font-size: 16px;
+      box-shadow: 0 12px 24px rgba(15, 118, 110, 0.22);
+    }
+
+    .super-button:active {
+      transform: translateY(1px);
+    }
+
     .status, .muted {
       color: var(--muted);
       font-size: 13px;
@@ -226,6 +240,23 @@
       cursor: default;
     }
 
+    .periodic.dancing .element-cell {
+      animation: element-dance 880ms ease-in-out;
+      animation-delay: calc(var(--dance-order, 0) * 18ms);
+    }
+
+    .periodic.dancing .element-cell.available {
+      box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.16), 0 9px 16px rgba(15, 118, 110, 0.16);
+    }
+
+    @keyframes element-dance {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      18% { transform: translateY(-8px) rotate(-3deg); }
+      38% { transform: translateY(4px) rotate(3deg); }
+      58% { transform: translateY(-5px) rotate(2deg); }
+      78% { transform: translateY(2px) rotate(-2deg); }
+    }
+
     .element-number {
       font-size: 9px;
       line-height: 1;
@@ -257,6 +288,39 @@
       border: 1px solid var(--line);
       border-radius: 8px;
     }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 10px;
+      background: #fbfcfd;
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 78px;
+      resize: vertical;
+    }
+
+    .span-2 { grid-column: span 2; }
+    .span-4 { grid-column: 1 / -1; }
 
     table {
       width: 100%;
@@ -292,7 +356,8 @@
 
     @media (max-width: 980px) {
       header { align-items: flex-start; flex-direction: column; }
-      .metric-grid, .layout-two { grid-template-columns: 1fr; }
+      .metric-grid, .layout-two, .form-grid { grid-template-columns: 1fr; }
+      .span-2, .span-4 { grid-column: auto; }
       input[type="search"] { width: 100%; }
     }
   </style>
@@ -314,6 +379,7 @@
       </div>
       <div class="content">
         <div class="toolbar">
+          <button class="super-button" id="superconductorBtn">Superconductor</button>
           <input id="searchInput" type="search" placeholder="Search: cuprate, nickelate, FeSe, Bi2212, NbSe2, Tc, q-dependent">
           <select id="familyFilter" title="Family filter">
             <option value="">All families</option>
@@ -386,6 +452,67 @@
 
     <section>
       <div class="section-head">
+        <h2>Our Data</h2>
+        <span class="status" id="ourDataStatus">Stored in this browser</span>
+      </div>
+      <div class="content">
+        <div class="card">
+          <h3>Add a personal superconductivity record</h3>
+          <div class="form-grid" style="margin-top:10px;">
+            <label>Material
+              <input id="ourMaterial" placeholder="e.g. Nd1-xSrxNiO2">
+            </label>
+            <label>Family
+              <input id="ourFamily" placeholder="nickelate, cuprate, iron-based">
+            </label>
+            <label>Elements
+              <input id="ourElements" placeholder="Ni, Nd, Sr, O">
+            </label>
+            <label>Tc (K)
+              <input id="ourTc" type="number" step="0.01" placeholder="15">
+            </label>
+            <label class="span-2">Special ARPES properties
+              <textarea id="ourSpecial" placeholder="Ni dx2-y2 band; rare-earth pocket"></textarea>
+            </label>
+            <label class="span-2">q-dependent observables
+              <textarea id="ourQ" placeholder="charge order q; Fermi surface reconstruction"></textarea>
+            </label>
+            <label class="span-2">Photon / ARPES notes
+              <textarea id="ourPhoton" placeholder="polarization dependence; photon energy for kz"></textarea>
+            </label>
+            <label class="span-2">Notes / source
+              <textarea id="ourNotes" placeholder="lab note, DOI, Web of Science ID, sample ID"></textarea>
+            </label>
+          </div>
+          <div class="toolbar" style="margin-top:12px;">
+            <button class="primary" id="saveOurDataBtn">Save personal record</button>
+            <button id="exportOurDataBtn">Export JSON</button>
+            <button id="clearOurDataBtn">Clear all</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Family</th>
+                <th>Elements</th>
+                <th>Tc (K)</th>
+                <th>ARPES properties</th>
+                <th>q-dependent</th>
+                <th>Photon notes</th>
+                <th>Notes / source</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="ourDataBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
         <h2>Template boundaries</h2>
       </div>
       <div class="content">
@@ -408,13 +535,17 @@
     const state = {
       db: null,
       selectedElement: "",
-      filtered: []
+      filtered: [],
+      ourData: []
     };
+
+    const STORAGE_KEY = "arpes-superconductivity-our-data-v1";
 
     const searchInput = document.querySelector("#searchInput");
     const familyFilter = document.querySelector("#familyFilter");
     const searchBtn = document.querySelector("#searchBtn");
     const resetBtn = document.querySelector("#resetBtn");
+    const superconductorBtn = document.querySelector("#superconductorBtn");
     const loadStatus = document.querySelector("#loadStatus");
     const metrics = document.querySelector("#metrics");
     const periodicTable = document.querySelector("#periodicTable");
@@ -424,6 +555,21 @@
     const tableStatus = document.querySelector("#tableStatus");
     const materialsBody = document.querySelector("#materialsBody");
     const detailPanel = document.querySelector("#detailPanel");
+    const ourDataStatus = document.querySelector("#ourDataStatus");
+    const ourDataBody = document.querySelector("#ourDataBody");
+    const saveOurDataBtn = document.querySelector("#saveOurDataBtn");
+    const exportOurDataBtn = document.querySelector("#exportOurDataBtn");
+    const clearOurDataBtn = document.querySelector("#clearOurDataBtn");
+    const ourFields = {
+      material: document.querySelector("#ourMaterial"),
+      family: document.querySelector("#ourFamily"),
+      elements: document.querySelector("#ourElements"),
+      tc: document.querySelector("#ourTc"),
+      special: document.querySelector("#ourSpecial"),
+      q: document.querySelector("#ourQ"),
+      photon: document.querySelector("#ourPhoton"),
+      notes: document.querySelector("#ourNotes")
+    };
 
     const periodicLayout = [
       ["H",1,1],["He",18,1],
@@ -444,6 +590,14 @@
 
     init();
 
+    superconductorBtn.addEventListener("click", () => {
+      familyFilter.value = "";
+      searchInput.value = "";
+      state.selectedElement = "";
+      applyFilters();
+      dancePeriodicTable();
+      document.querySelector("#periodicTable").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
     searchBtn.addEventListener("click", applyFilters);
     resetBtn.addEventListener("click", () => {
       state.selectedElement = "";
@@ -455,14 +609,19 @@
     searchInput.addEventListener("keydown", event => {
       if (event.key === "Enter") applyFilters();
     });
+    saveOurDataBtn.addEventListener("click", saveOurData);
+    exportOurDataBtn.addEventListener("click", exportOurData);
+    clearOurDataBtn.addEventListener("click", clearOurData);
 
     async function init() {
       try {
         state.db = await loadJson("data/superconductivity.json");
+        state.ourData = loadOurData();
         renderFamilyFilter();
         renderFamilyChips();
         renderPeriodicTable();
         applyFilters();
+        renderOurData();
         loadStatus.textContent = `${state.db.materials.length} seed materials`;
       } catch (error) {
         loadStatus.textContent = error.message;
@@ -495,11 +654,11 @@
 
     function renderPeriodicTable() {
       const available = new Set(state.db.materials.flatMap(row => row.elements));
-      periodicTable.innerHTML = periodicLayout.map(([symbol, col, row]) => {
+      periodicTable.innerHTML = periodicLayout.map(([symbol, col, row], index) => {
         const meta = elementMeta[symbol] || [symbol, ""];
         const enabled = available.has(symbol);
         return `
-          <button class="element-cell ${enabled ? "available" : "disabled"}" style="grid-column:${col};grid-row:${row};" data-symbol="${escapeAttr(symbol)}" ${enabled ? "" : "disabled"}>
+          <button class="element-cell ${enabled ? "available" : "disabled"}" style="grid-column:${col};grid-row:${row};--dance-order:${index};" data-symbol="${escapeAttr(symbol)}" ${enabled ? "" : "disabled"}>
             <span class="element-number">${escapeHtml(meta[1])}</span>
             <span class="element-symbol">${escapeHtml(symbol)}</span>
             <span class="element-name">${escapeHtml(meta[0])}</span>
@@ -512,6 +671,13 @@
           applyFilters();
         });
       });
+    }
+
+    function dancePeriodicTable() {
+      periodicTable.classList.remove("dancing");
+      void periodicTable.offsetWidth;
+      periodicTable.classList.add("dancing");
+      window.setTimeout(() => periodicTable.classList.remove("dancing"), 1500);
     }
 
     function applyFilters() {
@@ -611,6 +777,101 @@
           </ul>
         </div>
       `;
+    }
+
+    function loadOurData() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function persistOurData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.ourData));
+    }
+
+    function saveOurData() {
+      const record = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        material: ourFields.material.value.trim(),
+        family: ourFields.family.value.trim(),
+        elements: ourFields.elements.value.split(/[,\s]+/).map(value => value.trim()).filter(Boolean),
+        tc: ourFields.tc.value ? Number(ourFields.tc.value) : null,
+        special: ourFields.special.value.trim(),
+        q: ourFields.q.value.trim(),
+        photon: ourFields.photon.value.trim(),
+        notes: ourFields.notes.value.trim(),
+        saved_at: new Date().toISOString()
+      };
+      if (!record.material) {
+        ourDataStatus.textContent = "Material is required";
+        return;
+      }
+      state.ourData.unshift(record);
+      persistOurData();
+      clearOurForm();
+      renderOurData();
+      ourDataStatus.textContent = "Saved in this browser";
+    }
+
+    function clearOurForm() {
+      Object.values(ourFields).forEach(field => field.value = "");
+    }
+
+    function renderOurData() {
+      ourDataStatus.textContent = `${state.ourData.length} personal records`;
+      if (!state.ourData.length) {
+        ourDataBody.innerHTML = `
+          <tr>
+            <td colspan="9" class="muted">No personal records yet. Add one above; it will persist in this browser.</td>
+          </tr>
+        `;
+        return;
+      }
+      ourDataBody.innerHTML = state.ourData.map(record => `
+        <tr>
+          <td><strong>${escapeHtml(record.material)}</strong></td>
+          <td>${escapeHtml(record.family || "-")}</td>
+          <td>${chips(record.elements || [], "trusted")}</td>
+          <td>${record.tc === null || record.tc === undefined ? "-" : escapeHtml(record.tc)}</td>
+          <td>${escapeHtml(record.special || "-")}</td>
+          <td>${escapeHtml(record.q || "-")}</td>
+          <td>${escapeHtml(record.photon || "-")}</td>
+          <td>${escapeHtml(record.notes || "-")}<br><span class="muted">${escapeHtml(record.saved_at || "")}</span></td>
+          <td><button data-delete="${escapeAttr(record.id)}">Delete</button></td>
+        </tr>
+      `).join("");
+      ourDataBody.querySelectorAll("button[data-delete]").forEach(button => {
+        button.addEventListener("click", () => {
+          state.ourData = state.ourData.filter(record => record.id !== button.dataset.delete);
+          persistOurData();
+          renderOurData();
+        });
+      });
+    }
+
+    function exportOurData() {
+      const blob = new Blob([JSON.stringify(state.ourData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "arpes-superconductivity-our-data.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearOurData() {
+      if (!state.ourData.length) {
+        ourDataStatus.textContent = "No personal records to clear";
+        return;
+      }
+      state.ourData = [];
+      persistOurData();
+      renderOurData();
+      ourDataStatus.textContent = "All personal records cleared";
     }
 
     function familyName(id) {
