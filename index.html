@@ -1025,10 +1025,26 @@
     <!-- ===== 文章数据 ===== -->
     <section>
       <div class="section-head">
-        <h2>📄 文章数据 · Article Data (from articles.json)</h2>
-        <span class="status" id="articleStatus">Loading articles...</span>
+        <h2>📄 文章数据 · Article Data</h2>
+        <span class="status" id="articleStatus">Loading...</span>
       </div>
       <div class="content">
+        <div class="toolbar" style="margin-bottom:4px;">
+          <button class="primary" id="importWosBtn">📥 导入 WoS (粘贴CSV/TSV)</button>
+          <button class="primary" id="importScholarBtn">📥 导入 Google Scholar (粘贴BibTeX)</button>
+          <button id="resetArticlesBtn">🔄 恢复默认数据</button>
+        </div>
+        <div id="importPanel" style="display:none; border:2px solid var(--accent-glow); border-radius:10px; padding:12px; background:rgba(15,118,110,0.05);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong id="importPanelTitle">导入文章</strong>
+            <button id="closeImportBtn" style="min-height:28px;padding:2px 8px;">✕</button>
+          </div>
+          <textarea id="importTextarea" style="width:100%; min-height:200px; font-family:monospace; font-size:12px;" placeholder="在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本..."></textarea>
+          <div class="toolbar" style="margin-top:8px;">
+            <button class="primary" id="parseImportBtn">🔍 解析并导入 Parse & Import</button>
+            <span class="status" id="importParseStatus"></span>
+          </div>
+        </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:10px;" id="articleGrid"></div>
       </div>
     </section>
@@ -1462,6 +1478,15 @@
     const tcChart = $("#tcChart");
     const articleStatus = $("#articleStatus");
     const articleGrid = $("#articleGrid");
+    const importWosBtn = $("#importWosBtn");
+    const importScholarBtn = $("#importScholarBtn");
+    const resetArticlesBtn = $("#resetArticlesBtn");
+    const importPanel = $("#importPanel");
+    const importPanelTitle = $("#importPanelTitle");
+    const importTextarea = $("#importTextarea");
+    const parseImportBtn = $("#parseImportBtn");
+    const importParseStatus = $("#importParseStatus");
+    const closeImportBtn = $("#closeImportBtn");
     const comparePanel = $("#comparePanel");
     const compareGrid = $("#compareGrid");
     const clearCompareBtn = $("#clearCompareBtn");
@@ -1760,6 +1785,177 @@
     exportOurDataBtn.addEventListener("click", exportOurData);
     clearOurDataBtn.addEventListener("click", clearOurData);
     importFileInput.addEventListener("change", importOurData);
+    // ===== 文章导入按钮 =====
+    importWosBtn.addEventListener("click", () => {
+      importPanel.style.display = "block";
+      importPanelTitle.textContent = "📥 粘贴 Web of Science 导出 (CSV/TSV)";
+      importTextarea.placeholder = "从 Web of Science 导出 → 全选复制粘贴到这里...";
+      importParseStatus.textContent = "";
+      importTextarea.value = "";
+      importTextarea.focus();
+      importTextarea.dataset.mode = "wos";
+    });
+    importScholarBtn.addEventListener("click", () => {
+      importPanel.style.display = "block";
+      importPanelTitle.textContent = "📥 粘贴 Google Scholar BibTeX";
+      importTextarea.placeholder = "在 Google Scholar 搜索 → 点击 Cite → BibTeX → 复制粘贴到这里...";
+      importParseStatus.textContent = "";
+      importTextarea.value = "";
+      importTextarea.focus();
+      importTextarea.dataset.mode = "scholar";
+    });
+    closeImportBtn.addEventListener("click", () => { importPanel.style.display = "none"; });
+    parseImportBtn.addEventListener("click", () => {
+      const text = importTextarea.value.trim();
+      if (!text) { importParseStatus.textContent = "请先粘贴文本"; return; }
+      const mode = importTextarea.dataset.mode;
+      let parsed = [];
+      try {
+        if (mode === "wos") parsed = parseWoSExport(text);
+        else parsed = parseScholarBibTeX(text);
+      } catch (e) {
+        importParseStatus.textContent = "解析失败: " + e.message;
+        return;
+      }
+      if (!parsed.length) {
+        importParseStatus.textContent = "未识别到文章记录，请检查格式";
+        return;
+      }
+      const existingIds = new Set(state.articles.map(a => a.id));
+      const newArticles = parsed.filter(a => !existingIds.has(a.id));
+      state.articles = [...newArticles, ...state.articles];
+      renderArticles();
+      importPanel.style.display = "none";
+      showToast("导入了 " + newArticles.length + " 篇文章");
+    });
+    resetArticlesBtn.addEventListener("click", async () => {
+      try { state.articles = await loadJson("data/articles.json"); }
+      catch { state.articles = []; }
+      renderArticles();
+      showToast("已恢复默认文章数据");
+    });
+
+    // ===== 材料/元素/技术提取 =====
+    const KNOWN_MATERIALS = [
+      "Bi2Se3","Bi2Te3","Sb2Te3","WTe2","MoS2","MoSe2","MoTe2","WS2","WSe2",
+      "FeSe","FeTe","BaFe2As2","BaK122","Ba0.6K0.4Fe2As2",
+      "YBCO","YBa2Cu3O7","Bi2212","Bi2Sr2CaCu2O8","Bi2201","LSCO","LBCO",
+      "Nd2CuO4","Nd1-xSrxNiO2","La3Ni2O7","LaNiO3",
+      "SnSe2","SnSe","SnS2","SnS",
+      "MgB2","Nb3Sn","NbSe2","2H-NbSe2",
+      "CeCoIn5","CeIrIn5",
+      "Hg","Pb","Nb","H3S","LaH10",
+      "SrTiO3","KTaO3"
+    ];
+    const ELEMENT_SET = new Set([
+      "H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar",
+      "K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr",
+      "Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe",
+      "Cs","Ba","La","Ce","Pr","Nd","Sm","Eu","Gd","Dy","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi"
+    ]);
+    function extractMaterials(text) {
+      return KNOWN_MATERIALS.filter(m => text.toLowerCase().includes(m.toLowerCase()));
+    }
+    function extractElements(text) {
+      const found = [];
+      const words = text.split(/[\s,;.\-()\[\]{}]+/);
+      for (const w of words) {
+        if (ELEMENT_SET.has(w) && !found.includes(w)) found.push(w);
+      }
+      return found;
+    }
+    function extractTechniques(text) {
+      const techniques = [];
+      const tmap = {
+        "ARPES": ["arpes","angle-resolved photoemission","角分辨光电子能谱"],
+        "XPS": ["xps","x-ray photoelectron"],
+        "XRD": ["xrd","x-ray diffraction"],
+        "STM": ["stm","scanning tunneling"],
+        "TEM": ["tem","transmission electron"],
+        "DFT": ["dft","density functional theory","first-principles"],
+        "MBE": ["mbe","molecular beam epitaxy"],
+        "CVT": ["cvt","chemical vapor transport"],
+        "Raman": ["raman"],
+        "neutron": ["neutron scattering","neutron diffraction"],
+        "transport": ["resistivity","transport","hall effect"],
+        "SQUID": ["squid","magnetic susceptibility"]
+      };
+      const lower = text.toLowerCase();
+      for (const [name, keywords] of Object.entries(tmap)) {
+        if (keywords.some(kw => lower.includes(kw))) techniques.push(name);
+      }
+      return techniques;
+    }
+
+    // ===== WoS CSV/TSV 解析器 =====
+    function parseWoSExport(text) {
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length < 2) throw new Error("Need header + data rows");
+      const sep = lines[0].includes("\t") ? "\t" : ",";
+      const headers = lines[0].split(sep).map(h => h.trim().toLowerCase().replace(/"/g, ""));
+      const articles = [];
+      for (let i = 1; i < lines.length; i++) {
+        const vals = lines[i].split(sep).map(v => v.trim().replace(/^"|"$/g, ""));
+        if (vals.length < 2) continue;
+        const row = {};
+        headers.forEach((h, j) => { row[h] = vals[j] || ""; });
+        const title = row["article title"] || row["ti"] || row["title"] || "";
+        if (!title) continue;
+        const doi = row["doi"] || row["di"] || "";
+        const uid = row["ut (unique wos id)"] || row["ut"] || "";
+        const year = parseInt(row["publication year"] || row["py"] || "0") || null;
+        const allText = [title, row["abstract"] || "", row["author keywords"] || "", row["keywords plus"] || ""].join(" ");
+        const elements = extractElements(allText);
+        articles.push({
+          id: uid || `wos-${Date.now()}-${i}`,
+          title, year, source: "Web of Science",
+          source_title: row["source title"] || row["so"] || "",
+          authors: row["authors"] || row["au"] || "",
+          url: uid ? `https://www.webofscience.com/wos/woscc/full-record/${uid}` : "",
+          doi, materials: extractMaterials(allText), elements,
+          dopants: [], techniques: extractTechniques(allText),
+          keywords: (row["author keywords"] || "").split(/[;|]/).map(k => k.trim()).filter(Boolean),
+          temperature_K: null, photon_energy_eV: null, beamline: "",
+          properties: [], evidence: [title], verification_status: "wos_imported", figures: []
+        });
+      }
+      return articles;
+    }
+
+    // ===== Google Scholar BibTeX 解析器 =====
+    function parseScholarBibTeX(text) {
+      const entries = text.split(/@\w+\s*\{/).filter(Boolean);
+      const articles = [];
+      for (const entry of entries) {
+        const keyMatch = entry.match(/^([^,]+),/);
+        const key = keyMatch ? keyMatch[1].trim() : `scholar-${Date.now()}-${articles.length}`;
+        const getField = (name) => {
+          const re = new RegExp(name + "\\s*=\\s*[\"\\{]([^\"\\}]+?)[\"\\}]\\s*,?", "i");
+          const m = entry.match(re);
+          return m ? m[1].trim().replace(/[\{\}]/g, "") : "";
+        };
+        const title = getField("title");
+        if (!title) continue;
+        const author = getField("author");
+        const journal = getField("journal") || getField("booktitle");
+        const year = parseInt(getField("year")) || null;
+        const doi = getField("doi");
+        const url = getField("url");
+        const allText = [title, journal].join(" ");
+        const elements = extractElements(allText);
+        articles.push({
+          id: `scholar:${key}`,
+          title, year, source: "Google Scholar",
+          source_title: journal, authors: author,
+          url: url || (doi ? `https://doi.org/${doi}` : ""),
+          doi, materials: extractMaterials(allText), elements,
+          dopants: [], techniques: extractTechniques(allText),
+          keywords: [], temperature_K: null, photon_energy_eV: null, beamline: "",
+          properties: [], evidence: [title], verification_status: "scholar_imported", figures: []
+        });
+      }
+      return articles;
+    }
 
     // ===== 初始化 =====
     async function init() {
