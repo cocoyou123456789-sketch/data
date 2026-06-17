@@ -803,6 +803,30 @@
 
     .highlight-match { background: rgba(240,192,64,0.25); border-radius: 3px; padding: 0 2px; }
 
+    /* === 语言切换 === */
+    .lang-toggle {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 5px 5px;
+      background: var(--card-bg);
+      display: flex;
+      gap: 2px;
+      cursor: pointer;
+    }
+    .lang-option {
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 680;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .lang-option.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
     @media (max-width: 980px) {
       header { align-items: flex-start; flex-direction: column; }
       .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip { grid-template-columns: 1fr; }
@@ -831,6 +855,10 @@
         <div class="sound-bar" style="animation-delay:0.08s"></div>
         <div class="sound-bar" style="animation-delay:0.16s"></div>
       </div>
+      <div class="lang-toggle" id="langToggle" title="切换语言 Switch Language">
+        <span class="lang-option active" data-lang="zh">中文</span>
+        <span class="lang-option" data-lang="en">EN</span>
+      </div>
       <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">📦 GitHub</a>
     </div>
   </header>
@@ -839,7 +867,7 @@
     <!-- ===== 搜索 & 筛选 ===== -->
     <section>
       <div class="section-head">
-        <h2>🔍 搜索与筛选 | Search &amp; Filter</h2>
+        <h2 data-i18n="searchFilterTitle">🔍 搜索与筛选</h2>
         <span class="status" id="loadStatus">Loading...</span>
       </div>
       <div class="content">
@@ -851,7 +879,7 @@
           <button class="topic-tab" disabled>💎 光子晶体 Photonic</button>
         </div>
         <div class="toolbar">
-          <input id="searchInput" type="search" placeholder="搜索：上海、北京、NSRRC、arXiv、Cu、Ni、铜氧化物、铁基超导...">
+          <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder">
           <select id="familyFilter" title="材料家族">
             <option value="">全部家族 All families</option>
           </select>
@@ -881,12 +909,12 @@
         </div>
         <div class="layout-two">
           <div class="card" id="elementPanel">
-            <h3>👆 选择一个元素 Select an element</h3>
-            <p class="muted">点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。</p>
+            <h3>👆 Select an Element / 选择元素</h3>
+            <p class="muted">Click a green element to see material families and ARPES properties. Grey = no data yet. / 点击绿色元素查看相关超导材料。</p>
           </div>
           <div class="card" id="familyPanel">
-            <h3>🧬 材料家族 Material Families</h3>
-            <p class="muted">点击标签快速筛选。当前以超导为主题。</p>
+            <h3>🧬 Material Families / 材料家族</h3>
+            <p class="muted">Click to filter. Current topic: superconductivity. / 点击标签快速筛选。</p>
             <div class="chips" id="familyChips"></div>
           </div>
         </div>
@@ -1090,16 +1118,13 @@
       <div class="content">
         <div class="card">
           <div class="chips">
-            <span class="chip trusted">中英双语 Bilingual</span>
-            <span class="chip note">种子数据模板 Seed data</span>
-            <span class="chip note">实验值需验证 Experimental values need verification</span>
-            <span class="chip good">数据存于浏览器 Data in browser</span>
+            <span class="chip trusted" data-i18n="templateChipBilingual">中英双语</span>
+            <span class="chip note" data-i18n="templateChipSeed">种子数据模板</span>
+            <span class="chip note" data-i18n="templateChipVerify">实验值需验证</span>
+            <span class="chip good" data-i18n="templateChipBrowser">数据存于浏览器</span>
           </div>
-          <p class="muted">
-            本页面是超导主题的交互式探索模板。Tc 值和历史记录为代表性和种子数据，非最终精选条目。
-            个人数据保存在浏览器 localStorage 中。点击 <strong>SUPERCONDUCTOR</strong> 按钮让周期表元素跳舞！
-            支持按地区搜索光源设施（上海 SSRF、北京 BSRF、合肥 NSRL、台湾 NSRRC 及全球各地）。
-            文章数据从 articles.json 加载，包含 arXiv 预印本和已发表文献。
+          <p class="muted" id="templateNotesText">
+            本页面是超导主题的交互式探索模板。点击 <strong>SUPERCONDUCTOR</strong> 按钮让周期表元素跳舞！
           </p>
         </div>
       </div>
@@ -1107,6 +1132,291 @@
   </main>
 
   <script>
+    // ===== 国际化 i18n =====
+    const LANG_STORAGE_KEY = "arpes-explorer-lang-v1";
+    const I18N = {
+      zh: {
+        title: "⚡ ARPES 超导材料探索器",
+        subtitle: "超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析",
+        loading: "加载中...",
+        searchPlaceholder: "搜索：上海、北京、NSRRC、arXiv、Cu、Ni、铜氧化物、铁基超导...",
+        allFamilies: "全部家族",
+        allRegions: "全部地区",
+        allTypes: "全部类型",
+        searchBtn: "🔍 搜索",
+        resetBtn: "🔄 重置",
+        compareBtn: "📊 对比",
+        superconductorBtn: "⚡ 超导 SUPERCONDUCTOR ⚡",
+        topologicalTab: "🔷 拓扑材料",
+        photonicTab: "💎 光子晶体",
+        searchFilterTitle: "🔍 搜索与筛选",
+        periodicTitle: "🗂️ 元素周期表",
+        periodicStatus: "🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!",
+        selectElement: "👆 选择一个元素",
+        selectElementHint: "点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。",
+        familyTitle: "🧬 材料家族",
+        familyHint: "点击标签快速筛选。当前以超导为主题。",
+        overviewTitle: "📸 直观对比：文章图表 · Overview",
+        overviewStatus: "从论文提取图表 — 不同材料/技术并排对比",
+        figureGalleryTitle: "📊 论文图表对比 · Figure Comparison Gallery",
+        figureGalleryHint: "以下图表来自真实超导 ARPES 论文，按类型并排对比：费米面、能带色散、能隙分布、电荷序。点击跳转原文。",
+        milestonesTitle: "📜 超导历史里程碑",
+        milestonesHint: "从1911年至今的重大发现 — 点击节点查看详情",
+        tcChartTitle: "📊 Tc 对比 (K)",
+        noMaterials: "筛选后无材料数据",
+        sourceTitle: "💡 光源 / 档案目录",
+        sourceStatus: "按地区、设施、文章图表、原始数据搜索",
+        materialsTitle: "🧪 超导材料表",
+        materialsStatus: "等待中",
+        detailTitle: "📋 材料详情",
+        detailHint: "点击材料表中的一行查看详情。",
+        articleTitle: "📄 文章数据 (来自 articles.json)",
+        articleLoading: "加载文章中...",
+        noArticles: "暂无文章数据。",
+        ourDataTitle: "📝 我的数据",
+        ourDataStatus: "保存在浏览器本地",
+        addRecordTitle: "✏️ 添加个人超导记录",
+        saveBtn: "💾 保存",
+        exportBtn: "📥 导出 JSON",
+        importBtn: "📤 导入",
+        clearBtn: "🗑️ 清空",
+        notesTitle: "📌 模板说明",
+        comparePanelTitle: "📊 材料对比",
+        clearCompareBtn: "清除对比",
+        selectCompare: "请先勾选材料行进行对比",
+        saved: "✅ 已保存",
+        savedToast: "✅ 数据已保存!",
+        deletedToast: "已删除",
+        cleared: "已清空所有个人记录",
+        materialRequired: "⚠️ 材料名称为必填",
+        exportedToast: "📥 JSON 已导出!",
+        importedToast: "📤 导入了",
+        records: "条记录",
+        invalidJSON: "❌ 无效的 JSON 文件",
+        noPersonalRecords: "暂无个人记录。在上方添加，数据保存在浏览器中。",
+        noMatchSource: "未找到匹配的光源或档案。试试搜索\"上海\"、\"北京\"、\"NSRRC\"、\"ALS\"、\"arXiv\"。",
+        seedMaterials: "种子材料",
+        seedDataNote: "本页面是超导主题的交互式探索模板。Tc 值和历史记录为代表性和种子数据，非最终精选条目。个人数据保存在浏览器 localStorage 中。点击 SUPERCONDUCTOR 按钮让周期表元素跳舞！支持按地区搜索光源设施（上海 SSRF、北京 BSRF、合肥 NSRL、台湾 NSRRC 及全球各地）。文章数据从 articles.json 加载，包含 arXiv 预印本和已发表文献。",
+        materials: "材料数",
+        families: "家族",
+        elements: "元素",
+        maxTc: "最高 Tc",
+        familyCol: "家族",
+        materialCol: "材料",
+        elementsCol: "元素",
+        discoveredCol: "发现年份",
+        tcCol: "Tc (K)",
+        arpesCol: "ARPES 特性",
+        qCol: "q-dependent",
+        photonCol: "光子/ARPES 备注",
+        statusCol: "状态",
+        selectCol: "选择",
+        regionCol: "地区",
+        facilityCol: "光源/档案",
+        arpesUseCol: "ARPES 适用性",
+        figureCol: "论文图表",
+        dataCol: "原始数据",
+        archiveCol: "档案搜索",
+        materialField: "材料",
+        familyField: "家族",
+        elementsField: "元素",
+        tcField: "Tc (K)",
+        regionField: "地区 / 设施",
+        archiveField: "档案 ID / URL",
+        figureField: "论文图表 URL",
+        originalDataField: "原始数据 URL",
+        specialField: "ARPES 特殊性质",
+        qField: "q-dependent 可观测量",
+        photonField: "光子 / ARPES 备注",
+        notesField: "备注 / 来源",
+        operationCol: "操作",
+        dataLinksCol: "数据链接",
+        noFigureMatch: "暂无匹配的论文图表。尝试修改筛选条件。",
+        viewPaper: "查看原文",
+        viewPaperChip: "🔗 查看原文",
+        arpesNotes: "ARPES 相关备注",
+        specialProps: "特殊性质",
+        qDependent: "q-dependent",
+        photonPol: "光子/偏振",
+        sourceNote: "来源备注",
+        discovery: "发现/合成",
+        noMatch: "无匹配材料。",
+        rows: "行",
+        entries: "条光源 / 档案",
+        loadingFailed: "❌ 加载失败",
+        templateChipBilingual: "中英双语",
+        templateChipSeed: "种子数据模板",
+        templateChipVerify: "实验值需验证",
+        templateChipBrowser: "数据存于浏览器",
+        soundBarsTitle: "音效可视化",
+        languageLabel: "切换语言",
+        elementInSC: "相关超导材料",
+      },
+      en: {
+        title: "⚡ ARPES Superconductivity Explorer",
+        subtitle: "Superconducting materials · Periodic Table · Light Sources · Article Data · Comparison",
+        loading: "Loading...",
+        searchPlaceholder: "Search: Shanghai, Beijing, NSRRC, arXiv, Cu, Ni, cuprate, iron-based...",
+        allFamilies: "All Families",
+        allRegions: "All Regions",
+        allTypes: "All Types",
+        searchBtn: "🔍 Search",
+        resetBtn: "🔄 Reset",
+        compareBtn: "📊 Compare",
+        superconductorBtn: "⚡ SUPERCONDUCTOR ⚡",
+        topologicalTab: "🔷 Topological",
+        photonicTab: "💎 Photonic",
+        searchFilterTitle: "🔍 Search & Filter",
+        periodicTitle: "🗂️ Periodic Table",
+        periodicStatus: "🟢 = Superconductor-relevant elements | Click to filter | Click SUPERCONDUCTOR to dance!",
+        selectElement: "👆 Select an Element",
+        selectElementHint: "Click a green element to see material families and ARPES properties. Grey = no data yet.",
+        familyTitle: "🧬 Material Families",
+        familyHint: "Click a chip to filter. Current topic: superconductivity.",
+        overviewTitle: "📸 Overview: Article Figure Comparison",
+        overviewStatus: "Figures from papers — side-by-side comparison across materials/techniques",
+        figureGalleryTitle: "📊 Figure Comparison Gallery",
+        figureGalleryHint: "These figures come from real ARPES papers, grouped by type: Fermi surface, band dispersion, gap distribution, charge order. Click to view original paper.",
+        milestonesTitle: "📜 Superconductivity Milestones",
+        milestonesHint: "Major discoveries from 1911 to present — click a node for details",
+        tcChartTitle: "📊 Tc Comparison (K)",
+        noMaterials: "No materials match current filters",
+        sourceTitle: "💡 Light Source & Archive Directory",
+        sourceStatus: "Search by region, facility, paper figure, original data",
+        materialsTitle: "🧪 Superconducting Materials",
+        materialsStatus: "Waiting",
+        detailTitle: "📋 Material Details",
+        detailHint: "Click a row in the materials table for details.",
+        articleTitle: "📄 Article Data (from articles.json)",
+        articleLoading: "Loading articles...",
+        noArticles: "No article data.",
+        ourDataTitle: "📝 Our Data",
+        ourDataStatus: "Stored in this browser",
+        addRecordTitle: "✏️ Add Personal Record",
+        saveBtn: "💾 Save",
+        exportBtn: "📥 Export JSON",
+        importBtn: "📤 Import",
+        clearBtn: "🗑️ Clear",
+        notesTitle: "📌 Template Notes",
+        comparePanelTitle: "📊 Material Comparison",
+        clearCompareBtn: "Clear Compare",
+        selectCompare: "Select materials to compare first",
+        saved: "✅ Saved",
+        savedToast: "✅ Data saved!",
+        deletedToast: "Deleted",
+        cleared: "All personal records cleared",
+        materialRequired: "⚠️ Material name is required",
+        exportedToast: "📥 JSON exported!",
+        importedToast: "📤 Imported",
+        records: "records",
+        invalidJSON: "❌ Invalid JSON file",
+        noPersonalRecords: "No personal records yet. Add one above; data persists in browser.",
+        noMatchSource: "No matching light source or archive. Try Shanghai, Beijing, NSRRC, ALS, arXiv.",
+        seedMaterials: "seed materials",
+        seedDataNote: "This page is an interactive superconductivity exploration template. Tc values and historical notes are representative seed data, not final curated entries. Personal data is stored in browser localStorage. Click SUPERCONDUCTOR to make the periodic table dance! Search by region for light source facilities (SSRF, BSRF, NSRL, NSRRC, and global). Article data loaded from articles.json, including arXiv preprints and published literature.",
+        materials: "Materials",
+        families: "Families",
+        elements: "Elements",
+        maxTc: "Max Tc",
+        familyCol: "Family",
+        materialCol: "Material",
+        elementsCol: "Elements",
+        discoveredCol: "Discovered",
+        tcCol: "Tc (K)",
+        arpesCol: "ARPES Props",
+        qCol: "q-dependent",
+        photonCol: "Photon Notes",
+        statusCol: "Status",
+        selectCol: "Select",
+        regionCol: "Region",
+        facilityCol: "Facility",
+        arpesUseCol: "ARPES Use",
+        figureCol: "Figure",
+        dataCol: "Data",
+        archiveCol: "Archive",
+        materialField: "Material",
+        familyField: "Family",
+        elementsField: "Elements",
+        tcField: "Tc (K)",
+        regionField: "Region / Facility",
+        archiveField: "Archive ID / URL",
+        figureField: "Paper Figure URL",
+        originalDataField: "Original Data URL",
+        specialField: "ARPES Special Properties",
+        qField: "q-dependent Observables",
+        photonField: "Photon / ARPES Notes",
+        notesField: "Notes / Source",
+        operationCol: "Action",
+        dataLinksCol: "Data Links",
+        noFigureMatch: "No matching figures. Try adjusting filters.",
+        viewPaper: "View Paper",
+        viewPaperChip: "🔗 View Paper",
+        arpesNotes: "ARPES Notes",
+        specialProps: "Special Properties",
+        qDependent: "q-dependent",
+        photonPol: "Photon/Polarization",
+        sourceNote: "Source Note",
+        discovery: "Discovery/Synthesis",
+        noMatch: "No matching materials.",
+        rows: "rows",
+        entries: "entries",
+        loadingFailed: "❌ Loading failed",
+        templateChipBilingual: "Bilingual",
+        templateChipSeed: "Seed Data",
+        templateChipVerify: "Verify Experimental",
+        templateChipBrowser: "Browser Storage",
+        soundBarsTitle: "Sound Visualizer",
+        languageLabel: "Switch Language",
+        elementInSC: "in superconductivity",
+      }
+    };
+
+    let currentLang = localStorage.getItem(LANG_STORAGE_KEY) || "zh";
+    function t(key) {
+      return (I18N[currentLang] && I18N[currentLang][key]) || (I18N["en"][key]) || key;
+    }
+
+    function switchLang(lang) {
+      currentLang = lang;
+      localStorage.setItem(LANG_STORAGE_KEY, lang);
+      // Update toggle buttons
+      document.querySelectorAll(".lang-option").forEach(opt => {
+        opt.classList.toggle("active", opt.dataset.lang === lang);
+      });
+      // Re-render everything
+      applyFilters();
+      renderOurData();
+      renderArticles();
+      // Update static i18n elements
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.dataset.i18n;
+        if (key) el.textContent = t(key);
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if (key) el.placeholder = t(key);
+      });
+      // Update template notes
+      const notesEl = document.querySelector("#templateNotesText");
+      if (notesEl) notesEl.innerHTML = t("seedDataNote");
+      // Update section headings, buttons, etc.
+      document.querySelector("#superconductorBtn").innerHTML = t("superconductorBtn");
+      document.querySelector("#searchBtn").innerHTML = t("searchBtn");
+      document.querySelector("#resetBtn").innerHTML = t("resetBtn");
+      document.querySelector("#compareBtn").innerHTML = t("compareBtn") + ` (<span id="compareCount">${state.compareSet.size}</span>)`;
+      document.querySelector("#saveOurDataBtn").innerHTML = t("saveBtn");
+      document.querySelector("#exportOurDataBtn").innerHTML = t("exportBtn");
+      document.querySelector("#clearOurDataBtn").innerHTML = t("clearBtn");
+      document.querySelector("#sourceStatus").textContent = t("sourceStatus");
+      loadStatus.textContent = `${state.db ? state.db.materials.length : 0} ${t("seedMaterials")}`;
+    }
+
+    document.querySelector("#langToggle").addEventListener("click", (e) => {
+      const opt = e.target.closest(".lang-option");
+      if (!opt) return;
+      switchLang(opt.dataset.lang);
+    });
+
     // ===== 全局状态 =====
     const state = {
       db: null,
@@ -1403,7 +1713,7 @@
     });
     compareBtn.addEventListener("click", () => {
       if (state.compareSet.size === 0) {
-        showToast("请先勾选材料行进行对比 Select materials to compare");
+        showToast(t("selectCompare"));
         return;
       }
       renderComparePanel();
@@ -1433,6 +1743,8 @@
         try { state.articles = await loadJson("data/articles.json"); }
         catch { state.articles = []; }
         state.ourData = loadOurData();
+        // 应用语言
+        switchLang(currentLang);
         renderFamilyFilter();
         renderSourceFilters();
         renderFamilyChips();
@@ -1440,9 +1752,9 @@
         applyFilters();
         renderOurData();
         renderArticles();
-        loadStatus.textContent = `${state.db.materials.length} 种子材料 seed materials`;
+        loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       } catch (error) {
-        loadStatus.textContent = `❌ ${error.message}`;
+        loadStatus.textContent = `${t("loadingFailed")}: ${error.message}`;
       }
     }
 
@@ -1598,14 +1910,14 @@
 
     function updateSelectedElement() {
       if (!state.selectedElement) {
-        elementPanel.innerHTML = `<h3>👆 选择一个元素</h3><p class="muted">点击绿色元素查看相关超导材料。灰色元素暂无超导数据。</p>`;
+        elementPanel.innerHTML = `<h3>${t("selectElement")}</h3><p class="muted">${t("selectElementHint")}</p>`;
         return;
       }
       const rows = state.db.materials.filter(r => r.elements.includes(state.selectedElement));
       const families = uniq(rows.map(r => familyName(r.family)));
       const mats = rows.map(r => r.display_name || r.material);
       elementPanel.innerHTML = `
-        <h3>${esc(state.selectedElement)} 相关超导材料</h3>
+        <h3>${esc(state.selectedElement)} ${t("elementInSC")}</h3>
         <div class="chips">${families.map(v => `<span class="chip good">${esc(v)}</span>`).join("")}</div>
         <ul>${mats.map(v => `<li>${esc(v)}</li>`).join("")}</ul>
       `;
@@ -1623,10 +1935,10 @@
       const families = uniq(state.filtered.map(r => r.family));
       const elements = uniq(state.filtered.flatMap(r => r.elements));
       metrics.innerHTML = [
-        met("材料数 Rows", String(state.filtered.length)),
-        met("家族 Families", String(families.length)),
-        met("元素 Elements", String(elements.length)),
-        met("最高 Tc", maxTc === null ? "-" : `${maxTc} K`)
+        met(`${t("materials")} / Rows`, String(state.filtered.length)),
+        met(`${t("families")} / Families`, String(families.length)),
+        met(`${t("elements")} / Elements`, String(elements.length)),
+        met(`${t("maxTc")}`, maxTc === null ? "-" : `${maxTc} K`)
       ].join("");
     }
 
@@ -1654,7 +1966,7 @@
           <div class="tc-bar-fill" style="width:${pct}%;"></div>
           <span style="color:var(--accent-glow);font-weight:700;">${tc} K</span>
         </div>`;
-      }).join("") || `<p class="muted">筛选后无材料数据</p>`;
+      }).join("") || `<p class="muted">${t("noMaterials")}</p>`;
 
       // 文章图表对比画廊
       renderFigureGallery();
@@ -1707,7 +2019,7 @@
       }
 
       if (!allFigures.length) {
-        figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">暂无匹配的论文图表。尝试修改筛选条件，或查看上方"文章数据"区域。No matching figures. Adjust filters or check the Article Data section.</p></div>`;
+        figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${t("noFigureMatch")}</p></div>`;
         return;
       }
 
@@ -1722,7 +2034,7 @@
               <strong>${esc(fig.caption)}</strong>
               <span style="font-size:10px;">📄 ${esc(fig.article_title.slice(0, 60))}...</span>
               <span style="font-size:10px;">🔬 ${esc((fig.techniques || []).join(", "))} | 🧪 ${esc((fig.materials || []).join(", "))}</span>
-              <span class="chip good" style="font-size:10px;">🔗 查看原文 View paper</span>
+              <span class="chip good" style="font-size:10px;">${t("viewPaperChip")}</span>
             </div>
           </div>
         `;
@@ -1847,9 +2159,9 @@
 
     function renderSourceDirectory() {
       const rows = filteredSourceEntries();
-      sourceStatus.textContent = `${rows.length} 条光源 / 档案 entries`;
+      sourceStatus.textContent = `${rows.length} ${t("entries")}`;
       if (!rows.length) {
-        sourceBody.innerHTML = `<tr><td colspan="6" class="muted">未找到匹配的光源或档案。试试搜索"上海"、"北京"、"NSRRC"、"ALS"、"arXiv"。</td></tr>`;
+        sourceBody.innerHTML = `<tr><td colspan="6" class="muted">${t("noMatchSource")}</td></tr>`;
         return;
       }
       sourceBody.innerHTML = rows.map(entry => `
@@ -1866,7 +2178,7 @@
 
     // ===== 材料表 =====
     function renderMaterialsTable() {
-      tableStatus.textContent = `${state.filtered.length} 行 rows`;
+      tableStatus.textContent = `${state.filtered.length} ${t("rows")}`;
       materialsBody.innerHTML = state.filtered.map((row, i) => {
         const checked = state.compareSet.has(i) ? "checked" : "";
         return `<tr class="clickable" data-index="${i}">
@@ -1912,25 +2224,25 @@
       });
 
       if (state.filtered.length) showMaterialDetail(state.filtered[0]);
-      else detailPanel.innerHTML = `<div class="status">无匹配材料。No matching materials.</div>`;
+      else detailPanel.innerHTML = `<div class="status">${t("noMatch")}</div>`;
     }
 
     function showMaterialDetail(row) {
       detailPanel.innerHTML = `
         <div class="metric-grid">
-          ${met("材料 Material", row.display_name || row.material)}
-          ${met("家族 Family", familyName(row.family))}
+          ${met(`${t("materialCol")} / Material`, row.display_name || row.material)}
+          ${met(`${t("familyCol")} / Family`, familyName(row.family))}
           ${met("Tc", `${row.transition_temperature_K} K`)}
-          ${met("状态 Status", row.verification_status)}
+          ${met(`${t("statusCol")} / Status`, row.verification_status)}
         </div>
         <div class="card">
-          <h3>ARPES 相关备注</h3>
+          <h3>${t("arpesNotes")}</h3>
           <ul>
-            <li><strong>特殊性质:</strong> ${esc((row.arpes_special_properties || []).join(", "))}</li>
-            <li><strong>q-dependent:</strong> ${esc((row.q_dependent_observables || []).join(", "))}</li>
-            <li><strong>光子/偏振:</strong> ${esc(row.photon_arpes_notes || "-")}</li>
-            <li><strong>来源备注:</strong> ${esc(row.source_note || "-")}</li>
-            <li><strong>发现/合成:</strong> ${esc(row.synthesized_or_discovered || "-")}</li>
+            <li><strong>${t("specialProps")}:</strong> ${esc((row.arpes_special_properties || []).join(", "))}</li>
+            <li><strong>${t("qDependent")}:</strong> ${esc((row.q_dependent_observables || []).join(", "))}</li>
+            <li><strong>${t("photonPol")}:</strong> ${esc(row.photon_arpes_notes || "-")}</li>
+            <li><strong>${t("sourceNote")}:</strong> ${esc(row.source_note || "-")}</li>
+            <li><strong>${t("discovery")}:</strong> ${esc(row.synthesized_or_discovered || "-")}</li>
           </ul>
         </div>
       `;
@@ -1966,9 +2278,9 @@
 
     // ===== 文章数据渲染 =====
     function renderArticles() {
-      articleStatus.textContent = `${state.articles.length} 篇文章 articles loaded`;
+      articleStatus.textContent = `${state.articles.length} ${t("records")}`;
       if (!state.articles.length) {
-        articleGrid.innerHTML = `<p class="muted">暂无文章数据。No article data loaded from articles.json.</p>`;
+        articleGrid.innerHTML = `<p class="muted">${t("noArticles")}</p>`;
         return;
       }
       articleGrid.innerHTML = state.articles.map(a => `
@@ -2011,15 +2323,15 @@
         saved_at: new Date().toISOString()
       };
       if (!record.material) {
-        ourDataStatus.textContent = "⚠️ 材料名称为必填 Material is required";
+        ourDataStatus.textContent = t("materialRequired");
         return;
       }
       state.ourData.unshift(record);
       persistOurData();
       clearOurForm();
       renderOurData();
-      ourDataStatus.textContent = "✅ 已保存 Saved in browser";
-      showToast("✅ 数据已保存 Data saved!");
+      ourDataStatus.textContent = t("saved");
+      showToast(t("savedToast"));
     }
 
     function clearOurForm() {
@@ -2027,9 +2339,9 @@
     }
 
     function renderOurData() {
-      ourDataStatus.textContent = `${state.ourData.length} 条个人记录`;
+      ourDataStatus.textContent = `${state.ourData.length} ${t("records")}`;
       if (!state.ourData.length) {
-        ourDataBody.innerHTML = `<tr><td colspan="10" class="muted">暂无个人记录。在上方添加，数据保存在浏览器中。</td></tr>`;
+        ourDataBody.innerHTML = `<tr><td colspan="10" class="muted">${t("noPersonalRecords")}</td></tr>`;
         return;
       }
       ourDataBody.innerHTML = state.ourData.map(rec => `
@@ -2055,7 +2367,7 @@
           state.ourData = state.ourData.filter(r => r.id !== btn.dataset.delete);
           persistOurData();
           renderOurData();
-          showToast("已删除 Deleted");
+          showToast(t("deletedToast"));
         });
       });
     }
@@ -2070,7 +2382,7 @@
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      showToast("📥 JSON 已导出 Exported!");
+      showToast(t("exportedToast"));
     }
 
     function importOurData(e) {
@@ -2084,9 +2396,9 @@
           state.ourData = [...data, ...state.ourData];
           persistOurData();
           renderOurData();
-          showToast(`📤 导入了 ${data.length} 条记录`);
+          showToast(`${t("importedToast")} ${data.length} ${t("records")}`);
         } catch {
-          showToast("❌ 无效的 JSON 文件");
+          showToast(t("invalidJSON"));
         }
       };
       reader.readAsText(file);
@@ -2098,8 +2410,8 @@
       state.ourData = [];
       persistOurData();
       renderOurData();
-      ourDataStatus.textContent = "已清空 Cleared";
-      showToast("🗑️ 已清空所有个人记录");
+      ourDataStatus.textContent = t("cleared");
+      showToast(t("cleared"));
     }
 
     // ===== 工具函数 =====
