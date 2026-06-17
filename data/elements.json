@@ -1,0 +1,413 @@
+[
+  {
+    "symbol": "Sn",
+    "name": "Tin",
+    "chinese_name": "锡",
+    "atomic_number": 50,
+    "relative_atomic_mass": 118.710,
+    "group": 14,
+    "period": 5,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 231.928,
+    "melting_point_k": 505.078,
+    "boiling_point_c": 2586,
+    "boiling_point_k": 2859,
+    "density_g_cm3": 7.287,
+    "electron_configuration": "[Kr] 4d10 5s2 5p2",
+    "electronegativity_pauling": 1.96,
+    "common_oxidation_states": ["4", "2"],
+    "appearance": "A soft, pliable metal; below 13°C it slowly changes to a powder form.",
+    "relevance": [
+      "Sn 是 SnSe2、SnSe、SnS2、SnS、SnSeS 的共同阳离子元素。",
+      "常见氧化态为 +2 和 +4，因此可形成 Sn(II) 与 Sn(IV) 硫/硒化物。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/50/tin",
+      "evidence": "RSC fact box lists atomic number 50, relative atomic mass 118.710, group 14, melting point 231.928°C, boiling point 2586°C, density 7.287 g cm−3, and common oxidation states 4, 2."
+    }
+  },
+  {
+    "symbol": "Se",
+    "name": "Selenium",
+    "chinese_name": "硒",
+    "atomic_number": 34,
+    "relative_atomic_mass": 78.971,
+    "group": 16,
+    "period": 4,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 220.8,
+    "melting_point_k": 494,
+    "boiling_point_c": 685,
+    "boiling_point_k": 958,
+    "density_g_cm3": 4.809,
+    "electron_configuration": "[Ar] 3d10 4s2 4p4",
+    "electronegativity_pauling": 2.55,
+    "common_oxidation_states": ["6", "4", "-2"],
+    "appearance": "A semi-metal that can exist as a silvery metal or as a red powder.",
+    "relevance": [
+      "Se 是 SnSe2、SnSe、SnSeS 的阴离子元素。",
+      "Se 与 S 同属 16 族，替换或合金化会影响能隙、价带位置和晶格。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/34/selenium",
+      "evidence": "RSC fact box lists atomic number 34, relative atomic mass 78.971, group 16, melting point 220.8°C, boiling point 685°C, density 4.809 g cm−3, and common oxidation states 6, 4, -2."
+    }
+  },
+  {
+    "symbol": "S",
+    "name": "Sulfur",
+    "chinese_name": "硫",
+    "atomic_number": 16,
+    "relative_atomic_mass": 32.06,
+    "group": 16,
+    "period": 3,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 115.21,
+    "melting_point_k": 388.36,
+    "boiling_point_c": 444.61,
+    "boiling_point_k": 717.76,
+    "density_g_cm3": 2.07,
+    "electron_configuration": "[Ne] 3s2 3p4",
+    "electronegativity_pauling": 2.58,
+    "common_oxidation_states": ["6", "4", "2", "-2"],
+    "appearance": "The most common allotrope appears as yellow crystals or powder.",
+    "relevance": [
+      "S 是 SnS2、SnS、SnSeS 的阴离子元素。",
+      "S 与 Se 同属 16 族，Sn-Se-S 合金中 S/Se 比例是判断材料的重要线索。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/16/sulfur",
+      "evidence": "RSC fact box lists atomic number 16, relative atomic mass 32.06, group 16, melting point 115.21°C, boiling point 444.61°C, density 2.07 g cm−3, and common oxidation states 6, 4, 2, -2."
+    }
+  },
+  {
+    "symbol": "Bi",
+    "name": "Bismuth",
+    "chinese_name": "铋",
+    "atomic_number": 83,
+    "relative_atomic_mass": 208.9804,
+    "group": 15,
+    "period": 6,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 271.406,
+    "boiling_point_c": 1564,
+    "density_g_cm3": 9.807,
+    "electron_configuration": "[Xe] 4f14 5d10 6s2 6p3",
+    "electronegativity_pauling": 2.02,
+    "common_oxidation_states": ["3", "5"],
+    "appearance": "A brittle metal with a silvery-white appearance.",
+    "relevance": [
+      "Bi 常见于拓扑绝缘体和强自旋轨道耦合 ARPES 体系。",
+      "典型组合包括 Bi2Se3、Bi2Te3、Bi/Sb/Te/Se 系材料。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/83/bismuth",
+      "evidence": "RSC Periodic Table element page for bismuth."
+    }
+  },
+  {
+    "symbol": "Te",
+    "name": "Tellurium",
+    "chinese_name": "碲",
+    "atomic_number": 52,
+    "relative_atomic_mass": 127.60,
+    "group": 16,
+    "period": 5,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 449.51,
+    "boiling_point_c": 987.9,
+    "density_g_cm3": 6.232,
+    "electron_configuration": "[Kr] 4d10 5s2 5p4",
+    "electronegativity_pauling": 2.1,
+    "common_oxidation_states": ["6", "4", "-2"],
+    "appearance": "A brittle, silvery-white metalloid.",
+    "relevance": [
+      "Te 常见于 Bi2Te3、Sb2Te3、WTe2、MoTe2 等 ARPES 研究材料。",
+      "Te 与 Se/S 同属 16 族，常用于调节能带和自旋轨道耦合。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/52/tellurium",
+      "evidence": "RSC Periodic Table element page for tellurium."
+    }
+  },
+  {
+    "symbol": "Sb",
+    "name": "Antimony",
+    "chinese_name": "锑",
+    "atomic_number": 51,
+    "relative_atomic_mass": 121.760,
+    "group": 15,
+    "period": 5,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 630.628,
+    "boiling_point_c": 1587,
+    "density_g_cm3": 6.685,
+    "electron_configuration": "[Kr] 4d10 5s2 5p3",
+    "electronegativity_pauling": 2.05,
+    "common_oxidation_states": ["3", "5", "-3"],
+    "appearance": "A lustrous grey metalloid.",
+    "relevance": [
+      "Sb 常见于 Sb2Te3、Bi1-xSbx、拓扑材料和半金属 ARPES 研究。",
+      "与 Bi 类似，Sb 体系常用于比较拓扑表面态和体能带。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/51/antimony",
+      "evidence": "RSC Periodic Table element page for antimony."
+    }
+  },
+  {
+    "symbol": "Pb",
+    "name": "Lead",
+    "chinese_name": "铅",
+    "atomic_number": 82,
+    "relative_atomic_mass": 207.2,
+    "group": 14,
+    "period": 6,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": 327.462,
+    "boiling_point_c": 1749,
+    "density_g_cm3": 11.35,
+    "electron_configuration": "[Xe] 4f14 5d10 6s2 6p2",
+    "electronegativity_pauling": 2.33,
+    "common_oxidation_states": ["2", "4"],
+    "appearance": "A heavy, dull grey metal.",
+    "relevance": [
+      "Pb 常见于 PbTe、PbSe、PbSnSe 等窄带隙和拓扑相关材料。",
+      "Pb 的强自旋轨道耦合使其适合 ARPES 能带和拓扑相研究。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/82/lead",
+      "evidence": "RSC Periodic Table element page for lead."
+    }
+  },
+  {
+    "symbol": "W",
+    "name": "Tungsten",
+    "chinese_name": "钨",
+    "atomic_number": 74,
+    "relative_atomic_mass": 183.84,
+    "group": 6,
+    "period": 6,
+    "block": "d",
+    "state_at_20c": "Solid",
+    "melting_point_c": 3422,
+    "boiling_point_c": 5555,
+    "density_g_cm3": 19.25,
+    "electron_configuration": "[Xe] 4f14 5d4 6s2",
+    "electronegativity_pauling": 2.36,
+    "common_oxidation_states": ["6", "5", "4", "3", "2"],
+    "appearance": "A very hard, steel-grey metal.",
+    "relevance": [
+      "W 常见于 WTe2、WS2、WSe2 等过渡金属硫族化物。",
+      "ARPES 中常关注 Weyl、层状能带、谷结构和自旋轨道劈裂。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/74/tungsten",
+      "evidence": "RSC Periodic Table element page for tungsten."
+    }
+  },
+  {
+    "symbol": "Mo",
+    "name": "Molybdenum",
+    "chinese_name": "钼",
+    "atomic_number": 42,
+    "relative_atomic_mass": 95.95,
+    "group": 6,
+    "period": 5,
+    "block": "d",
+    "state_at_20c": "Solid",
+    "melting_point_c": 2623,
+    "boiling_point_c": 4639,
+    "density_g_cm3": 10.28,
+    "electron_configuration": "[Kr] 4d5 5s1",
+    "electronegativity_pauling": 2.16,
+    "common_oxidation_states": ["6", "5", "4", "3", "2"],
+    "appearance": "A silvery metal.",
+    "relevance": [
+      "Mo 常见于 MoS2、MoSe2、MoTe2 等二维过渡金属硫族化物。",
+      "ARPES 中常用于研究层数依赖、谷电子结构和相变。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/42/molybdenum",
+      "evidence": "RSC Periodic Table element page for molybdenum."
+    }
+  },
+  {
+    "symbol": "Ti",
+    "name": "Titanium",
+    "chinese_name": "钛",
+    "atomic_number": 22,
+    "relative_atomic_mass": 47.867,
+    "group": 4,
+    "period": 4,
+    "block": "d",
+    "state_at_20c": "Solid",
+    "melting_point_c": 1668,
+    "boiling_point_c": 3287,
+    "density_g_cm3": 4.506,
+    "electron_configuration": "[Ar] 3d2 4s2",
+    "electronegativity_pauling": 1.54,
+    "common_oxidation_states": ["4", "3", "2"],
+    "appearance": "A lustrous transition metal.",
+    "relevance": [
+      "Ti 常见于 TiSe2、TiTe2、SrTiO3 等 ARPES 体系。",
+      "TiSe2 相关体系常用于 CDW、激子绝缘体和掺杂相图研究。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/22/titanium",
+      "evidence": "RSC Periodic Table element page for titanium."
+    }
+  },
+  {
+    "symbol": "Fe",
+    "name": "Iron",
+    "chinese_name": "铁",
+    "atomic_number": 26,
+    "relative_atomic_mass": 55.845,
+    "group": 8,
+    "period": 4,
+    "block": "d",
+    "state_at_20c": "Solid",
+    "melting_point_c": 1538,
+    "boiling_point_c": 2862,
+    "density_g_cm3": 7.874,
+    "electron_configuration": "[Ar] 3d6 4s2",
+    "electronegativity_pauling": 1.83,
+    "common_oxidation_states": ["3", "2"],
+    "appearance": "A lustrous, ductile metal.",
+    "relevance": [
+      "Fe 是铁基超导和磁性材料 ARPES 研究的核心元素。",
+      "常见体系包括 FeSe、FeTe、BaFe2As2 及其掺杂材料。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/26/iron",
+      "evidence": "RSC Periodic Table element page for iron."
+    }
+  },
+  {
+    "symbol": "Cu",
+    "name": "Copper",
+    "chinese_name": "铜",
+    "atomic_number": 29,
+    "relative_atomic_mass": 63.546,
+    "group": 11,
+    "period": 4,
+    "block": "d",
+    "state_at_20c": "Solid",
+    "melting_point_c": 1084.62,
+    "boiling_point_c": 2562,
+    "density_g_cm3": 8.96,
+    "electron_configuration": "[Ar] 3d10 4s1",
+    "electronegativity_pauling": 1.90,
+    "common_oxidation_states": ["2", "1"],
+    "appearance": "A reddish-gold metal.",
+    "relevance": [
+      "Cu 是铜氧化物高温超导 ARPES 研究的核心元素。",
+      "常见体系包括 Bi2212、LSCO、YBCO 等 cuprate 材料。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/29/copper",
+      "evidence": "RSC Periodic Table element page for copper."
+    }
+  },
+  {
+    "symbol": "O",
+    "name": "Oxygen",
+    "chinese_name": "氧",
+    "atomic_number": 8,
+    "relative_atomic_mass": 15.999,
+    "group": 16,
+    "period": 2,
+    "block": "p",
+    "state_at_20c": "Gas",
+    "melting_point_c": -218.79,
+    "boiling_point_c": -182.962,
+    "density_g_cm3": null,
+    "electron_configuration": "[He] 2s2 2p4",
+    "electronegativity_pauling": 3.44,
+    "common_oxidation_states": ["-2"],
+    "appearance": "A colourless gas.",
+    "relevance": [
+      "O 是氧化物 ARPES 材料的重要元素。",
+      "常见体系包括 cuprates、SrTiO3、iridates 和 nickelates。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/8/oxygen",
+      "evidence": "RSC Periodic Table element page for oxygen."
+    }
+  },
+  {
+    "symbol": "Co",
+    "name": "Cobalt",
+    "chinese_name": "钴",
+    "atomic_number": 27,
+    "relative_atomic_mass": 58.933194,
+    "group": 9,
+    "period": 4,
+    "block": "d",
+    "state_at_20c": "Solid",
+    "melting_point_c": 1495,
+    "boiling_point_c": 2927,
+    "density_g_cm3": 8.90,
+    "electron_configuration": "[Ar] 3d7 4s2",
+    "electronegativity_pauling": 1.88,
+    "common_oxidation_states": ["3", "2"],
+    "appearance": "A hard, lustrous, grey metal.",
+    "relevance": [
+      "Co 可作为磁性元素，也出现在二茂钴 CoCp2 等表面掺杂剂中。",
+      "在 SnSe2 掺二茂钴场景中，Co 是识别分子掺杂的重要线索。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/27/cobalt",
+      "evidence": "RSC Periodic Table element page for cobalt."
+    }
+  },
+  {
+    "symbol": "C",
+    "name": "Carbon",
+    "chinese_name": "碳",
+    "atomic_number": 6,
+    "relative_atomic_mass": 12.011,
+    "group": 14,
+    "period": 2,
+    "block": "p",
+    "state_at_20c": "Solid",
+    "melting_point_c": null,
+    "boiling_point_c": null,
+    "density_g_cm3": null,
+    "electron_configuration": "[He] 2s2 2p2",
+    "electronegativity_pauling": 2.55,
+    "common_oxidation_states": ["4", "2", "-4"],
+    "appearance": "Occurs in forms including graphite and diamond.",
+    "relevance": [
+      "C 出现在石墨烯、碳基材料和有机分子掺杂剂中。",
+      "在二茂钴 CoCp2 等分子处理里，C 可辅助识别有机配体。"
+    ],
+    "source": {
+      "name": "Royal Society of Chemistry Periodic Table",
+      "url": "https://periodic-table.rsc.org/element/6/carbon",
+      "evidence": "RSC Periodic Table element page for carbon."
+    }
+  }
+]

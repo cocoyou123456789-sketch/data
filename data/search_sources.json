@@ -1,0 +1,112 @@
+[
+  {
+    "name": "OpenAlex",
+    "category": "literature",
+    "access": "official_api",
+    "trust_level": "open metadata",
+    "best_for": ["broad literature discovery", "authors", "institutions", "citations", "open access links"],
+    "can_integrate_now": true,
+    "notes": "Fully open scholarly catalog with REST API and snapshots. Good first choice for broad automatic metadata search.",
+    "limits": "Metadata still needs DOI/full-text verification before extracting experimental values.",
+    "official_url": "https://developers.openalex.org/"
+  },
+  {
+    "name": "Crossref",
+    "category": "literature",
+    "access": "official_api",
+    "trust_level": "publisher DOI metadata",
+    "best_for": ["DOI lookup", "publisher metadata", "journal articles", "references"],
+    "can_integrate_now": true,
+    "notes": "Strong source for DOI-centered metadata. Useful for normalizing article identity.",
+    "limits": "Usually metadata only; abstracts and full text are not always available.",
+    "official_url": "https://api.crossref.org/swagger-ui/index.html"
+  },
+  {
+    "name": "Semantic Scholar",
+    "category": "literature",
+    "access": "official_api",
+    "trust_level": "scholarly graph metadata",
+    "best_for": ["paper search", "citations", "references", "abstracts", "influential papers"],
+    "can_integrate_now": true,
+    "notes": "Academic Graph API can enrich paper search with citation and reference context.",
+    "limits": "Rate limits/API key policy should be checked before large batch jobs.",
+    "official_url": "https://api.semanticscholar.org/api-docs/"
+  },
+  {
+    "name": "arXiv",
+    "category": "preprint",
+    "access": "official_api",
+    "trust_level": "open preprint metadata",
+    "best_for": ["preprints", "physics", "condensed matter", "open PDFs"],
+    "can_integrate_now": true,
+    "notes": "Public API and open metadata/PDF access make it useful for ARPES preprint testing.",
+    "limits": "Preprints may not be peer reviewed; publisher version may differ.",
+    "official_url": "https://info.arxiv.org/help/api/index.html"
+  },
+  {
+    "name": "Europe PMC",
+    "category": "literature",
+    "access": "official_api",
+    "trust_level": "biomedical/open full text metadata",
+    "best_for": ["life science literature", "open full text", "text mining"],
+    "can_integrate_now": true,
+    "notes": "Less central for ARPES, but useful if materials overlap with bio/chem literature.",
+    "limits": "Coverage is biomedical/life-science oriented, not a primary condensed matter index.",
+    "official_url": "https://europepmc.org/RestfulWebService"
+  },
+  {
+    "name": "Web of Science",
+    "category": "curated_index",
+    "access": "export_or_paid_api",
+    "trust_level": "curated subscription index",
+    "best_for": ["curated article sets", "institutional publication tracking", "citation reports"],
+    "can_integrate_now": true,
+    "notes": "Already supported through CSV/TSV export import. API integration needs Clarivate license/API key.",
+    "limits": "Not fully open; automated API access depends on institutional subscription.",
+    "official_url": "https://developer.clarivate.com/apis/wos"
+  },
+  {
+    "name": "Google Scholar",
+    "category": "literature_search",
+    "access": "manual_bibtex_import",
+    "trust_level": "broad discovery, not API-backed",
+    "best_for": ["finding obscure papers", "quick manual discovery", "citation export"],
+    "can_integrate_now": true,
+    "notes": "Supported through manual BibTeX import from Scholar citation dialog.",
+    "limits": "No stable official public search API; do not automate scraping because of CAPTCHA/blocking and usage constraints.",
+    "official_url": "https://scholar.google.com/"
+  },
+  {
+    "name": "Scopus",
+    "category": "curated_index",
+    "access": "paid_api_or_export",
+    "trust_level": "curated subscription index",
+    "best_for": ["citation analysis", "publisher metadata", "large institution workflows"],
+    "can_integrate_now": false,
+    "notes": "Potential future source if the lab has Elsevier/Scopus API access or exported CSV.",
+    "limits": "Subscription/API entitlement required.",
+    "official_url": "https://dev.elsevier.com/"
+  },
+  {
+    "name": "Materials Project",
+    "category": "materials_database",
+    "access": "official_api",
+    "trust_level": "computed materials properties",
+    "best_for": ["crystal structures", "DFT band gaps", "formation energies", "computed properties"],
+    "can_integrate_now": true,
+    "notes": "Useful companion to literature search for Sn-Se-S materials properties.",
+    "limits": "Computed DFT data is not the same as experimental ARPES measurements.",
+    "official_url": "https://materialsproject.org/api"
+  },
+  {
+    "name": "OPTIMADE federation",
+    "category": "materials_database",
+    "access": "standard_api",
+    "trust_level": "federated materials structures",
+    "best_for": ["cross-database structure search", "composition filters", "materials interoperability"],
+    "can_integrate_now": true,
+    "notes": "Standard API for querying multiple materials databases in a common format.",
+    "limits": "Property coverage varies by provider; not a literature search engine.",
+    "official_url": "https://www.optimade.org/"
+  }
+]
