@@ -1,22 +1,24 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ARPES Materials Explorer</title>
+  <title>ARPES Superconductivity Explorer</title>
   <style>
     :root {
-      --bg: #f6f8fa;
+      --bg: #f5f7f8;
       --panel: #ffffff;
-      --ink: #1f2933;
-      --muted: #637381;
-      --line: #d9e2e8;
+      --ink: #172026;
+      --muted: #66737d;
+      --line: #d8e0e5;
       --accent: #0f766e;
-      --accent-soft: #e6f4f1;
-      --warn: #8a4b00;
-      --warn-soft: #fff6df;
+      --accent-soft: #e4f4f1;
       --blue-soft: #e8f0ff;
-      --shadow: 0 14px 34px rgba(31, 41, 51, 0.08);
+      --warn-soft: #fff5df;
+      --warn: #805100;
+      --disabled: #edf0f2;
+      --disabled-ink: #9aa4ac;
+      --shadow: 0 14px 34px rgba(23, 32, 38, 0.08);
     }
 
     * { box-sizing: border-box; }
@@ -28,13 +30,14 @@
     }
 
     header {
+      min-height: 96px;
+      padding: 20px clamp(16px, 4vw, 56px);
       background: var(--panel);
       border-bottom: 1px solid var(--line);
-      padding: 20px clamp(16px, 4vw, 56px);
       display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 18px;
-      align-items: center;
     }
 
     h1 {
@@ -45,13 +48,13 @@
     }
 
     .subtitle {
-      margin: 6px 0 0;
+      margin: 7px 0 0;
       color: var(--muted);
       font-size: 14px;
     }
 
     main {
-      width: min(1440px, 100%);
+      width: min(1520px, 100%);
       margin: 0 auto;
       padding: 22px clamp(14px, 3vw, 36px) 42px;
       display: grid;
@@ -76,11 +79,13 @@
       gap: 12px;
     }
 
-    h2 {
+    h2, h3 {
       margin: 0;
-      font-size: 16px;
       letter-spacing: 0;
     }
+
+    h2 { font-size: 16px; }
+    h3 { font-size: 14px; }
 
     .content {
       padding: 16px;
@@ -95,26 +100,30 @@
       align-items: center;
     }
 
-    input[type="search"] {
-      width: min(680px, 100%);
-      min-height: 44px;
+    input[type="search"], select {
+      min-height: 42px;
       border: 1px solid var(--line);
       border-radius: 6px;
-      padding: 10px 12px;
-      font-size: 16px;
-      color: var(--ink);
+      padding: 9px 11px;
       background: #fbfcfd;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    input[type="search"] {
+      width: min(560px, 100%);
+      font-size: 16px;
     }
 
     button {
-      min-height: 38px;
+      min-height: 36px;
       border: 1px solid var(--line);
       border-radius: 6px;
-      padding: 8px 12px;
+      padding: 7px 10px;
       background: #ffffff;
       color: var(--ink);
       cursor: pointer;
-      font-weight: 650;
+      font-weight: 680;
     }
 
     button.primary {
@@ -123,40 +132,22 @@
       color: #ffffff;
     }
 
-    .status {
+    .status, .muted {
       color: var(--muted);
       font-size: 13px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .grid.two {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcfd;
-      padding: 12px;
-      min-height: 120px;
-    }
-
     .metric-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
     }
 
-    .metric {
+    .metric, .card {
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 12px;
       background: #fbfcfd;
+      padding: 12px;
     }
 
     .metric .label {
@@ -171,22 +162,10 @@
       overflow-wrap: anywhere;
     }
 
-    .symbol {
-      font-size: 30px;
-      font-weight: 820;
-      line-height: 1;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
     .chips {
       display: flex;
       flex-wrap: wrap;
       gap: 7px;
-      margin-top: 8px;
     }
 
     .chip {
@@ -201,40 +180,76 @@
       text-decoration: none;
     }
 
-    .chip.good {
-      background: var(--accent-soft);
-      color: #0b5f59;
+    .chip.good { background: var(--accent-soft); color: #0b5f59; }
+    .chip.trusted { background: var(--blue-soft); color: #174ea6; }
+    .chip.note { background: var(--warn-soft); color: var(--warn); }
+
+    .periodic-wrap {
+      overflow-x: auto;
+      padding-bottom: 4px;
     }
 
-    .chip.note {
-      background: var(--warn-soft);
-      color: var(--warn);
-    }
-
-    .chip.trusted {
-      background: var(--blue-soft);
-      color: #174ea6;
-    }
-
-    .facts {
+    .periodic {
+      min-width: 920px;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 6px;
-      margin-top: 10px;
-      font-size: 12px;
+      grid-template-columns: repeat(18, 46px);
+      grid-auto-rows: 46px;
+      gap: 5px;
     }
 
-    .fact {
-      background: #ffffff;
+    .element-cell {
       border: 1px solid var(--line);
       border-radius: 6px;
-      padding: 7px;
+      background: #ffffff;
+      padding: 5px;
+      display: grid;
+      align-content: start;
+      gap: 1px;
+      cursor: pointer;
+      min-width: 0;
     }
 
-    .fact span {
-      display: block;
-      color: var(--muted);
-      margin-bottom: 2px;
+    .element-cell.available {
+      background: var(--accent-soft);
+      border-color: #8fcfc4;
+    }
+
+    .element-cell.selected {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .element-cell.disabled {
+      background: var(--disabled);
+      color: var(--disabled-ink);
+      cursor: default;
+    }
+
+    .element-number {
+      font-size: 9px;
+      line-height: 1;
+    }
+
+    .element-symbol {
+      font-size: 15px;
+      font-weight: 780;
+      line-height: 1.05;
+    }
+
+    .element-name {
+      font-size: 8px;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .layout-two {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 14px;
+      align-items: start;
     }
 
     .table-wrap {
@@ -245,7 +260,7 @@
 
     table {
       width: 100%;
-      min-width: 760px;
+      min-width: 1100px;
       border-collapse: collapse;
       font-size: 13px;
     }
@@ -261,15 +276,23 @@
       background: #f8fafb;
       color: var(--muted);
       font-size: 12px;
+      white-space: nowrap;
     }
 
     tr:last-child td { border-bottom: 0; }
+    tr.clickable { cursor: pointer; }
+    tr.clickable:hover { background: #f8fbfb; }
 
-    a { color: var(--accent); }
+    ul {
+      margin: 7px 0 0;
+      padding-left: 18px;
+    }
 
-    @media (max-width: 900px) {
+    li { margin: 4px 0; }
+
+    @media (max-width: 980px) {
       header { align-items: flex-start; flex-direction: column; }
-      .grid, .grid.two, .metric-grid { grid-template-columns: 1fr; }
+      .metric-grid, .layout-two { grid-template-columns: 1fr; }
       input[type="search"] { width: 100%; }
     }
   </style>
@@ -277,8 +300,8 @@
 <body>
   <header>
     <div>
-      <h1>ARPES Materials Explorer</h1>
-      <p class="subtitle">公开静态版：元素/材料搜索、可信来源说明、文献线索对比</p>
+      <h1>ARPES Superconductivity Explorer</h1>
+      <p class="subtitle">English template: superconducting materials, Tc, ARPES properties, q-dependent observables, photon-energy notes, and element availability.</p>
     </div>
     <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">GitHub repository</a>
   </header>
@@ -286,50 +309,95 @@
   <main>
     <section>
       <div class="section-head">
-        <h2>搜索材料或元素</h2>
-        <span class="status" id="searchStatus">加载中</span>
+        <h2>Superconductivity Topic</h2>
+        <span class="status" id="loadStatus">Loading</span>
       </div>
       <div class="content">
         <div class="toolbar">
-          <input id="searchInput" type="search" placeholder="输入 Sn、Se、Bi2Se3、FeSe、MoS2、ARPES">
-          <button class="primary" id="searchBtn">搜索</button>
+          <input id="searchInput" type="search" placeholder="Search: cuprate, nickelate, FeSe, Bi2212, NbSe2, Tc, q-dependent">
+          <select id="familyFilter" title="Family filter">
+            <option value="">All families</option>
+          </select>
+          <button class="primary" id="searchBtn">Search</button>
+          <button id="resetBtn">Reset</button>
         </div>
-        <div class="toolbar" id="elementButtons"></div>
+        <div class="metric-grid" id="metrics"></div>
       </div>
     </section>
 
     <section>
       <div class="section-head">
-        <h2>结果</h2>
-        <span class="status" id="resultStatus">等待搜索</span>
+        <h2>Periodic Table: superconductivity-relevant elements</h2>
+        <span class="status">Green = data in this template, grey = no superconductivity entry yet</span>
       </div>
-      <div class="content" id="results">
-        <div class="status">选择一个元素或输入材料名。</div>
+      <div class="content">
+        <div class="periodic-wrap">
+          <div class="periodic" id="periodicTable"></div>
+        </div>
+        <div class="layout-two">
+          <div class="card" id="elementPanel">
+            <h3>Select an element</h3>
+            <p class="muted">Click a green element to see material families and ARPES-relevant properties. Grey elements are placeholders for future data.</p>
+          </div>
+          <div class="card" id="familyPanel">
+            <h3>Material property groups</h3>
+            <p class="muted">This first template focuses on superconductivity. Other topics can later reuse the same layout.</p>
+            <div class="chips" id="familyChips"></div>
+          </div>
+        </div>
       </div>
     </section>
 
     <section>
       <div class="section-head">
-        <h2>可用搜索源</h2>
-        <span class="status" id="sourceStatus">加载中</span>
+        <h2>Superconducting materials table</h2>
+        <span class="status" id="tableStatus">Waiting</span>
       </div>
-      <div class="content" id="sourceList"></div>
+      <div class="content">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Family</th>
+                <th>Material</th>
+                <th>Elements</th>
+                <th>Synthesized / discovered</th>
+                <th>Tc (K)</th>
+                <th>Special ARPES properties</th>
+                <th>q-dependent observables</th>
+                <th>Photon / ARPES notes</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="materialsBody"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <section>
       <div class="section-head">
-        <h2>数据边界</h2>
+        <h2>Selected material details</h2>
+      </div>
+      <div class="content" id="detailPanel">
+        <div class="status">Click a row in the materials table.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Template boundaries</h2>
       </div>
       <div class="content">
         <div class="card">
           <div class="chips">
-            <span class="chip trusted">元素数据有来源链接</span>
-            <span class="chip note">文献记录是线索</span>
-            <span class="chip note">实验指标需全文核验</span>
+            <span class="chip trusted">English template</span>
+            <span class="chip note">Not a full superconductor database yet</span>
+            <span class="chip note">Experimental values need source-level verification</span>
           </div>
           <p class="muted">
-            公开静态版不保存上传文件，也不自动爬 Google Scholar。Web of Science 和 Google Scholar 导入功能保留在本地 Python 版中。
-            温度、光子能量、band gap、Fermi velocity 等实验指标只有完成全文或实验数据核验后才应写入数据库。
+            This page is a first superconductivity topic template. Tc values and historical notes are representative seed data, not final curated entries.
+            For publication-quality use, each material row should be linked to synthesis papers, ARPES papers, sample conditions, and uncertainty/source metadata.
           </p>
         </div>
       </div>
@@ -337,271 +405,232 @@
   </main>
 
   <script>
-    const state = { elements: [], articles: [], sources: [] };
-    const searchInput = document.querySelector("#searchInput");
-    const searchBtn = document.querySelector("#searchBtn");
-    const searchStatus = document.querySelector("#searchStatus");
-    const resultStatus = document.querySelector("#resultStatus");
-    const results = document.querySelector("#results");
-    const sourceStatus = document.querySelector("#sourceStatus");
-    const sourceList = document.querySelector("#sourceList");
-    const elementButtons = document.querySelector("#elementButtons");
+    const state = {
+      db: null,
+      selectedElement: "",
+      filtered: []
+    };
 
-    const priority = ["Sn", "Se", "S", "Bi", "Te", "Sb", "Pb", "W", "Mo", "Ti", "Fe", "Cu", "O", "Co", "C"];
+    const searchInput = document.querySelector("#searchInput");
+    const familyFilter = document.querySelector("#familyFilter");
+    const searchBtn = document.querySelector("#searchBtn");
+    const resetBtn = document.querySelector("#resetBtn");
+    const loadStatus = document.querySelector("#loadStatus");
+    const metrics = document.querySelector("#metrics");
+    const periodicTable = document.querySelector("#periodicTable");
+    const elementPanel = document.querySelector("#elementPanel");
+    const familyPanel = document.querySelector("#familyPanel");
+    const familyChips = document.querySelector("#familyChips");
+    const tableStatus = document.querySelector("#tableStatus");
+    const materialsBody = document.querySelector("#materialsBody");
+    const detailPanel = document.querySelector("#detailPanel");
+
+    const periodicLayout = [
+      ["H",1,1],["He",18,1],
+      ["Li",1,2],["Be",2,2],["B",13,2],["C",14,2],["N",15,2],["O",16,2],["F",17,2],["Ne",18,2],
+      ["Na",1,3],["Mg",2,3],["Al",13,3],["Si",14,3],["P",15,3],["S",16,3],["Cl",17,3],["Ar",18,3],
+      ["K",1,4],["Ca",2,4],["Sc",3,4],["Ti",4,4],["V",5,4],["Cr",6,4],["Mn",7,4],["Fe",8,4],["Co",9,4],["Ni",10,4],["Cu",11,4],["Zn",12,4],["Ga",13,4],["Ge",14,4],["As",15,4],["Se",16,4],["Br",17,4],["Kr",18,4],
+      ["Rb",1,5],["Sr",2,5],["Y",3,5],["Zr",4,5],["Nb",5,5],["Mo",6,5],["Tc",7,5],["Ru",8,5],["Rh",9,5],["Pd",10,5],["Ag",11,5],["Cd",12,5],["In",13,5],["Sn",14,5],["Sb",15,5],["Te",16,5],["I",17,5],["Xe",18,5],
+      ["Cs",1,6],["Ba",2,6],["La",3,6],["Ce",4,6],["Pr",5,6],["Nd",6,6],["Sm",7,6],["Eu",8,6],["Gd",9,6],["Dy",10,6],["Hf",4,7],["Ta",5,7],["W",6,7],["Re",7,7],["Os",8,7],["Ir",9,7],["Pt",10,7],["Au",11,7],["Hg",12,7],["Tl",13,7],["Pb",14,7],["Bi",15,7]
+    ];
+
+    const elementMeta = {
+      H:["Hydrogen",1], He:["Helium",2], Li:["Lithium",3], Be:["Beryllium",4], B:["Boron",5], C:["Carbon",6], N:["Nitrogen",7], O:["Oxygen",8], F:["Fluorine",9], Ne:["Neon",10],
+      Na:["Sodium",11], Mg:["Magnesium",12], Al:["Aluminium",13], Si:["Silicon",14], P:["Phosphorus",15], S:["Sulfur",16], Cl:["Chlorine",17], Ar:["Argon",18],
+      K:["Potassium",19], Ca:["Calcium",20], Sc:["Scandium",21], Ti:["Titanium",22], V:["Vanadium",23], Cr:["Chromium",24], Mn:["Manganese",25], Fe:["Iron",26], Co:["Cobalt",27], Ni:["Nickel",28], Cu:["Copper",29], Zn:["Zinc",30], Ga:["Gallium",31], Ge:["Germanium",32], As:["Arsenic",33], Se:["Selenium",34], Br:["Bromine",35], Kr:["Krypton",36],
+      Rb:["Rubidium",37], Sr:["Strontium",38], Y:["Yttrium",39], Zr:["Zirconium",40], Nb:["Niobium",41], Mo:["Molybdenum",42], Tc:["Technetium",43], Ru:["Ruthenium",44], Rh:["Rhodium",45], Pd:["Palladium",46], Ag:["Silver",47], Cd:["Cadmium",48], In:["Indium",49], Sn:["Tin",50], Sb:["Antimony",51], Te:["Tellurium",52], I:["Iodine",53], Xe:["Xenon",54],
+      Cs:["Caesium",55], Ba:["Barium",56], La:["Lanthanum",57], Ce:["Cerium",58], Pr:["Praseodymium",59], Nd:["Neodymium",60], Sm:["Samarium",62], Eu:["Europium",63], Gd:["Gadolinium",64], Dy:["Dysprosium",66], Hf:["Hafnium",72], Ta:["Tantalum",73], W:["Tungsten",74], Re:["Rhenium",75], Os:["Osmium",76], Ir:["Iridium",77], Pt:["Platinum",78], Au:["Gold",79], Hg:["Mercury",80], Tl:["Thallium",81], Pb:["Lead",82], Bi:["Bismuth",83]
+    };
 
     init();
 
-    searchBtn.addEventListener("click", () => runSearch(searchInput.value));
+    searchBtn.addEventListener("click", applyFilters);
+    resetBtn.addEventListener("click", () => {
+      state.selectedElement = "";
+      searchInput.value = "";
+      familyFilter.value = "";
+      applyFilters();
+    });
+    familyFilter.addEventListener("change", applyFilters);
     searchInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") runSearch(searchInput.value);
+      if (event.key === "Enter") applyFilters();
     });
 
     async function init() {
       try {
-        const [elements, articles, sources] = await Promise.all([
-          loadJson("data/elements.json"),
-          loadJson("data/articles.json"),
-          loadJson("data/search_sources.json")
-        ]);
-        state.elements = elements;
-        state.articles = articles;
-        state.sources = sources;
-        renderElementButtons();
-        renderSources();
-        searchStatus.textContent = `${elements.length} 个元素`;
+        state.db = await loadJson("data/superconductivity.json");
+        renderFamilyFilter();
+        renderFamilyChips();
+        renderPeriodicTable();
+        applyFilters();
+        loadStatus.textContent = `${state.db.materials.length} seed materials`;
       } catch (error) {
-        searchStatus.textContent = error.message;
-        results.innerHTML = `<div class="status">${escapeHtml(error.message)}</div>`;
+        loadStatus.textContent = error.message;
       }
     }
 
     async function loadJson(path) {
       const response = await fetch(path);
-      if (!response.ok) throw new Error(`无法加载 ${path}`);
+      if (!response.ok) throw new Error(`Could not load ${path}`);
       return response.json();
     }
 
-    function renderElementButtons() {
-      const bySymbol = Object.fromEntries(state.elements.map(item => [item.symbol, item]));
-      elementButtons.innerHTML = priority
-        .filter(symbol => bySymbol[symbol])
-        .map(symbol => `<button data-symbol="${escapeAttr(symbol)}" title="${escapeAttr(bySymbol[symbol].name)}">${escapeHtml(symbol)}</button>`)
+    function renderFamilyFilter() {
+      familyFilter.innerHTML = `<option value="">All families</option>` + state.db.families
+        .map(family => `<option value="${escapeAttr(family.id)}">${escapeHtml(family.name)}</option>`)
         .join("");
-      elementButtons.querySelectorAll("button").forEach(button => {
+    }
+
+    function renderFamilyChips() {
+      familyChips.innerHTML = state.db.families
+        .map(family => `<button data-family="${escapeAttr(family.id)}">${escapeHtml(family.name)}</button>`)
+        .join("");
+      familyChips.querySelectorAll("button").forEach(button => {
         button.addEventListener("click", () => {
-          searchInput.value = button.dataset.symbol;
-          runSearch(button.dataset.symbol);
+          familyFilter.value = button.dataset.family;
+          applyFilters();
         });
       });
     }
 
-    function runSearch(query) {
-      const terms = query.trim().toLowerCase().split(/[\s,，]+/).filter(Boolean);
-      if (!terms.length) {
-        resultStatus.textContent = "请输入关键词";
+    function renderPeriodicTable() {
+      const available = new Set(state.db.materials.flatMap(row => row.elements));
+      periodicTable.innerHTML = periodicLayout.map(([symbol, col, row]) => {
+        const meta = elementMeta[symbol] || [symbol, ""];
+        const enabled = available.has(symbol);
+        return `
+          <button class="element-cell ${enabled ? "available" : "disabled"}" style="grid-column:${col};grid-row:${row};" data-symbol="${escapeAttr(symbol)}" ${enabled ? "" : "disabled"}>
+            <span class="element-number">${escapeHtml(meta[1])}</span>
+            <span class="element-symbol">${escapeHtml(symbol)}</span>
+            <span class="element-name">${escapeHtml(meta[0])}</span>
+          </button>
+        `;
+      }).join("");
+      periodicTable.querySelectorAll(".element-cell.available").forEach(cell => {
+        cell.addEventListener("click", () => {
+          state.selectedElement = cell.dataset.symbol;
+          applyFilters();
+        });
+      });
+    }
+
+    function applyFilters() {
+      const term = searchInput.value.trim().toLowerCase();
+      const family = familyFilter.value;
+      state.filtered = state.db.materials.filter(row => {
+        const elementOk = !state.selectedElement || row.elements.includes(state.selectedElement);
+        const familyOk = !family || row.family === family;
+        const text = [
+          row.family, row.material, row.display_name, row.synthesized_or_discovered, row.tc_note,
+          ...(row.elements || []), ...(row.arpes_special_properties || []), ...(row.q_dependent_observables || []),
+          row.photon_arpes_notes, row.source_note
+        ].join(" ").toLowerCase();
+        const termOk = !term || text.includes(term);
+        return elementOk && familyOk && termOk;
+      });
+      updateSelectedElement();
+      renderMetrics();
+      renderMaterialsTable();
+      highlightPeriodicTable();
+    }
+
+    function updateSelectedElement() {
+      if (!state.selectedElement) {
+        elementPanel.innerHTML = `
+          <h3>Select an element</h3>
+          <p class="muted">Click a green element. Grey cells mean this first superconductivity template has no material rows using that element yet.</p>
+        `;
         return;
       }
-      const matchedElements = state.elements.filter(item => {
-        return terms.some(term => matchesElement(item, term));
+      const rows = state.db.materials.filter(row => row.elements.includes(state.selectedElement));
+      const families = unique(rows.map(row => familyName(row.family)));
+      const materials = rows.map(row => row.display_name || row.material);
+      elementPanel.innerHTML = `
+        <h3>${escapeHtml(state.selectedElement)} in superconductivity rows</h3>
+        <div class="chips">${families.map(value => `<span class="chip good">${escapeHtml(value)}</span>`).join("")}</div>
+        <ul>${materials.map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul>
+      `;
+    }
+
+    function highlightPeriodicTable() {
+      periodicTable.querySelectorAll(".element-cell").forEach(cell => {
+        cell.classList.toggle("selected", cell.dataset.symbol === state.selectedElement);
       });
-      const matchedArticles = state.articles
-        .map(article => ({ ...article, matchScore: scoreArticle(article, terms) }))
-        .filter(article => article.matchScore > 0)
-        .sort((a, b) => b.matchScore - a.matchScore || String(a.title).localeCompare(String(b.title)));
-      const candidates = summarizeMaterials(matchedArticles);
-      resultStatus.textContent = `${matchedElements.length} 个元素 · ${matchedArticles.length} 条文献线索`;
-      renderResults(query, matchedElements, candidates, matchedArticles);
     }
 
-    function scoreArticle(article, terms) {
-      return terms.reduce((sum, term) => sum + (matchesArticle(article, term) ? 1 : 0), 0);
+    function renderMetrics() {
+      const tcValues = state.filtered.map(row => row.transition_temperature_K).filter(value => typeof value === "number");
+      const maxTc = tcValues.length ? Math.max(...tcValues) : null;
+      const families = unique(state.filtered.map(row => row.family));
+      const elements = unique(state.filtered.flatMap(row => row.elements));
+      metrics.innerHTML = [
+        metric("Rows", String(state.filtered.length)),
+        metric("Families", String(families.length)),
+        metric("Elements", String(elements.length)),
+        metric("Max Tc", maxTc === null ? "-" : `${maxTc} K`)
+      ].join("");
     }
 
-    function matchesElement(item, term) {
-      const exact = [item.symbol, item.name, item.chinese_name].filter(Boolean).map(value => String(value).toLowerCase());
-      if (term.length <= 2) return exact.includes(term);
-      const text = [item.symbol, item.name, item.chinese_name, ...(item.relevance || [])].join(" ").toLowerCase();
-      return text.includes(term);
+    function renderMaterialsTable() {
+      tableStatus.textContent = `${state.filtered.length} rows`;
+      materialsBody.innerHTML = state.filtered.map((row, index) => `
+        <tr class="clickable" data-index="${index}">
+          <td>${escapeHtml(familyName(row.family))}</td>
+          <td><strong>${escapeHtml(row.display_name || row.material)}</strong><br><span class="muted">${escapeHtml(row.material)}</span></td>
+          <td>${chips(row.elements, "trusted")}</td>
+          <td>${escapeHtml(row.synthesized_or_discovered)}</td>
+          <td>${escapeHtml(row.transition_temperature_K)}<br><span class="muted">${escapeHtml(row.tc_note || "")}</span></td>
+          <td>${list(row.arpes_special_properties)}</td>
+          <td>${list(row.q_dependent_observables)}</td>
+          <td>${escapeHtml(row.photon_arpes_notes)}</td>
+          <td><span class="chip note">${escapeHtml(row.verification_status)}</span></td>
+        </tr>
+      `).join("");
+      materialsBody.querySelectorAll("tr").forEach(row => {
+        row.addEventListener("click", () => showMaterialDetail(state.filtered[Number(row.dataset.index)]));
+      });
+      if (state.filtered.length) showMaterialDetail(state.filtered[0]);
+      else detailPanel.innerHTML = `<div class="status">No matching material row.</div>`;
     }
 
-    function matchesArticle(article, term) {
-      const elements = (article.elements || []).map(value => String(value).toLowerCase());
-      const materials = (article.materials || []).map(value => String(value).toLowerCase());
-      if (term.length <= 2) {
-        return elements.includes(term) || materials.some(material => material.startsWith(term));
-      }
-      const fields = [
-        ...materials,
-        ...elements,
-        ...(article.dopants || []),
-        ...(article.techniques || []),
-        ...(article.keywords || []),
-        article.title || "",
-        ...(article.evidence || [])
-      ].join(" ").toLowerCase();
-      return fields.includes(term);
-    }
-
-    function summarizeMaterials(articles) {
-      const byMaterial = new Map();
-      for (const article of articles) {
-        for (const material of article.materials || []) {
-          if (!byMaterial.has(material)) byMaterial.set(material, []);
-          byMaterial.get(material).push(article);
-        }
-      }
-      return Array.from(byMaterial.entries()).map(([material, rows]) => ({
-        material,
-        articleCount: rows.length,
-        temperatures: range(rows.map(row => row.temperature_K)),
-        photons: range(rows.map(row => row.photon_energy_eV)),
-        gaps: range(rows.map(row => row.band_gap_eV)),
-        dopants: unique(rows.flatMap(row => row.dopants || [])),
-        properties: unique(rows.flatMap(row => row.properties || []))
-      })).sort((a, b) => b.articleCount - a.articleCount || a.material.localeCompare(b.material));
-    }
-
-    function renderResults(query, elements, candidates, articles) {
-      results.innerHTML = `
+    function showMaterialDetail(row) {
+      detailPanel.innerHTML = `
         <div class="metric-grid">
-          ${metric("搜索", query)}
-          ${metric("候选材料", String(candidates.length))}
-          ${metric("文献线索", String(articles.length))}
+          ${metric("Material", row.display_name || row.material)}
+          ${metric("Family", familyName(row.family))}
+          ${metric("Tc", `${row.transition_temperature_K} K`)}
+          ${metric("Status", row.verification_status)}
         </div>
-        ${renderElements(elements)}
-        ${renderCandidates(candidates)}
-        ${renderArticles(articles)}
-      `;
-    }
-
-    function renderElements(elements) {
-      if (!elements.length) return block("可信元素数据", `<span class="chip note">没有匹配元素</span>`);
-      return block("可信元素数据", `<div class="grid">${elements.map(elementCard).join("")}</div>`);
-    }
-
-    function elementCard(item) {
-      return `
         <div class="card">
-          <div class="symbol">${escapeHtml(item.symbol)}</div>
-          <div class="muted">${escapeHtml(item.name)} / ${escapeHtml(item.chinese_name || "")}</div>
-          <div class="facts">
-            ${fact("原子序数", item.atomic_number)}
-            ${fact("相对原子质量", item.relative_atomic_mass)}
-            ${fact("族 / 周期", `${item.group} / ${item.period}`)}
-            ${fact("20°C 状态", item.state_at_20c)}
-            ${fact("熔点", unit(item.melting_point_c, "°C"))}
-            ${fact("沸点", unit(item.boiling_point_c, "°C"))}
-            ${fact("密度", unit(item.density_g_cm3, "g/cm³"))}
-            ${fact("电负性", item.electronegativity_pauling)}
-          </div>
-          <ul>${(item.relevance || []).map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul>
-          <a class="chip trusted" href="${escapeAttr(item.source?.url || "#")}" target="_blank" rel="noreferrer">${escapeHtml(item.source?.name || "source")}</a>
-        </div>
-      `;
-    }
-
-    function renderCandidates(candidates) {
-      if (!candidates.length) return block("指标对比", `<span class="chip note">没有候选材料</span>`);
-      const rows = candidates.map(item => `
-        <tr>
-          <td><strong>${escapeHtml(item.material)}</strong></td>
-          <td>${item.articleCount}</td>
-          <td>${rangeText(item.temperatures, "K")}</td>
-          <td>${rangeText(item.photons, "eV")}</td>
-          <td>${rangeText(item.gaps, "eV")}</td>
-          <td>${escapeHtml(item.dopants.join("、") || "-")}</td>
-          <td>${escapeHtml(item.properties.join("、") || "-")}</td>
-        </tr>
-      `).join("");
-      return block("指标对比", `<div class="table-wrap"><table>
-        <thead><tr><th>候选物质</th><th>记录数</th><th>温度</th><th>光子能量</th><th>band gap</th><th>掺杂</th><th>特征</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table></div>`);
-    }
-
-    function renderArticles(articles) {
-      if (!articles.length) return block("文献线索", `<span class="chip note">没有匹配文献</span>`);
-      const rows = articles.map(article => `
-        <tr>
-          <td>${escapeHtml((article.materials || []).join("、") || "-")}</td>
-          <td>${article.url ? `<a href="${escapeAttr(article.url)}" target="_blank" rel="noreferrer">${escapeHtml(article.title)}</a>` : escapeHtml(article.title)}</td>
-          <td>${escapeHtml(article.year || "-")}</td>
-          <td>${escapeHtml((article.techniques || []).join("、") || "-")}</td>
-          <td>${metricText(article.temperature_K, "K")}</td>
-          <td>${metricText(article.photon_energy_eV, "eV")}</td>
-          <td>${metricText(article.band_gap_eV, "eV")}</td>
-          <td>${escapeHtml(statusText(article.verification_status))}</td>
-        </tr>
-      `).join("");
-      return block("文献线索", `<div class="table-wrap"><table>
-        <thead><tr><th>材料</th><th>文章</th><th>年份</th><th>技术</th><th>温度</th><th>光子能量</th><th>band gap</th><th>状态</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table></div>`);
-    }
-
-    function renderSources() {
-      sourceStatus.textContent = `${state.sources.length} 个来源`;
-      sourceList.innerHTML = `<div class="grid two">${state.sources.map(source => `
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;gap:10px;align-items:start;">
-            <strong>${escapeHtml(source.name)}</strong>
-            <span class="chip ${source.can_integrate_now ? "good" : "note"}">${source.can_integrate_now ? "可接入/已支持" : "需授权"}</span>
-          </div>
-          <div class="muted">${escapeHtml(source.category)} · ${escapeHtml(source.access)} · ${escapeHtml(source.trust_level)}</div>
-          <div class="chips">${(source.best_for || []).map(value => `<span class="chip trusted">${escapeHtml(value)}</span>`).join("")}</div>
+          <h3>ARPES-facing notes</h3>
           <ul>
-            <li>${escapeHtml(source.notes)}</li>
-            <li>${escapeHtml(source.limits)}</li>
+            <li><strong>Special properties:</strong> ${escapeHtml((row.arpes_special_properties || []).join(", "))}</li>
+            <li><strong>q-dependent:</strong> ${escapeHtml((row.q_dependent_observables || []).join(", "))}</li>
+            <li><strong>Photon / polarization:</strong> ${escapeHtml(row.photon_arpes_notes || "-")}</li>
+            <li><strong>Source note:</strong> ${escapeHtml(row.source_note || "-")}</li>
           </ul>
-          <a class="chip trusted" href="${escapeAttr(source.official_url)}" target="_blank" rel="noreferrer">official source</a>
         </div>
-      `).join("")}</div>`;
+      `;
     }
 
-    function block(title, content) {
-      return `<section style="box-shadow:none;"><div class="section-head"><h2>${escapeHtml(title)}</h2></div><div class="content">${content}</div></section>`;
+    function familyName(id) {
+      return state.db.families.find(family => family.id === id)?.name || id;
     }
 
     function metric(label, value) {
       return `<div class="metric"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(value)}</div></div>`;
     }
 
-    function fact(label, value) {
-      return `<div class="fact"><span>${escapeHtml(label)}</span>${escapeHtml(value ?? "-")}</div>`;
+    function chips(values, tone = "") {
+      return `<div class="chips">${(values || []).map(value => `<span class="chip ${tone}">${escapeHtml(value)}</span>`).join("")}</div>`;
     }
 
-    function range(values) {
-      const nums = values.filter(value => typeof value === "number");
-      if (!nums.length) return { count: 0 };
-      const min = Math.min(...nums);
-      const max = Math.max(...nums);
-      const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
-      return { count: nums.length, min, max, avg: Math.round(avg * 1000) / 1000 };
-    }
-
-    function rangeText(value, suffix) {
-      if (!value.count) return "-";
-      if (value.min === value.max) return `${value.min} ${suffix}`;
-      return `${value.min}-${value.max} ${suffix}; avg ${value.avg}`;
-    }
-
-    function metricText(value, suffix) {
-      return typeof value === "number" ? `${value} ${suffix}` : "-";
-    }
-
-    function unit(value, suffix) {
-      return value === null || value === undefined || value === "" ? "-" : `${value} ${suffix}`;
+    function list(values) {
+      return `<ul>${(values || []).map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul>`;
     }
 
     function unique(values) {
       return Array.from(new Set(values.filter(Boolean).map(String)));
-    }
-
-    function statusText(status) {
-      if (status === "lead_needs_fulltext_check") return "文献线索，待全文核验";
-      if (status === "wos_metadata_only") return "Web of Science 元数据，待全文核验";
-      if (status === "google_scholar_bibtex_metadata") return "Google Scholar BibTeX 元数据，待全文核验";
-      return status || "未标注";
     }
 
     function escapeHtml(value) {
