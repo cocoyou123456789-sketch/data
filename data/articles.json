@@ -1,5 +1,2860 @@
 [
   {
+    "id": "arxiv:1304.6028",
+    "title": "Universality of the momentum band density of periodic networks",
+    "year": 2013,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1304.6028",
+    "ar5iv_url": "https://ar5iv.org/abs/1304.6028",
+    "arxiv_id": "1304.6028",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - Universality of the momentum band density of periodic networ",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1509.05213",
+    "title": "Universality and optimality of band-gaps in laminated media",
+    "year": 2015,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1509.05213",
+    "ar5iv_url": "https://ar5iv.org/abs/1509.05213",
+    "arxiv_id": "1509.05213",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - Universality and optimality of band-gaps in laminated media",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1811.11656",
+    "title": "Superconductivity in SrTiO$_{3}$: dielectric function method for non-parabolic bands",
+    "year": 2018,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1811.11656",
+    "ar5iv_url": "https://ar5iv.org/abs/1811.11656",
+    "arxiv_id": "1811.11656",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "O",
+      "Sr",
+      "Ti"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Superconductivity in SrTiO$_{3}$: dielectric function method",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Superconductivity in SrTiO$_{3}$: dielectric function method",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:9607054",
+    "title": "Extrapolations of BATSE Gamma-Ray Burst Spectra to the Optical-UV Band",
+    "year": 1996,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/9607054",
+    "ar5iv_url": "https://ar5iv.org/abs/9607054",
+    "arxiv_id": "9607054",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "B",
+      "Ba",
+      "Ga",
+      "S",
+      "V"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Extrapolations of BATSE Gamma-Ray Burst Spectra to the Optic",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Extrapolations of BATSE Gamma-Ray Burst Spectra to the Optic",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0908.1656",
+    "title": "Superconducting band stabilizing superconductivity in MgB2",
+    "year": 2009,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0908.1656",
+    "ar5iv_url": "https://ar5iv.org/abs/0908.1656",
+    "arxiv_id": "0908.1656",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "B",
+      "Mg"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "MgB2"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Superconducting band stabilizing superconductivity in MgB2",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0212452",
+    "title": "Comparison of the Gamma-Ray Burst Sensitivity of Different Detectors",
+    "year": 2002,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0212452",
+    "ar5iv_url": "https://ar5iv.org/abs/0212452",
+    "arxiv_id": "0212452",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Co",
+      "Ga",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Comparison of the Gamma-Ray Burst Sensitivity of Different D",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Comparison of the Gamma-Ray Burst Sensitivity of Different D",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1712.06027",
+    "title": "Lifshitz transitions in multi-band Hubbard models for topological superconductivity in complex quantum matter",
+    "year": 2017,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1712.06027",
+    "ar5iv_url": "https://ar5iv.org/abs/1712.06027",
+    "arxiv_id": "1712.06027",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Li"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - Lifshitz transitions in multi-band Hubbard models for topolo",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Charge order/CDW - Lifshitz transitions in multi-band Hubbard models for topolo",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1603.03851",
+    "title": "Superconductivity driven by pairing of the coherent parts of the physical electrons",
+    "year": 2016,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1603.03851",
+    "ar5iv_url": "https://ar5iv.org/abs/1603.03851",
+    "arxiv_id": "1603.03851",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Superconductivity driven by pairing of the coherent parts of",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Superconductivity driven by pairing of the coherent parts of",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2001.06748",
+    "title": "ARPES autocorrelation in electron-doped cuprate superconductors",
+    "year": 2020,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2001.06748",
+    "ar5iv_url": "https://ar5iv.org/abs/2001.06748",
+    "arxiv_id": "2001.06748",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - ARPES autocorrelation in electron-doped cuprate superconduct",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1608.06329",
+    "title": "Relaxation of Microwave Nonlinearity in a Cuprate Superconducting Resonator",
+    "year": 2016,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1608.06329",
+    "ar5iv_url": "https://ar5iv.org/abs/1608.06329",
+    "arxiv_id": "1608.06329",
+    "materials": [
+      "YBa2Cu3O7"
+    ],
+    "elements": [
+      "Cu",
+      "Re"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "YBa2Cu3O7"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Relaxation of Microwave Nonlinearity in a Cuprate Supercondu",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Relaxation of Microwave Nonlinearity in a Cuprate Supercondu",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1502.07284",
+    "title": "Fermi Communications and Public Outreach",
+    "year": 2015,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1502.07284",
+    "ar5iv_url": "https://ar5iv.org/abs/1502.07284",
+    "arxiv_id": "1502.07284",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Co",
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Fermi Communications and Public Outreach",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Fermi Communications and Public Outreach",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0912.3666",
+    "title": "Pulsar observations with the Fermi LAT: what we have seen",
+    "year": 2009,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0912.3666",
+    "ar5iv_url": "https://ar5iv.org/abs/0912.3666",
+    "arxiv_id": "0912.3666",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Pulsar observations with the Fermi LAT: what we have seen",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Pulsar observations with the Fermi LAT: what we have seen",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1303.0042",
+    "title": "Twelve Years of Education and Public Outreach with the Fermi Gamma-ray Space Telescope",
+    "year": 2013,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1303.0042",
+    "ar5iv_url": "https://ar5iv.org/abs/1303.0042",
+    "arxiv_id": "1303.0042",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "Ga",
+      "Te"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Twelve Years of Education and Public Outreach with the Fermi",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Twelve Years of Education and Public Outreach with the Fermi",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1002.3205",
+    "title": "Fermi detection of delayed GeV emission from the short GRB 081024B",
+    "year": 2010,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1002.3205",
+    "ar5iv_url": "https://ar5iv.org/abs/1002.3205",
+    "arxiv_id": "1002.3205",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "B",
+      "Fe",
+      "Ge",
+      "V"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Fermi detection of delayed GeV emission from the short GRB 0",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Fermi detection of delayed GeV emission from the short GRB 0",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1503.01182",
+    "title": "Observations of Gamma-ray Bursts with ASTRO-H and Fermi",
+    "year": 2015,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1503.01182",
+    "ar5iv_url": "https://ar5iv.org/abs/1503.01182",
+    "arxiv_id": "1503.01182",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "Ga",
+      "H",
+      "O",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Observations of Gamma-ray Bursts with ASTRO-H and Fermi",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Observations of Gamma-ray Bursts with ASTRO-H and Fermi",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0909.0862",
+    "title": "Spectral Analysis of the Crab Pulsar and Nebula with the Fermi Large Area Telescope",
+    "year": 2009,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0909.0862",
+    "ar5iv_url": "https://ar5iv.org/abs/0909.0862",
+    "arxiv_id": "0909.0862",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Cr",
+      "Fe",
+      "La",
+      "Te"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Spectral Analysis of the Crab Pulsar and Nebula with the Fer",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Spectral Analysis of the Crab Pulsar and Nebula with the Fer",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0503117",
+    "title": "Fermi Surface and Quasiparticle Excitations of overdoped Tl2Ba2CuO6+d by ARPES",
+    "year": 2005,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0503117",
+    "ar5iv_url": "https://ar5iv.org/abs/0503117",
+    "arxiv_id": "0503117",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Ba",
+      "Cu",
+      "Fe",
+      "O",
+      "P",
+      "S",
+      "Tl"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Fermi Surface and Quasiparticle Excitations of overdoped Tl2",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Band dispersion - Fermi Surface and Quasiparticle Excitations of overdoped Tl2",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Fermi Surface and Quasiparticle Excitations of overdoped Tl2",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0801.3421",
+    "title": "Controlling the self-doping of YBa2C3O7-d polar surfaces: From Fermi surface to nodal Fermi arcs by ARPES",
+    "year": 2008,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0801.3421",
+    "ar5iv_url": "https://ar5iv.org/abs/0801.3421",
+    "arxiv_id": "0801.3421",
+    "materials": [
+      "YBCO"
+    ],
+    "elements": [
+      "Ba",
+      "C",
+      "Co",
+      "Fe",
+      "O",
+      "P",
+      "S",
+      "Y"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "YBCO"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Controlling the self-doping of YBa2C3O7-d polar surfaces: Fr",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0911.3063",
+    "title": "Gamma-ray and Radio Properties of Six Pulsars Detected by the Fermi Large Area Telescope",
+    "year": 2009,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0911.3063",
+    "ar5iv_url": "https://ar5iv.org/abs/0911.3063",
+    "arxiv_id": "0911.3063",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "Ga",
+      "La",
+      "Pr",
+      "Si",
+      "Te"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Gamma-ray and Radio Properties of Six Pulsars Detected by th",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Gamma-ray and Radio Properties of Six Pulsars Detected by th",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0906.1217",
+    "title": "Discovery of Pulsations from the Pulsar J0205+6449 in SNR 3C 58 with the Fermi Gamma-Ray Space Telescope",
+    "year": 2009,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0906.1217",
+    "ar5iv_url": "https://ar5iv.org/abs/0906.1217",
+    "arxiv_id": "0906.1217",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "Fe",
+      "Ga",
+      "N",
+      "S",
+      "Te"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Discovery of Pulsations from the Pulsar J0205+6449 in SNR 3C",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Discovery of Pulsations from the Pulsar J0205+6449 in SNR 3C",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1805.06395",
+    "title": "Possible origin of the pseudogap end point in the high-T$_{c}$ cuprates",
+    "year": 2018,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1805.06395",
+    "ar5iv_url": "https://ar5iv.org/abs/1805.06395",
+    "arxiv_id": "1805.06395",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Possible origin of the pseudogap end point in the high-T$_{c",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Possible origin of the pseudogap end point in the high-T$_{c",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1802.09163",
+    "title": "Relationship between Magnetic Anisotropy Below Pseudogap Temperature and Short-Range Antiferromagnetic Order in High-Temperature Cuprate Superconductor",
+    "year": 2018,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1802.09163",
+    "ar5iv_url": "https://ar5iv.org/abs/1802.09163",
+    "arxiv_id": "1802.09163",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Be",
+      "Cu",
+      "Re",
+      "Te"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - Relationship between Magnetic Anisotropy Below Pseudogap Tem",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1009.0274",
+    "title": "ARPES studies of cuprate Fermiology: superconductivity, pseudogap, and quasiparticle dynamics",
+    "year": 2010,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1009.0274",
+    "ar5iv_url": "https://ar5iv.org/abs/1009.0274",
+    "arxiv_id": "1009.0274",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "P",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - ARPES studies of cuprate Fermiology: superconductivity, pseu",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - ARPES studies of cuprate Fermiology: superconductivity, pseu",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0606651",
+    "title": "Pseudogap behaviour in Bi2212: Results of Generalized DMFT Approach",
+    "year": 2006,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0606651",
+    "ar5iv_url": "https://ar5iv.org/abs/0606651",
+    "arxiv_id": "0606651",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "F",
+      "Ge",
+      "Re"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Pseudogap behaviour in Bi2212: Results of Generalized DMFT A",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Pseudogap behaviour in Bi2212: Results of Generalized DMFT A",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1501.04154",
+    "title": "Pseudogap from ARPES experiment: three gaps in cuprates and topological superconductivity",
+    "year": 2015,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1501.04154",
+    "ar5iv_url": "https://ar5iv.org/abs/1501.04154",
+    "arxiv_id": "1501.04154",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Pseudogap from ARPES experiment: three gaps in cuprates and ",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Pseudogap from ARPES experiment: three gaps in cuprates and ",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Charge order/CDW - Pseudogap from ARPES experiment: three gaps in cuprates and ",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1805.05530",
+    "title": "Pairing origin of the pseudogap as observed in ARPES measurement in the underdoped cuprates",
+    "year": 2018,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1805.05530",
+    "ar5iv_url": "https://ar5iv.org/abs/1805.05530",
+    "arxiv_id": "1805.05530",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Pairing origin of the pseudogap as observed in ARPES measure",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Pairing origin of the pseudogap as observed in ARPES measure",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2510.21568",
+    "title": "ARPES of Bi2212 interpreted via a particle in a system of dynamic scatterers",
+    "year": 2025,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2510.21568",
+    "ar5iv_url": "https://ar5iv.org/abs/2510.21568",
+    "arxiv_id": "2510.21568",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "P",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - ARPES of Bi2212 interpreted via a particle in a system of dy",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - ARPES of Bi2212 interpreted via a particle in a system of dy",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1009.4336",
+    "title": "An ARPES view on the high-Tc problem: phonons vs spin-fluctuations",
+    "year": 2010,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1009.4336",
+    "ar5iv_url": "https://ar5iv.org/abs/1009.4336",
+    "arxiv_id": "1009.4336",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - An ARPES view on the high-Tc problem: phonons vs spin-fluctu",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1101.1786",
+    "title": "Novel magnetic order in pseudogap state of high Tc copper oxides superconductors",
+    "year": 2011,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1101.1786",
+    "ar5iv_url": "https://ar5iv.org/abs/1101.1786",
+    "arxiv_id": "1101.1786",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - Novel magnetic order in pseudogap state of high Tc copper ox",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:9912481",
+    "title": "Scenario of pseudogap in underdoped cuprate",
+    "year": 1999,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/9912481",
+    "ar5iv_url": "https://ar5iv.org/abs/9912481",
+    "arxiv_id": "9912481",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Sc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - Scenario of pseudogap in underdoped cuprate",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1310.0792",
+    "title": "Introduction to Dirac materials and topological insulators",
+    "year": 2013,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1310.0792",
+    "ar5iv_url": "https://ar5iv.org/abs/1310.0792",
+    "arxiv_id": "1310.0792",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "In"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Introduction to Dirac materials and topological insulators",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Introduction to Dirac materials and topological insulators",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0305022",
+    "title": "DIRAC: A High Resolution Spectrometer for Pionium Detection",
+    "year": 2003,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0305022",
+    "ar5iv_url": "https://ar5iv.org/abs/0305022",
+    "arxiv_id": "0305022",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "I",
+      "Re"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - DIRAC: A High Resolution Spectrometer for Pionium Detection",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - DIRAC: A High Resolution Spectrometer for Pionium Detection",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2210.13612",
+    "title": "Strained topological insulator spin field effect transistor",
+    "year": 2022,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2210.13612",
+    "ar5iv_url": "https://ar5iv.org/abs/2210.13612",
+    "arxiv_id": "2210.13612",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Strained topological insulator spin field effect transistor",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Strained topological insulator spin field effect transistor",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1211.5026",
+    "title": "Criticality of the metal-topological insulator transition driven by disorder",
+    "year": 2012,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1211.5026",
+    "ar5iv_url": "https://ar5iv.org/abs/1211.5026",
+    "arxiv_id": "1211.5026",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Cr"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Criticality of the metal-topological insulator transition dr",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Criticality of the metal-topological insulator transition dr",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1509.07782",
+    "title": "Cyclotron Resonance in Topological Insulators: Non-Relativistic Effects",
+    "year": 2015,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1509.07782",
+    "ar5iv_url": "https://ar5iv.org/abs/1509.07782",
+    "arxiv_id": "1509.07782",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "In",
+      "Re"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Cyclotron Resonance in Topological Insulators: Non-Relativis",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Cyclotron Resonance in Topological Insulators: Non-Relativis",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1312.2803",
+    "title": "Two types of Dirac-cone surface states on (111) surface of topological crystalline insulator SnTe",
+    "year": 2013,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1312.2803",
+    "ar5iv_url": "https://ar5iv.org/abs/1312.2803",
+    "arxiv_id": "1312.2803",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Sn",
+      "Te"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Two types of Dirac-cone surface states on (111) surface of t",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Two types of Dirac-cone surface states on (111) surface of t",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0409053",
+    "title": "Detection of $π^+π^-$atoms with the DIRAC spectrometer at CERN",
+    "year": 2004,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0409053",
+    "ar5iv_url": "https://ar5iv.org/abs/0409053",
+    "arxiv_id": "0409053",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "I",
+      "N"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Detection of $π^+π^-$atoms with the DIRAC spectrometer at CE",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Detection of $π^+π^-$atoms with the DIRAC spectrometer at CE",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1412.4317",
+    "title": "Engineering Dirac electrons emergent on the surface of a topological insulator",
+    "year": 2014,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1412.4317",
+    "ar5iv_url": "https://ar5iv.org/abs/1412.4317",
+    "arxiv_id": "1412.4317",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - Engineering Dirac electrons emergent on the surface of a top",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1509.08464",
+    "title": "Sharp correlations in the ARPES spectra of strongly disordered topological boundary modes",
+    "year": 2015,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1509.08464",
+    "ar5iv_url": "https://ar5iv.org/abs/1509.08464",
+    "arxiv_id": "1509.08464",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Sharp correlations in the ARPES spectra of strongly disorder",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Sharp correlations in the ARPES spectra of strongly disorder",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1805.00084",
+    "title": "Observation of a Topological Insulator Dirac Cone Reshaped by Non-magnetic Impurity Resonance",
+    "year": 2018,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1805.00084",
+    "ar5iv_url": "https://ar5iv.org/abs/1805.00084",
+    "arxiv_id": "1805.00084",
+    "materials": [
+      "Bi2Se3"
+    ],
+    "elements": [
+      "Co",
+      "In",
+      "Re"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Se3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Observation of a Topological Insulator Dirac Cone Reshaped b",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Observation of a Topological Insulator Dirac Cone Reshaped b",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1509.07465",
+    "title": "Observation of surface states derived from topological Fermi arcs in the Weyl semimetal NbP",
+    "year": 2015,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1509.07465",
+    "ar5iv_url": "https://ar5iv.org/abs/1509.07465",
+    "arxiv_id": "1509.07465",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "Nb",
+      "P"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Observation of surface states derived from topological Fermi",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1702.07310",
+    "title": "Discovery of Weyl fermion semimetals and topological Fermi arc states",
+    "year": 2017,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1702.07310",
+    "ar5iv_url": "https://ar5iv.org/abs/1702.07310",
+    "arxiv_id": "1702.07310",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Discovery of Weyl fermion semimetals and topological Fermi a",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Discovery of Weyl fermion semimetals and topological Fermi a",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1603.08508",
+    "title": "Experimental observation of topological Fermi arcs in type-II Weyl semimetal MoTe2",
+    "year": 2016,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1603.08508",
+    "ar5iv_url": "https://ar5iv.org/abs/1603.08508",
+    "arxiv_id": "1603.08508",
+    "materials": [
+      "MoTe2"
+    ],
+    "elements": [
+      "Fe",
+      "I",
+      "Mo",
+      "Te"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "MoTe2"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Experimental observation of topological Fermi arcs in type-I",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Experimental observation of topological Fermi arcs in type-I",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1502.03807",
+    "title": "Discovery of a Weyl Fermion Semimetal and Topological Fermi Arcs",
+    "year": 2015,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1502.03807",
+    "ar5iv_url": "https://ar5iv.org/abs/1502.03807",
+    "arxiv_id": "1502.03807",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Discovery of a Weyl Fermion Semimetal and Topological Fermi ",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Discovery of a Weyl Fermion Semimetal and Topological Fermi ",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1707.00280",
+    "title": "Fermi Arcs in Tilted Weyl Semimetals: Classification, Evolution and Transport Properties",
+    "year": 2017,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1707.00280",
+    "ar5iv_url": "https://ar5iv.org/abs/1707.00280",
+    "arxiv_id": "1707.00280",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Cl",
+      "Fe",
+      "Pr",
+      "Se",
+      "Ti"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Fermi Arcs in Tilted Weyl Semimetals: Classification, Evolut",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Fermi Arcs in Tilted Weyl Semimetals: Classification, Evolut",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1601.04327",
+    "title": "Criteria for directly detecting topological Fermi arcs in Weyl semimetals",
+    "year": 2016,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1601.04327",
+    "ar5iv_url": "https://ar5iv.org/abs/1601.04327",
+    "arxiv_id": "1601.04327",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Cr",
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Criteria for directly detecting topological Fermi arcs in We",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2107.11044",
+    "title": "Fermi arcs of topological surface states in multi-Weyl Semimetals",
+    "year": 2021,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2107.11044",
+    "ar5iv_url": "https://ar5iv.org/abs/2107.11044",
+    "arxiv_id": "2107.11044",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Fermi arcs of topological surface states in multi-Weyl Semim",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Fermi arcs of topological surface states in multi-Weyl Semim",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2311.03640",
+    "title": "Impact of the Ce $4f$ states in the electronic structure of the intermediate-valence superconductor CeIr$_3$",
+    "year": 2023,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2311.03640",
+    "ar5iv_url": "https://ar5iv.org/abs/2311.03640",
+    "arxiv_id": "2311.03640",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Ce",
+      "Ir"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Impact of the Ce $4f$ states in the electronic structure of ",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2008.09274",
+    "title": "Doping dependence of electronic structure of infinite-layer NdNiO2",
+    "year": 2020,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2008.09274",
+    "ar5iv_url": "https://ar5iv.org/abs/2008.09274",
+    "arxiv_id": "2008.09274",
+    "materials": [
+      "NdNiO2"
+    ],
+    "elements": [
+      "Nd",
+      "Ni",
+      "O"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NdNiO2"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Doping dependence of electronic structure of infinite-layer ",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Band dispersion - Doping dependence of electronic structure of infinite-layer ",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1612.05791",
+    "title": "Electrons and polarons at oxide interfaces explored by soft-X-ray ARPES",
+    "year": 2016,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1612.05791",
+    "ar5iv_url": "https://ar5iv.org/abs/1612.05791",
+    "arxiv_id": "1612.05791",
+    "materials": [
+      "SrTiO3"
+    ],
+    "elements": [
+      "P",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "SrTiO3"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Electrons and polarons at oxide interfaces explored by soft-",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Band dispersion - Electrons and polarons at oxide interfaces explored by soft-",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1303.1438",
+    "title": "ARPES: A probe of electronic correlations",
+    "year": 2013,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1303.1438",
+    "ar5iv_url": "https://ar5iv.org/abs/1303.1438",
+    "arxiv_id": "1303.1438",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - ARPES: A probe of electronic correlations",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1909.03942",
+    "title": "Formation of 2D single-component correlated electron system and band engineering in the nickelate superconductor NdNiO2",
+    "year": 2019,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1909.03942",
+    "ar5iv_url": "https://ar5iv.org/abs/1909.03942",
+    "arxiv_id": "1909.03942",
+    "materials": [
+      "NdNiO2"
+    ],
+    "elements": [
+      "Nd",
+      "Ni",
+      "O"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NdNiO2"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Formation of 2D single-component correlated electron system ",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Band dispersion - Formation of 2D single-component correlated electron system ",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2402.03143",
+    "title": "Scanning tunnelling microscopy and X-ray photoemission studies of NdNiO2 infinite-layer nickelates films",
+    "year": 2024,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2402.03143",
+    "ar5iv_url": "https://ar5iv.org/abs/2402.03143",
+    "arxiv_id": "2402.03143",
+    "materials": [
+      "NdNiO2",
+      "SrTiO3"
+    ],
+    "elements": [
+      "Nd",
+      "Ni",
+      "O",
+      "Sc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NdNiO2",
+      "SrTiO3"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order/CDW - Scanning tunnelling microscopy and X-ray photoemission studi",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2412.07178",
+    "title": "Electron microscopy and spectroscopy investigation of atomic, electronic, and phonon structures of NdNiO2/SrTiO3 interface",
+    "year": 2024,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2412.07178",
+    "ar5iv_url": "https://ar5iv.org/abs/2412.07178",
+    "arxiv_id": "2412.07178",
+    "materials": [
+      "NdNiO2",
+      "SrTiO3"
+    ],
+    "elements": [
+      "Nd",
+      "Ni",
+      "O",
+      "Sr",
+      "Ti"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NdNiO2",
+      "SrTiO3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Electron microscopy and spectroscopy investigation of atomic",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Electron microscopy and spectroscopy investigation of atomic",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2107.01790",
+    "title": "Bulk NdNiO2 is thermodynamically unstable with respect to decomposition while hydrogenation reduces the instability and transforms it from metal to insulator",
+    "year": 2021,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2107.01790",
+    "ar5iv_url": "https://ar5iv.org/abs/2107.01790",
+    "arxiv_id": "2107.01790",
+    "materials": [
+      "NdNiO2",
+      "SrTiO3"
+    ],
+    "elements": [
+      "Nd",
+      "Ni",
+      "O"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NdNiO2",
+      "SrTiO3"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Bulk NdNiO2 is thermodynamically unstable with respect to de",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Bulk NdNiO2 is thermodynamically unstable with respect to de",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2207.13633",
+    "title": "Electronic structure and correlations in planar trilayer nickelate Pr4Ni3O8",
+    "year": 2022,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2207.13633",
+    "ar5iv_url": "https://ar5iv.org/abs/2207.13633",
+    "arxiv_id": "2207.13633",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Ni",
+      "O",
+      "Pr"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Electronic structure and correlations in planar trilayer nic",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Band dispersion - Electronic structure and correlations in planar trilayer nic",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0807.1010",
+    "title": "Electronic Structure of New LiFeAs High-Tc Superconductor",
+    "year": 2008,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0807.1010",
+    "ar5iv_url": "https://ar5iv.org/abs/0807.1010",
+    "arxiv_id": "0807.1010",
+    "materials": [
+      "BaFe2As2",
+      "LiFeAs"
+    ],
+    "elements": [
+      "As",
+      "Fe",
+      "Li",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "BaFe2As2",
+      "LiFeAs"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Electronic Structure of New LiFeAs High-Tc Superconductor",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Band dispersion - Electronic Structure of New LiFeAs High-Tc Superconductor",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1802.03009",
+    "title": "Pair density wave, charge density wave and vortex in high Tc cuprates",
+    "year": 2018,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1802.03009",
+    "ar5iv_url": "https://ar5iv.org/abs/1802.03009",
+    "arxiv_id": "1802.03009",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap - Pair density wave, charge density wave and vortex in high Tc",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Charge order/CDW - Pair density wave, charge density wave and vortex in high Tc",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2303.12053",
+    "title": "Tomography Scan of Charge Density Wave in NbSe2",
+    "year": 2023,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2303.12053",
+    "ar5iv_url": "https://ar5iv.org/abs/2303.12053",
+    "arxiv_id": "2303.12053",
+    "materials": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "elements": [
+      "Nb",
+      "Sc",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order/CDW - Tomography Scan of Charge Density Wave in NbSe2",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1307.2282",
+    "title": "Visualizing the Charge Density Wave Transition in 2H-NbSe2 in Real Space",
+    "year": 2013,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1307.2282",
+    "ar5iv_url": "https://ar5iv.org/abs/1307.2282",
+    "arxiv_id": "1307.2282",
+    "materials": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "elements": [
+      "H",
+      "Nb",
+      "Re",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Visualizing the Charge Density Wave Transition in 2H-NbSe2 i",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Visualizing the Charge Density Wave Transition in 2H-NbSe2 i",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Charge order/CDW - Visualizing the Charge Density Wave Transition in 2H-NbSe2 i",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1805.06449",
+    "title": "Unconventional Superconductivity and Density Waves in Twisted Bilayer Graphene",
+    "year": 2018,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1805.06449",
+    "ar5iv_url": "https://ar5iv.org/abs/1805.06449",
+    "arxiv_id": "1805.06449",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Bi"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Unconventional Superconductivity and Density Waves in Twiste",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Unconventional Superconductivity and Density Waves in Twiste",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1812.11350",
+    "title": "Topological Landscape of Competing Charge Density Waves in 2H-NbSe2",
+    "year": 2018,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1812.11350",
+    "ar5iv_url": "https://ar5iv.org/abs/1812.11350",
+    "arxiv_id": "1812.11350",
+    "materials": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "elements": [
+      "Co",
+      "H",
+      "La",
+      "Nb",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order/CDW - Topological Landscape of Competing Charge Density Waves in 2",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2407.08982",
+    "title": "Understanding chiral charge-density wave by frozen chiral phonon",
+    "year": 2024,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2407.08982",
+    "ar5iv_url": "https://ar5iv.org/abs/2407.08982",
+    "arxiv_id": "2407.08982",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order/CDW - Understanding chiral charge-density wave by frozen chiral ph",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1904.03672",
+    "title": "Electron-phonon coupling and the Coexistence of Superconductivity and Charge-Density Wave in Monolayer NbSe2",
+    "year": 2019,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1904.03672",
+    "ar5iv_url": "https://ar5iv.org/abs/1904.03672",
+    "arxiv_id": "1904.03672",
+    "materials": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "elements": [
+      "Co",
+      "Mo",
+      "Nb",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Electron-phonon coupling and the Coexistence of Superconduct",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Electron-phonon coupling and the Coexistence of Superconduct",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Charge order/CDW - Electron-phonon coupling and the Coexistence of Superconduct",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0806.1344",
+    "title": "Primary role of the barely occupied states in the charge density wave formation of NbSe2",
+    "year": 2008,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0806.1344",
+    "ar5iv_url": "https://ar5iv.org/abs/0806.1344",
+    "arxiv_id": "0806.1344",
+    "materials": [
+      "NbSe2"
+    ],
+    "elements": [
+      "Nb",
+      "Pr",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NbSe2"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Primary role of the barely occupied states in the charge den",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Primary role of the barely occupied states in the charge den",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Charge order/CDW - Primary role of the barely occupied states in the charge den",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:0308278",
+    "title": "Quasi-Particle Spectra, Charge-Density-Wave, Superconductivity and Electron-Phonon Coupling in 2H-NbSe2",
+    "year": 2003,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/0308278",
+    "ar5iv_url": "https://ar5iv.org/abs/0308278",
+    "arxiv_id": "0308278",
+    "materials": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "elements": [
+      "Co",
+      "H",
+      "Nb",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NbSe2",
+      "2H-NbSe2"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Quasi-Particle Spectra, Charge-Density-Wave, Superconductivi",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Charge order/CDW - Quasi-Particle Spectra, Charge-Density-Wave, Superconductivi",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1210.6607",
+    "title": "Wave dispersion under finite deformation",
+    "year": 2012,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1210.6607",
+    "ar5iv_url": "https://ar5iv.org/abs/1210.6607",
+    "arxiv_id": "1210.6607",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order/CDW - Wave dispersion under finite deformation",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:1701.04458",
+    "title": "Observability of surface currents in p-wave superconductors",
+    "year": 2017,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/1701.04458",
+    "ar5iv_url": "https://ar5iv.org/abs/1701.04458",
+    "arxiv_id": "1701.04458",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Observability of surface currents in p-wave superconductors",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Observability of surface currents in p-wave superconductors",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2109.10809",
+    "title": "Kagome superconductors AV$_3$Sb$_5$ (A=K, Rb, Cs)",
+    "year": 2021,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2109.10809",
+    "ar5iv_url": "https://ar5iv.org/abs/2109.10809",
+    "arxiv_id": "2109.10809",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Cs",
+      "K",
+      "Rb",
+      "Sb",
+      "V"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order/CDW - Kagome superconductors AV$_3$Sb$_5$ (A=K, Rb, Cs)",
+        "type": "Charge order map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2506.01581",
+    "title": "Unfolding the kagome lattice to improve understanding of ARPES in CoSn",
+    "year": 2025,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2506.01581",
+    "ar5iv_url": "https://ar5iv.org/abs/2506.01581",
+    "arxiv_id": "2506.01581",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Co",
+      "P",
+      "S",
+      "Sn"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Unfolding the kagome lattice to improve understanding of ARP",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2007.10049",
+    "title": "Inelastic X-ray scattering studies of phonon dispersions in superconductors at high pressures",
+    "year": 2020,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2007.10049",
+    "ar5iv_url": "https://ar5iv.org/abs/2007.10049",
+    "arxiv_id": "2007.10049",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "In"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES data - Inelastic X-ray scattering studies of phonon dispersions in ",
+        "type": "ARPES spectrum",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Electronic structure - Inelastic X-ray scattering studies of phonon dispersions in ",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2209.03840",
+    "title": "Titanium-based kagome superconductor CsTi_3Bi_5 and topological states",
+    "year": 2022,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2209.03840",
+    "ar5iv_url": "https://ar5iv.org/abs/2209.03840",
+    "arxiv_id": "2209.03840",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Bi",
+      "Cs",
+      "Ti"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Band dispersion - Titanium-based kagome superconductor CsTi_3Bi_5 and topologi",
+        "type": "Band structure",
+        "ar5iv_fig": "x2.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
+    "id": "arxiv:2207.12031",
+    "title": "Topological and nodal superconductor kagome magnesium triboride",
+    "year": 2022,
+    "source": "arXiv",
+    "url": "https://arxiv.org/abs/2207.12031",
+    "ar5iv_url": "https://ar5iv.org/abs/2207.12031",
+    "arxiv_id": "2207.12031",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Fermi surface - Topological and nodal superconductor kagome magnesium tribor",
+        "type": "Fermi surface",
+        "ar5iv_fig": "x1.png",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Superconducting gap - Topological and nodal superconductor kagome magnesium tribor",
+        "type": "Gap map",
+        "ar5iv_fig": "x3.png",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "arxiv_with_figures"
+  },
+  {
     "id": "crossref:10.34049/bcc.55.a.0019",
     "title": "Strontium-doped lanthanum nickelate (LaNiO3) nano-materials for alkaline water splitting",
     "year": 2026,
