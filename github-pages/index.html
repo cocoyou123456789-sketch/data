@@ -2407,15 +2407,21 @@
         if (fig.energy_eV) metaParts.push(`hν=${fig.energy_eV}eV`);
         if (fig.temp_K) metaParts.push(`T=${fig.temp_K}K`);
 
-        // Build actual figure image URL from ar5iv
+        // Build actual figure image URL from ar5iv (uses Fig1.png naming)
         let figImageHtml = "";
         if (fig.ar5iv_fig && fig.arxiv_id) {
-          const figUrl = `https://ar5iv.org/html/${fig.arxiv_id}/${fig.ar5iv_fig}`;
+          const figName = fig.ar5iv_fig.replace(/^x/, "Fig");
+          const figUrl = `https://ar5iv.labs.arxiv.org/html/${fig.arxiv_id}/assets/${figName}`;
           figImageHtml = `<img src="${esc(figUrl)}" alt="${esc(fig.caption)}" loading="lazy"
-            style="width:100%; max-height:200px; object-fit:contain; border-radius:4px;"
-            onerror="this.parentElement.innerHTML='<div style=\\'font-size:24px;\\'>📊</div><div style=\\'font-size:10px;color:var(--muted);\\'>图表加载中/Figure loading</div>'">`;
+            style="width:100%; max-height:200px; object-fit:contain; border-radius:4px; background:#0a0e14;"
+            onerror="this.style.display='none';this.parentElement.innerHTML='<div style=font-size:28px;>📊</div><div style=font-size:10px;color:var(--muted);>图表待加载</div><a href=\\'${esc(fig.article_url)}\' target=_blank class=\\'chip good\\' style=font-size:9px;>📖 点击查看原文图表</a>';">`;
+        } else if (fig.has_ar5iv && fig.arxiv_id) {
+          const figUrl = `https://ar5iv.labs.arxiv.org/html/${fig.arxiv_id}/assets/Fig1.png`;
+          figImageHtml = `<img src="${esc(figUrl)}" alt="${esc(fig.caption)}" loading="lazy"
+            style="width:100%; max-height:200px; object-fit:contain; border-radius:4px; background:#0a0e14;"
+            onerror="this.style.display='none';this.parentElement.innerHTML='<div style=font-size:28px;>📊</div><div style=font-size:10px;color:var(--muted);>图表待加载</div><a href=\\'${esc(fig.article_url)}\' target=_blank class=\\'chip good\\' style=font-size:9px;>📖 点击查看原文图表</a>';">`;
         } else if (fig.has_ar5iv) {
-          figImageHtml = `<div style="font-size:28px;">📊</div><div style="font-size:10px;color:var(--muted);">图表加载中...</div>`;
+          figImageHtml = `<div style="font-size:28px;">📊</div><div style="font-size:10px;color:var(--muted);">图表待加载...</div>`;
         } else {
           figImageHtml = `<div style="font-size:28px;">📄</div><div style="font-size:10px;color:var(--muted);">${metaParts.join(" · ") || "DOI原文查看"}</div>`;
         }
