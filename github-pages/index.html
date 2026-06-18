@@ -556,6 +556,18 @@
     }
 
     /* === 文章图表对比画廊 === */
+    .fig-filter-chip {
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .fig-filter-chip.active {
+      border-color: var(--accent-glow);
+      background: var(--accent-soft);
+      color: var(--accent-glow);
+    }
     .figure-gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -971,9 +983,23 @@
       <div class="content">
         <!-- 文章图表对比画廊 -->
         <div>
-          <h3 style="margin-bottom:8px;">📊 论文图表对比 · Figure Comparison Gallery</h3>
-          <p class="muted">以下图表来自真实超导 ARPES 论文，按类型并排对比：费米面、能带色散、能隙分布、电荷序。点击跳转原文。</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <h3 style="margin:0;">📊 论文图表对比 · Figure Comparison</h3>
+            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+              <span class="muted">筛选图表类型:</span>
+              <button class="fig-filter-chip active" data-figtype="all" style="font-size:11px;padding:3px 10px;border-radius:14px;">全部 All</button>
+              <button class="fig-filter-chip" data-figtype="Fermi surface" style="font-size:11px;padding:3px 10px;border-radius:14px;">费米面 FS</button>
+              <button class="fig-filter-chip" data-figtype="Band structure" style="font-size:11px;padding:3px 10px;border-radius:14px;">能带结构 Band</button>
+              <button class="fig-filter-chip" data-figtype="Gap" style="font-size:11px;padding:3px 10px;border-radius:14px;">能隙 Gap</button>
+              <button class="fig-filter-chip" data-figtype="ARPES spectrum" style="font-size:11px;padding:3px 10px;border-radius:14px;">ARPES谱</button>
+              <button class="fig-filter-chip" data-figtype="Charge order" style="font-size:11px;padding:3px 10px;border-radius:14px;">电荷序 CDW</button>
+              <span id="figCount" class="status"></span>
+            </div>
+          </div>
           <div class="figure-gallery" id="figureGallery"></div>
+          <div style="text-align:center; margin-top:8px;" id="figShowMoreWrap">
+            <button id="figShowMoreBtn" style="display:none;">显示更多 Show More</button>
+          </div>
         </div>
         <!-- 历史里程碑 + Tc 柱状图 + 光源卡片 -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start;">
@@ -1554,7 +1580,11 @@
     const historyLine = $("#historyLine");
     const figureStrip = $("#figureStrip");
     const figureGallery = $("#figureGallery");
+    const figCount = $("#figCount");
+    const figShowMoreBtn = $("#figShowMoreBtn");
     const sourceCards = $("#sourceCards");
+    let figFilterType = "all";
+    let figShowLimit = 12;
     const sourceBody = $("#sourceBody");
     const tcChart = $("#tcChart");
     const articleStatus = $("#articleStatus");
@@ -2295,10 +2325,26 @@
       `).join("");
     }
 
-    // ===== 图表画廊：展示真实论文中的图表信息（从 articles.json） =====
+    // ===== 图表类型筛选按钮 =====
+    document.querySelectorAll(".fig-filter-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".fig-filter-chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        figFilterType = chip.dataset.figtype;
+        figShowLimit = 12;
+        renderFigureGallery();
+      });
+    });
+    figShowMoreBtn.addEventListener("click", () => {
+      figShowLimit += 24;
+      renderFigureGallery();
+    });
+
+    // ===== 图表画廊：从 articles.json 提取真实论文图表（带搜索筛选） =====
     function renderFigureGallery() {
       const allFigures = [];
       const term = (searchInput.value || "").trim().toLowerCase();
+      const family = familyFilter.value;
 
       for (const article of state.articles) {
         if (!article.figures || !article.figures.length) continue;
@@ -2306,9 +2352,25 @@
           article.title, ...(article.materials || []), ...(article.elements || []),
           ...(article.keywords || []), ...(article.techniques || [])
         ].join(" ").toLowerCase();
+
+        // 搜索词匹配（搜索时只显示匹配的图表）
         if (term && !articleText.includes(term)) continue;
+        // 家族匹配
+        if (family) {
+          const matchesFamily = (article.materials || []).some(m => {
+            const dbMat = state.db.materials.find(r => r.material === m || r.display_name === m);
+            return dbMat && dbMat.family === family;
+          });
+          if (!matchesFamily) continue;
+        }
 
         for (const fig of article.figures) {
+          // 图表类型筛选
+          if (figFilterType !== "all") {
+            if (figFilterType === "Gap" && !(fig.type || "").toLowerCase().includes("gap")) continue;
+            if (figFilterType === "Charge order" && !(fig.type || "").toLowerCase().includes("charge")) continue;
+            if (figFilterType !== "Gap" && figFilterType !== "Charge order" && !(fig.type || "").includes(figFilterType)) continue;
+          }
           allFigures.push({
             ...fig,
             article_title: article.title,
@@ -2322,39 +2384,56 @@
         }
       }
 
-      if (!allFigures.length) {
-        figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${t("noFigureMatch")}</p></div>`;
+      const totalFigs = allFigures.length;
+      const shownFigs = allFigures.slice(0, figShowLimit);
+      const hiddenFigs = totalFigs - shownFigs.length;
+
+      figCount.textContent = term || family || figFilterType !== "all"
+        ? `筛选出 ${totalFigs} 张图表`
+        : `共 ${totalFigs} 张图表 (请搜索或筛选)`;
+
+      if (!shownFigs.length) {
+        figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${t("noFigureMatch")} — 尝试搜索材料名如 "FeSe"、"Bi2212"、"ARPES"</p></div>`;
+        figShowMoreBtn.style.display = "none";
         return;
       }
 
-      figureGallery.innerHTML = allFigures.map(fig => {
+      figureGallery.innerHTML = shownFigs.map(fig => {
         const typeClass = figureTypeClass[fig.type] || "fig-type-other";
         const sourceBadge = fig.article_source.includes("Nature") ? "🔴" :
                            fig.article_source.includes("Phys. Rev.") ? "🟡" :
-                           fig.article_source.includes("Science") ? "🟠" :
-                           fig.article_source.includes("arXiv") ? "🟢" : "⚪";
-        const ar5ivBadge = fig.has_ar5iv ? `<span class="chip good" style="font-size:9px;">📖 ar5iv 可查看全文图表</span>` : "";
+                           fig.article_source.includes("Science") ? "🟠" : "⚪";
+        const ar5ivBadge = fig.has_ar5iv
+          ? `<a href="${esc(fig.article_url)}" target="_blank" class="chip good" style="font-size:9px;cursor:pointer;" onclick="event.stopPropagation();">📖 ar5iv 查看图表</a>`
+          : `<a href="${esc(fig.article_url)}" target="_blank" class="chip trusted" style="font-size:9px;cursor:pointer;" onclick="event.stopPropagation();">🔗 DOI原文</a>`;
         const metaParts = [];
         if (fig.energy_eV) metaParts.push(`hν=${fig.energy_eV}eV`);
         if (fig.temp_K) metaParts.push(`T=${fig.temp_K}K`);
         return `
-          <div class="figure-card ${typeClass}" onclick="window.open('${esc(fig.article_url || "#")}', '_blank')" title="点击查看原文: ${esc(fig.article_title)}">
+          <div class="figure-card ${typeClass}" onclick="window.open('${esc(fig.article_url || "#")}', '_blank')" title="点击查看原文图表 · ${esc(fig.article_title)}">
             <div class="figure-card-header">${sourceBadge} ${esc(fig.type)} · ${esc(fig.year || "")} · ${esc(fig.article_source)}</div>
             <div class="figure-card-visual" style="display:grid;place-items:center;gap:6px;text-align:center;padding:14px;">
-              <div style="font-size:36px;">📊</div>
-              <div style="font-size:11px;color:var(--muted);">真实论文图表 · Real paper figure</div>
-              <div style="font-size:11px;">${metaParts.join(" · ") || "查看原文获取图表"}</div>
+              <div style="font-size:32px;">${fig.type.includes("Fermi") ? "🔵" : fig.type.includes("Band") ? "🟡" : fig.type.includes("Gap") ? "🔴" : fig.type.includes("Charge") ? "🟣" : "📊"}</div>
+              <div style="font-size:11px;color:var(--muted);">真实论文图表 · Real figure</div>
+              <div style="font-size:11px;">${metaParts.join(" · ") || "点击查看原文图表"}</div>
               ${ar5ivBadge}
             </div>
             <div class="figure-card-footer">
               <strong>${esc(fig.caption)}</strong>
               <span style="font-size:10px;">📄 ${esc(fig.article_title.slice(0, 70))}...</span>
-              <span style="font-size:10px;">🧪 ${esc((fig.materials || []).join(", "))} | 🔬 ${esc((fig.techniques || []).join(", "))}</span>
-              <span class="chip good" style="font-size:10px;">🔗 点击查看原文图表 View real figure in paper</span>
+              <span style="font-size:10px;">🧪 ${esc((fig.materials || []).join(", "))}</span>
             </div>
           </div>
         `;
       }).join("");
+
+      // 显示更多按钮
+      if (hiddenFigs > 0) {
+        figShowMoreBtn.style.display = "inline-block";
+        figShowMoreBtn.textContent = `显示更多 (${hiddenFigs} 张剩余) Show ${hiddenFigs} more`;
+      } else {
+        figShowMoreBtn.style.display = "none";
+      }
     }
 
     function filteredSourceEntries() {
