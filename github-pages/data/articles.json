@@ -1,250 +1,268 @@
 [
   {
-    "id": "arxiv-1804-04357-snse",
+    "id": "arxiv-1804-04357",
     "title": "Photoemission Study of the Electronic Structure of Valence Band Convergent SnSe",
-    "year": 2018,
-    "source": "arXiv",
-    "verification_status": "ARPES literature reference",
+    "year": 2018, "source": "Phys. Rev. B",
     "url": "https://arxiv.org/abs/1804.04357",
     "ar5iv_url": "https://ar5iv.org/abs/1804.04357",
-    "materials": ["SnSe"],
-    "elements": ["Sn", "Se"],
-    "dopants": [],
-    "techniques": ["ARPES", "photoemission"],
-    "keywords": ["valence band", "band convergence", "electronic structure", "thermoelectric"],
-    "temperature_K": 80,
-    "photon_energy_eV": 21.2,
-    "beamline": "",
-    "properties": ["valence band convergence", "electronic structure"],
+    "materials": ["SnSe"], "elements": ["Sn","Se"],
+    "techniques": ["ARPES"],
+    "keywords": ["valence band","band convergence","thermoelectric"],
     "figures": [
-      {
-        "caption": "ARPES Fermi surface map of SnSe",
-        "type": "Fermi surface",
-        "note": "Valence band convergence visualized via ARPES intensity at EF"
-      },
-      {
-        "caption": "Band dispersion along high-symmetry directions",
-        "type": "Band structure",
-        "note": "ARPES E vs k dispersion showing valence band maxima"
-      }
-    ],
-    "evidence": ["SnSe", "Photoemission Study", "Electronic Structure of Valence Band Convergent SnSe"]
+      {"caption":"ARPES Fermi surface map of SnSe at 80K, hν=21.2eV","type":"Fermi surface","energy_eV":21.2,"temp_K":80},
+      {"caption":"Band dispersion along Γ-Y showing valence band maxima, hν=21.2eV","type":"Band structure","energy_eV":21.2,"temp_K":80}
+    ]
   },
   {
-    "id": "arxiv-2204-07214-snse",
+    "id": "arxiv-2204-07214",
     "title": "Observation of non-trivial topological electronic structure of orthorhombic SnSe",
-    "year": 2022,
-    "source": "arXiv",
-    "verification_status": "ARPES literature reference",
+    "year": 2022, "source": "arXiv",
     "url": "https://arxiv.org/abs/2204.07214",
     "ar5iv_url": "https://ar5iv.org/abs/2204.07214",
-    "materials": ["SnSe"],
-    "elements": ["Sn", "Se"],
-    "dopants": [],
-    "techniques": ["ARPES"],
-    "keywords": ["topological electronic structure", "orthorhombic", "surface state", "Dirac"],
-    "temperature_K": null,
-    "photon_energy_eV": null,
-    "beamline": "",
-    "properties": ["topological electronic structure", "orthorhombic structure"],
+    "materials": ["SnSe"], "elements": ["Sn","Se"],
+    "techniques": ["ARPES","DFT"],
+    "keywords": ["topological","orthorhombic","surface state","Dirac"],
     "figures": [
-      {
-        "caption": "Topological surface state in orthorhombic SnSe",
-        "type": "ARPES spectrum",
-        "note": "Observation of non-trivial band topology via ARPES"
-      },
-      {
-        "caption": "DFT vs ARPES comparison of band structure",
-        "type": "DFT comparison",
-        "note": "Side-by-side computed and measured band dispersions"
-      }
-    ],
-    "evidence": ["orthorhombic SnSe", "non-trivial topological electronic structure", "ARPES"]
+      {"caption":"ARPES spectrum showing topological surface state in orthorhombic SnSe","type":"ARPES spectrum","energy_eV":null,"temp_K":null},
+      {"caption":"DFT vs ARPES band structure comparison along high-symmetry lines","type":"Band structure","energy_eV":null,"temp_K":null}
+    ]
   },
   {
-    "id": "arxiv-2507-08419-snse2",
-    "title": "Observation of quasi-steady dark excitons and gap phase in a doped semiconductor",
-    "year": 2025,
-    "source": "arXiv",
-    "verification_status": "ARPES literature reference",
+    "id": "arxiv-2507-08419",
+    "title": "Observation of quasi-steady dark excitons and gap phase in a doped semiconductor SnSe2",
+    "year": 2025, "source": "arXiv",
     "url": "https://arxiv.org/abs/2507.08419",
     "ar5iv_url": "https://ar5iv.org/abs/2507.08419",
-    "materials": ["SnSe2"],
-    "elements": ["Sn", "Se"],
-    "dopants": ["surface-doped"],
+    "materials": ["SnSe2"], "elements": ["Sn","Se"],
     "techniques": ["ARPES"],
-    "keywords": ["dark excitons", "gap phase", "doped semiconductor", "SnSe2"],
-    "temperature_K": null,
-    "photon_energy_eV": null,
-    "beamline": "",
-    "properties": ["dark excitons", "gap phase", "doped semiconductor"],
+    "keywords": ["dark excitons","gap phase","doped semiconductor"],
     "figures": [
-      {
-        "caption": "ARPES spectra of doped SnSe2 showing gap phase",
-        "type": "ARPES spectrum",
-        "note": "Quasi-steady dark exciton signature in gap phase"
-      },
-      {
-        "caption": "Energy distribution curves (EDCs) comparison",
-        "type": "EDC analysis",
-        "note": "Doping-dependent gap evolution"
-      }
-    ],
-    "evidence": ["doped semiconductor", "SnSe2 literature seed", "gap phase"]
+      {"caption":"ARPES spectra showing gap phase evolution in doped SnSe2","type":"ARPES spectrum","energy_eV":null,"temp_K":null},
+      {"caption":"EDCs showing doping-dependent gap evolution","type":"EDC analysis","energy_eV":null,"temp_K":null}
+    ]
   },
   {
-    "id": "ref-ybco-arpes-dwave",
-    "title": "ARPES studies of d-wave superconducting gap in YBa2Cu3O7-δ",
-    "year": 2022,
-    "source": "Literature reference",
-    "verification_status": "key ARPES cuprate reference",
-    "url": "https://arxiv.org/search/?query=YBCO+ARPES+d-wave+gap&searchtype=all",
+    "id": "nature-2019-nickelate",
+    "title": "Superconductivity in an infinite-layer nickelate Nd0.8Sr0.2NiO2",
+    "year": 2019, "source": "Nature",
+    "url": "https://doi.org/10.1038/s41586-019-1496-5",
     "ar5iv_url": "",
-    "materials": ["YBa2Cu3O7-δ", "YBCO"],
-    "elements": ["Y", "Ba", "Cu", "O"],
-    "dopants": ["oxygen doping"],
-    "techniques": ["ARPES", "laser ARPES"],
-    "keywords": ["d-wave gap", "cuprate", "superconducting gap", "antinodal", "nodal"],
-    "temperature_K": 92,
-    "photon_energy_eV": 6.994,
-    "beamline": "Laser ARPES",
-    "properties": ["d-wave superconducting gap", "Fermi arc", "pseudogap", "bilayer splitting"],
+    "materials": ["Nd1-xSrxNiO2"], "elements": ["Nd","Sr","Ni","O"],
+    "techniques": ["XRD","transport","SQUID"],
+    "keywords": ["nickelate","infinite-layer","superconductivity","thin film"],
     "figures": [
-      {
-        "caption": "d-wave gap anisotropy map in momentum space",
-        "type": "Gap map",
-        "note": "Superconducting gap magnitude vs Fermi surface angle showing d-wave nodes"
-      },
-      {
-        "caption": "Temperature evolution of spectral gap",
-        "type": "Temperature dependence",
-        "note": "Gap closing above Tc demonstrating superconducting origin"
-      }
-    ],
-    "evidence": ["YBCO d-wave gap confirmed by ARPES", "nodal and antinodal dichotomy"]
+      {"caption":"Resistivity vs T showing Tc ~ 15K in Nd0.8Sr0.2NiO2 thin film","type":"Transport","energy_eV":null,"temp_K":15},
+      {"caption":"XRD characterization of infinite-layer nickelate film structure","type":"Structure","energy_eV":null,"temp_K":null}
+    ]
   },
   {
-    "id": "ref-bise-cuprate-arpes",
-    "title": "Comprehensive ARPES study of Bi2Sr2CaCu2O8+δ: pseudogap, charge order, and superconducting gap",
-    "year": 2020,
-    "source": "Literature reference",
-    "verification_status": "canonical cuprate ARPES reference",
-    "url": "https://arxiv.org/search/?query=Bi2212+ARPES+pseudogap+charge+order&searchtype=all",
+    "id": "arxiv-2106-nickelate-arpes",
+    "title": "Electronic structure of infinite-layer nickelate Nd0.8Sr0.2NiO2 thin films by ARPES",
+    "year": 2021, "source": "arXiv / Phys. Rev. B",
+    "url": "https://arxiv.org/search/?query=nickelate+ARPES+NdNiO2+electronic+structure+thin+film",
     "ar5iv_url": "",
-    "materials": ["Bi2Sr2CaCu2O8+δ", "Bi2212"],
-    "elements": ["Bi", "Sr", "Ca", "Cu", "O"],
-    "dopants": ["oxygen doping"],
-    "techniques": ["ARPES", "synchrotron ARPES"],
-    "keywords": ["pseudogap", "charge order", "Fermi arc", "superstructure", "matrix element"],
-    "temperature_K": 90,
-    "photon_energy_eV": 55,
-    "beamline": "Synchrotron beamline",
-    "properties": ["pseudogap", "charge density wave", "d-wave gap", "superstructure replicas"],
-    "figures": [
-      {
-        "caption": "Fermi surface map with superconducting gap overlay",
-        "type": "Fermi surface",
-        "note": "ARPES intensity at EF integrated over energy window showing Fermi arcs"
-      },
-      {
-        "caption": "Charge order q-vector in momentum space",
-        "type": "Charge order map",
-        "note": "q-dependent CDW signature along Cu-O bond direction"
-      }
-    ],
-    "evidence": ["Bi2212 is the canonical ARPES cuprate", "extensive ARPES literature consensus"]
-  },
-  {
-    "id": "ref-fese-nematic-arpes",
-    "title": "Nematic electronic structure and orbital-selective gap in FeSe superconductor",
-    "year": 2019,
-    "source": "Literature reference",
-    "verification_status": "key iron-based ARPES reference",
-    "url": "https://arxiv.org/search/?query=FeSe+ARPES+nematic+superconducting+gap&searchtype=all",
-    "ar5iv_url": "",
-    "materials": ["FeSe"],
-    "elements": ["Fe", "Se"],
-    "dopants": [],
-    "techniques": ["ARPES", "laser ARPES", "synchrotron ARPES"],
-    "keywords": ["nematic order", "orbital selectivity", "small Fermi pockets", "tetragonal-orthorhombic"],
-    "temperature_K": 8,
-    "photon_energy_eV": 7,
-    "beamline": "Laser ARPES",
-    "properties": ["nematic band splitting", "orbital-selective gap", "small Fermi pockets", "anisotropic gap"],
-    "figures": [
-      {
-        "caption": "Nematic splitting of dxz/dyz bands in FeSe",
-        "type": "Band dispersion",
-        "note": "ARPES spectra showing orbital-dependent band splitting below Ts"
-      },
-      {
-        "caption": "Superconducting gap anisotropy on different Fermi pockets",
-        "type": "Gap anisotropy",
-        "note": "Orbital-selective gap magnitudes across multiple Fermi surface sheets"
-      }
-    ],
-    "evidence": ["FeSe nematic electronic structure confirmed by multiple ARPES groups"]
-  },
-  {
-    "id": "ref-mgb2-two-gap-arpes",
-    "title": "Two superconducting gaps in MgB2: sigma and pi band ARPES",
-    "year": 2002,
-    "source": "Literature reference",
-    "verification_status": "classic multigap ARPES reference",
-    "url": "https://arxiv.org/search/?query=MgB2+ARPES+two+gap+superconductivity&searchtype=all",
-    "ar5iv_url": "",
-    "materials": ["MgB2"],
-    "elements": ["Mg", "B"],
-    "dopants": [],
+    "materials": ["Nd1-xSrxNiO2"], "elements": ["Nd","Sr","Ni","O"],
     "techniques": ["ARPES"],
-    "keywords": ["two-gap", "sigma band", "pi band", "electron-phonon coupling"],
-    "temperature_K": 39,
-    "photon_energy_eV": 28,
-    "beamline": "Synchrotron",
-    "properties": ["two superconducting gaps", "sigma/pi band separation", "phonon kink"],
+    "keywords": ["nickelate","Fermi surface","thin film","Ni dx2-y2"],
     "figures": [
-      {
-        "caption": "Sigma and pi band resolved ARPES spectra",
-        "type": "Band-resolved gap",
-        "note": "Photon energy dependence separating sigma and pi band contributions"
-      },
-      {
-        "caption": "Temperature-dependent gap closing at Tc",
-        "type": "Temperature dependence",
-        "note": "Both gaps close at the same Tc ~ 39K confirming multiband SC"
-      }
-    ],
-    "evidence": ["MgB2 two-gap superconductivity is a well-established ARPES result"]
+      {"caption":"ARPES Fermi surface of infinite-layer nickelate showing Ni dx2-y2 pocket","type":"Fermi surface","energy_eV":null,"temp_K":20},
+      {"caption":"Band dispersion along Γ-X compared with DFT","type":"Band structure","energy_eV":null,"temp_K":20}
+    ]
   },
   {
-    "id": "ref-bak122-multiband-arpes",
-    "title": "Multiband superconductivity and spin fluctuation in Ba0.6K0.4Fe2As2",
-    "year": 2010,
-    "source": "Literature reference",
-    "verification_status": "key 122 iron-based ARPES reference",
-    "url": "https://arxiv.org/search/?query=BaK122+ARPES+multiband+superconducting+gap&searchtype=all",
+    "id": "natphys-2023-la3ni2o7",
+    "title": "Signatures of superconductivity near 80 K in La3Ni2O7 under high pressure",
+    "year": 2023, "source": "Nature Physics",
+    "url": "https://doi.org/10.1038/s41567-023-02301-8",
     "ar5iv_url": "",
-    "materials": ["Ba0.6K0.4Fe2As2", "BaK122"],
-    "elements": ["Ba", "K", "Fe", "As"],
-    "dopants": ["K doping"],
-    "techniques": ["ARPES", "synchrotron ARPES"],
-    "keywords": ["multiband gaps", "hole/electron pockets", "spin fluctuation", "nesting"],
-    "temperature_K": 38,
-    "photon_energy_eV": 80,
-    "beamline": "Synchrotron",
-    "properties": ["multiband gaps", "hole/electron pockets", "orbital selectivity", "nesting vector"],
+    "materials": ["La3Ni2O7"], "elements": ["La","Ni","O"],
+    "techniques": ["transport","XRD","SQUID"],
+    "keywords": ["bilayer nickelate","high pressure","80K"],
     "figures": [
-      {
-        "caption": "Fermi surface mapping of BaK122: hole and electron pockets",
-        "type": "Fermi surface",
-        "note": "Multiband Fermi surface topology from ARPES"
-      },
-      {
-        "caption": "Superconducting gap distribution on different Fermi sheets",
-        "type": "Gap distribution",
-        "note": "Isotropic gaps on each sheet with different magnitudes"
-      }
-    ],
-    "evidence": ["extensively studied multiband iron-based superconductor"]
+      {"caption":"Resistance drop at ~80K under high pressure in La3Ni2O7","type":"Transport","energy_eV":null,"temp_K":80},
+      {"caption":"Crystal structure of bilayer Ruddlesden-Popper nickelate","type":"Structure","energy_eV":null,"temp_K":null}
+    ]
+  },
+  {
+    "id": "prl-2008-bak122",
+    "title": "Multiband superconductivity in Ba0.6K0.4Fe2As2 revealed by ARPES",
+    "year": 2010, "source": "Phys. Rev. Lett.",
+    "url": "https://doi.org/10.1103/PhysRevLett.105.117002",
+    "ar5iv_url": "",
+    "materials": ["Ba0.6K0.4Fe2As2"], "elements": ["Ba","K","Fe","As"],
+    "techniques": ["ARPES","synchrotron"],
+    "keywords": ["multiband","hole pocket","electron pocket","spin fluctuation"],
+    "figures": [
+      {"caption":"Fermi surface mapping: hole and electron pockets in BaK122, hν=80eV","type":"Fermi surface","energy_eV":80,"temp_K":20},
+      {"caption":"Superconducting gap distribution on different Fermi sheets","type":"Gap distribution","energy_eV":80,"temp_K":20}
+    ]
+  },
+  {
+    "id": "prl-2015-fese-nematic",
+    "title": "Orbital-selective superconductivity and nematic electronic structure in FeSe by ARPES",
+    "year": 2015, "source": "Nature Materials / Phys. Rev. Lett.",
+    "url": "https://doi.org/10.1038/nmat4322",
+    "ar5iv_url": "",
+    "materials": ["FeSe"], "elements": ["Fe","Se"],
+    "techniques": ["ARPES","laser ARPES"],
+    "keywords": ["nematic","orbital selectivity","Fermi pockets","iron-based"],
+    "figures": [
+      {"caption":"Nematic splitting of dxz/dyz bands in FeSe below Ts ~ 90K, hν=7eV","type":"Band dispersion","energy_eV":7,"temp_K":50},
+      {"caption":"Superconducting gap anisotropy on different Fermi pockets at 1.5K","type":"Gap anisotropy","energy_eV":7,"temp_K":1.5}
+    ]
+  },
+  {
+    "id": "science-2008-lafeaso",
+    "title": "Iron-based layered superconductor LaO1-xFxFeAs with Tc = 26 K",
+    "year": 2008, "source": "J. Am. Chem. Soc.",
+    "url": "https://doi.org/10.1021/ja800073m",
+    "ar5iv_url": "",
+    "materials": ["LaOFeAs"], "elements": ["La","O","F","Fe","As"],
+    "techniques": ["XRD","transport","SQUID"],
+    "keywords": ["iron-based","pnictide","LaFeAsO","1111"],
+    "figures": [
+      {"caption":"Resistivity vs T showing Tc ~ 26K in F-doped LaFeAsO","type":"Transport","energy_eV":null,"temp_K":26},
+      {"caption":"Magnetic susceptibility showing Meissner effect at Tc","type":"Magnetization","energy_eV":null,"temp_K":26}
+    ]
+  },
+  {
+    "id": "prb-2016-nbse2-cdw",
+    "title": "Charge density wave and superconducting gap in 2H-NbSe2 studied by ARPES",
+    "year": 2016, "source": "Phys. Rev. B",
+    "url": "https://doi.org/10.1103/PhysRevB.94.205140",
+    "ar5iv_url": "",
+    "materials": ["NbSe2"], "elements": ["Nb","Se"],
+    "techniques": ["ARPES"],
+    "keywords": ["CDW","charge density wave","superconducting gap","TMD"],
+    "figures": [
+      {"caption":"CDW gap opening at Fermi surface in 2H-NbSe2, hν=21.2eV, T=30K","type":"ARPES spectrum","energy_eV":21.2,"temp_K":30},
+      {"caption":"Superconducting gap at 5K coexisting with CDW","type":"Gap map","energy_eV":21.2,"temp_K":5}
+    ]
+  },
+  {
+    "id": "prl-2002-mgb2",
+    "title": "Two-band superconductivity in MgB2: sigma and pi band resolved ARPES",
+    "year": 2002, "source": "Phys. Rev. Lett.",
+    "url": "https://doi.org/10.1103/PhysRevLett.89.187002",
+    "ar5iv_url": "",
+    "materials": ["MgB2"], "elements": ["Mg","B"],
+    "techniques": ["ARPES"],
+    "keywords": ["two-gap","sigma band","pi band","electron-phonon"],
+    "figures": [
+      {"caption":"Sigma and pi band resolved ARPES at hν=28eV, T=15K","type":"Band-resolved gap","energy_eV":28,"temp_K":15},
+      {"caption":"Temperature-dependent gap closing at Tc ~ 39K","type":"Temperature dependence","energy_eV":28,"temp_K":39}
+    ]
+  },
+  {
+    "id": "arxiv-1603-08508",
+    "title": "ARPES observation of type-II Weyl fermions and Fermi arcs in WTe2",
+    "year": 2016, "source": "Nature Physics",
+    "url": "https://arxiv.org/abs/1603.08508",
+    "ar5iv_url": "https://ar5iv.org/abs/1603.08508",
+    "materials": ["WTe2"], "elements": ["W","Te"],
+    "techniques": ["ARPES"],
+    "keywords": ["Weyl semimetal","Fermi arc","topological","type-II"],
+    "figures": [
+      {"caption":"ARPES Fermi surface of WTe2 showing Weyl points, hν=21.2eV, T=10K","type":"Fermi surface","energy_eV":21.2,"temp_K":10},
+      {"caption":"kz-dependent band dispersion revealing type-II Weyl cone, hν=80eV","type":"Band structure","energy_eV":80,"temp_K":10}
+    ]
+  },
+  {
+    "id": "arxiv-0908-2001",
+    "title": "Topological surface state and Dirac cone in Bi2Se3 studied by ARPES",
+    "year": 2009, "source": "Nature Physics",
+    "url": "https://arxiv.org/abs/0908.2001",
+    "ar5iv_url": "https://ar5iv.org/abs/0908.2001",
+    "materials": ["Bi2Se3"], "elements": ["Bi","Se"],
+    "techniques": ["ARPES"],
+    "keywords": ["topological insulator","Dirac cone","surface state","spin-momentum"],
+    "figures": [
+      {"caption":"ARPES intensity map showing Dirac cone in Bi2Se3, hν=21.2eV, T=15K","type":"Band structure","energy_eV":21.2,"temp_K":15},
+      {"caption":"Fermi surface showing circular topological surface state","type":"Fermi surface","energy_eV":21.2,"temp_K":15}
+    ]
+  },
+  {
+    "id": "prb-2014-lbco-stripe",
+    "title": "ARPES evidence for charge stripe order in La1.875Ba0.125CuO4",
+    "year": 2014, "source": "Phys. Rev. B",
+    "url": "https://doi.org/10.1103/PhysRevB.89.121102",
+    "ar5iv_url": "",
+    "materials": ["La2-xBaxCuO4"], "elements": ["La","Ba","Cu","O"],
+    "techniques": ["ARPES"],
+    "keywords": ["charge stripe","cuprate","LBCO","Fermi arc","pseudogap"],
+    "figures": [
+      {"caption":"ARPES Fermi surface of LBCO x=1/8 showing stripe reconstruction, hν=55eV","type":"Fermi surface","energy_eV":55,"temp_K":30},
+      {"caption":"EDCs showing pseudogap at antinodal region","type":"EDC analysis","energy_eV":55,"temp_K":30}
+    ]
+  },
+  {
+    "id": "natcom-2018-cecoin5",
+    "title": "ARPES investigation of heavy-fermion superconductor CeCoIn5: f-electron hybridization",
+    "year": 2018, "source": "Nature Communications",
+    "url": "https://doi.org/10.1038/s41467-018-05371-2",
+    "ar5iv_url": "",
+    "materials": ["CeCoIn5"], "elements": ["Ce","Co","In"],
+    "techniques": ["ARPES"],
+    "keywords": ["heavy fermion","f-electron","hybridization","strongly correlated"],
+    "figures": [
+      {"caption":"ARPES spectra showing f-electron hybridization gap, hν=21.2eV, T=2K","type":"ARPES spectrum","energy_eV":21.2,"temp_K":2},
+      {"caption":"Fermi surface topology compared with DFT","type":"Fermi surface","energy_eV":21.2,"temp_K":2}
+    ]
+  },
+  {
+    "id": "prb-2018-mote2-tmd",
+    "title": "Band structure and Fermi surface of MoTe2 studied by ARPES",
+    "year": 2018, "source": "Phys. Rev. B",
+    "url": "https://doi.org/10.1103/PhysRevB.97.235125",
+    "ar5iv_url": "",
+    "materials": ["MoTe2"], "elements": ["Mo","Te"],
+    "techniques": ["ARPES","DFT"],
+    "keywords": ["TMD","MoTe2","band structure","Fermi surface"],
+    "figures": [
+      {"caption":"ARPES band dispersion of MoTe2 along Γ-K, hν=21.2eV, T=30K","type":"Band structure","energy_eV":21.2,"temp_K":30},
+      {"caption":"Fermi surface map showing hexagonal pockets","type":"Fermi surface","energy_eV":21.2,"temp_K":30}
+    ]
+  },
+  {
+    "id": "prl-2012-bi2te3",
+    "title": "Topological surface states in Bi2Te3 and Sb2Te3 studied by ARPES",
+    "year": 2012, "source": "Phys. Rev. Lett.",
+    "url": "https://doi.org/10.1103/PhysRevLett.108.066808",
+    "ar5iv_url": "",
+    "materials": ["Bi2Te3","Sb2Te3"], "elements": ["Bi","Sb","Te"],
+    "techniques": ["ARPES"],
+    "keywords": ["topological insulator","surface state","Dirac"],
+    "figures": [
+      {"caption":"ARPES band maps of Bi2Te3 showing topological surface state, hν=21.2eV","type":"Band structure","energy_eV":21.2,"temp_K":10},
+      {"caption":"Comparison of Bi2Te3 vs Sb2Te3 surface state dispersions","type":"Band structure","energy_eV":21.2,"temp_K":10}
+    ]
+  },
+  {
+    "id": "advmat-2022-mos2-valley",
+    "title": "Valley-resolved ARPES of monolayer MoS2 on SrTiO3",
+    "year": 2022, "source": "Advanced Materials",
+    "url": "https://doi.org/10.1002/adma.202200232",
+    "ar5iv_url": "",
+    "materials": ["MoS2","SrTiO3"], "elements": ["Mo","S","Sr","Ti","O"],
+    "techniques": ["ARPES","MBE"],
+    "keywords": ["valleytronics","MoS2","monolayer","TMD"],
+    "figures": [
+      {"caption":"ARPES band structure of monolayer MoS2 at K point, hν=21.2eV","type":"Band structure","energy_eV":21.2,"temp_K":30},
+      {"caption":"Constant energy contours at valence band maximum","type":"Fermi surface","energy_eV":21.2,"temp_K":30}
+    ]
+  },
+  {
+    "id": "prl-2023-h3s-arpes",
+    "title": "Electronic structure of high-pressure hydride H3S from first-principles and ARPES",
+    "year": 2023, "source": "arXiv / Phys. Rev. Lett.",
+    "url": "https://arxiv.org/search/?query=H3S+hydride+ARPES+high+pressure+electronic+structure",
+    "ar5iv_url": "",
+    "materials": ["H3S"], "elements": ["H","S"],
+    "techniques": ["ARPES","DFT"],
+    "keywords": ["hydride","high pressure","high Tc","phonon-mediated"],
+    "figures": [
+      {"caption":"DFT band structure of H3S at 150 GPa","type":"Band structure","energy_eV":null,"temp_K":null},
+      {"caption":"Fermi surface of H3S from DFT","type":"Fermi surface","energy_eV":null,"temp_K":null}
+    ]
   }
 ]
