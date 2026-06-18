@@ -2403,24 +2403,37 @@
         const sourceBadge = fig.article_source.includes("Nature") ? "🔴" :
                            fig.article_source.includes("Phys. Rev.") ? "🟡" :
                            fig.article_source.includes("Science") ? "🟠" : "⚪";
-        const ar5ivBadge = fig.has_ar5iv
-          ? `<a href="${esc(fig.article_url)}" target="_blank" class="chip good" style="font-size:9px;cursor:pointer;" onclick="event.stopPropagation();">📖 ar5iv 查看图表</a>`
-          : `<a href="${esc(fig.article_url)}" target="_blank" class="chip trusted" style="font-size:9px;cursor:pointer;" onclick="event.stopPropagation();">🔗 DOI原文</a>`;
         const metaParts = [];
         if (fig.energy_eV) metaParts.push(`hν=${fig.energy_eV}eV`);
         if (fig.temp_K) metaParts.push(`T=${fig.temp_K}K`);
+
+        // Build actual figure image URL from ar5iv
+        let figImageHtml = "";
+        if (fig.ar5iv_fig && fig.arxiv_id) {
+          const figUrl = `https://ar5iv.org/html/${fig.arxiv_id}/${fig.ar5iv_fig}`;
+          figImageHtml = `<img src="${esc(figUrl)}" alt="${esc(fig.caption)}" loading="lazy"
+            style="width:100%; max-height:200px; object-fit:contain; border-radius:4px;"
+            onerror="this.parentElement.innerHTML='<div style=\\'font-size:24px;\\'>📊</div><div style=\\'font-size:10px;color:var(--muted);\\'>图表加载中/Figure loading</div>'">`;
+        } else if (fig.has_ar5iv) {
+          figImageHtml = `<div style="font-size:28px;">📊</div><div style="font-size:10px;color:var(--muted);">图表加载中...</div>`;
+        } else {
+          figImageHtml = `<div style="font-size:28px;">📄</div><div style="font-size:10px;color:var(--muted);">${metaParts.join(" · ") || "DOI原文查看"}</div>`;
+        }
+
+        const ar5ivBadge = fig.has_ar5iv
+          ? `<a href="${esc(fig.article_url)}" target="_blank" class="chip good" style="font-size:9px;cursor:pointer;" onclick="event.stopPropagation();">📖 ar5iv 全屏图表</a>`
+          : `<a href="${esc(fig.article_url)}" target="_blank" class="chip trusted" style="font-size:9px;cursor:pointer;" onclick="event.stopPropagation();">🔗 DOI原文</a>`;
+
         return `
-          <div class="figure-card ${typeClass}" onclick="window.open('${esc(fig.article_url || "#")}', '_blank')" title="点击查看原文图表 · ${esc(fig.article_title)}">
+          <div class="figure-card ${typeClass}" onclick="window.open('${esc(fig.article_url || "#")}', '_blank')" title="点击查看原文 · ${esc(fig.article_title)}">
             <div class="figure-card-header">${sourceBadge} ${esc(fig.type)} · ${esc(fig.year || "")} · ${esc(fig.article_source)}</div>
-            <div class="figure-card-visual" style="display:grid;place-items:center;gap:6px;text-align:center;padding:14px;">
-              <div style="font-size:32px;">${fig.type.includes("Fermi") ? "🔵" : fig.type.includes("Band") ? "🟡" : fig.type.includes("Gap") ? "🔴" : fig.type.includes("Charge") ? "🟣" : "📊"}</div>
-              <div style="font-size:11px;color:var(--muted);">真实论文图表 · Real figure</div>
-              <div style="font-size:11px;">${metaParts.join(" · ") || "点击查看原文图表"}</div>
+            <div class="figure-card-visual" style="display:grid;place-items:center;gap:4px;text-align:center;padding:6px;min-height:140px;">
+              ${figImageHtml}
               ${ar5ivBadge}
             </div>
             <div class="figure-card-footer">
               <strong>${esc(fig.caption)}</strong>
-              <span style="font-size:10px;">📄 ${esc(fig.article_title.slice(0, 70))}...</span>
+              <span style="font-size:10px;">📄 ${esc(fig.article_title.slice(0, 60))}...</span>
               <span style="font-size:10px;">🧪 ${esc((fig.materials || []).join(", "))}</span>
             </div>
           </div>
