@@ -1,268 +1,5597 @@
 [
   {
-    "id": "arxiv-1804-04357",
-    "title": "Photoemission Study of the Electronic Structure of Valence Band Convergent SnSe",
-    "year": 2018, "source": "Phys. Rev. B",
-    "url": "https://arxiv.org/abs/1804.04357",
-    "ar5iv_url": "https://ar5iv.org/abs/1804.04357",
-    "materials": ["SnSe"], "elements": ["Sn","Se"],
-    "techniques": ["ARPES"],
-    "keywords": ["valence band","band convergence","thermoelectric"],
-    "figures": [
-      {"caption":"ARPES Fermi surface map of SnSe at 80K, hν=21.2eV","type":"Fermi surface","energy_eV":21.2,"temp_K":80},
-      {"caption":"Band dispersion along Γ-Y showing valence band maxima, hν=21.2eV","type":"Band structure","energy_eV":21.2,"temp_K":80}
-    ]
-  },
-  {
-    "id": "arxiv-2204-07214",
-    "title": "Observation of non-trivial topological electronic structure of orthorhombic SnSe",
-    "year": 2022, "source": "arXiv",
-    "url": "https://arxiv.org/abs/2204.07214",
-    "ar5iv_url": "https://ar5iv.org/abs/2204.07214",
-    "materials": ["SnSe"], "elements": ["Sn","Se"],
-    "techniques": ["ARPES","DFT"],
-    "keywords": ["topological","orthorhombic","surface state","Dirac"],
-    "figures": [
-      {"caption":"ARPES spectrum showing topological surface state in orthorhombic SnSe","type":"ARPES spectrum","energy_eV":null,"temp_K":null},
-      {"caption":"DFT vs ARPES band structure comparison along high-symmetry lines","type":"Band structure","energy_eV":null,"temp_K":null}
-    ]
-  },
-  {
-    "id": "arxiv-2507-08419",
-    "title": "Observation of quasi-steady dark excitons and gap phase in a doped semiconductor SnSe2",
-    "year": 2025, "source": "arXiv",
-    "url": "https://arxiv.org/abs/2507.08419",
-    "ar5iv_url": "https://ar5iv.org/abs/2507.08419",
-    "materials": ["SnSe2"], "elements": ["Sn","Se"],
-    "techniques": ["ARPES"],
-    "keywords": ["dark excitons","gap phase","doped semiconductor"],
-    "figures": [
-      {"caption":"ARPES spectra showing gap phase evolution in doped SnSe2","type":"ARPES spectrum","energy_eV":null,"temp_K":null},
-      {"caption":"EDCs showing doping-dependent gap evolution","type":"EDC analysis","energy_eV":null,"temp_K":null}
-    ]
-  },
-  {
-    "id": "nature-2019-nickelate",
-    "title": "Superconductivity in an infinite-layer nickelate Nd0.8Sr0.2NiO2",
-    "year": 2019, "source": "Nature",
-    "url": "https://doi.org/10.1038/s41586-019-1496-5",
+    "id": "crossref:10.34049/bcc.55.a.0019",
+    "title": "Strontium-doped lanthanum nickelate (LaNiO3) nano-materials for alkaline water splitting",
+    "year": 2026,
+    "source": "Bulgarian Chemical Communications",
+    "url": "https://doi.org/10.34049/bcc.55.a.0019",
     "ar5iv_url": "",
-    "materials": ["Nd1-xSrxNiO2"], "elements": ["Nd","Sr","Ni","O"],
-    "techniques": ["XRD","transport","SQUID"],
-    "keywords": ["nickelate","infinite-layer","superconductivity","thin film"],
+    "doi": "10.34049/bcc.55.a.0019",
+    "materials": [
+      "LaNiO3"
+    ],
+    "elements": [
+      "La",
+      "Ni",
+      "O"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "LaNiO3"
+    ],
     "figures": [
-      {"caption":"Resistivity vs T showing Tc ~ 15K in Nd0.8Sr0.2NiO2 thin film","type":"Transport","energy_eV":null,"temp_K":15},
-      {"caption":"XRD characterization of infinite-layer nickelate film structure","type":"Structure","energy_eV":null,"temp_K":null}
-    ]
+      {
+        "caption": "ARPES measurement from Strontium-doped lanthanum nickelate (LaNiO3) nano-materials ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Bulgarian Chemical Communications (2026)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "arxiv-2106-nickelate-arpes",
-    "title": "Electronic structure of infinite-layer nickelate Nd0.8Sr0.2NiO2 thin films by ARPES",
-    "year": 2021, "source": "arXiv / Phys. Rev. B",
-    "url": "https://arxiv.org/search/?query=nickelate+ARPES+NdNiO2+electronic+structure+thin+film",
+    "id": "crossref:10.15330/pcss.27.1.988-992",
+    "title": "Superconductivity of topological insulator Bi2Se3",
+    "year": 2026,
+    "source": "Physics and Chemistry of Solid State",
+    "url": "https://doi.org/10.15330/pcss.27.1.988-992",
     "ar5iv_url": "",
-    "materials": ["Nd1-xSrxNiO2"], "elements": ["Nd","Sr","Ni","O"],
-    "techniques": ["ARPES"],
-    "keywords": ["nickelate","Fermi surface","thin film","Ni dx2-y2"],
+    "doi": "10.15330/pcss.27.1.988-992",
+    "materials": [
+      "Bi2Se3"
+    ],
+    "elements": [
+      "Bi",
+      "Se"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "Bi2Se3"
+    ],
     "figures": [
-      {"caption":"ARPES Fermi surface of infinite-layer nickelate showing Ni dx2-y2 pocket","type":"Fermi surface","energy_eV":null,"temp_K":20},
-      {"caption":"Band dispersion along Γ-X compared with DFT","type":"Band structure","energy_eV":null,"temp_K":20}
-    ]
+      {
+        "caption": "ARPES measurement from Superconductivity of topological insulator Bi2Se3",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physics and Chemistry of Solid State (2026)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "natphys-2023-la3ni2o7",
-    "title": "Signatures of superconductivity near 80 K in La3Ni2O7 under high pressure",
-    "year": 2023, "source": "Nature Physics",
-    "url": "https://doi.org/10.1038/s41567-023-02301-8",
+    "id": "crossref:10.1038/s41567-026-03207-5",
+    "title": "MagnetoARPES reveals time-reversal symmetry breaking in a kagome superconductor",
+    "year": 2026,
+    "source": "Nature Physics",
+    "url": "https://doi.org/10.1038/s41567-026-03207-5",
     "ar5iv_url": "",
-    "materials": ["La3Ni2O7"], "elements": ["La","Ni","O"],
-    "techniques": ["transport","XRD","SQUID"],
-    "keywords": ["bilayer nickelate","high pressure","80K"],
+    "doi": "10.1038/s41567-026-03207-5",
+    "materials": [
+      "kagome"
+    ],
+    "elements": [
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "kagome"
+    ],
     "figures": [
-      {"caption":"Resistance drop at ~80K under high pressure in La3Ni2O7","type":"Transport","energy_eV":null,"temp_K":80},
-      {"caption":"Crystal structure of bilayer Ruddlesden-Popper nickelate","type":"Structure","energy_eV":null,"temp_K":null}
-    ]
+      {
+        "caption": "ARPES measurement from MagnetoARPES reveals time-reversal symmetry breaking in a ka",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Nature Physics (2026)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "prl-2008-bak122",
-    "title": "Multiband superconductivity in Ba0.6K0.4Fe2As2 revealed by ARPES",
-    "year": 2010, "source": "Phys. Rev. Lett.",
-    "url": "https://doi.org/10.1103/PhysRevLett.105.117002",
+    "id": "crossref:10.1103/wwp3-sphm",
+    "title": "Strong pairing and symmetric pseudogap metal in double Kondo lattice model: From nickelate superconductor to tetralayer optical lattice",
+    "year": 2025,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/wwp3-sphm",
     "ar5iv_url": "",
-    "materials": ["Ba0.6K0.4Fe2As2"], "elements": ["Ba","K","Fe","As"],
-    "techniques": ["ARPES","synchrotron"],
-    "keywords": ["multiband","hole pocket","electron pocket","spin fluctuation"],
+    "doi": "10.1103/wwp3-sphm",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
     "figures": [
-      {"caption":"Fermi surface mapping: hole and electron pockets in BaK122, hν=80eV","type":"Fermi surface","energy_eV":80,"temp_K":20},
-      {"caption":"Superconducting gap distribution on different Fermi sheets","type":"Gap distribution","energy_eV":80,"temp_K":20}
-    ]
+      {
+        "caption": "Superconducting gap measurement from Strong pairing and symmetric pseudogap metal in double Kondo",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Physical Review B (2025)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "prl-2015-fese-nematic",
-    "title": "Orbital-selective superconductivity and nematic electronic structure in FeSe by ARPES",
-    "year": 2015, "source": "Nature Materials / Phys. Rev. Lett.",
-    "url": "https://doi.org/10.1038/nmat4322",
+    "id": "crossref:10.1038/s41467-025-56206-0",
+    "title": "Sensitive dependence of pairing symmetry on Ni-eg crystal field splitting in the nickelate superconductor La3Ni2O7",
+    "year": 2025,
+    "source": "Nature Communications",
+    "url": "https://doi.org/10.1038/s41467-025-56206-0",
     "ar5iv_url": "",
-    "materials": ["FeSe"], "elements": ["Fe","Se"],
-    "techniques": ["ARPES","laser ARPES"],
-    "keywords": ["nematic","orbital selectivity","Fermi pockets","iron-based"],
+    "doi": "10.1038/s41467-025-56206-0",
+    "materials": [
+      "La3Ni2O7"
+    ],
+    "elements": [
+      "La",
+      "Ni",
+      "O",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "La3Ni2O7"
+    ],
     "figures": [
-      {"caption":"Nematic splitting of dxz/dyz bands in FeSe below Ts ~ 90K, hν=7eV","type":"Band dispersion","energy_eV":7,"temp_K":50},
-      {"caption":"Superconducting gap anisotropy on different Fermi pockets at 1.5K","type":"Gap anisotropy","energy_eV":7,"temp_K":1.5}
-    ]
+      {
+        "caption": "ARPES measurement from Sensitive dependence of pairing symmetry on Ni-eg crystal fi",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Nature Communications (2025)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "science-2008-lafeaso",
-    "title": "Iron-based layered superconductor LaO1-xFxFeAs with Tc = 26 K",
-    "year": 2008, "source": "J. Am. Chem. Soc.",
-    "url": "https://doi.org/10.1021/ja800073m",
+    "id": "crossref:10.15302/frontphys.2025.044209",
+    "title": "Metal&amp;#x2212;insulator transition in an isoelectronically doped transition metal dichalcogenide and its heterostructures",
+    "year": 2025,
+    "source": "Frontiers of Physics",
+    "url": "https://doi.org/10.15302/frontphys.2025.044209",
     "ar5iv_url": "",
-    "materials": ["LaOFeAs"], "elements": ["La","O","F","Fe","As"],
-    "techniques": ["XRD","transport","SQUID"],
-    "keywords": ["iron-based","pnictide","LaFeAsO","1111"],
+    "doi": "10.15302/frontphys.2025.044209",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
     "figures": [
-      {"caption":"Resistivity vs T showing Tc ~ 26K in F-doped LaFeAsO","type":"Transport","energy_eV":null,"temp_K":26},
-      {"caption":"Magnetic susceptibility showing Meissner effect at Tc","type":"Magnetization","energy_eV":null,"temp_K":26}
-    ]
+      {
+        "caption": "ARPES measurement from Metal&amp;#x2212;insulator transition in an isoelectronicall",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Frontiers of Physics (2025)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "prb-2016-nbse2-cdw",
-    "title": "Charge density wave and superconducting gap in 2H-NbSe2 studied by ARPES",
-    "year": 2016, "source": "Phys. Rev. B",
-    "url": "https://doi.org/10.1103/PhysRevB.94.205140",
+    "id": "crossref:10.22232/stj.2024.12.02.13",
+    "title": "Topological Fermi arcs in Weyl semimetal MoTe2",
+    "year": 2025,
+    "source": "Science &amp; Technology Journal",
+    "url": "https://doi.org/10.22232/stj.2024.12.02.13",
     "ar5iv_url": "",
-    "materials": ["NbSe2"], "elements": ["Nb","Se"],
-    "techniques": ["ARPES"],
-    "keywords": ["CDW","charge density wave","superconducting gap","TMD"],
+    "doi": "10.22232/stj.2024.12.02.13",
+    "materials": [
+      "MoTe2"
+    ],
+    "elements": [
+      "Fe",
+      "Mo",
+      "Te"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "MoTe2"
+    ],
     "figures": [
-      {"caption":"CDW gap opening at Fermi surface in 2H-NbSe2, hν=21.2eV, T=30K","type":"ARPES spectrum","energy_eV":21.2,"temp_K":30},
-      {"caption":"Superconducting gap at 5K coexisting with CDW","type":"Gap map","energy_eV":21.2,"temp_K":5}
-    ]
+      {
+        "caption": "ARPES measurement from Topological Fermi arcs in Weyl semimetal MoTe2",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Science &amp; Technology Journal (2025)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "prl-2002-mgb2",
-    "title": "Two-band superconductivity in MgB2: sigma and pi band resolved ARPES",
-    "year": 2002, "source": "Phys. Rev. Lett.",
-    "url": "https://doi.org/10.1103/PhysRevLett.89.187002",
+    "id": "crossref:10.1063/10.0032151",
+    "title": "Two-band model of a superconductor with a high critical temperature",
+    "year": 2025,
+    "source": "Soviet Journal of Low Temperature Physics",
+    "url": "https://doi.org/10.1063/10.0032151",
     "ar5iv_url": "",
-    "materials": ["MgB2"], "elements": ["Mg","B"],
-    "techniques": ["ARPES"],
-    "keywords": ["two-gap","sigma band","pi band","electron-phonon"],
+    "doi": "10.1063/10.0032151",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
     "figures": [
-      {"caption":"Sigma and pi band resolved ARPES at hν=28eV, T=15K","type":"Band-resolved gap","energy_eV":28,"temp_K":15},
-      {"caption":"Temperature-dependent gap closing at Tc ~ 39K","type":"Temperature dependence","energy_eV":28,"temp_K":39}
-    ]
+      {
+        "caption": "Superconducting gap measurement from Two-band model of a superconductor with a high critical temp",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Soviet Journal of Low Temperature Physics (2025)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "arxiv-1603-08508",
-    "title": "ARPES observation of type-II Weyl fermions and Fermi arcs in WTe2",
-    "year": 2016, "source": "Nature Physics",
-    "url": "https://arxiv.org/abs/1603.08508",
-    "ar5iv_url": "https://ar5iv.org/abs/1603.08508",
-    "materials": ["WTe2"], "elements": ["W","Te"],
-    "techniques": ["ARPES"],
-    "keywords": ["Weyl semimetal","Fermi arc","topological","type-II"],
-    "figures": [
-      {"caption":"ARPES Fermi surface of WTe2 showing Weyl points, hν=21.2eV, T=10K","type":"Fermi surface","energy_eV":21.2,"temp_K":10},
-      {"caption":"kz-dependent band dispersion revealing type-II Weyl cone, hν=80eV","type":"Band structure","energy_eV":80,"temp_K":10}
-    ]
-  },
-  {
-    "id": "arxiv-0908-2001",
-    "title": "Topological surface state and Dirac cone in Bi2Se3 studied by ARPES",
-    "year": 2009, "source": "Nature Physics",
-    "url": "https://arxiv.org/abs/0908.2001",
-    "ar5iv_url": "https://ar5iv.org/abs/0908.2001",
-    "materials": ["Bi2Se3"], "elements": ["Bi","Se"],
-    "techniques": ["ARPES"],
-    "keywords": ["topological insulator","Dirac cone","surface state","spin-momentum"],
-    "figures": [
-      {"caption":"ARPES intensity map showing Dirac cone in Bi2Se3, hν=21.2eV, T=15K","type":"Band structure","energy_eV":21.2,"temp_K":15},
-      {"caption":"Fermi surface showing circular topological surface state","type":"Fermi surface","energy_eV":21.2,"temp_K":15}
-    ]
-  },
-  {
-    "id": "prb-2014-lbco-stripe",
-    "title": "ARPES evidence for charge stripe order in La1.875Ba0.125CuO4",
-    "year": 2014, "source": "Phys. Rev. B",
-    "url": "https://doi.org/10.1103/PhysRevB.89.121102",
+    "id": "crossref:10.21275/sr241129192546",
+    "title": "Electrodynamics of the Josephson Vortex Lattice in High Temperature Superconductor",
+    "year": 2025,
+    "source": "International Journal of Science and Research (IJSR)",
+    "url": "https://doi.org/10.21275/sr241129192546",
     "ar5iv_url": "",
-    "materials": ["La2-xBaxCuO4"], "elements": ["La","Ba","Cu","O"],
-    "techniques": ["ARPES"],
-    "keywords": ["charge stripe","cuprate","LBCO","Fermi arc","pseudogap"],
+    "doi": "10.21275/sr241129192546",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "La",
+      "Te"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
     "figures": [
-      {"caption":"ARPES Fermi surface of LBCO x=1/8 showing stripe reconstruction, hν=55eV","type":"Fermi surface","energy_eV":55,"temp_K":30},
-      {"caption":"EDCs showing pseudogap at antinodal region","type":"EDC analysis","energy_eV":55,"temp_K":30}
-    ]
+      {
+        "caption": "ARPES measurement from Electrodynamics of the Josephson Vortex Lattice in High Temp",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from International Journal of Science and Research (IJSR) (2025)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "natcom-2018-cecoin5",
-    "title": "ARPES investigation of heavy-fermion superconductor CeCoIn5: f-electron hybridization",
-    "year": 2018, "source": "Nature Communications",
-    "url": "https://doi.org/10.1038/s41467-018-05371-2",
+    "id": "crossref:10.1380/vss.68.301",
+    "title": "Visualization of Superconducting Gap Inhomogeneity in High-&lt;i&gt;T&lt;/i&gt;&lt;sub&gt;c&lt;/sub&gt; Cuprate Superconductor Using Micro-ARPES",
+    "year": 2025,
+    "source": "Vacuum and Surface Science",
+    "url": "https://doi.org/10.1380/vss.68.301",
     "ar5iv_url": "",
-    "materials": ["CeCoIn5"], "elements": ["Ce","Co","In"],
-    "techniques": ["ARPES"],
-    "keywords": ["heavy fermion","f-electron","hybridization","strongly correlated"],
+    "doi": "10.1380/vss.68.301",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Cu",
+      "Ga",
+      "In",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
     "figures": [
-      {"caption":"ARPES spectra showing f-electron hybridization gap, hν=21.2eV, T=2K","type":"ARPES spectrum","energy_eV":21.2,"temp_K":2},
-      {"caption":"Fermi surface topology compared with DFT","type":"Fermi surface","energy_eV":21.2,"temp_K":2}
-    ]
+      {
+        "caption": "Superconducting gap measurement from Visualization of Superconducting Gap Inhomogeneity in High-&",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Vacuum and Surface Science (2025)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "prb-2018-mote2-tmd",
-    "title": "Band structure and Fermi surface of MoTe2 studied by ARPES",
-    "year": 2018, "source": "Phys. Rev. B",
-    "url": "https://doi.org/10.1103/PhysRevB.97.235125",
+    "id": "crossref:10.1103/5rpf-sd26",
+    "title": "Unfolding the kagome lattice to improve understanding of ARPES in CoSn",
+    "year": 2025,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/5rpf-sd26",
     "ar5iv_url": "",
-    "materials": ["MoTe2"], "elements": ["Mo","Te"],
-    "techniques": ["ARPES","DFT"],
-    "keywords": ["TMD","MoTe2","band structure","Fermi surface"],
+    "doi": "10.1103/5rpf-sd26",
+    "materials": [
+      "kagome"
+    ],
+    "elements": [
+      "Co",
+      "P",
+      "S",
+      "Sn"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "kagome"
+    ],
     "figures": [
-      {"caption":"ARPES band dispersion of MoTe2 along Γ-K, hν=21.2eV, T=30K","type":"Band structure","energy_eV":21.2,"temp_K":30},
-      {"caption":"Fermi surface map showing hexagonal pockets","type":"Fermi surface","energy_eV":21.2,"temp_K":30}
-    ]
+      {
+        "caption": "ARPES measurement from Unfolding the kagome lattice to improve understanding of ARP",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physical Review B (2025)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "prl-2012-bi2te3",
-    "title": "Topological surface states in Bi2Te3 and Sb2Te3 studied by ARPES",
-    "year": 2012, "source": "Phys. Rev. Lett.",
-    "url": "https://doi.org/10.1103/PhysRevLett.108.066808",
+    "id": "crossref:10.1007/s11433-024-2459-4",
+    "title": "Oxygens matter in the bilayer nickelate superconductor",
+    "year": 2024,
+    "source": "Science China Physics, Mechanics &amp; Astronomy",
+    "url": "https://doi.org/10.1007/s11433-024-2459-4",
     "ar5iv_url": "",
-    "materials": ["Bi2Te3","Sb2Te3"], "elements": ["Bi","Sb","Te"],
-    "techniques": ["ARPES"],
-    "keywords": ["topological insulator","surface state","Dirac"],
+    "doi": "10.1007/s11433-024-2459-4",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
     "figures": [
-      {"caption":"ARPES band maps of Bi2Te3 showing topological surface state, hν=21.2eV","type":"Band structure","energy_eV":21.2,"temp_K":10},
-      {"caption":"Comparison of Bi2Te3 vs Sb2Te3 surface state dispersions","type":"Band structure","energy_eV":21.2,"temp_K":10}
-    ]
+      {
+        "caption": "ARPES measurement from Oxygens matter in the bilayer nickelate superconductor",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Science China Physics, Mechanics &amp; Astronomy (2024)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "advmat-2022-mos2-valley",
-    "title": "Valley-resolved ARPES of monolayer MoS2 on SrTiO3",
-    "year": 2022, "source": "Advanced Materials",
-    "url": "https://doi.org/10.1002/adma.202200232",
+    "id": "crossref:10.3390/opt5010008",
+    "title": "Surface Topological Plexcitons: Strong Coupling in a Bi2Se3 Topological Insulator Nanoparticle-Quantum Dot Molecule",
+    "year": 2024,
+    "source": "Optics",
+    "url": "https://doi.org/10.3390/opt5010008",
     "ar5iv_url": "",
-    "materials": ["MoS2","SrTiO3"], "elements": ["Mo","S","Sr","Ti","O"],
-    "techniques": ["ARPES","MBE"],
-    "keywords": ["valleytronics","MoS2","monolayer","TMD"],
+    "doi": "10.3390/opt5010008",
+    "materials": [
+      "Bi2Se3"
+    ],
+    "elements": [
+      "Bi",
+      "Co",
+      "In",
+      "Mo",
+      "Na",
+      "Se"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "Bi2Se3"
+    ],
     "figures": [
-      {"caption":"ARPES band structure of monolayer MoS2 at K point, hν=21.2eV","type":"Band structure","energy_eV":21.2,"temp_K":30},
-      {"caption":"Constant energy contours at valence band maximum","type":"Fermi surface","energy_eV":21.2,"temp_K":30}
-    ]
+      {
+        "caption": "ARPES measurement from Surface Topological Plexcitons: Strong Coupling in a Bi2Se3 ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Optics (2024)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   },
   {
-    "id": "prl-2023-h3s-arpes",
-    "title": "Electronic structure of high-pressure hydride H3S from first-principles and ARPES",
-    "year": 2023, "source": "arXiv / Phys. Rev. Lett.",
-    "url": "https://arxiv.org/search/?query=H3S+hydride+ARPES+high+pressure+electronic+structure",
+    "id": "crossref:10.1039/d3ra06559f",
+    "title": "Twistronics in two-dimensional transition metal dichalcogenide (TMD)-based van der Waals interface",
+    "year": 2024,
+    "source": "RSC Advances",
+    "url": "https://doi.org/10.1039/d3ra06559f",
     "ar5iv_url": "",
-    "materials": ["H3S"], "elements": ["H","S"],
-    "techniques": ["ARPES","DFT"],
-    "keywords": ["hydride","high pressure","high Tc","phonon-mediated"],
+    "doi": "10.1039/d3ra06559f",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
     "figures": [
-      {"caption":"DFT band structure of H3S at 150 GPa","type":"Band structure","energy_eV":null,"temp_K":null},
-      {"caption":"Fermi surface of H3S from DFT","type":"Fermi surface","energy_eV":null,"temp_K":null}
-    ]
+      {
+        "caption": "ARPES measurement from Twistronics in two-dimensional transition metal dichalcogeni",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from RSC Advances (2024)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.110.094104",
+    "title": "Unconventional Dirac-Weyl semimetal with ultralong surface arc in phononic crystals",
+    "year": 2024,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.110.094104",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.110.094104",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Unconventional Dirac-Weyl semimetal with ultralong surface a",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physical Review B (2024)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/1402-4896/ad7547",
+    "title": "Chirality transfer torque and transverse Chirality current in the Dirac/magnetic Weyl semimetal junction",
+    "year": 2024,
+    "source": "Physica Scripta",
+    "url": "https://doi.org/10.1088/1402-4896/ad7547",
+    "ar5iv_url": "",
+    "doi": "10.1088/1402-4896/ad7547",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "TEM",
+      "MBE"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Chirality transfer torque and transverse Chirality current i",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica Scripta (2024)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/10.0029538",
+    "title": "Effect of magnetic impurities and pressure on the critical temperature of a superconductor with an AuGa2-type band structure",
+    "year": 2024,
+    "source": "Soviet Journal of Low Temperature Physics",
+    "url": "https://doi.org/10.1063/10.0029538",
+    "ar5iv_url": "",
+    "doi": "10.1063/10.0029538",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Au",
+      "Ga"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from Effect of magnetic impurities and pressure on the critical t",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from Soviet Journal of Low Temperature Physics (2024)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.3390/ma16134674",
+    "title": "Preliminary Tc Calculations for Iron-Based Superconductivity in NaFeAs, LiFeAs, FeSe and Nanostructured FeSe/SrTiO3 Superconductors",
+    "year": 2023,
+    "source": "Materials",
+    "url": "https://doi.org/10.3390/ma16134674",
+    "ar5iv_url": "",
+    "doi": "10.3390/ma16134674",
+    "materials": [
+      "FeSe",
+      "NaFeAs",
+      "LiFeAs",
+      "SrTiO3",
+      "LiFeAs",
+      "FeSe/SrTiO3"
+    ],
+    "elements": [
+      "As",
+      "Ba",
+      "Ca",
+      "Fe",
+      "Ir",
+      "Li",
+      "Na",
+      "O",
+      "Pr",
+      "Se",
+      "Sr",
+      "Tc",
+      "Ti"
+    ],
+    "techniques": [
+      "ARPES",
+      "TEM",
+      "DFT"
+    ],
+    "keywords": [
+      "FeSe",
+      "NaFeAs",
+      "LiFeAs",
+      "SrTiO3",
+      "LiFeAs"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Preliminary Tc Calculations for Iron-Based Superconductivity",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Materials (2023)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.3788/col202321.043801",
+    "title": "Distinguishing high-harmonic generation from surface and bulk states in topological insulator Bi2Se3",
+    "year": 2023,
+    "source": "Chinese Optics Letters",
+    "url": "https://doi.org/10.3788/col202321.043801",
+    "ar5iv_url": "",
+    "doi": "10.3788/col202321.043801",
+    "materials": [
+      "Bi2Se3"
+    ],
+    "elements": [
+      "Bi",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Se3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Distinguishing high-harmonic generation from surface and bul",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Chinese Optics Letters (2023)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/5.0136626",
+    "title": "Topological insulator phases in polycrystalline Bi2Te3 thin films",
+    "year": 2023,
+    "source": "AIP Advances",
+    "url": "https://doi.org/10.1063/5.0136626",
+    "ar5iv_url": "",
+    "doi": "10.1063/5.0136626",
+    "materials": [
+      "Bi2Te3"
+    ],
+    "elements": [
+      "Bi",
+      "Te"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "Bi2Te3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Topological insulator phases in polycrystalline Bi2Te3 thin ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from AIP Advances (2023)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.22353/physics.v17i362.683",
+    "title": "First-principles Electronic Structure Calculation of Topological Insulator Bi2Te3  ",
+    "year": 2023,
+    "source": "Физик сэтгүүл",
+    "url": "https://doi.org/10.22353/physics.v17i362.683",
+    "ar5iv_url": "",
+    "doi": "10.22353/physics.v17i362.683",
+    "materials": [
+      "Bi2Te3"
+    ],
+    "elements": [
+      "Bi",
+      "Ca",
+      "In",
+      "Te"
+    ],
+    "techniques": [
+      "DFT"
+    ],
+    "keywords": [
+      "Bi2Te3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from First-principles Electronic Structure Calculation of Topolog",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from Физик сэтгүүл (2023)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.ijhydene.2023.01.056",
+    "title": "The synthesis, properties, and potential applications of CoS2 as a transition metal dichalcogenide (TMD)",
+    "year": 2023,
+    "source": "International Journal of Hydrogen Energy",
+    "url": "https://doi.org/10.1016/j.ijhydene.2023.01.056",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.ijhydene.2023.01.056",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Co",
+      "S",
+      "Th"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from The synthesis, properties, and potential applications of CoS",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from International Journal of Hydrogen Energy (2023)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.108.195436",
+    "title": "Large optical conductivity of Fermi arc states in Weyl and Dirac semimetal nanowires",
+    "year": 2023,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.108.195436",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.108.195436",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "La"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Large optical conductivity of Fermi arc states in Weyl and D",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physical Review B (2023)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.3390/cryst13020321",
+    "title": "Ginzburg–Landau Analysis on the Physical Properties of the Kagome Superconductor CsV3Sb5",
+    "year": 2023,
+    "source": "Crystals",
+    "url": "https://doi.org/10.3390/cryst13020321",
+    "ar5iv_url": "",
+    "doi": "10.3390/cryst13020321",
+    "materials": [
+      "CsV3Sb5",
+      "kagome"
+    ],
+    "elements": [
+      "Cs",
+      "La",
+      "Pr",
+      "Sb",
+      "V"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "CsV3Sb5",
+      "kagome"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Ginzburg–Landau Analysis on the Physical Properties of the K",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Crystals (2023)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1380/vss.66.40",
+    "title": "Polar Surface of a Novel Kagome Superconductor Revealed by Angle-resolved Photoemission Spectroscopy",
+    "year": 2023,
+    "source": "Vacuum and Surface Science",
+    "url": "https://doi.org/10.1380/vss.66.40",
+    "ar5iv_url": "",
+    "doi": "10.1380/vss.66.40",
+    "materials": [
+      "kagome"
+    ],
+    "elements": [
+      "Re"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "kagome"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Polar Surface of a Novel Kagome Superconductor Revealed by A",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Vacuum and Surface Science (2023)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/s10948-022-06274-w",
+    "title": "Study of Cuprate Superconductivity Using the Particle Number Conserving Bogoliubov-de Gennes Equations: ARPES and STS Images From Surface Plus Bulk Layers Model",
+    "year": 2022,
+    "source": "Journal of Superconductivity and Novel Magnetism",
+    "url": "https://doi.org/10.1007/s10948-022-06274-w",
+    "ar5iv_url": "",
+    "doi": "10.1007/s10948-022-06274-w",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Co",
+      "Cu",
+      "Ge",
+      "La",
+      "Mo",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES",
+      "MBE"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Study of Cuprate Superconductivity Using the Particle Number",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Superconductivity and Novel Magnetism (2022)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.3389/fphy.2022.915619",
+    "title": "Diverse Exotic Orders and Fermiology in Fe-Based Superconductors: A Unified Mechanism for B1g/B2g Nematicity in FeSe/(Cs,Rb)Fe2As2 and Smectic Order in BaFe2As2",
+    "year": 2022,
+    "source": "Frontiers in Physics",
+    "url": "https://doi.org/10.3389/fphy.2022.915619",
+    "ar5iv_url": "",
+    "doi": "10.3389/fphy.2022.915619",
+    "materials": [
+      "FeSe",
+      "BaFe2As2",
+      "BaFe2As2"
+    ],
+    "elements": [
+      "As",
+      "B",
+      "Ba",
+      "Cs",
+      "Fe",
+      "Ne",
+      "Rb",
+      "Se",
+      "Sm"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "FeSe",
+      "BaFe2As2",
+      "BaFe2As2"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Diverse Exotic Orders and Fermiology in Fe-Based Superconduc",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Frontiers in Physics (2022)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.2139/ssrn.4080321",
+    "title": "Chemical Doping to Ni-Sites in Layered Nickelate Pr4ni3o8 For High-Tc Superconductor Candidate",
+    "year": 2022,
+    "source": "SSRN Electronic Journal",
+    "url": "https://doi.org/10.2139/ssrn.4080321",
+    "ar5iv_url": "",
+    "doi": "10.2139/ssrn.4080321",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Ca",
+      "La",
+      "Ni",
+      "Pr",
+      "Si",
+      "Tc"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Chemical Doping to Ni-Sites in Layered Nickelate Pr4ni3o8 Fo",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from SSRN Electronic Journal (2022)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.matpr.2022.06.012",
+    "title": "A Density Functional Theory based study of Transition Metal Dichalcogenide - MoS2",
+    "year": 2022,
+    "source": "Materials Today: Proceedings",
+    "url": "https://doi.org/10.1016/j.matpr.2022.06.012",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.matpr.2022.06.012",
+    "materials": [
+      "MoS2"
+    ],
+    "elements": [
+      "Mo",
+      "S",
+      "Th"
+    ],
+    "techniques": [
+      "DFT"
+    ],
+    "keywords": [
+      "MoS2"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from A Density Functional Theory based study of Transition Metal ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Materials Today: Proceedings (2022)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1360/sspma-2022-0244",
+    "title": "ARPES study of heavy fermion systems",
+    "year": 2022,
+    "source": "SCIENTIA SINICA Physica, Mechanica &amp; Astronomica",
+    "url": "https://doi.org/10.1360/sspma-2022-0244",
+    "ar5iv_url": "",
+    "doi": "10.1360/sspma-2022-0244",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES",
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from ARPES study of heavy fermion systems",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from SCIENTIA SINICA Physica, Mechanica &amp; Astronomica (2022)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/s10948-022-06453-9",
+    "title": "Drastic Suppression of CDW (Charge Density Wave) by Pd Addition in TiSe2",
+    "year": 2022,
+    "source": "Journal of Superconductivity and Novel Magnetism",
+    "url": "https://doi.org/10.1007/s10948-022-06453-9",
+    "ar5iv_url": "",
+    "doi": "10.1007/s10948-022-06453-9",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "Pd",
+      "Se",
+      "Ti",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Drastic Suppression of CDW (Charge Density Wave) by Pd Addit",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Journal of Superconductivity and Novel Magnetism (2022)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1209/0295-5075/ac4d0b",
+    "title": "Finite size effect on the Fermi arc surface states in Weyl semimetal",
+    "year": 2022,
+    "source": "Europhysics Letters",
+    "url": "https://doi.org/10.1209/0295-5075/ac4d0b",
+    "ar5iv_url": "",
+    "doi": "10.1209/0295-5075/ac4d0b",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe"
+    ],
+    "techniques": [
+      "transport"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Finite size effect on the Fermi arc surface states in Weyl s",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Europhysics Letters (2022)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/1361-6668/acab38",
+    "title": "Development of highly selective compact high-temperature superconducting quad-band bandpass filter using interdigital feeding structure for radio astronomy",
+    "year": 2022,
+    "source": "Superconductor Science and Technology",
+    "url": "https://doi.org/10.1088/1361-6668/acab38",
+    "ar5iv_url": "",
+    "doi": "10.1088/1361-6668/acab38",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Development of highly selective compact high-temperature sup",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Superconductor Science and Technology (2022)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/s11433-022-1870-3",
+    "title": "Charge density wave in kagome superconductor AV3Sb5",
+    "year": 2022,
+    "source": "Science China Physics, Mechanics &amp; Astronomy",
+    "url": "https://doi.org/10.1007/s11433-022-1870-3",
+    "ar5iv_url": "",
+    "doi": "10.1007/s11433-022-1870-3",
+    "materials": [
+      "AV3Sb5",
+      "kagome"
+    ],
+    "elements": [
+      "Sb",
+      "V"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "AV3Sb5",
+      "kagome"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Charge density wave in kagome superconductor AV3Sb5",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Science China Physics, Mechanics &amp; Astronomy (2022)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1140/epjp/s13360-022-03118-3",
+    "title": "Discovery of the kagome superconductor in the Half-Heusler “NbRhSb”",
+    "year": 2022,
+    "source": "The European Physical Journal Plus",
+    "url": "https://doi.org/10.1140/epjp/s13360-022-03118-3",
+    "ar5iv_url": "",
+    "doi": "10.1140/epjp/s13360-022-03118-3",
+    "materials": [
+      "Nb",
+      "kagome"
+    ],
+    "elements": [
+      "He",
+      "Nb",
+      "Rh",
+      "Sb"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Nb",
+      "kagome"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Discovery of the kagome superconductor in the Half-Heusler “",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from The European Physical Journal Plus (2022)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/s11433-022-1869-2",
+    "title": "New piece of the jigsaw for orbital/bond order in a kagome superconductor",
+    "year": 2022,
+    "source": "Science China Physics, Mechanics &amp; Astronomy",
+    "url": "https://doi.org/10.1007/s11433-022-1869-2",
+    "ar5iv_url": "",
+    "doi": "10.1007/s11433-022-1869-2",
+    "materials": [
+      "kagome"
+    ],
+    "elements": [
+      "Ne"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "kagome"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from New piece of the jigsaw for orbital/bond order in a kagome s",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Science China Physics, Mechanics &amp; Astronomy (2022)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.14445/22315373/ijmtt-v67i4p503",
+    "title": "Topological Insulation And Bi2Se3 a Three-Dimensional Topological Insulator",
+    "year": 2021,
+    "source": "International Journal of Mathematics Trends and Technology",
+    "url": "https://doi.org/10.14445/22315373/ijmtt-v67i4p503",
+    "ar5iv_url": "",
+    "doi": "10.14445/22315373/ijmtt-v67i4p503",
+    "materials": [
+      "Bi2Se3"
+    ],
+    "elements": [
+      "Bi",
+      "In",
+      "Se",
+      "Th"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Se3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Topological Insulation And Bi2Se3 a Three-Dimensional Topolo",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from International Journal of Mathematics Trends and Technology (2021)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.molliq.2021.117520",
+    "title": "A novel TMD/MOF (Transition Metal Dichalcogenide/Metalorganic frameworks) composite for highly and selective adsorption of methylene blue dye from aqueous mixture of MB and MO",
+    "year": 2021,
+    "source": "Journal of Molecular Liquids",
+    "url": "https://doi.org/10.1016/j.molliq.2021.117520",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.molliq.2021.117520",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "B",
+      "F",
+      "O"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from A novel TMD/MOF (Transition Metal Dichalcogenide/Metalorgani",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Molecular Liquids (2021)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/1742-6596/1548/1/012024",
+    "title": "Silver doping effects on irreversibility field and pinning energy of a FeSe iron based superconductor",
+    "year": 2020,
+    "source": "Journal of Physics: Conference Series",
+    "url": "https://doi.org/10.1088/1742-6596/1548/1/012024",
+    "ar5iv_url": "",
+    "doi": "10.1088/1742-6596/1548/1/012024",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se",
+      "Si"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Silver doping effects on irreversibility field and pinning e",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Physics: Conference Series (2020)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/5.0004530",
+    "title": "Emergent behavior of LaNiO3 in short-periodic nickelate superlattices",
+    "year": 2020,
+    "source": "APL Materials",
+    "url": "https://doi.org/10.1063/5.0004530",
+    "ar5iv_url": "",
+    "doi": "10.1063/5.0004530",
+    "materials": [
+      "LaNiO3"
+    ],
+    "elements": [
+      "La",
+      "Ni",
+      "O"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "LaNiO3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Emergent behavior of LaNiO3 in short-periodic nickelate supe",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from APL Materials (2020)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.5143316",
+    "title": "A laser-ARPES study of LaNiO3 thin films grown by sputter deposition",
+    "year": 2020,
+    "source": "APL Materials",
+    "url": "https://doi.org/10.1063/1.5143316",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.5143316",
+    "materials": [
+      "LaNiO3"
+    ],
+    "elements": [
+      "La",
+      "Ni",
+      "O",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES",
+      "TEM"
+    ],
+    "keywords": [
+      "LaNiO3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from A laser-ARPES study of LaNiO3 thin films grown by sputter de",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from APL Materials (2020)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1038/s41598-020-68690-z",
+    "title": "Surface phonons in topological insulator Bi2Te3 investigated by Brillouin light scattering",
+    "year": 2020,
+    "source": "Scientific Reports",
+    "url": "https://doi.org/10.1038/s41598-020-68690-z",
+    "ar5iv_url": "",
+    "doi": "10.1038/s41598-020-68690-z",
+    "materials": [
+      "Bi2Te3"
+    ],
+    "elements": [
+      "Bi",
+      "Br",
+      "Te"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Te3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Surface phonons in topological insulator Bi2Te3 investigated",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Scientific Reports (2020)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1149/ma2016-02/37/2335",
+    "title": "High-Performance Photodetectors Using Transition Metal Dichalcogenide (TMD)-based Hybrid Structures",
+    "year": 2020,
+    "source": "ECS Meeting Abstracts",
+    "url": "https://doi.org/10.1149/ma2016-02/37/2335",
+    "ar5iv_url": "",
+    "doi": "10.1149/ma2016-02/37/2335",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from High-Performance Photodetectors Using Transition Metal Dicha",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from ECS Meeting Abstracts (2020)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physleta.2020.126958",
+    "title": "Thermodynamic properties of a monolayer transition metal dichalcogenide (TMD) quantum dot in the presence of magnetic field",
+    "year": 2020,
+    "source": "Physics Letters A",
+    "url": "https://doi.org/10.1016/j.physleta.2020.126958",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physleta.2020.126958",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Th"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Thermodynamic properties of a monolayer transition metal dic",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physics Letters A (2020)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.3938/jkps.76.93",
+    "title": "High-Energy Proton-Irradiation Effects on the Magnetism of the Transition-Metal Dichalcogenide MoS2",
+    "year": 2020,
+    "source": "Journal of the Korean Physical Society",
+    "url": "https://doi.org/10.3938/jkps.76.93",
+    "ar5iv_url": "",
+    "doi": "10.3938/jkps.76.93",
+    "materials": [
+      "MoS2"
+    ],
+    "elements": [
+      "Ir",
+      "Mo",
+      "Pr",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "MoS2"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from High-Energy Proton-Irradiation Effects on the Magnetism of t",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of the Korean Physical Society (2020)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1038/s41467-020-15010-8",
+    "title": "Fermi-arc supercurrent oscillations in Dirac semimetal Josephson junctions",
+    "year": 2020,
+    "source": "Nature Communications",
+    "url": "https://doi.org/10.1038/s41467-020-15010-8",
+    "ar5iv_url": "",
+    "doi": "10.1038/s41467-020-15010-8",
+    "materials": [
+      "Nb"
+    ],
+    "elements": [
+      "Fe"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Nb"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Fermi-arc supercurrent oscillations in Dirac semimetal Josep",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Nature Communications (2020)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/1361-6668/abbec5",
+    "title": "A 12-pole VHF band high selective high temperature superconducting filter",
+    "year": 2020,
+    "source": "Superconductor Science and Technology",
+    "url": "https://doi.org/10.1088/1361-6668/abbec5",
+    "ar5iv_url": "",
+    "doi": "10.1088/1361-6668/abbec5",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "F",
+      "H",
+      "V"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from A 12-pole VHF band high selective high temperature supercond",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Superconductor Science and Technology (2020)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.36471/jccm_november_2017_01",
+    "title": "Is FeSe a superconductor in the Bose-Einstein condensation limit?",
+    "year": 2019,
+    "source": "Journal Club for Condensed Matter Physics",
+    "url": "https://doi.org/10.36471/jccm_november_2017_01",
+    "ar5iv_url": "",
+    "doi": "10.36471/jccm_november_2017_01",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Is FeSe a superconductor in the Bose-Einstein condensation l",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal Club for Condensed Matter Physics (2019)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevlett.123.167002",
+    "title": "Bulk Superconductivity and Role of Fluctuations in the Iron-Based Superconductor FeSe at High Pressures",
+    "year": 2019,
+    "source": "Physical Review Letters",
+    "url": "https://doi.org/10.1103/physrevlett.123.167002",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevlett.123.167002",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Ba",
+      "Fe",
+      "Ir",
+      "Pr",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Bulk Superconductivity and Role of Fluctuations in the Iron-",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physical Review Letters (2019)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.36471/jccm_july_2016_02",
+    "title": "Towards a Unified Description of the Electronic Orders in Iron-Based Superconductors: Insights from FeSe",
+    "year": 2019,
+    "source": "Journal Club for Condensed Matter Physics",
+    "url": "https://doi.org/10.36471/jccm_july_2016_02",
+    "ar5iv_url": "",
+    "doi": "10.36471/jccm_july_2016_02",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Ba",
+      "Fe",
+      "In",
+      "Ir",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Towards a Unified Description of the Electronic Orders in Ir",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal Club for Condensed Matter Physics (2019)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.3233/jcm-2005-5107",
+    "title": "Continuum distorted wave – Born initial state (CDW-BIS) model for single charge exchange",
+    "year": 2019,
+    "source": "Journal of Computational Methods in Sciences and Engineering",
+    "url": "https://doi.org/10.3233/jcm-2005-5107",
+    "ar5iv_url": "",
+    "doi": "10.3233/jcm-2005-5107",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "B",
+      "C",
+      "Co",
+      "I",
+      "S",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Continuum distorted wave – Born initial state (CDW-BIS) mode",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Journal of Computational Methods in Sciences and Engineering (2019)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.100.085424",
+    "title": "Quantized Fermi arc mediated transport in Weyl semimetal nanowires",
+    "year": 2019,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.100.085424",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.100.085424",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Quantized Fermi arc mediated transport in Weyl semimetal nan",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physical Review B (2019)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/1361-648x/aae3cf",
+    "title": "Unusual effects of Be doping in the iron-based superconductor FeSe",
+    "year": 2018,
+    "source": "Journal of Physics: Condensed Matter",
+    "url": "https://doi.org/10.1088/1361-648x/aae3cf",
+    "ar5iv_url": "",
+    "doi": "10.1088/1361-648x/aae3cf",
+    "materials": [
+      "FeSe",
+      "monolayer FeSe"
+    ],
+    "elements": [
+      "Be",
+      "Fe",
+      "Se"
+    ],
+    "techniques": [
+      "TEM",
+      "transport"
+    ],
+    "keywords": [
+      "FeSe",
+      "monolayer FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Unusual effects of Be doping in the iron-based superconducto",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Physics: Condensed Matter (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.ijleo.2018.12.122",
+    "title": "Study of electrical effect of transition-metal dichalcogenide-MoS2 layer on the performance characteristic of Cu2ZnSnS4 based solar cells using wxAMPS",
+    "year": 2018,
+    "source": "Optik",
+    "url": "https://doi.org/10.1016/j.ijleo.2018.12.122",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.ijleo.2018.12.122",
+    "materials": [
+      "MoS2",
+      "SnS"
+    ],
+    "elements": [
+      "Cu",
+      "Mo",
+      "P",
+      "S",
+      "Sn",
+      "Zn"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "MoS2",
+      "SnS"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Study of electrical effect of transition-metal dichalcogenid",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Optik (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.5051965",
+    "title": "Second harmonic generation in strained transition metal dichalcogenide monolayers: MoS2, MoSe2, WS2, and WSe2",
+    "year": 2018,
+    "source": "APL Photonics",
+    "url": "https://doi.org/10.1063/1.5051965",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.5051965",
+    "materials": [
+      "MoS2",
+      "MoSe2",
+      "WS2",
+      "WSe2",
+      "Hg"
+    ],
+    "elements": [
+      "Mo",
+      "S",
+      "Se",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "MoS2",
+      "MoSe2",
+      "WS2",
+      "WSe2",
+      "Hg"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Second harmonic generation in strained transition metal dich",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from APL Photonics (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/1742-6596/969/1/012105",
+    "title": "Metal–insulator transition in a transition metal dichalcogenide: Dependence on metal contacts",
+    "year": 2018,
+    "source": "Journal of Physics: Conference Series",
+    "url": "https://doi.org/10.1088/1742-6596/969/1/012105",
+    "ar5iv_url": "",
+    "doi": "10.1088/1742-6596/969/1/012105",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Metal–insulator transition in a transition metal dichalcogen",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Physics: Conference Series (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1038/s41467-018-02841-9",
+    "title": "Visualizing heavy fermion confinement and Pauli-limited superconductivity in layered CeCoIn5",
+    "year": 2018,
+    "source": "Nature Communications",
+    "url": "https://doi.org/10.1038/s41467-018-02841-9",
+    "ar5iv_url": "",
+    "doi": "10.1038/s41467-018-02841-9",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In"
+    ],
+    "techniques": [
+      "STM"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Visualizing heavy fermion confinement and Pauli-limited supe",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Nature Communications (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1209/0295-5075/122/27004",
+    "title": "Signature of Fermi arc surface states in Andreev reflection at the WTe\n                    <sub>2</sub>\n                    Weyl semimetal surface",
+    "year": 2018,
+    "source": "EPL (Europhysics Letters)",
+    "url": "https://doi.org/10.1209/0295-5075/122/27004",
+    "ar5iv_url": "",
+    "doi": "10.1209/0295-5075/122/27004",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "Si",
+      "Te",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Signature of Fermi arc surface states in Andreev reflection ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from EPL (Europhysics Letters) (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1134/s0021364018120020",
+    "title": "Realization of a Double-Slit SQUID Geometry by Fermi Arc Surface States in a WTe2 Weyl Semimetal",
+    "year": 2018,
+    "source": "JETP Letters",
+    "url": "https://doi.org/10.1134/s0021364018120020",
+    "ar5iv_url": "",
+    "doi": "10.1134/s0021364018120020",
+    "materials": [
+      "WTe2"
+    ],
+    "elements": [
+      "Ar",
+      "Fe",
+      "Ge",
+      "I",
+      "Re",
+      "S",
+      "Se",
+      "Te",
+      "U",
+      "W"
+    ],
+    "techniques": [
+      "SQUID"
+    ],
+    "keywords": [
+      "WTe2"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Realization of a Double-Slit SQUID Geometry by Fermi Arc Sur",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from JETP Letters (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/1361-648x/aaade4",
+    "title": "Electronic transport property in Weyl semimetal with local Weyl cone tilt",
+    "year": 2018,
+    "source": "Journal of Physics: Condensed Matter",
+    "url": "https://doi.org/10.1088/1361-648x/aaade4",
+    "ar5iv_url": "",
+    "doi": "10.1088/1361-648x/aaade4",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Electronic transport property in Weyl semimetal with local W",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Physics: Condensed Matter (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.ijleo.2018.07.036",
+    "title": "Kagome–Honeycomb structure produced using a wave laser in a conventional superconductor",
+    "year": 2018,
+    "source": "Optik",
+    "url": "https://doi.org/10.1016/j.ijleo.2018.07.036",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.ijleo.2018.07.036",
+    "materials": [
+      "kagome"
+    ],
+    "elements": [
+      "Ho"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "kagome"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Kagome–Honeycomb structure produced using a wave laser in a ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Optik (2018)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.4973558",
+    "title": "Electronic structure of buried LaNiO3 layers in (111)-oriented LaNiO3/LaMnO3 superlattices probed by soft x-ray ARPES",
+    "year": 2017,
+    "source": "APL Materials",
+    "url": "https://doi.org/10.1063/1.4973558",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.4973558",
+    "materials": [
+      "LaNiO3",
+      "111"
+    ],
+    "elements": [
+      "La",
+      "Mn",
+      "Ni",
+      "O",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "LaNiO3",
+      "111"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from Electronic structure of buried LaNiO3 layers in (111)-orient",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from APL Materials (2017)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1038/s41598-017-13863-6",
+    "title": "Materials analysis and focused ion beam nanofabrication of topological insulator Bi2Se3",
+    "year": 2017,
+    "source": "Scientific Reports",
+    "url": "https://doi.org/10.1038/s41598-017-13863-6",
+    "ar5iv_url": "",
+    "doi": "10.1038/s41598-017-13863-6",
+    "materials": [
+      "Bi2Se3"
+    ],
+    "elements": [
+      "Bi",
+      "Se"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "Bi2Se3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Materials analysis and focused ion beam nanofabrication of t",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Scientific Reports (2017)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1002/pssb.201600827",
+    "title": "Dielectric properties of graphene on transition metal dichalcogenide substrate",
+    "year": 2017,
+    "source": "physica status solidi (b)",
+    "url": "https://doi.org/10.1002/pssb.201600827",
+    "ar5iv_url": "",
+    "doi": "10.1002/pssb.201600827",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Dielectric properties of graphene on transition metal dichal",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from physica status solidi (b) (2017)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1038/s41598-017-03991-4",
+    "title": "Influence of Fermi arc states and double Weyl node on tunneling in a Dirac semimetal",
+    "year": 2017,
+    "source": "Scientific Reports",
+    "url": "https://doi.org/10.1038/s41598-017-03991-4",
+    "ar5iv_url": "",
+    "doi": "10.1038/s41598-017-03991-4",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "In"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Influence of Fermi arc states and double Weyl node on tunnel",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Scientific Reports (2017)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.95.125435",
+    "title": "Electron-hole pairing of Fermi-arc surface states in a Weyl semimetal bilayer",
+    "year": 2017,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.95.125435",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.95.125435",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Electron-hole pairing of Fermi-arc surface states in a Weyl ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physical Review B (2017)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.96.081410",
+    "title": "Large optical conductivity of Dirac semimetal Fermi arc surface states",
+    "year": 2017,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.96.081410",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.96.081410",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "La"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Large optical conductivity of Dirac semimetal Fermi arc surf",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physical Review B (2017)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1002/chin.198403107",
+    "title": "ChemInform Abstract: ETHYLENE HYDROGENATION OVER REDUCED LANTHANUM NICKELATE (LANIO3) PEROVSKITE",
+    "year": 2016,
+    "source": "Chemischer Informationsdienst",
+    "url": "https://doi.org/10.1002/chin.198403107",
+    "ar5iv_url": "",
+    "doi": "10.1002/chin.198403107",
+    "materials": [
+      "LaNiO3"
+    ],
+    "elements": [
+      "C",
+      "H",
+      "I",
+      "In",
+      "K",
+      "N",
+      "O",
+      "P",
+      "S",
+      "U",
+      "V",
+      "Y"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "LaNiO3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from ChemInform Abstract: ETHYLENE HYDROGENATION OVER REDUCED LAN",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Chemischer Informationsdienst (2016)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/s10948-016-3377-6",
+    "title": "Electronic Structure of NaFeAs Superconductor: LDA + DMFT Calculations Compared with ARPES Experiment",
+    "year": 2016,
+    "source": "Journal of Superconductivity and Novel Magnetism",
+    "url": "https://doi.org/10.1007/s10948-016-3377-6",
+    "ar5iv_url": "",
+    "doi": "10.1007/s10948-016-3377-6",
+    "materials": [
+      "NaFeAs"
+    ],
+    "elements": [
+      "As",
+      "Ca",
+      "Co",
+      "F",
+      "Fe",
+      "Na",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NaFeAs"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from Electronic Structure of NaFeAs Superconductor: LDA + DMFT Ca",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from Journal of Superconductivity and Novel Magnetism (2016)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1017/s1431927615008454",
+    "title": "Microscopy and Chemical Analysis of Topological Insulator Bi2Se3 and Topological Crystalline Insulator SnTe Nanostructures",
+    "year": 2016,
+    "source": "Microscopy and Microanalysis",
+    "url": "https://doi.org/10.1017/s1431927615008454",
+    "ar5iv_url": "",
+    "doi": "10.1017/s1431927615008454",
+    "materials": [
+      "Bi2Se3"
+    ],
+    "elements": [
+      "Bi",
+      "Cr",
+      "In",
+      "Na",
+      "Se",
+      "Sn",
+      "Te"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Se3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Microscopy and Chemical Analysis of Topological Insulator Bi",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Microscopy and Microanalysis (2016)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1149/07513.0073ecst",
+    "title": "High-Performance Photodetectors Using Transition Metal Dichalcogenide (TMD)-based Hybrid Structures",
+    "year": 2016,
+    "source": "ECS Transactions",
+    "url": "https://doi.org/10.1149/07513.0073ecst",
+    "ar5iv_url": "",
+    "doi": "10.1149/07513.0073ecst",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from High-Performance Photodetectors Using Transition Metal Dicha",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from ECS Transactions (2016)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1002/chin.198925009",
+    "title": "ChemInform Abstract: Scanning Tunneling Microscopy (STM) Investigations of a New Charge Density Wave (CDW) Phase in Niobium‐Doped Tantalum Disulfide.",
+    "year": 2016,
+    "source": "ChemInform",
+    "url": "https://doi.org/10.1002/chin.198925009",
+    "ar5iv_url": "",
+    "doi": "10.1002/chin.198925009",
+    "materials": [
+      "Nb"
+    ],
+    "elements": [
+      "C",
+      "In",
+      "Ne",
+      "Ni",
+      "S",
+      "Sc",
+      "Ta",
+      "W"
+    ],
+    "techniques": [
+      "STM"
+    ],
+    "keywords": [
+      "Nb"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from ChemInform Abstract: Scanning Tunneling Microscopy (STM) Inv",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from ChemInform (2016)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/s11664-016-4766-0",
+    "title": "Optical Distinctions Between Weyl Semimetal TaAs and Dirac Semimetal Na3Bi: An Ab Initio Investigation",
+    "year": 2016,
+    "source": "Journal of Electronic Materials",
+    "url": "https://doi.org/10.1007/s11664-016-4766-0",
+    "ar5iv_url": "",
+    "doi": "10.1007/s11664-016-4766-0",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "As",
+      "Be",
+      "Bi",
+      "In",
+      "Na",
+      "Se",
+      "Ta"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Optical Distinctions Between Weyl Semimetal TaAs and Dirac S",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Electronic Materials (2016)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1038/nature18276",
+    "title": "Transport evidence for Fermi-arc-mediated chirality transfer in the Dirac semimetal Cd3As2",
+    "year": 2016,
+    "source": "Nature",
+    "url": "https://doi.org/10.1038/nature18276",
+    "ar5iv_url": "",
+    "doi": "10.1038/nature18276",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "As",
+      "Cd",
+      "Fe"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Transport evidence for Fermi-arc-mediated chirality transfer",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Nature (2016)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1002/chin.198738014",
+    "title": "ChemInform Abstract: Band Electronic Structure of the High‐Temperature (Tc &gt; 90 K) Superconductor Orthorhombic YBa2Cu3O7. Part 1. Partially Filled d‐Block Bands of the Equilibrium Structure",
+    "year": 2016,
+    "source": "ChemInform",
+    "url": "https://doi.org/10.1002/chin.198738014",
+    "ar5iv_url": "",
+    "doi": "10.1002/chin.198738014",
+    "materials": [
+      "YBa2Cu3O7"
+    ],
+    "elements": [
+      "Ba",
+      "Cu",
+      "In",
+      "K",
+      "O",
+      "Tc",
+      "Te",
+      "Y"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "YBa2Cu3O7"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from ChemInform Abstract: Band Electronic Structure of the High‐T",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from ChemInform (2016)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1002/chin.198738013",
+    "title": "ChemInform Abstract: Band Electronic Structure Study of La2CuO4 and the High‐Temperature Superconductor La2‐xMxCuO4: Non‐Peierls Nature of the Tetragonal to Orthorhombic Distortion of La2CuO4 and Its Implications",
+    "year": 2016,
+    "source": "ChemInform",
+    "url": "https://doi.org/10.1002/chin.198738013",
+    "ar5iv_url": "",
+    "doi": "10.1002/chin.198738013",
+    "materials": [
+      "La2CuO4"
+    ],
+    "elements": [
+      "Ba",
+      "Cu",
+      "In",
+      "La",
+      "Na",
+      "O",
+      "Te"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "La2CuO4"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from ChemInform Abstract: Band Electronic Structure Study of La2C",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from ChemInform (2016)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1134/s0021364015010105",
+    "title": "Electronic and magnetic properties of the new iron-based superconductor [Li1 − x Fe x OH]FeSe",
+    "year": 2015,
+    "source": "JETP Letters",
+    "url": "https://doi.org/10.1134/s0021364015010105",
+    "ar5iv_url": "",
+    "doi": "10.1134/s0021364015010105",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "H",
+      "Li",
+      "O",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Electronic and magnetic properties of the new iron-based sup",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from JETP Letters (2015)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1209/0295-5075/109/27003",
+    "title": "Quantum oscillations and upper critical magnetic field of the iron-based superconductor FeSe",
+    "year": 2015,
+    "source": "EPL (Europhysics Letters)",
+    "url": "https://doi.org/10.1209/0295-5075/109/27003",
+    "ar5iv_url": "",
+    "doi": "10.1209/0295-5075/109/27003",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Quantum oscillations and upper critical magnetic field of th",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from EPL (Europhysics Letters) (2015)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1134/s0021364015130123",
+    "title": "Electronic structure of NaFeAs superconductor: LDA+DMFT calculations compared to the ARPES experiment",
+    "year": 2015,
+    "source": "JETP Letters",
+    "url": "https://doi.org/10.1134/s0021364015130123",
+    "ar5iv_url": "",
+    "doi": "10.1134/s0021364015130123",
+    "materials": [
+      "NaFeAs"
+    ],
+    "elements": [
+      "As",
+      "F",
+      "Fe",
+      "Na",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "NaFeAs"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from Electronic structure of NaFeAs superconductor: LDA+DMFT calc",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from JETP Letters (2015)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1140/epjb/e2015-60691-2",
+    "title": "On-site electron correlations in Bi2Se3 topological insulator",
+    "year": 2015,
+    "source": "The European Physical Journal B",
+    "url": "https://doi.org/10.1140/epjb/e2015-60691-2",
+    "ar5iv_url": "",
+    "doi": "10.1140/epjb/e2015-60691-2",
+    "materials": [
+      "Bi2Se3"
+    ],
+    "elements": [
+      "Bi",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Se3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from On-site electron correlations in Bi2Se3 topological insulato",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from The European Physical Journal B (2015)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1039/c5cs90037a",
+    "title": "Two-dimensional transition metal dichalcogenide (TMD) nanosheets",
+    "year": 2015,
+    "source": "Chemical Society Reviews",
+    "url": "https://doi.org/10.1039/c5cs90037a",
+    "ar5iv_url": "",
+    "doi": "10.1039/c5cs90037a",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Two-dimensional transition metal dichalcogenide (TMD) nanosh",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Chemical Society Reviews (2015)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/0953-2048/27/12/120501",
+    "title": "As easy as pie? Large FeSe superconducting crystal, which is of the simplest structural type from the large family of iron based superconductors, is finally grown",
+    "year": 2014,
+    "source": "Superconductor Science and Technology",
+    "url": "https://doi.org/10.1088/0953-2048/27/12/120501",
+    "ar5iv_url": "",
+    "doi": "10.1088/0953-2048/27/12/120501",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "As",
+      "Fe",
+      "La",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from As easy as pie? Large FeSe superconducting crystal, which is",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Superconductor Science and Technology (2014)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.4896680",
+    "title": "Thermoelectric properties of topological insulator Bi2Te3, Sb2Te3, and Bi2Se3 thin film quantum wells",
+    "year": 2014,
+    "source": "Applied Physics Letters",
+    "url": "https://doi.org/10.1063/1.4896680",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.4896680",
+    "materials": [
+      "Bi2Se3",
+      "Bi2Te3",
+      "Sb2Te3"
+    ],
+    "elements": [
+      "Bi",
+      "Sb",
+      "Se",
+      "Te",
+      "Th"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Se3",
+      "Bi2Te3",
+      "Sb2Te3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Thermoelectric properties of topological insulator Bi2Te3, S",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Applied Physics Letters (2014)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.4773325",
+    "title": "Topological states ruled by stacking faults in Bi2Se3 and Bi2Te3",
+    "year": 2013,
+    "source": "Journal of Applied Physics",
+    "url": "https://doi.org/10.1063/1.4773325",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.4773325",
+    "materials": [
+      "Bi2Se3",
+      "Bi2Te3"
+    ],
+    "elements": [
+      "Bi",
+      "Se",
+      "Te"
+    ],
+    "techniques": [
+      "DFT"
+    ],
+    "keywords": [
+      "Bi2Se3",
+      "Bi2Te3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Topological states ruled by stacking faults in Bi2Se3 and Bi",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Applied Physics (2013)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1038/nphys2672",
+    "title": "Visualizing nodal heavy fermion superconductivity in CeCoIn5",
+    "year": 2013,
+    "source": "Nature Physics",
+    "url": "https://doi.org/10.1038/nphys2672",
+    "ar5iv_url": "",
+    "doi": "10.1038/nphys2672",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Visualizing nodal heavy fermion superconductivity in CeCoIn5",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Nature Physics (2013)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1038/nphys2771",
+    "title": "Erratum: Visualizing nodal heavy fermion superconductivity in CeCoIn5",
+    "year": 2013,
+    "source": "Nature Physics",
+    "url": "https://doi.org/10.1038/nphys2771",
+    "ar5iv_url": "",
+    "doi": "10.1038/nphys2771",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "Er",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Erratum: Visualizing nodal heavy fermion superconductivity i",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Nature Physics (2013)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1143/jpsj.81.043702",
+    "title": "Electrochemical Synthesis of Iron-Based Superconductor FeSe Films",
+    "year": 2012,
+    "source": "Journal of the Physical Society of Japan",
+    "url": "https://doi.org/10.1143/jpsj.81.043702",
+    "ar5iv_url": "",
+    "doi": "10.1143/jpsj.81.043702",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Ba",
+      "Fe",
+      "Ir",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Electrochemical Synthesis of Iron-Based Superconductor FeSe ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of the Physical Society of Japan (2012)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.4729011",
+    "title": "Ambipolar charge injection and transport of few-layer topological insulator Bi2Te3 and Bi2Se3 nanoplates",
+    "year": 2012,
+    "source": "Journal of Applied Physics",
+    "url": "https://doi.org/10.1063/1.4729011",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.4729011",
+    "materials": [
+      "Bi2Se3",
+      "Bi2Te3"
+    ],
+    "elements": [
+      "Bi",
+      "Se",
+      "Te"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Se3",
+      "Bi2Te3"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Ambipolar charge injection and transport of few-layer topolo",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Journal of Applied Physics (2012)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physc.2011.10.004",
+    "title": "Electronic structure and phonon spectrum of binary iron-based superconductor FeSe in both nonmagnetic and striped antiferromagnetic phases",
+    "year": 2011,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/j.physc.2011.10.004",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physc.2011.10.004",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from Electronic structure and phonon spectrum of binary iron-base",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from Physica C: Superconductivity (2011)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.mseb.2011.12.009",
+    "title": "Microstructure and transport properties of [001]-tilt bicrystal grain boundaries in iron pnictide superconductor, cobalt-doped BaFe2As2",
+    "year": 2011,
+    "source": "Materials Science and Engineering: B",
+    "url": "https://doi.org/10.1016/j.mseb.2011.12.009",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.mseb.2011.12.009",
+    "materials": [
+      "BaFe2As2",
+      "BaFe2As2"
+    ],
+    "elements": [
+      "As",
+      "Ba",
+      "Fe"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "BaFe2As2",
+      "BaFe2As2"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Microstructure and transport properties of [001]-tilt bicrys",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Materials Science and Engineering: B (2011)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.3622306",
+    "title": "Atomic-layer-deposited Al2O3 on Bi2Te3 for topological insulator field-effect transistors",
+    "year": 2011,
+    "source": "Applied Physics Letters",
+    "url": "https://doi.org/10.1063/1.3622306",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.3622306",
+    "materials": [
+      "Bi2Te3"
+    ],
+    "elements": [
+      "Al",
+      "Bi",
+      "O",
+      "Te"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Te3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Atomic-layer-deposited Al2O3 on Bi2Te3 for topological insul",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Applied Physics Letters (2011)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/1367-2630/12/10/105008",
+    "title": "ARPES studies of cuprate Fermiology: superconductivity, pseudogap and quasiparticle dynamics",
+    "year": 2010,
+    "source": "New Journal of Physics",
+    "url": "https://doi.org/10.1088/1367-2630/12/10/105008",
+    "ar5iv_url": "",
+    "doi": "10.1088/1367-2630/12/10/105008",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from ARPES studies of cuprate Fermiology: superconductivity, pseu",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from New Journal of Physics (2010)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1209/0295-5075/91/27001",
+    "title": "Low-temperature metal-insulator transition in the electron-doped iron chalcogenide FeSe superconductor",
+    "year": 2010,
+    "source": "EPL (Europhysics Letters)",
+    "url": "https://doi.org/10.1209/0295-5075/91/27001",
+    "ar5iv_url": "",
+    "doi": "10.1209/0295-5075/91/27001",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Low-temperature metal-insulator transition in the electron-d",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from EPL (Europhysics Letters) (2010)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1002/chin.199428030",
+    "title": "ChemInform Abstract: Synthesis, Crystal Structure, and Properties of Oxygen‐Deficient Lanthanum Nickelate LaNiO3‐x (0 ≤ x ≤ 0.5).",
+    "year": 2010,
+    "source": "ChemInform",
+    "url": "https://doi.org/10.1002/chin.199428030",
+    "ar5iv_url": "",
+    "doi": "10.1002/chin.199428030",
+    "materials": [
+      "LaNiO3"
+    ],
+    "elements": [
+      "Cr",
+      "In",
+      "La",
+      "Ni",
+      "O",
+      "Pr"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "LaNiO3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from ChemInform Abstract: Synthesis, Crystal Structure, and Prope",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from ChemInform (2010)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physleta.2009.10.044",
+    "title": "Effect of quasiparticle spectral weight and consistency of energy gaps obtained from STM and ARPES spectra for underdoped superconductor Bi2Sr2CaCu2O8+δ",
+    "year": 2009,
+    "source": "Physics Letters A",
+    "url": "https://doi.org/10.1016/j.physleta.2009.10.044",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physleta.2009.10.044",
+    "materials": [
+      "Bi2Sr2CaCu2O8"
+    ],
+    "elements": [
+      "Bi",
+      "Ca",
+      "Cu",
+      "O",
+      "P",
+      "S",
+      "Sr"
+    ],
+    "techniques": [
+      "ARPES",
+      "STM"
+    ],
+    "keywords": [
+      "Bi2Sr2CaCu2O8"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Effect of quasiparticle spectral weight and consistency of e",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Physics Letters A (2009)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/0042-207x(75)91819-9",
+    "title": "1240. Investigation of saturation vapour pressure of Bi2Te3Bi2Se3 and Bi2Te3Sb2Te3 thermoelectric materials",
+    "year": 2009,
+    "source": "Vacuum",
+    "url": "https://doi.org/10.1016/0042-207x(75)91819-9",
+    "ar5iv_url": "",
+    "doi": "10.1016/0042-207x(75)91819-9",
+    "materials": [
+      "Bi2Se3",
+      "Bi2Te3",
+      "Sb2Te3"
+    ],
+    "elements": [
+      "Bi",
+      "In",
+      "Sb",
+      "Se",
+      "Te"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2Se3",
+      "Bi2Te3",
+      "Sb2Te3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from 1240. Investigation of saturation vapour pressure of Bi2Te3",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Vacuum (2009)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physc.2009.02.015",
+    "title": "Heat capacity, thermal expansion and pressure derivative of critical temperature at the superconducting and charge density wave (CDW) transitions in NbSe2",
+    "year": 2009,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/j.physc.2009.02.015",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physc.2009.02.015",
+    "materials": [
+      "NbSe2",
+      "Nb"
+    ],
+    "elements": [
+      "C",
+      "He",
+      "Nb",
+      "Se",
+      "W"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "NbSe2",
+      "Nb"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Heat capacity, thermal expansion and pressure derivative of ",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Physica C: Superconductivity (2009)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.79.214502",
+    "title": "Doped kagome system as exotic superconductor",
+    "year": 2009,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.79.214502",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.79.214502",
+    "materials": [
+      "kagome"
+    ],
+    "elements": [],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "kagome"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Doped kagome system as exotic superconductor",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physical Review B (2009)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/0256-307x/25/6/081",
+    "title": "Anti-Correlation between Energy-Gap and Phonon Energy for Cuprate Bi2212 Superconductor",
+    "year": 2008,
+    "source": "Chinese Physics Letters",
+    "url": "https://doi.org/10.1088/0256-307x/25/6/081",
+    "ar5iv_url": "",
+    "doi": "10.1088/0256-307x/25/6/081",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "Co",
+      "Cu",
+      "Ga"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Anti-Correlation between Energy-Gap and Phonon Energy for Cu",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Chinese Physics Letters (2008)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1143/jpsj.77.113703",
+    "title": "Evidence for Unconventional Superconductivity in Arsenic-Free Iron-Based Superconductor FeSe: A <sup>77</sup>Se-NMR Study",
+    "year": 2008,
+    "source": "Journal of the Physical Society of Japan",
+    "url": "https://doi.org/10.1143/jpsj.77.113703",
+    "ar5iv_url": "",
+    "doi": "10.1143/jpsj.77.113703",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Ar",
+      "Ba",
+      "Fe",
+      "Ir",
+      "N",
+      "Se"
+    ],
+    "techniques": [
+      "NMR"
+    ],
+    "keywords": [
+      "FeSe"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Evidence for Unconventional Superconductivity in Arsenic-Fre",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of the Physical Society of Japan (2008)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physc.2008.01.004",
+    "title": "Microwave absorption measurements of the heavy-fermion superconductor CeCoIn5",
+    "year": 2008,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/j.physc.2008.01.004",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physc.2008.01.004",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Microwave absorption measurements of the heavy-fermion super",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity (2008)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/0953-2048/21/8/085012",
+    "title": "Correlation of microwave nonlinearity and magnetic pinning in high-temperature superconductor thin film band-pass filters",
+    "year": 2008,
+    "source": "Superconductor Science and Technology",
+    "url": "https://doi.org/10.1088/0953-2048/21/8/085012",
+    "ar5iv_url": "",
+    "doi": "10.1088/0953-2048/21/8/085012",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Co"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Correlation of microwave nonlinearity and magnetic pinning i",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Superconductor Science and Technology (2008)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physc.2007.03.006",
+    "title": "High-resolution ARPES study of many-body interactions in high-Tc cuprate superconductors",
+    "year": 2007,
+    "source": "Physica C: Superconductivity and its Applications",
+    "url": "https://doi.org/10.1016/j.physc.2007.03.006",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physc.2007.03.006",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S",
+      "Tc"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from High-resolution ARPES study of many-body interactions in hig",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Physica C: Superconductivity and its Applications (2007)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physc.2007.04.228",
+    "title": "A re-examination of the oxygen isotope effect in ARPES spectra of Bi2212",
+    "year": 2007,
+    "source": "Physica C: Superconductivity and its Applications",
+    "url": "https://doi.org/10.1016/j.physc.2007.04.228",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physc.2007.04.228",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from A re-examination of the oxygen isotope effect in ARPES spect",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity and its Applications (2007)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/bf02704951",
+    "title": "Multiple superconducting phases in heavy fermion compounds PrOs4Sb12 and CeCoIn5",
+    "year": 2007,
+    "source": "Pramana",
+    "url": "https://doi.org/10.1007/bf02704951",
+    "ar5iv_url": "",
+    "doi": "10.1007/bf02704951",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In",
+      "Os",
+      "Pr",
+      "Sb"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Multiple superconducting phases in heavy fermion compounds P",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Pramana (2007)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.jallcom.2006.08.347",
+    "title": "The peculiarities of the phase diagram of heavy fermion metal CeCoIn5",
+    "year": 2007,
+    "source": "Journal of Alloys and Compounds",
+    "url": "https://doi.org/10.1016/j.jallcom.2006.08.347",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.jallcom.2006.08.347",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In",
+      "Th"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from The peculiarities of the phase diagram of heavy fermion meta",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Alloys and Compounds (2007)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.2787969",
+    "title": "Superconducting thin films of heavy-fermion compound CeCoIn5 prepared by molecular beam epitaxy",
+    "year": 2007,
+    "source": "Applied Physics Letters",
+    "url": "https://doi.org/10.1063/1.2787969",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.2787969",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In"
+    ],
+    "techniques": [
+      "TEM",
+      "MBE"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Superconducting thin films of heavy-fermion compound CeCoIn5",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Applied Physics Letters (2007)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physc.2007.03.007",
+    "title": "Andreev reflection spectroscopy of the heavy-fermion superconductor CeCoIn5 along three different crystallographic orientations",
+    "year": 2007,
+    "source": "Physica C: Superconductivity and its Applications",
+    "url": "https://doi.org/10.1016/j.physc.2007.03.007",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physc.2007.03.007",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Andreev reflection spectroscopy of the heavy-fermion superco",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity and its Applications (2007)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physb.2007.10.228",
+    "title": "Andreev reflection spectroscopy of the pure and Cd-doped heavy-fermion superconductor CeCoIn5: Detecting order parameter symmetry and competing phases",
+    "year": 2007,
+    "source": "Physica B: Condensed Matter",
+    "url": "https://doi.org/10.1016/j.physb.2007.10.228",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physb.2007.10.228",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Cd",
+      "Ce",
+      "Co",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Andreev reflection spectroscopy of the pure and Cd-doped hea",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica B: Condensed Matter (2007)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1080/00150197708236740",
+    "title": "A relation between the charge density wave (CDW) instability and superconducting Tc in layered compounds",
+    "year": 2007,
+    "source": "Ferroelectrics",
+    "url": "https://doi.org/10.1080/00150197708236740",
+    "ar5iv_url": "",
+    "doi": "10.1080/00150197708236740",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "Tc",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from A relation between the charge density wave (CDW) instability",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Ferroelectrics (2007)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/bf02644710",
+    "title": "Electron Microscopy Studies of Charge Density Wave (CDW) Transitions in Ti58.7Ni37.5Al3.8 Alloy",
+    "year": 2007,
+    "source": "Metallurgical Transactions A",
+    "url": "https://doi.org/10.1007/bf02644710",
+    "ar5iv_url": "",
+    "doi": "10.1007/bf02644710",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Al",
+      "C",
+      "Ni",
+      "Ti",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Electron Microscopy Studies of Charge Density Wave (CDW) Tra",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Metallurgical Transactions A (2007)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1002/pssb.2221120217",
+    "title": "The Dielectric Response of a Charge Density Wave (CDW) Distorted Electron–Phonon System in the Precritical Region I. The Self‐Consistent Method",
+    "year": 2007,
+    "source": "physica status solidi (b)",
+    "url": "https://doi.org/10.1002/pssb.2221120217",
+    "ar5iv_url": "",
+    "doi": "10.1002/pssb.2221120217",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "Co",
+      "I",
+      "Pr",
+      "Re",
+      "Se",
+      "Th",
+      "W"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from The Dielectric Response of a Charge Density Wave (CDW) Disto",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from physica status solidi (b) (2007)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1002/pssb.2221140114",
+    "title": "The dielectric response of a charge density wave (CDW) distorted electron—phonon system in the precritical region II. Macroscopic dielectric function and conductivity",
+    "year": 2007,
+    "source": "physica status solidi (b)",
+    "url": "https://doi.org/10.1002/pssb.2221140114",
+    "ar5iv_url": "",
+    "doi": "10.1002/pssb.2221140114",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "I",
+      "Th",
+      "W"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from The dielectric response of a charge density wave (CDW) disto",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from physica status solidi (b) (2007)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1088/0953-8984/20/01/015205",
+    "title": "Two-gap, high temperature superconductor, ARPES data, the pseudogap, and magnetic circular dichroism from the negative-<i>U</i>perspective",
+    "year": 2007,
+    "source": "Journal of Physics: Condensed Matter",
+    "url": "https://doi.org/10.1088/0953-8984/20/01/015205",
+    "ar5iv_url": "",
+    "doi": "10.1088/0953-8984/20/01/015205",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S",
+      "U"
+    ],
+    "techniques": [
+      "ARPES",
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Two-gap, high temperature superconductor, ARPES data, the ps",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Journal of Physics: Condensed Matter (2007)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1246/bcsj.67.687",
+    "title": "Synthesis, Crystal Structure, and Properties of Oxygen-Deficient Lanthanum Nickelate LaNiO3−<i>x</i> (0 ≤ <i>x</i> ≤ 0.5)",
+    "year": 2006,
+    "source": "Bulletin of the Chemical Society of Japan",
+    "url": "https://doi.org/10.1246/bcsj.67.687",
+    "ar5iv_url": "",
+    "doi": "10.1246/bcsj.67.687",
+    "materials": [
+      "LaNiO3"
+    ],
+    "elements": [
+      "Cr",
+      "La",
+      "Ni",
+      "O",
+      "Pr"
+    ],
+    "techniques": [
+      "XPS",
+      "TEM"
+    ],
+    "keywords": [
+      "LaNiO3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Synthesis, Crystal Structure, and Properties of Oxygen-Defic",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Bulletin of the Chemical Society of Japan (2006)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physb.2006.01.460",
+    "title": "Point-contact spectroscopy of CeCoIn5: Andreev reflection studies of the normal-metal–heavy-fermion superconductor interface",
+    "year": 2006,
+    "source": "Physica B: Condensed Matter",
+    "url": "https://doi.org/10.1016/j.physb.2006.01.460",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physb.2006.01.460",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Point-contact spectroscopy of CeCoIn5: Andreev reflection st",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica B: Condensed Matter (2006)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physb.2006.01.124",
+    "title": "Fulde–Ferrell–Larkin–Ovchinnikov superconductivity in heavy fermion CeCoIn5",
+    "year": 2006,
+    "source": "Physica B: Condensed Matter",
+    "url": "https://doi.org/10.1016/j.physb.2006.01.124",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physb.2006.01.124",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "Fe",
+      "In",
+      "La"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Fulde–Ferrell–Larkin–Ovchinnikov superconductivity in heavy ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica B: Condensed Matter (2006)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.2199429",
+    "title": "ARPES on high-temperature superconductors: Simplicity vs. complexity (Review Article)",
+    "year": 2006,
+    "source": "Low Temperature Physics",
+    "url": "https://doi.org/10.1063/1.2199429",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.2199429",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Ar",
+      "P",
+      "Re",
+      "S",
+      "Si"
+    ],
+    "techniques": [
+      "ARPES",
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from ARPES on high-temperature superconductors: Simplicity vs. co",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Low Temperature Physics (2006)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1007/bf02055401",
+    "title": "Physico-chemical and catalytic properties of gamma-irradiated lanthanum nickelate (LaNiO3)",
+    "year": 2005,
+    "source": "Journal of Radioanalytical and Nuclear Chemistry Articles",
+    "url": "https://doi.org/10.1007/bf02055401",
+    "ar5iv_url": "",
+    "doi": "10.1007/bf02055401",
+    "materials": [
+      "LaNiO3"
+    ],
+    "elements": [
+      "La",
+      "Ni",
+      "O"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "LaNiO3"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Physico-chemical and catalytic properties of gamma-irradiate",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Radioanalytical and Nuclear Chemistry Articles (2005)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physb.2005.01.125",
+    "title": "Destruction of charge density wave (CDW) ordering and enhancement of in the alloy system Lu5Ir4Si(1−xGex)10",
+    "year": 2005,
+    "source": "Physica B: Condensed Matter",
+    "url": "https://doi.org/10.1016/j.physb.2005.01.125",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physb.2005.01.125",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "Ge",
+      "Ir",
+      "Lu",
+      "Si",
+      "W"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Destruction of charge density wave (CDW) ordering and enhanc",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Physica B: Condensed Matter (2005)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1021/ic00259a002",
+    "title": "Band electronic structure of the high-temperature (Tc &gt; 90K) superconductor orthorhombic ytterium barium cuprate (YBa2Cu3O7). 1. Partially filled d-block bands of the equilibrium structure",
+    "year": 2005,
+    "source": "Inorganic Chemistry",
+    "url": "https://doi.org/10.1021/ic00259a002",
+    "ar5iv_url": "",
+    "doi": "10.1021/ic00259a002",
+    "materials": [
+      "YBa2Cu3O7"
+    ],
+    "elements": [
+      "Ba",
+      "Cu",
+      "K",
+      "O",
+      "Tc",
+      "Y"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "YBa2Cu3O7"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from Band electronic structure of the high-temperature (Tc &gt; 9",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from Inorganic Chemistry (2005)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physc.2004.01.154",
+    "title": "Nodal vs antinodal quasiparticles in optimally doped Bi2212 superconductor",
+    "year": 2004,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/j.physc.2004.01.154",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physc.2004.01.154",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Nodal vs antinodal quasiparticles in optimally doped Bi2212 ",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity (2004)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/j.physc.2003.09.089",
+    "title": "Anisotropic magnetoresistance of Bi2212 crystals",
+    "year": 2004,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/j.physc.2003.09.089",
+    "ar5iv_url": "",
+    "doi": "10.1016/j.physc.2003.09.089",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Anisotropic magnetoresistance of Bi2212 crystals",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity (2004)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/0921-4534(96)00248-1",
+    "title": "The effect of carbon on the peritectic melting of Bi2212 and Bi2212 + Ag",
+    "year": 2003,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/0921-4534(96)00248-1",
+    "ar5iv_url": "",
+    "doi": "10.1016/0921-4534(96)00248-1",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Ag",
+      "Bi",
+      "Th"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from The effect of carbon on the peritectic melting of Bi2212 and",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity (2003)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/s0921-4534(02)02569-8",
+    "title": "Superconductivity of YBCO/(Sr,Ca)–Cu–O/YBCO system",
+    "year": 2003,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/s0921-4534(02)02569-8",
+    "ar5iv_url": "",
+    "doi": "10.1016/s0921-4534(02)02569-8",
+    "materials": [
+      "YBCO"
+    ],
+    "elements": [
+      "B",
+      "C",
+      "Ca",
+      "Cu",
+      "O",
+      "Sr",
+      "Y"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "YBCO"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Superconductivity of YBCO/(Sr,Ca)–Cu–O/YBCO system",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity (2003)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/s0921-4534(02)02730-2",
+    "title": "Gap structure and anomalous superconducting state of quasi-2D heavy-fermion CeCoIn5",
+    "year": 2003,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/s0921-4534(02)02730-2",
+    "ar5iv_url": "",
+    "doi": "10.1016/s0921-4534(02)02730-2",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "Ga",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Gap structure and anomalous superconducting state of quasi-2",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Physica C: Superconductivity (2003)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1023/a:1026247808957",
+    "title": "Vortex Dynamics in Heavy Fermion CeCoIn5",
+    "year": 2003,
+    "source": "Journal of Low Temperature Physics",
+    "url": "https://doi.org/10.1023/a:1026247808957",
+    "ar5iv_url": "",
+    "doi": "10.1023/a:1026247808957",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "Dy",
+      "Fe",
+      "He",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Vortex Dynamics in Heavy Fermion CeCoIn5",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Low Temperature Physics (2003)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/0036-9748(83)90178-3",
+    "title": "Microstructural features of charge density wave (CDW) and martensitic transformations in TiNiFe and TiNiAl alloys",
+    "year": 2003,
+    "source": "Scripta Metallurgica",
+    "url": "https://doi.org/10.1016/0036-9748(83)90178-3",
+    "ar5iv_url": "",
+    "doi": "10.1016/0036-9748(83)90178-3",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Al",
+      "C",
+      "Fe",
+      "Ni",
+      "Ti",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Microstructural features of charge density wave (CDW) and ma",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Scripta Metallurgica (2003)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/0379-6779(91)91723-n",
+    "title": "Optical studies of BaBiO3: A 3D charge density wave (CDW) insulator",
+    "year": 2003,
+    "source": "Synthetic Metals",
+    "url": "https://doi.org/10.1016/0379-6779(91)91723-n",
+    "ar5iv_url": "",
+    "doi": "10.1016/0379-6779(91)91723-n",
+    "materials": [
+      "BaBiO3"
+    ],
+    "elements": [
+      "Ba",
+      "Bi",
+      "C",
+      "O",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "BaBiO3"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Optical studies of BaBiO3: A 3D charge density wave (CDW) in",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Synthetic Metals (2003)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/s0921-4534(97)01767-x",
+    "title": "Interpretation of the ARPES normal state gap in cuprate superconductors from a mixed boson–fermion model",
+    "year": 2002,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/s0921-4534(97)01767-x",
+    "ar5iv_url": "",
+    "doi": "10.1016/s0921-4534(97)01767-x",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "In",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Interpretation of the ARPES normal state gap in cuprate supe",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Physica C: Superconductivity (2002)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/0921-4534(91)91602-z",
+    "title": "Hole filling and pair breaking effects of Pr in cuprate oxide with YBCO-structure",
+    "year": 2002,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/0921-4534(91)91602-z",
+    "ar5iv_url": "",
+    "doi": "10.1016/0921-4534(91)91602-z",
+    "materials": [
+      "YBCO"
+    ],
+    "elements": [
+      "B",
+      "C",
+      "Ho",
+      "O",
+      "Pr",
+      "Y"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "YBCO"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Hole filling and pair breaking effects of Pr in cuprate oxid",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity (2002)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1023/a:1013204028051",
+    "title": "A Comparison Between Charge-Transfer and Sliding-Bond Models for Superconduction in YBCO Cuprate",
+    "year": 2002,
+    "source": "Journal of Superconductivity",
+    "url": "https://doi.org/10.1023/a:1013204028051",
+    "ar5iv_url": "",
+    "doi": "10.1023/a:1013204028051",
+    "materials": [
+      "YBCO"
+    ],
+    "elements": [
+      "B",
+      "Be",
+      "C",
+      "Co",
+      "Cu",
+      "Mo",
+      "O",
+      "Y"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "YBCO"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from A Comparison Between Charge-Transfer and Sliding-Bond Models",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Journal of Superconductivity (2002)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/s0921-4534(98)00509-7",
+    "title": "Itinerant-localized duality theory for pseudogaps of ARPES in the normal state of high-Tc cuprate superconductors",
+    "year": 2002,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/s0921-4534(98)00509-7",
+    "ar5iv_url": "",
+    "doi": "10.1016/s0921-4534(98)00509-7",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "P",
+      "S",
+      "Tc"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Itinerant-localized duality theory for pseudogaps of ARPES i",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Physica C: Superconductivity (2002)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/s0921-4534(97)00133-0",
+    "title": "The grain alignment of Bi2223, Bi2212 and Bi2223 + Bi2212 phases in mechanical deformation and annealing processes",
+    "year": 2002,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/s0921-4534(97)00133-0",
+    "ar5iv_url": "",
+    "doi": "10.1016/s0921-4534(97)00133-0",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "Th"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from The grain alignment of Bi2223, Bi2212 and Bi2223 + Bi2212 ph",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity (2002)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/s0921-4534(97)00235-9",
+    "title": "Recent photoemission data from underdoped Bi2212 single crystals",
+    "year": 2002,
+    "source": "Physica C: Superconductivity",
+    "url": "https://doi.org/10.1016/s0921-4534(97)00235-9",
+    "ar5iv_url": "",
+    "doi": "10.1016/s0921-4534(97)00235-9",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "Re"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "Bi2212"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Recent photoemission data from underdoped Bi2212 single crys",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Physica C: Superconductivity (2002)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1116/1.575408",
+    "title": "Summary Abstract: Scanning tunneling microscopy investigation of 2H-MoS2: A layered semiconducting transition-metal dichalcogenide",
+    "year": 2002,
+    "source": "Journal of Vacuum Science &amp; Technology A: Vacuum, Surfaces, and Films",
+    "url": "https://doi.org/10.1116/1.575408",
+    "ar5iv_url": "",
+    "doi": "10.1116/1.575408",
+    "materials": [
+      "MoS2"
+    ],
+    "elements": [
+      "H",
+      "Mo",
+      "S",
+      "Sc"
+    ],
+    "techniques": [
+      "STM"
+    ],
+    "keywords": [
+      "MoS2"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Summary Abstract: Scanning tunneling microscopy investigatio",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Vacuum Science &amp; Technology A: Vacuum, Surfaces, and Films (2002)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/s0022-3697(02)00008-2",
+    "title": "Magnetization study of the heavy fermion superconductor CeCoIn5",
+    "year": 2002,
+    "source": "Journal of Physics and Chemistry of Solids",
+    "url": "https://doi.org/10.1016/s0022-3697(02)00008-2",
+    "ar5iv_url": "",
+    "doi": "10.1016/s0022-3697(02)00008-2",
+    "materials": [
+      "CeCoIn5"
+    ],
+    "elements": [
+      "Ce",
+      "Co",
+      "In"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "CeCoIn5"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Magnetization study of the heavy fermion superconductor CeCo",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Journal of Physics and Chemistry of Solids (2002)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.30.6387",
+    "title": "Spectral function of the charge-density-wave (CDW) phonon in an anisotropic CDW superconductor",
+    "year": 2002,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.30.6387",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.30.6387",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "W"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Spectral function of the charge-density-wave (CDW) phonon in",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Physical Review B (2002)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.32.1464",
+    "title": "Raman scattering of light from a charge-density-wave (CDW) phonon in an anisotropic CDW superconductor",
+    "year": 2002,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.32.1464",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.32.1464",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "C",
+      "W"
+    ],
+    "techniques": [
+      "Raman"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Raman scattering of light from a charge-density-wave (CDW) p",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Physical Review B (2002)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.29.7023",
+    "title": "Theory of charge-density-wave—spin-density-wave mixing",
+    "year": 2002,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.29.7023",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.29.7023",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Th"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Theory of charge-density-wave—spin-density-wave mixing",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Physical Review B (2002)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1103/physrevb.41.9308",
+    "title": "Spin-density-wave and charge-density-wave fluctuation and electric conductivity",
+    "year": 2002,
+    "source": "Physical Review B",
+    "url": "https://doi.org/10.1103/physrevb.41.9308",
+    "ar5iv_url": "",
+    "doi": "10.1103/physrevb.41.9308",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Charge order / CDW data from Spin-density-wave and charge-density-wave fluctuation and el",
+        "type": "Charge order map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "ARPES spectra from Physical Review B (2002)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1063/1.1480238",
+    "title": "Galvanomagnetic effects in the normal state of high-Tc metal oxides in a model two-band superconductor with a narrow band (level) near the Fermi boundary",
+    "year": 2002,
+    "source": "Low Temperature Physics",
+    "url": "https://doi.org/10.1063/1.1480238",
+    "ar5iv_url": "",
+    "doi": "10.1063/1.1480238",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Fe",
+      "Ga",
+      "Tc"
+    ],
+    "techniques": [
+      "TEM",
+      "transport"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "Superconducting gap measurement from Galvanomagnetic effects in the normal state of high-Tc metal",
+        "type": "Gap map",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Temperature dependence data from Low Temperature Physics (2002)",
+        "type": "Temperature dependence",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1023/a:1012556114791",
+    "title": "Gulyaev–Bleustein Waves in a Layered Structure of Piezoelectric – Periodic Granular High-Temperature Superconductor Structure",
+    "year": 2002,
+    "source": "Russian Physics Journal",
+    "url": "https://doi.org/10.1023/a:1012556114791",
+    "ar5iv_url": "",
+    "doi": "10.1023/a:1012556114791",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "La",
+      "Te"
+    ],
+    "techniques": [
+      "TEM"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES measurement from Gulyaev–Bleustein Waves in a Layered Structure of Piezoelect",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Data from Russian Physics Journal (2002)",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
+  },
+  {
+    "id": "crossref:10.1016/s0368-2048(01)00264-x",
+    "title": "From Mott insulator to overdoped superconductor: evolution of the electronic structure of cuprates studied by ARPES",
+    "year": 2002,
+    "source": "Journal of Electron Spectroscopy and Related Phenomena",
+    "url": "https://doi.org/10.1016/s0368-2048(01)00264-x",
+    "ar5iv_url": "",
+    "doi": "10.1016/s0368-2048(01)00264-x",
+    "materials": [
+      "ARPES material"
+    ],
+    "elements": [
+      "Mo",
+      "P",
+      "S"
+    ],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES material"
+    ],
+    "figures": [
+      {
+        "caption": "ARPES band dispersion / Fermi surface from From Mott insulator to overdoped superconductor: evolution o",
+        "type": "Band structure",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Experimental data from Journal of Electron Spectroscopy and Related Phenomena (2002)",
+        "type": "ARPES spectrum",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "verification_status": "crossref_verified"
   }
 ]
