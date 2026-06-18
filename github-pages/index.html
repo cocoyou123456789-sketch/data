@@ -803,6 +803,45 @@
 
     .highlight-match { background: rgba(240,192,64,0.25); border-radius: 3px; padding: 0 2px; }
 
+    /* === HDF5 数据区 === */
+    .drop-zone {
+      border: 2px dashed var(--line);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      background: rgba(15,118,110,0.03);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .drop-zone.drag-over { border-color: var(--accent-glow); background: rgba(15,118,110,0.1); }
+    .hdf5-tree { max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+    .hdf5-tree .group { color: #f59e0b; cursor: pointer; }
+    .hdf5-tree .dataset { color: var(--accent-glow); cursor: pointer; padding-left: 16px; }
+    .hdf5-tree .attr { color: #60a5fa; padding-left: 24px; font-size: 11px; }
+    .band-plot-wrap {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0a0e14;
+      overflow: hidden;
+    }
+    .band-plot-wrap canvas { display: block; width: 100%; }
+    .data-library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+    }
+    .library-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card-bg);
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .library-card:hover { border-color: var(--accent-glow); transform: translateY(-2px); }
+    .library-card.selected { border: 2px solid var(--accent-glow); background: rgba(15,118,110,0.08); }
+
     /* === 语言切换 === */
     .lang-toggle {
       min-height: 34px;
@@ -834,6 +873,7 @@
       input[type="search"] { width: 100%; }
     }
   </style>
+<script src="https://cdn.jsdelivr.net/npm/jsfive@0.5.2/dist/browser/jsfive.min.js"></script>
 </head>
 <body>
   <!-- 粒子背景 -->
@@ -949,6 +989,47 @@
             </div>
           </div>
           <div class="source-map" id="sourceCards"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HDF5 数据管理 ===== -->
+    <section>
+      <div class="section-head">
+        <h2>📊 HDF5 数据管理 · ARPES Data Library</h2>
+        <span class="status" id="hdf5Status">上传 .h5 文件，解析能带/能量/温度数据，直观对比</span>
+      </div>
+      <div class="content">
+        <!-- 上传区域 -->
+        <div class="drop-zone" id="hdf5DropZone">
+          <strong>📁 拖放或点击上传 HDF5 (.h5/.hdf5) 文件</strong>
+          <p class="muted">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据</p>
+          <input type="file" id="hdf5FileInput" accept=".h5,.hdf5" multiple style="display:none;">
+        </div>
+        <!-- HDF5 文件树 + 元数据 -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="card">
+            <h3>📂 文件结构 · HDF5 Structure</h3>
+            <div class="hdf5-tree" id="hdf5Tree"><span class="muted">上传文件后显示结构</span></div>
+          </div>
+          <div class="card">
+            <h3>🏷️ 元数据 · Metadata</h3>
+            <div id="hdf5Meta"><span class="muted">点击数据集查看元数据</span></div>
+          </div>
+        </div>
+        <!-- 已导入的数据集库 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3>🗄️ 本地数据仓库 · Local Library (IndexedDB)</h3>
+            <div style="display:flex; gap:8px;">
+              <input type="search" id="librarySearch" placeholder="搜索：能量范围、温度、材料..." style="width:260px; min-height:34px;">
+              <button id="compareSelectedBtn" class="primary">📊 对比选中 Compare</button>
+              <button id="clearLibraryBtn">🗑️ 清空库</button>
+            </div>
+          </div>
+          <div class="data-library-grid" id="dataLibraryGrid">
+            <span class="muted">暂无数据。上传 HDF5 文件后添加到库。</span>
+          </div>
         </div>
       </div>
     </section>
@@ -2674,6 +2755,486 @@
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
       }[ch]));
     }
+
+    // ============================================================
+    //  HDF5 数据管理 · ARPES Data Library
+    //  使用 jsfive 解析 .h5, IndexedDB 存储, Canvas 绘制能带图
+    // ============================================================
+    const IDB_NAME = "arpes-data-library";
+    const IDB_VERSION = 1;
+    let idb = null;
+
+    // DOM refs for HDF5 section
+    const hdf5DropZone = document.querySelector("#hdf5DropZone");
+    const hdf5FileInput = document.querySelector("#hdf5FileInput");
+    const hdf5Tree = document.querySelector("#hdf5Tree");
+    const hdf5Meta = document.querySelector("#hdf5Meta");
+    const hdf5Status = document.querySelector("#hdf5Status");
+    const librarySearch = document.querySelector("#librarySearch");
+    const dataLibraryGrid = document.querySelector("#dataLibraryGrid");
+    const compareSelectedBtn = document.querySelector("#compareSelectedBtn");
+    const clearLibraryBtn = document.querySelector("#clearLibraryBtn");
+
+    let currentH5 = null;
+    let currentH5Path = "";
+    let librarySelection = new Set();
+
+    // 拖放/点击上传
+    hdf5DropZone.addEventListener("click", () => hdf5FileInput.click());
+    hdf5DropZone.addEventListener("dragover", (e) => { e.preventDefault(); hdf5DropZone.classList.add("drag-over"); });
+    hdf5DropZone.addEventListener("dragleave", () => hdf5DropZone.classList.remove("drag-over"));
+    hdf5DropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      hdf5DropZone.classList.remove("drag-over");
+      for (const file of e.dataTransfer.files) handleHDF5File(file);
+    });
+    hdf5FileInput.addEventListener("change", () => {
+      for (const file of hdf5FileInput.files) handleHDF5File(file);
+    });
+
+    async function handleHDF5File(file) {
+      if (!window.jsfive) { hdf5Status.textContent = "❌ HDF5 库未加载，请刷新重试"; return; }
+      hdf5Status.textContent = `⏳ 解析 ${file.name}...`;
+      try {
+        const buffer = await file.arrayBuffer();
+        const data = new Uint8Array(buffer);
+        const h5 = new jsfive.File(data);
+        currentH5 = h5;
+        renderHDF5Tree(h5);
+        hdf5Status.textContent = `✅ 已加载: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)`;
+        // 自动扫描 ARPES 相关数据集
+        autoScanARPES(h5, file.name);
+      } catch (e) {
+        hdf5Status.textContent = `❌ 无法解析 ${file.name}: ${e.message}`;
+      }
+    }
+
+    function renderHDF5Tree(h5) {
+      let html = "";
+      function walk(node, path, depth) {
+        const indent = "&nbsp;".repeat(depth * 4);
+        if (node.attrs && Object.keys(node.attrs).length) {
+          Object.entries(node.attrs).forEach(([k, v]) => {
+            html += `<div class="attr">${indent}📌 ${esc(String(k))}: ${esc(String(v))}</div>`;
+          });
+        }
+        if (node.keys) {
+          node.keys.forEach(key => {
+            const item = node.get(key);
+            const fullPath = `${path}/${key}`;
+            if (item.isGroup) {
+              html += `<div class="group" data-path="${esc(fullPath)}" onclick="event.stopPropagation();navigateH5('${esc(fullPath)}')">${indent}📁 ${esc(key)}</div>`;
+              walk(item, fullPath, depth + 1);
+            } else {
+              const shape = item.shape ? item.shape.join("×") : "scalar";
+              const dtype = item.dtype || "?";
+              html += `<div class="dataset" data-path="${esc(fullPath)}" onclick="event.stopPropagation();inspectDataset('${esc(fullPath)}')">${indent}📊 ${esc(key)} <span class="muted">[${shape}] ${dtype}</span></div>`;
+            }
+          });
+        }
+      }
+      walk(h5, "", 0);
+      hdf5Tree.innerHTML = html || "<span class='muted'>空文件</span>";
+    }
+
+    // 导航到 H5 group
+    window.navigateH5 = function(path) {
+      currentH5Path = path;
+      if (!currentH5) return;
+      try {
+        let node = currentH5;
+        const parts = path.split("/").filter(Boolean);
+        for (const p of parts) node = node.get(p);
+        if (node && node.isGroup) {
+          renderHDF5Tree(node);
+          let html = `<strong>📁 ${path}</strong><br>`;
+          if (node.attrs) Object.entries(node.attrs).forEach(([k, v]) => { html += `📌 ${esc(k)}: ${esc(String(v))}<br>`; });
+          if (node.keys) html += `📊 包含 ${node.keys.length} 个子项<br>`;
+          hdf5Meta.innerHTML = html;
+        }
+      } catch(e) { hdf5Meta.innerHTML = "无法导航: " + e.message; }
+    };
+
+    // 查看数据集详情
+    window.inspectDataset = async function(path) {
+      if (!currentH5) return;
+      try {
+        let node = currentH5;
+        const parts = path.split("/").filter(Boolean);
+        for (const p of parts) node = node.get(p);
+        const shape = node.shape || [];
+        const dtype = node.dtype || "unknown";
+        const size = shape.reduce((a,b) => a*b, 1);
+        let html = `<strong>📊 ${path.split("/").pop()}</strong><br>`;
+        html += `维度: [${shape.join(", ")}]<br>`;
+        html += `类型: ${dtype}<br>`;
+        html += `元素数: ${size.toLocaleString()}<br>`;
+        if (node.attrs) {
+          Object.entries(node.attrs).forEach(([k, v]) => {
+            html += `📌 ${esc(k)}: ${esc(String(v))}<br>`;
+          });
+        }
+        // 对小型数据集预览值
+        if (size <= 100 && size > 0) {
+          try {
+            const vals = node.value;
+            html += `值: ${esc(JSON.stringify(Array.from(vals.flat ? vals.flat().slice(0,20) : [vals]).slice(0,20)))}<br>`;
+          } catch(e) {}
+        }
+        html += `<br><button class="primary" onclick="addDatasetToLibrary('${esc(path)}')" style="font-size:12px;">➕ 添加到数据仓库</button>`;
+        hdf5Meta.innerHTML = html;
+      } catch(e) {
+        hdf5Meta.innerHTML = "读取失败: " + e.message;
+      }
+    };
+
+    // 自动扫描 ARPES 数据集
+    function autoScanARPES(h5, filename) {
+      const arpesDatasets = [];
+      const arpesKeywords = ["energy", "energies", "temperature", "temp", "photon", "angle", "theta", "kx", "ky", "kz", "momentum", "band", "spectrum", "intensity", "fermi", "gap", "dispersion"];
+      function scan(node, path) {
+        if (node.keys) {
+          node.keys.forEach(key => {
+            const item = node.get(key);
+            const fullPath = `${path}/${key}`;
+            const nameLower = key.toLowerCase();
+            if (!item.isGroup && arpesKeywords.some(kw => nameLower.includes(kw))) {
+              arpesDatasets.push({ path: fullPath, name: key, shape: item.shape || [], dtype: item.dtype || "" });
+            }
+            if (item.isGroup) scan(item, fullPath);
+          });
+        }
+      }
+      scan(h5, "");
+      if (arpesDatasets.length) {
+        hdf5Status.textContent = `✅ ${filename} | 检测到 ${arpesDatasets.length} 个 ARPES 相关数据集`;
+        hdf5Meta.innerHTML = `<strong>🔍 检测到的 ARPES 数据集:</strong><br>` +
+          arpesDatasets.map(d => `📊 ${esc(d.name)} [${(d.shape||[]).join("×")}] ${esc(d.dtype)}`).join("<br>");
+      }
+    }
+
+    // ===== IndexedDB 数据仓库 =====
+    function openIDB() {
+      return new Promise((resolve, reject) => {
+        if (idb) return resolve(idb);
+        const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains("datasets")) {
+            db.createObjectStore("datasets", { keyPath: "id" });
+          }
+        };
+        req.onsuccess = (e) => { idb = e.target.result; resolve(idb); };
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function addToLibrary(dataset) {
+      const db = await openIDB();
+      const tx = db.transaction("datasets", "readwrite");
+      const store = tx.objectStore("datasets");
+      await new Promise((resolve, reject) => {
+        const req = store.put(dataset);
+        req.onsuccess = resolve;
+        req.onerror = reject;
+      });
+      renderLibrary();
+    }
+
+    window.addDatasetToLibrary = async function(path) {
+      if (!currentH5) return;
+      try {
+        let node = currentH5;
+        const parts = path.split("/").filter(Boolean);
+        for (const p of parts) node = node.get(p);
+        const shape = node.shape || [];
+        const size = shape.reduce((a,b) => a*b, 0);
+        let data = null;
+        if (size <= 1e6 && size > 0) {
+          try { data = Array.from(node.value.flat ? node.value.flat().slice(0, 10000) : (node.value.length ? node.value.slice(0, 10000) : [node.value])); } catch(e) {}
+        }
+        const name = path.split("/").pop();
+        const attrs = {};
+        if (node.attrs) Object.entries(node.attrs).forEach(([k,v]) => { attrs[k] = v; });
+
+        const record = {
+          id: `h5-${Date.now()}-${Math.random().toString(16).slice(2,8)}`,
+          name, path, shape, dtype: node.dtype || "",
+          attrs,
+          data: data ? data.slice(0, 5000) : null,
+          source_file: currentH5.filename || "unknown.h5",
+          imported_at: new Date().toISOString(),
+          tags: autoTag(name, attrs)
+        };
+        await addToLibrary(record);
+        showToast(`✅ ${name} 已添加到仓库`);
+      } catch(e) {
+        showToast("添加失败: " + e.message);
+      }
+    };
+
+    function autoTag(name, attrs) {
+      const tags = [];
+      const text = (name + " " + Object.values(attrs).join(" ")).toLowerCase();
+      if (/energy|energies|eV/.test(text)) tags.push("energy");
+      if (/temperature|temp|kelvin|Tc/.test(text)) tags.push("temperature");
+      if (/angle|theta|momentum|kx|ky|kz|wave/.test(text)) tags.push("momentum");
+      if (/photon|hv|laser|synchrotron/.test(text)) tags.push("photon");
+      if (/band|dispersion|spectrum|intensity/.test(text)) tags.push("spectrum");
+      if (/fermi|gap|superconducting/.test(text)) tags.push("gap");
+      return tags;
+    }
+
+    async function renderLibrary() {
+      const db = await openIDB();
+      const tx = db.transaction("datasets", "readonly");
+      const store = tx.objectStore("datasets");
+      const all = await new Promise((resolve) => {
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+      });
+      const term = (librarySearch.value || "").toLowerCase();
+      const filtered = term ? all.filter(r => {
+        const text = [r.name, r.path, r.source_file, ...(r.tags||[]), JSON.stringify(r.attrs)].join(" ").toLowerCase();
+        return text.includes(term);
+      }) : all;
+
+      if (!filtered.length) {
+        dataLibraryGrid.innerHTML = "<span class='muted'>暂无数据。上传 HDF5 文件，点击数据集旁的 ➕ 添加到仓库。</span>";
+        return;
+      }
+      dataLibraryGrid.innerHTML = filtered.map(r => {
+        const sel = librarySelection.has(r.id) ? "selected" : "";
+        return `<div class="library-card ${sel}" data-id="${esc(r.id)}" onclick="toggleLibrarySelect('${esc(r.id)}')">
+          <strong>📊 ${esc(r.name)}</strong>
+          <span class="muted">[${(r.shape||[]).join("×")}] ${esc(r.dtype)}</span>
+          <span class="muted">📁 ${esc(r.source_file)}</span>
+          <div class="chips">${(r.tags||[]).map(t => `<span class="chip good">${esc(t)}</span>`).join("")}</div>
+          <span class="muted">${esc(r.imported_at?.slice(0,16) || "")}</span>
+        </div>`;
+      }).join("");
+    }
+
+    window.toggleLibrarySelect = function(id) {
+      if (librarySelection.has(id)) librarySelection.delete(id);
+      else librarySelection.add(id);
+      renderLibrary();
+    };
+
+    clearLibraryBtn.addEventListener("click", async () => {
+      const db = await openIDB();
+      const tx = db.transaction("datasets", "readwrite");
+      await new Promise((resolve) => { tx.objectStore("datasets").clear().onsuccess = resolve; });
+      librarySelection.clear();
+      renderLibrary();
+      showToast("🗑️ 数据仓库已清空");
+    });
+
+    compareSelectedBtn.addEventListener("click", async () => {
+      if (librarySelection.size < 2) { showToast("请至少选择2个数据集进行对比"); return; }
+      const db = await openIDB();
+      const tx = db.transaction("datasets", "readonly");
+      const all = await new Promise((resolve) => { tx.objectStore("datasets").getAll().onsuccess = (e) => resolve(e.target.result || []); });
+      const selected = all.filter(r => librarySelection.has(r.id));
+      drawBandComparison(selected);
+      // 滚动到 Overview 区域
+      document.querySelector("section:nth-of-type(3)").scrollIntoView({ behavior: "smooth" });
+    });
+
+    // ===== 能带图 Canvas 绘制 =====
+    function drawBandComparison(datasets) {
+      // 在 Overview 区域下方显示
+      let container = document.querySelector("#bandCompareContainer");
+      if (!container) {
+        const overviewSection = document.querySelector("section:nth-of-type(3)");
+        container = document.createElement("div");
+        container.id = "bandCompareContainer";
+        container.style.cssText = "padding:16px;";
+        overviewSection.querySelector(".content").appendChild(container);
+      }
+      const n = datasets.length;
+      const cols = n <= 2 ? n : Math.min(n, 3);
+      const rows = Math.ceil(n / cols);
+      container.innerHTML = `<h3>📊 能带图对比 · Band Structure Comparison</h3>
+        <div style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:12px;" id="bandPlots"></div>
+        <div class="toolbar" style="margin-top:8px;">
+          <span class="muted">⚡ 高对称方向 · High-symmetry directions · ML 扩展接口预留</span>
+          <button id="exportBandDataBtn">📥 导出数据 JSON</button>
+        </div>`;
+      const plotsDiv = document.querySelector("#bandPlots");
+
+      datasets.forEach((ds, i) => {
+        const wrap = document.createElement("div");
+        wrap.className = "band-plot-wrap";
+        const canvas = document.createElement("canvas");
+        canvas.width = 560;
+        canvas.height = 380;
+        canvas.style.width = "100%";
+        canvas.style.height = "auto";
+        wrap.appendChild(canvas);
+        wrap.innerHTML += `<div style="padding:6px 10px; font-size:11px;"><strong>${esc(ds.name)}</strong> · ${esc(ds.source_file)} · tags: ${(ds.tags||[]).join(", ")}</div>`;
+        plotsDiv.appendChild(wrap);
+        drawBandPlot(canvas, ds, i);
+      });
+
+      // 导出按钮
+      document.querySelector("#exportBandDataBtn")?.addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(datasets, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "arpes-band-comparison.json";
+        a.click();
+      });
+    }
+
+    function drawBandPlot(canvas, ds, index) {
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width, H = canvas.height;
+      const margin = { top: 30, right: 40, bottom: 50, left: 55 };
+      const pw = W - margin.left - margin.right;
+      const ph = H - margin.top - margin.bottom;
+
+      ctx.fillStyle = "#0a0e14";
+      ctx.fillRect(0, 0, W, H);
+
+      // 网格
+      ctx.strokeStyle = "#1e2a36";
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i <= 8; i++) {
+        const y = margin.top + (ph * i / 8);
+        ctx.beginPath(); ctx.moveTo(margin.left, y); ctx.lineTo(W - margin.right, y); ctx.stroke();
+      }
+      for (let i = 0; i <= 10; i++) {
+        const x = margin.left + (pw * i / 10);
+        ctx.beginPath(); ctx.moveTo(x, margin.top); ctx.lineTo(x, H - margin.bottom); ctx.stroke();
+      }
+
+      // 轴
+      ctx.strokeStyle = "#4a5568";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(margin.left, margin.top); ctx.lineTo(margin.left, H - margin.bottom); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(margin.left, H - margin.bottom); ctx.lineTo(W - margin.right, H - margin.bottom); ctx.stroke();
+
+      // EF 虚线
+      const efY = margin.top + ph * 0.5;
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath(); ctx.moveTo(margin.left, efY); ctx.lineTo(W - margin.right, efY); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 标签
+      ctx.fillStyle = "#8899aa";
+      ctx.font = "11px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("k (Å⁻¹)", W/2, H - 8);
+      ctx.save();
+      ctx.translate(12, H/2);
+      ctx.rotate(-Math.PI/2);
+      ctx.fillText("E - EF (eV)", 0, 0);
+      ctx.restore();
+      ctx.fillText("EF", W - margin.right + 20, efY + 4);
+      // 高对称点标签
+      const kLabels = ["Γ", "X", "M", "Y", "Γ"];
+      for (let i = 0; i < kLabels.length; i++) {
+        const kx = margin.left + pw * i / (kLabels.length - 1);
+        ctx.fillText(kLabels[i], kx, H - margin.bottom + 18);
+        ctx.strokeStyle = "#2a3a48";
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(kx, margin.top); ctx.lineTo(kx, H - margin.bottom); ctx.stroke();
+      }
+
+      // 绘制数据
+      const colors = ["#14b8a6", "#60a5fa", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
+      const color = colors[index % colors.length];
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+
+      if (ds.data && ds.data.length > 1) {
+        const d = ds.data;
+        const nPts = Math.min(d.length, 1000);
+        const step = Math.max(1, Math.floor(d.length / nPts));
+        const sampled = [];
+        for (let i = 0; i < d.length; i += step) sampled.push(d[i]);
+        const yMin = Math.min(...sampled.filter(v => isFinite(v)));
+        const yMax = Math.max(...sampled.filter(v => isFinite(v)));
+        const yRange = Math.max(Math.abs(yMin), Math.abs(yMax), 0.5) * 1.2;
+
+        ctx.beginPath();
+        for (let i = 0; i < sampled.length; i++) {
+          const v = sampled[i];
+          if (!isFinite(v)) continue;
+          const kx = margin.left + pw * i / (sampled.length - 1);
+          const ky = margin.top + ph * (0.5 - v / (2 * yRange));
+          if (i === 0) ctx.moveTo(kx, ky);
+          else ctx.lineTo(kx, ky);
+        }
+        ctx.stroke();
+
+        // 图例
+        ctx.fillStyle = color;
+        ctx.font = "bold 11px sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(ds.name, margin.left + 8, margin.top + 16);
+      } else {
+        // 生成模拟色散关系作为示意图
+        ctx.beginPath();
+        const colors2 = ["#14b8a6", "#60a5fa", "#f59e0b", "#ef4444"];
+        for (let b = 0; b < 3; b++) {
+          ctx.strokeStyle = colors2[b % colors2.length];
+          ctx.lineWidth = 2.2 - b * 0.3;
+          ctx.beginPath();
+          for (let i = 0; i <= 200; i++) {
+            const t = i / 200;
+            const kx = margin.left + pw * t;
+            const ky = margin.top + ph * (0.5 - (0.3 * Math.sin(t * Math.PI * 2 + b * 2.1) - b * 0.15));
+            if (i === 0) ctx.moveTo(kx, ky);
+            else ctx.lineTo(kx, ky);
+          }
+          ctx.stroke();
+        }
+        ctx.fillStyle = color;
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("📊 示意能带 (上传含energy/k轴的HDF5数据可显示真实能带)", margin.left + 8, margin.top + 16);
+        ctx.fillText("Schematic — upload real HDF5 with E/k data", margin.left + 8, margin.top + 32);
+      }
+    }
+
+    // ===== 搜索库 =====
+    librarySearch.addEventListener("input", renderLibrary);
+    librarySearch.addEventListener("keydown", (e) => { if (e.key === "Enter") renderLibrary(); });
+
+    // 初始化 IndexedDB
+    openIDB().then(() => renderLibrary()).catch(() => {});
+
+    // ===== ML 扩展接口 (预留) =====
+    // 外部模型可通过 window.ARPES_ML 接入
+    window.ARPES_ML = {
+      version: "0.1.0",
+      // 注册模型
+      registerModel(name, predictFn) {
+        if (!this._models) this._models = {};
+        this._models[name] = predictFn;
+        console.log(`ML model "${name}" registered`);
+      },
+      // 获取高对称方向数据
+      async getHighSymmetryData(datasetId) {
+        const db = await openIDB();
+        const tx = db.transaction("datasets", "readonly");
+        return new Promise((resolve) => {
+          tx.objectStore("datasets").get(datasetId).onsuccess = (e) => resolve(e.target.result);
+        });
+      },
+      // 运行预测
+      async predict(modelName, datasetId) {
+        const data = await this.getHighSymmetryData(datasetId);
+        if (!data) throw new Error("Dataset not found");
+        if (!this._models || !this._models[modelName]) throw new Error("Model not registered");
+        return this._models[modelName](data);
+      },
+      _models: {}
+    };
   </script>
 </body>
 </html>
