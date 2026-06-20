@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
   <title>ARPES Superconductivity Explorer | 超导材料探索器</title>
   <style>
     :root {
@@ -2124,7 +2125,7 @@
     }
 
     function renderPeriodicTable() {
-      const available = new Set(state.db.materials.flatMap(r => r.elements));
+      const available = new Set(curatedArticles().flatMap(article => article.elements || []));
       periodicTable.innerHTML = periodicLayout.map(([sym, col, row], i) => {
         const meta = elementMeta[sym] || [sym, ""];
         const on = available.has(sym);
@@ -2142,6 +2143,12 @@
           applyFilters();
         });
       });
+    }
+
+    function curatedArticles() {
+      return (state.articles || []).filter(article =>
+        String(article.verification_status || "").startsWith("curated_real_article")
+      );
     }
 
     // ===== 创意跳舞动画 + 粒子 + 音效条 =====
@@ -2250,16 +2257,21 @@
 
     function updateSelectedElement() {
       if (!state.selectedElement) {
-        elementPanel.innerHTML = `<h3>${t("selectElement")}</h3><p class="muted">${t("selectElementHint")}</p>`;
+        elementPanel.innerHTML = `<h3>${t("selectElement")}</h3><p class="muted">绿色元素现在只来自 curated 真实 ARPES 论文图，不再由 seed 模板点亮。${t("selectElementHint")}</p>`;
         return;
       }
       const rows = state.db.materials.filter(r => r.elements.includes(state.selectedElement));
       const families = uniq(rows.map(r => familyName(r.family)));
       const mats = rows.map(r => r.display_name || r.material);
+      const articleRows = curatedArticles().filter(article => (article.elements || []).includes(state.selectedElement));
       elementPanel.innerHTML = `
-        <h3>${esc(state.selectedElement)} ${t("elementInSC")}</h3>
-        <div class="chips">${families.map(v => `<span class="chip good">${esc(v)}</span>`).join("")}</div>
-        <ul>${mats.map(v => `<li>${esc(v)}</li>`).join("")}</ul>
+        <h3>${esc(state.selectedElement)}：curated ARPES articles</h3>
+        <div class="chips">
+          ${families.map(v => `<span class="chip good">${esc(v)}</span>`).join("")}
+          <span class="chip trusted">${articleRows.length} real article records</span>
+        </div>
+        <ul>${articleRows.map(article => `<li>${esc(article.title)} <span class="muted">(${esc(article.year)})</span></li>`).join("")}</ul>
+        <p class="muted">Seed material rows for this element: ${esc(mats.join(", ") || "-")}</p>
       `;
     }
 
@@ -2346,7 +2358,7 @@
       const term = (searchInput.value || "").trim().toLowerCase();
       const family = familyFilter.value;
 
-      for (const article of state.articles) {
+      for (const article of curatedArticles()) {
         if (!article.figures || !article.figures.length) continue;
         const articleText = [
           article.title, ...(article.materials || []), ...(article.elements || []),
@@ -2365,6 +2377,8 @@
         }
 
         for (const fig of article.figures) {
+          const imageUrl = resolveFigureImage(fig, article);
+          if (!imageUrl) continue;
           // 图表类型筛选
           if (figFilterType !== "all") {
             if (figFilterType === "Gap" && !(fig.type || "").toLowerCase().includes("gap")) continue;
@@ -2379,6 +2393,9 @@
             year: article.year,
             materials: article.materials || [],
             techniques: article.techniques || [],
+            data_quality: article.data_quality || article.verification_status,
+            image_url: imageUrl,
+            original_figure_url: fig.original_figure_url || article.ar5iv_url || article.url,
             has_ar5iv: !!article.ar5iv_url
           });
         }
@@ -2389,8 +2406,8 @@
       const hiddenFigs = totalFigs - shownFigs.length;
 
       figCount.textContent = term || family || figFilterType !== "all"
-        ? `筛选出 ${totalFigs} 张图表`
-        : `共 ${totalFigs} 张图表 (请搜索或筛选)`;
+        ? `筛选出 ${totalFigs} 张已核验真实论文图`
+        : `共 ${totalFigs} 张已核验真实论文图`;
 
       if (!shownFigs.length) {
         figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${t("noFigureMatch")} — 尝试搜索材料名如 "FeSe"、"Bi2212"、"ARPES"</p></div>`;
@@ -2407,25 +2424,31 @@
         if (fig.energy_eV) metaParts.push(`hν=${fig.energy_eV}eV`);
         if (fig.temp_K) metaParts.push(`T=${fig.temp_K}K`);
 
-        // 图表卡片：展示真实论文图表信息 + 一键跳转查看
+        // 图表卡片：只显示 curated 真实论文图像，不再使用猜测占位图
+        const imgSrc = fig.image_url;
+        const figContent = `
+          <div style="position:relative;width:100%;min-height:180px;background:#0a0e14;border-radius:6px;overflow:hidden;display:grid;place-items:center;">
+            <img src="${esc(imgSrc)}" alt="${esc(fig.caption)}"
+              referrerpolicy="no-referrer"
+              loading="eager"
+              style="width:100%;max-height:260px;object-fit:contain;"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">
+            <div style="display:none;place-items:center;gap:6px;padding:20px;text-align:center;position:absolute;inset:0;">
+              <div style="font-size:32px;">📊</div>
+              <div style="font-size:11px;color:var(--muted);">该真实论文图像无法直连显示</div>
+              <a href="${esc(fig.original_figure_url || fig.article_url || imgSrc)}" target="_blank" class="chip good" style="font-size:10px;">📖 查看论文图源</a>
+            </div>
+          </div>`;
+
         return `
           <div class="figure-card ${typeClass}">
             <div class="figure-card-header">${sourceBadge} ${esc(fig.type)} · ${esc(fig.year || "")} · ${esc(fig.article_source)}</div>
-            <div class="figure-card-visual" style="display:grid;place-items:center;gap:8px;text-align:center;padding:16px;min-height:150px;cursor:pointer;"
-                 onclick="window.open('${esc(fig.ar5iv_url || fig.article_url || "#")}', '_blank')">
-              <div style="font-size:40px;">${fig.type.includes("Fermi") ? "🔵" : fig.type.includes("Band") ? "🟡" : fig.type.includes("Gap") ? "🔴" : fig.type.includes("Charge") ? "🟣" : "📊"}</div>
-              <div style="font-size:13px;font-weight:700;">${esc(fig.caption)}</div>
-              ${metaParts.length ? `<div style="font-size:12px;color:var(--accent-glow);">${metaParts.join(" · ")}</div>` : ""}
-              <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
-                <a href="${esc(fig.ar5iv_url || fig.article_url)}" target="_blank" class="chip good" style="font-size:11px;padding:6px 12px;text-decoration:none;" onclick="event.stopPropagation();">
-                  📖 查看图表 View Figure
-                </a>
-                ${fig.doi ? `<a href="https://doi.org/${esc(fig.doi)}" target="_blank" class="chip trusted" style="font-size:11px;padding:6px 12px;text-decoration:none;" onclick="event.stopPropagation();">🔗 DOI</a>` : ""}
-              </div>
-            </div>
+            ${figContent}
             <div class="figure-card-footer">
-              <span style="font-size:10px;">📄 ${esc(fig.article_title.slice(0, 80))}...</span>
-              <span style="font-size:10px;">🧪 ${esc((fig.materials || []).join(", "))} | 🔬 ${esc((fig.techniques || []).join(", "))}</span>
+              <strong>${esc(fig.caption)}</strong>
+              <span style="font-size:10px;">✅ ${esc(fig.data_quality || "curated_real_article_figure")}</span>
+              <span style="font-size:10px;">📄 ${esc(fig.article_title.slice(0, 70))}...</span>
+              <span style="font-size:10px;">🧪 ${esc((fig.materials || []).join(", "))}</span>
             </div>
           </div>
         `;
@@ -2438,6 +2461,15 @@
       } else {
         figShowMoreBtn.style.display = "none";
       }
+    }
+
+    function resolveFigureImage(fig, article) {
+      if (fig.image_url) return fig.image_url;
+      if (!fig.ar5iv_fig) return "";
+      if (/^https?:\/\//i.test(fig.ar5iv_fig)) return fig.ar5iv_fig;
+      if (fig.ar5iv_fig.startsWith("/")) return `https://ar5iv.labs.arxiv.org${fig.ar5iv_fig}`;
+      if (!article.arxiv_id) return "";
+      return `https://ar5iv.labs.arxiv.org/html/${article.arxiv_id}/assets/${fig.ar5iv_fig}`;
     }
 
     function filteredSourceEntries() {
