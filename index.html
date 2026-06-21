@@ -23,6 +23,13 @@
       --shadow: 0 14px 34px rgba(0,0,0,0.4);
       --card-bg: #181f2a;
       --highlight: #f0c040;
+      --fig-fermi: #60a5fa;
+      --fig-band: #f59e0b;
+      --fig-gap: #ef4444;
+      --fig-charge: #8b5cf6;
+      --fig-edc: #10b981;
+      --fig-comparison: #ec4899;
+      --fig-other: #6b7280;
     }
 
     * { box-sizing: border-box; }
@@ -628,12 +635,46 @@
       overflow: hidden;
     }
     /* 图表类型颜色标记 */
-    .fig-type-fs { border-left: 3px solid #60a5fa; }   /* Fermi surface */
-    .fig-type-band { border-left: 3px solid #f59e0b; }  /* Band structure */
-    .fig-type-gap { border-left: 3px solid #ef4444; }   /* Gap map */
-    .fig-type-cdw { border-left: 3px solid #8b5cf6; }   /* Charge order */
-    .fig-type-edc { border-left: 3px solid #10b981; }   /* EDC */
-    .fig-type-other { border-left: 3px solid #6b7280; }
+    .fig-type-fs { --figure-color: var(--fig-fermi); border-left: 3px solid var(--figure-color); }   /* Fermi surface */
+    .fig-type-band { --figure-color: var(--fig-band); border-left: 3px solid var(--figure-color); }  /* Band structure */
+    .fig-type-gap { --figure-color: var(--fig-gap); border-left: 3px solid var(--figure-color); }   /* Gap map */
+    .fig-type-cdw { --figure-color: var(--fig-charge); border-left: 3px solid var(--figure-color); }   /* Charge order */
+    .fig-type-edc { --figure-color: var(--fig-edc); border-left: 3px solid var(--figure-color); }   /* EDC */
+    .fig-type-comparison { --figure-color: var(--fig-comparison); border-left: 3px solid var(--figure-color); }
+    .fig-type-other { --figure-color: var(--fig-other); border-left: 3px solid var(--figure-color); }
+    .fig-type-fs .figure-card-header,
+    .fig-type-band .figure-card-header,
+    .fig-type-gap .figure-card-header,
+    .fig-type-cdw .figure-card-header,
+    .fig-type-edc .figure-card-header,
+    .fig-type-comparison .figure-card-header,
+    .fig-type-other .figure-card-header {
+      color: var(--figure-color);
+      background: color-mix(in srgb, var(--figure-color) 14%, transparent);
+    }
+    .figure-color-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 8px 0 12px;
+    }
+    .figure-color-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 11px;
+      background: rgba(255,255,255,0.02);
+    }
+    .figure-color-legend i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--legend-color);
+    }
 
     /* === SVG 概念图 === */
     .concept-svg {
@@ -1050,6 +1091,7 @@
               <span id="figCount" class="status"></span>
             </div>
           </div>
+          <div id="figureColorLegend"></div>
           <div class="figure-gallery" id="figureGallery"></div>
           <div style="text-align:center; margin-top:8px;" id="figShowMoreWrap">
             <button id="figShowMoreBtn" style="display:none;">显示更多 Show More</button>
@@ -1711,11 +1753,24 @@
       "Gap distribution": "fig-type-gap",
       "Band-resolved gap": "fig-type-gap",
       "Temperature dependence": "fig-type-gap",
+      "Charge order": "fig-type-cdw",
       "Charge order map": "fig-type-cdw",
       "EDC analysis": "fig-type-edc",
-      "Comparison": "fig-type-other",
+      "Comparison": "fig-type-comparison",
+      "Other": "fig-type-other",
       "DFT comparison": "fig-type-other"
     };
+    const figureTypeColors = {
+      "Fermi surface": "#60a5fa",
+      "Band structure": "#f59e0b",
+      "ARPES spectrum": "#f59e0b",
+      "Gap map": "#ef4444",
+      "Charge order": "#8b5cf6",
+      "EDC analysis": "#10b981",
+      "Comparison": "#ec4899",
+      "Other": "#6b7280"
+    };
+    const datasetCompareColors = ["#60a5fa", "#f59e0b", "#ef4444", "#8b5cf6", "#10b981", "#ec4899", "#14b8a6", "#f97316"];
 
     // ===== 扩展光源词条（覆盖全球） =====
     const sourceEntries = [
@@ -2515,6 +2570,8 @@
       const allFigures = [];
       const term = (searchInput.value || "").trim().toLowerCase();
       const family = familyFilter.value;
+      const legendEl = $("#figureColorLegend");
+      if (legendEl) legendEl.innerHTML = typeColorLegendHtml();
 
       for (const article of curatedArticles()) {
         if (!article.figures || !article.figures.length) continue;
@@ -2772,6 +2829,7 @@
             <span class="chip trusted">${esc(figureComparison.typeLabel)}</span>
           </div>
           <p class="muted" style="margin-top:0;">自动统一图类型：当前图表筛选优先；未筛选时选择覆盖最多选中材料的真实论文图类型。</p>
+          ${typeColorLegendHtml()}
           <div class="figure-compare-grid">
             ${figureComparison.items.map(item => renderCompareFigureCard(item, figureComparison.typeLabel)).join("")}
           </div>
@@ -2841,8 +2899,9 @@
         `;
       }
       const fig = item.figure;
+      const typeClass = figureTypeClass[normalizeFigureType(fig.type)] || figureTypeClass[fig.type] || "fig-type-other";
       return `
-        <div class="figure-compare-card ${figureTypeClass[fig.type] || "fig-type-other"}">
+        <div class="figure-compare-card ${typeClass}">
           <div class="figure-card-header">${esc(material)} · ${esc(normalizeFigureType(fig.type))} · ${esc(fig.year || "")}</div>
           <div class="figure-compare-image">
             <img src="${esc(fig.image_url)}" alt="${esc(fig.caption)}" referrerpolicy="no-referrer" loading="eager">
@@ -2866,6 +2925,31 @@
       if (value.includes("spectrum") || value.includes("arpes")) return "ARPES spectrum";
       if (value.includes("comparison")) return "Comparison";
       return type || "Other";
+    }
+
+    function figureTypeColor(type) {
+      return figureTypeColors[normalizeFigureType(type)] || figureTypeColors.Other;
+    }
+
+    function typeColorLegendHtml() {
+      const items = [
+        ["Fermi surface", "Fermi surface"],
+        ["Band structure", "Band / ARPES spectrum"],
+        ["Gap map", "Gap"],
+        ["Charge order", "Charge order"],
+        ["EDC analysis", "EDC"],
+        ["Comparison", "Comparison"]
+      ];
+      return `<div class="figure-color-legend">
+        ${items.map(([type, label]) => `<span><i style="--legend-color:${figureTypeColor(type)}"></i>${esc(label)}</span>`).join("")}
+      </div>`;
+    }
+
+    function stableColorForText(value, palette = datasetCompareColors) {
+      const text = String(value || "");
+      let hash = 0;
+      for (let i = 0; i < text.length; i++) hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+      return palette[Math.abs(hash) % palette.length];
     }
 
     function normalizeMaterialName(value) {
@@ -3439,8 +3523,7 @@
       }
 
       // 绘制数据
-      const colors = ["#14b8a6", "#60a5fa", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
-      const color = colors[index % colors.length];
+      const color = stableColorForText(ds.name || ds.id || index);
       ctx.strokeStyle = color;
       ctx.lineWidth = 2.5;
 
@@ -3473,7 +3556,7 @@
       } else {
         // 生成模拟色散关系作为示意图
         ctx.beginPath();
-        const colors2 = ["#14b8a6", "#60a5fa", "#f59e0b", "#ef4444"];
+        const colors2 = ["#60a5fa", "#f59e0b", "#ef4444", "#8b5cf6"];
         for (let b = 0; b < 3; b++) {
           ctx.strokeStyle = colors2[b % colors2.length];
           ctx.lineWidth = 2.2 - b * 0.3;
