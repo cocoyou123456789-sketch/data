@@ -23,13 +23,14 @@
       --shadow: 0 14px 34px rgba(0,0,0,0.4);
       --card-bg: #181f2a;
       --highlight: #f0c040;
-      --fig-fermi: #60a5fa;
-      --fig-band: #f59e0b;
-      --fig-gap: #ef4444;
-      --fig-charge: #8b5cf6;
-      --fig-edc: #10b981;
-      --fig-comparison: #ec4899;
-      --fig-other: #6b7280;
+      --fig-fermi: #7aa9d8;
+      --fig-band: #d7a86b;
+      --fig-gap: #d87979;
+      --fig-charge: #a58bd8;
+      --fig-edc: #78bfa7;
+      --fig-comparison: #cf83b5;
+      --fig-other: #8c98a5;
+      --fig-surface: #101923;
     }
 
     * { box-sizing: border-box; }
@@ -582,9 +583,9 @@
       gap: 10px;
     }
     .figure-card {
-      border: 1px solid var(--line);
+      border: 1px solid #233141;
       border-radius: 10px;
-      background: linear-gradient(180deg, #111922 0%, #0d1520 100%);
+      background: linear-gradient(180deg, #101923 0%, #0d1620 100%);
       overflow: hidden;
       cursor: pointer;
       transition: all 0.3s;
@@ -592,13 +593,13 @@
       grid-template-rows: auto 1fr auto;
     }
     .figure-card:hover {
-      border-color: var(--accent-glow);
+      border-color: color-mix(in srgb, var(--figure-color, var(--accent-glow)) 55%, var(--line));
       transform: translateY(-4px);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.5), 0 0 16px rgba(15,118,110,0.15);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.42), 0 0 0 1px color-mix(in srgb, var(--figure-color, var(--accent-glow)) 28%, transparent);
     }
     .figure-card-header {
       padding: 8px 10px;
-      background: rgba(15,118,110,0.1);
+      background: #142030;
       border-bottom: 1px solid var(--line);
       font-size: 10px;
       font-weight: 700;
@@ -635,13 +636,13 @@
       overflow: hidden;
     }
     /* 图表类型颜色标记 */
-    .fig-type-fs { --figure-color: var(--fig-fermi); border-left: 3px solid var(--figure-color); }   /* Fermi surface */
-    .fig-type-band { --figure-color: var(--fig-band); border-left: 3px solid var(--figure-color); }  /* Band structure */
-    .fig-type-gap { --figure-color: var(--fig-gap); border-left: 3px solid var(--figure-color); }   /* Gap map */
-    .fig-type-cdw { --figure-color: var(--fig-charge); border-left: 3px solid var(--figure-color); }   /* Charge order */
-    .fig-type-edc { --figure-color: var(--fig-edc); border-left: 3px solid var(--figure-color); }   /* EDC */
-    .fig-type-comparison { --figure-color: var(--fig-comparison); border-left: 3px solid var(--figure-color); }
-    .fig-type-other { --figure-color: var(--fig-other); border-left: 3px solid var(--figure-color); }
+    .fig-type-fs { --figure-color: var(--fig-fermi); border-left: 2px solid var(--figure-color); }   /* Fermi surface */
+    .fig-type-band { --figure-color: var(--fig-band); border-left: 2px solid var(--figure-color); }  /* Band structure */
+    .fig-type-gap { --figure-color: var(--fig-gap); border-left: 2px solid var(--figure-color); }   /* Gap map */
+    .fig-type-cdw { --figure-color: var(--fig-charge); border-left: 2px solid var(--figure-color); }   /* Charge order */
+    .fig-type-edc { --figure-color: var(--fig-edc); border-left: 2px solid var(--figure-color); }   /* EDC */
+    .fig-type-comparison { --figure-color: var(--fig-comparison); border-left: 2px solid var(--figure-color); }
+    .fig-type-other { --figure-color: var(--fig-other); border-left: 2px solid var(--figure-color); }
     .fig-type-fs .figure-card-header,
     .fig-type-band .figure-card-header,
     .fig-type-gap .figure-card-header,
@@ -650,7 +651,12 @@
     .fig-type-comparison .figure-card-header,
     .fig-type-other .figure-card-header {
       color: var(--figure-color);
-      background: color-mix(in srgb, var(--figure-color) 14%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--figure-color) 16%, var(--fig-surface)), color-mix(in srgb, var(--figure-color) 8%, var(--fig-surface)));
+      border-bottom-color: color-mix(in srgb, var(--figure-color) 20%, var(--line));
+    }
+    .figure-card .figure-card-visual,
+    .figure-compare-card .figure-compare-image {
+      background: #091018;
     }
     .figure-color-legend {
       display: flex;
@@ -1920,16 +1926,16 @@
       "DFT comparison": "fig-type-other"
     };
     const figureTypeColors = {
-      "Fermi surface": "#60a5fa",
-      "Band structure": "#f59e0b",
-      "ARPES spectrum": "#f59e0b",
-      "Gap map": "#ef4444",
-      "Charge order": "#8b5cf6",
-      "EDC analysis": "#10b981",
-      "Comparison": "#ec4899",
-      "Other": "#6b7280"
+      "Fermi surface": "#7aa9d8",
+      "Band structure": "#d7a86b",
+      "ARPES spectrum": "#d7a86b",
+      "Gap map": "#d87979",
+      "Charge order": "#a58bd8",
+      "EDC analysis": "#78bfa7",
+      "Comparison": "#cf83b5",
+      "Other": "#8c98a5"
     };
-    const datasetCompareColors = ["#60a5fa", "#f59e0b", "#ef4444", "#8b5cf6", "#10b981", "#ec4899", "#14b8a6", "#f97316"];
+    const datasetCompareColors = ["#7aa9d8", "#d7a86b", "#d87979", "#a58bd8", "#78bfa7", "#cf83b5", "#83b7c9", "#b7aa82"];
 
     // ===== 扩展光源词条（覆盖全球） =====
     const sourceEntries = [
@@ -2797,9 +2803,6 @@
 
       figureGallery.innerHTML = shownFigs.map(fig => {
         const typeClass = figureTypeClass[fig.type] || "fig-type-other";
-        const sourceBadge = fig.article_source.includes("Nature") ? "🔴" :
-                           fig.article_source.includes("Phys. Rev.") ? "🟡" :
-                           fig.article_source.includes("Science") ? "🟠" : "⚪";
         const metaParts = [];
         if (fig.energy_eV) metaParts.push(`hν=${fig.energy_eV}eV`);
         if (fig.temp_K) metaParts.push(`T=${fig.temp_K}K`);
@@ -2807,7 +2810,7 @@
         // 图表卡片：只显示 curated 真实论文图像，不再使用猜测占位图
         const imgSrc = fig.image_url;
         const figContent = `
-          <div style="position:relative;width:100%;min-height:180px;background:#0a0e14;border-radius:6px;overflow:hidden;display:grid;place-items:center;">
+          <div style="position:relative;width:100%;min-height:180px;background:#091018;border-radius:6px;overflow:hidden;display:grid;place-items:center;">
             <img src="${esc(imgSrc)}" alt="${esc(fig.caption)}"
               referrerpolicy="no-referrer"
               loading="eager"
@@ -2822,7 +2825,7 @@
 
         return `
           <div class="figure-card ${typeClass}">
-            <div class="figure-card-header">${sourceBadge} ${esc(fig.type)} · ${esc(fig.year || "")} · ${esc(fig.article_source)}</div>
+            <div class="figure-card-header">${esc(fig.type)} · ${esc(fig.year || "")} · ${esc(fig.article_source)}</div>
             ${figContent}
             <div class="figure-card-footer">
               <strong>${esc(fig.caption)}</strong>
