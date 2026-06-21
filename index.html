@@ -1582,6 +1582,7 @@
       document.querySelector("#searchBtn").innerHTML = t("searchBtn");
       document.querySelector("#resetBtn").innerHTML = t("resetBtn");
       document.querySelector("#compareBtn").innerHTML = t("compareBtn") + ` (<span id="compareCount">${state.compareSet.size}</span>)`;
+      compareCount = $("#compareCount");
       document.querySelector("#saveOurDataBtn").innerHTML = t("saveBtn");
       document.querySelector("#exportOurDataBtn").innerHTML = t("exportBtn");
       document.querySelector("#clearOurDataBtn").innerHTML = t("clearBtn");
@@ -1607,6 +1608,7 @@
     };
 
     const STORAGE_KEY = "arpes-superconductivity-our-data-v1";
+    const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
     // ===== DOM 引用 =====
     const $ = (s) => document.querySelector(s);
@@ -1619,7 +1621,7 @@
     const searchBtn = $("#searchBtn");
     const resetBtn = $("#resetBtn");
     const compareBtn = $("#compareBtn");
-    const compareCount = $("#compareCount");
+    let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
     const metrics = $("#metrics");
@@ -1711,6 +1713,7 @@
       "Temperature dependence": "fig-type-gap",
       "Charge order map": "fig-type-cdw",
       "EDC analysis": "fig-type-edc",
+      "Comparison": "fig-type-other",
       "DFT comparison": "fig-type-other"
     };
 
@@ -2236,9 +2239,20 @@
     }
 
     async function loadJson(path) {
-      const resp = await fetch(path);
-      if (!resp.ok) throw new Error(`Cannot load ${path}`);
-      return resp.json();
+      const publicUrl = new URL(path, STATIC_DATA_BASE).href;
+      const candidates = location.protocol === "file:" ? [publicUrl] : [path, publicUrl];
+      let lastError = null;
+      for (const url of candidates) {
+        try {
+          const resp = await fetch(url, { cache: "no-store" });
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          return await resp.json();
+        } catch (error) {
+          lastError = error;
+          console.warn(`Cannot load ${url}`, error);
+        }
+      }
+      throw new Error(`Cannot load ${path}${lastError ? ` (${lastError.message})` : ""}`);
     }
 
     // ===== 渲染函数 =====
