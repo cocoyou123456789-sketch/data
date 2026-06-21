@@ -220,5 +220,141 @@
     ],
     "data_quality": "curated_real_article_figure",
     "verification_status": "curated_real_article_figure"
+  },
+  {
+    "id": "arxiv:0809.4455",
+    "title": "Momentum dependence of the superconducting gap in Ba1-xKxFe2As2",
+    "year": 2008,
+    "source": "arXiv / open article",
+    "url": "https://arxiv.org/abs/0809.4455",
+    "ar5iv_url": "https://ar5iv.labs.arxiv.org/html/0809.4455",
+    "arxiv_id": "0809.4455",
+    "materials": ["Ba0.6K0.4Fe2As2", "Ba1-xKxFe2As2", "BaK122"],
+    "elements": ["Ba", "K", "Fe", "As"],
+    "dopants": ["K"],
+    "techniques": ["ARPES"],
+    "keywords": ["BaK122", "iron-based superconductor", "superconducting gap", "momentum dependence"],
+    "figures": [
+      {
+        "caption": "Ba1-xKxFe2As2 ARPES superconducting-gap momentum dependence.",
+        "type": "Gap map",
+        "image_url": "https://ar5iv.labs.arxiv.org/html/0809.4455/assets/x1.png",
+        "original_figure_url": "https://ar5iv.labs.arxiv.org/html/0809.4455",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "BaK122 ARPES band / gap comparison panel.",
+        "type": "ARPES spectrum",
+        "image_url": "https://ar5iv.labs.arxiv.org/html/0809.4455/assets/x3.png",
+        "original_figure_url": "https://ar5iv.labs.arxiv.org/html/0809.4455",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "data_quality": "curated_real_article_figure",
+    "verification_status": "curated_real_article_figure"
+  },
+  {
+    "id": "arxiv:1503.07269",
+    "title": "ARPES measurements of the superconducting gap of Fe-based superconductors and their implications to the pairing mechanism",
+    "year": 2015,
+    "source": "arXiv / review article",
+    "url": "https://arxiv.org/abs/1503.07269",
+    "ar5iv_url": "https://ar5iv.labs.arxiv.org/html/1503.07269",
+    "arxiv_id": "1503.07269",
+    "materials": ["BaK122", "KFe2As2", "FeSe", "Fe-based superconductors"],
+    "elements": ["Ba", "K", "Fe", "As", "Se"],
+    "dopants": ["K"],
+    "techniques": ["ARPES"],
+    "keywords": ["Fe-based superconductors", "superconducting gap", "pairing mechanism", "review"],
+    "figures": [
+      {
+        "caption": "Fe-based superconductors ARPES superconducting-gap comparison from review.",
+        "type": "Gap map",
+        "image_url": "https://ar5iv.labs.arxiv.org/html/1503.07269/assets/x1.png",
+        "original_figure_url": "https://ar5iv.labs.arxiv.org/html/1503.07269",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "Fe-based ARPES band / gap overview comparison.",
+        "type": "Comparison",
+        "image_url": "https://ar5iv.labs.arxiv.org/html/1503.07269/assets/x4.png",
+        "original_figure_url": "https://ar5iv.labs.arxiv.org/html/1503.07269",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "data_quality": "curated_real_article_figure",
+    "verification_status": "curated_real_article_figure"
+  },
+  {
+    "id": "arxiv:1512.01949",
+    "title": "Observation of high-Tc superconductivity in rectangular FeSe/STO(110) monolayer",
+    "year": 2015,
+    "source": "arXiv / open article",
+    "url": "https://arxiv.org/abs/1512.01949",
+    "ar5iv_url": "https://ar5iv.labs.arxiv.org/html/1512.01949",
+    "arxiv_id": "1512.01949",
+    "materials": ["FeSe/STO", "FeSe", "SrTiO3"],
+    "elements": ["Fe", "Se", "Sr", "Ti", "O"],
+    "dopants": [],
+    "techniques": ["ARPES", "monolayer film"],
+    "keywords": ["FeSe", "STO", "monolayer", "high-Tc", "ARPES"],
+    "figures": [
+      {
+        "caption": "Monolayer FeSe/STO ARPES and superconducting-state figure.",
+        "type": "ARPES spectrum",
+        "image_url": "https://ar5iv.labs.arxiv.org/html/1512.01949/assets/x1.png",
+        "original_figure_url": "https://ar5iv.labs.arxiv.org/html/1512.01949",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "FeSe/STO superconducting gap / temperature-dependent figure.",
+        "type": "Gap map",
+        "image_url": "https://ar5iv.labs.arxiv.org/html/1512.01949/assets/x3.png",
+        "original_figure_url": "https://ar5iv.labs.arxiv.org/html/1512.01949",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "data_quality": "curated_real_article_figure",
+    "verification_status": "curated_real_article_figure"
+  },
+  {
+    "id": "arxiv:1309.5654",
+    "title": "Multiband Superconductivity in KFe2As2: Evidence for one Isotropic and several Liliputian Energy Gaps",
+    "year": 2013,
+    "source": "arXiv / open article",
+    "url": "https://arxiv.org/abs/1309.5654",
+    "ar5iv_url": "https://ar5iv.labs.arxiv.org/html/1309.5654",
+    "arxiv_id": "1309.5654",
+    "materials": ["KFe2As2"],
+    "elements": ["K", "Fe", "As"],
+    "dopants": [],
+    "techniques": ["ARPES"],
+    "keywords": ["KFe2As2", "multiband superconductivity", "energy gaps", "ARPES"],
+    "figures": [
+      {
+        "caption": "KFe2As2 multiband superconducting-gap ARPES figure.",
+        "type": "Gap map",
+        "image_url": "https://ar5iv.labs.arxiv.org/html/1309.5654/assets/x1.png",
+        "original_figure_url": "https://ar5iv.labs.arxiv.org/html/1309.5654",
+        "energy_eV": null,
+        "temp_K": null
+      },
+      {
+        "caption": "KFe2As2 ARPES band / Fermi-surface comparison figure.",
+        "type": "Fermi surface",
+        "image_url": "https://ar5iv.labs.arxiv.org/html/1309.5654/assets/x3.png",
+        "original_figure_url": "https://ar5iv.labs.arxiv.org/html/1309.5654",
+        "energy_eV": null,
+        "temp_K": null
+      }
+    ],
+    "data_quality": "curated_real_article_figure",
+    "verification_status": "curated_real_article_figure"
   }
 ]

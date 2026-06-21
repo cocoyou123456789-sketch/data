@@ -1868,6 +1868,96 @@
       },
       {
         region: "Global / 全球",
+        source: "Web of Science / Clarivate",
+        type: "Curated academic index",
+        arpes: "适合从机构授权数据库导出高可信 ARPES 论文集合、引用记录、作者和机构成果。",
+        figure: "通过 DOI / publisher landing page 定位论文图。",
+        originalData: "WoS 导出 metadata；全文图和补充数据需回到出版社或作者仓库。",
+        archive: "https://developer.clarivate.com/apis/wos",
+        archiveLabel: "Web of Science API"
+      },
+      {
+        region: "Global / 全球",
+        source: "Scopus / Elsevier",
+        type: "Curated academic index",
+        arpes: "适合大规模机构成果、引用和期刊 metadata 对比；需 Scopus 授权或导出文件。",
+        figure: "通过 DOI / ScienceDirect / publisher page 定位图表。",
+        originalData: "Scopus metadata；原始数据通常在补充材料或出版社数据仓库。",
+        archive: "https://dev.elsevier.com/",
+        archiveLabel: "Elsevier Developer"
+      },
+      {
+        region: "Global / 全球",
+        source: "Crossref",
+        type: "DOI metadata API",
+        arpes: "适合用 DOI 标准化文章身份、期刊、年份、publisher 和引用元数据。",
+        figure: "通过 DOI landing page 定位论文图。",
+        originalData: "Crossref metadata only；原始实验数据需链接补充材料。",
+        archive: "https://www.crossref.org/documentation/retrieve-metadata/rest-api/",
+        archiveLabel: "Crossref REST API"
+      },
+      {
+        region: "Global / 全球",
+        source: "OpenAlex",
+        type: "Open scholarly graph",
+        arpes: "开放学术图谱，适合按材料、机构、作者、引用关系检索 ARPES 文献。",
+        figure: "通过 open access URL / DOI 回连论文图。",
+        originalData: "Open metadata and OA links；实验数据需回到论文/补充数据。",
+        archive: "https://developers.openalex.org/",
+        archiveLabel: "OpenAlex API"
+      },
+      {
+        region: "Global / 全球",
+        source: "Semantic Scholar",
+        type: "Scholarly graph API",
+        arpes: "适合找相关论文、引用、参考文献和摘要，帮助扩展 ARPES 文章网络。",
+        figure: "通过 paper URL / DOI 定位图表。",
+        originalData: "Metadata / abstract / citation graph；实验原始数据需另链。",
+        archive: "https://api.semanticscholar.org/api-docs/",
+        archiveLabel: "Semantic Scholar API"
+      },
+      {
+        region: "Global / 全球",
+        source: "APS / Physical Review journals",
+        type: "Publisher / journals",
+        arpes: "凝聚态和超导 ARPES 常见出版源，适合 DOI 回链和图表核验。",
+        figure: "APS article figure panels and captions.",
+        originalData: "Supplemental Material / publisher article page.",
+        archive: "https://journals.aps.org/",
+        archiveLabel: "APS Journals"
+      },
+      {
+        region: "Global / 全球",
+        source: "Nature Portfolio",
+        type: "Publisher / journals",
+        arpes: "Nature、Nature Physics、Nature Materials 等高影响材料/ARPES 论文入口。",
+        figure: "Nature article figures, extended data and supplementary information.",
+        originalData: "Supplementary information / data availability links.",
+        archive: "https://www.nature.com/",
+        archiveLabel: "Nature"
+      },
+      {
+        region: "Global / 全球",
+        source: "ScienceDirect / Elsevier",
+        type: "Publisher platform",
+        arpes: "适合跟踪 Elsevier 期刊中的材料合成、表征和 ARPES 论文。",
+        figure: "Article figures and graphical abstracts.",
+        originalData: "Supplementary files / Mendeley Data when available.",
+        archive: "https://www.sciencedirect.com/",
+        archiveLabel: "ScienceDirect"
+      },
+      {
+        region: "Global / 全球",
+        source: "SpringerLink",
+        type: "Publisher platform",
+        arpes: "适合检索 Springer Nature 期刊/会议中的超导和 ARPES 论文。",
+        figure: "Article figures and supplementary information.",
+        originalData: "Supplementary files / publisher data availability.",
+        archive: "https://link.springer.com/",
+        archiveLabel: "SpringerLink"
+      },
+      {
+        region: "Global / 全球",
         source: "Materials Project",
         type: "Materials database / 计算数据库",
         arpes: "DFT 计算能带结构、态密度、晶体结构可用于 ARPES 对比。",
