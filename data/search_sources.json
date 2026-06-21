@@ -88,6 +88,61 @@
     "official_url": "https://dev.elsevier.com/"
   },
   {
+    "name": "APS Journals",
+    "category": "publisher",
+    "access": "publisher_pages_and_apis",
+    "trust_level": "peer-reviewed publisher",
+    "best_for": ["Physical Review articles", "condensed matter physics", "DOI landing pages", "supplemental material"],
+    "can_integrate_now": true,
+    "notes": "Useful publisher source for ARPES and superconductivity articles in Physical Review journals.",
+    "limits": "Full-text and figure reuse depend on article access/license; use DOI/page links and supplemental material links.",
+    "official_url": "https://journals.aps.org/"
+  },
+  {
+    "name": "Nature Portfolio",
+    "category": "publisher",
+    "access": "publisher_pages",
+    "trust_level": "peer-reviewed publisher",
+    "best_for": ["Nature Physics", "Nature Materials", "high-impact ARPES papers", "extended data", "supplementary information"],
+    "can_integrate_now": true,
+    "notes": "Good for curated high-impact article entries and data availability links.",
+    "limits": "Automated full-text/figure extraction is limited by access and licensing.",
+    "official_url": "https://www.nature.com/"
+  },
+  {
+    "name": "ScienceDirect",
+    "category": "publisher",
+    "access": "publisher_pages_or_elsevier_api",
+    "trust_level": "peer-reviewed publisher platform",
+    "best_for": ["Elsevier journal articles", "article figures", "supplementary files", "Mendeley Data links"],
+    "can_integrate_now": true,
+    "notes": "Use DOI and article pages for publisher-verified metadata and supplement links.",
+    "limits": "API/full text may require Elsevier entitlement; respect licenses.",
+    "official_url": "https://www.sciencedirect.com/"
+  },
+  {
+    "name": "SpringerLink",
+    "category": "publisher",
+    "access": "publisher_pages",
+    "trust_level": "peer-reviewed publisher platform",
+    "best_for": ["Springer Nature articles", "article figures", "supplementary information", "data availability statements"],
+    "can_integrate_now": true,
+    "notes": "Useful for article landing pages and supplement/data links.",
+    "limits": "Full-text access and figure extraction depend on article license.",
+    "official_url": "https://link.springer.com/"
+  },
+  {
+    "name": "IOPscience",
+    "category": "publisher",
+    "access": "publisher_pages",
+    "trust_level": "peer-reviewed publisher platform",
+    "best_for": ["Journal of Physics articles", "condensed matter", "materials physics", "supplementary data"],
+    "can_integrate_now": true,
+    "notes": "Good additional publisher source for materials and condensed-matter literature.",
+    "limits": "Full-text and figure extraction depend on access and licensing.",
+    "official_url": "https://iopscience.iop.org/"
+  },
+  {
     "name": "Materials Project",
     "category": "materials_database",
     "access": "official_api",
