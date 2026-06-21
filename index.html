@@ -988,8 +988,8 @@
 
   <header>
     <div>
-      <h1>⚡ ARPES Superconductivity Explorer</h1>
-      <p class="subtitle">超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析 | Superconducting materials, periodic table, light sources, article data, comparison</p>
+      <h1 data-i18n="title">⚡ ARPES 超导材料探索器</h1>
+      <p class="subtitle" data-i18n="subtitle">超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析</p>
     </div>
     <div style="display:flex; gap:10px; align-items:center;">
       <div class="sound-bars" id="soundBars">
@@ -1022,24 +1022,24 @@
           <div class="super-button-wrap">
             <button class="super-button" id="superconductorBtn">⚡ SUPERCONDUCTOR ⚡</button>
           </div>
-          <button class="topic-tab" data-topic="sc">⚡ 超导 Superconductor</button>
-          <button class="topic-tab" data-topic="topo">🔷 拓扑材料 Topological</button>
-          <button class="topic-tab" data-topic="photo">💎 光子晶体 Photonic</button>
+          <button class="topic-tab" data-topic="sc" data-i18n="superconductorTab">⚡ 超导</button>
+          <button class="topic-tab" data-topic="topo" data-i18n="topologicalTab">🔷 拓扑材料</button>
+          <button class="topic-tab" data-topic="photo" data-i18n="photonicTab">💎 光子晶体</button>
         </div>
         <div class="toolbar">
           <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder">
           <select id="familyFilter" title="材料家族">
-            <option value="">全部家族 All families</option>
+            <option value="">全部家族</option>
           </select>
           <select id="regionFilter" title="地区">
-            <option value="">全部地区 All regions</option>
+            <option value="">全部地区</option>
           </select>
           <select id="sourceTypeFilter" title="光源类型">
-            <option value="">全部类型 All types</option>
+            <option value="">全部类型</option>
           </select>
-          <button class="primary" id="searchBtn">🔍 搜索 Search</button>
+          <button class="primary" id="searchBtn">🔍 搜索</button>
           <button id="resetBtn">🔄 重置 Reset</button>
-          <button id="compareBtn" style="border-color:var(--accent-glow);">📊 对比 Compare (<span id="compareCount">0</span>)</button>
+          <button id="compareBtn" style="border-color:var(--accent-glow);">📊 对比 (<span id="compareCount">0</span>)</button>
         </div>
         <div class="metric-grid" id="metrics"></div>
       </div>
@@ -1048,8 +1048,8 @@
     <!-- ===== 周期表 ===== -->
     <section>
       <div class="section-head">
-        <h2>🗂️ 元素周期表 · Periodic Table</h2>
-        <span class="status">🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!</span>
+        <h2 data-i18n="periodicTitle">🗂️ 元素周期表</h2>
+        <span class="status" data-i18n="periodicStatus">🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!</span>
       </div>
       <div class="content">
         <div class="periodic-wrap">
@@ -1057,12 +1057,12 @@
         </div>
         <div class="layout-two">
           <div class="card" id="elementPanel">
-            <h3>👆 Select an Element / 选择元素</h3>
-            <p class="muted">Click a green element to see material families and ARPES properties. Grey = no data yet. / 点击绿色元素查看相关超导材料。</p>
+            <h3 data-i18n="selectElement">👆 选择一个元素</h3>
+            <p class="muted" data-i18n="selectElementHint">点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。</p>
           </div>
           <div class="card" id="familyPanel">
-            <h3>🧬 Material Families / 材料家族</h3>
-            <p class="muted">Click to filter. Current topic: superconductivity. / 点击标签快速筛选。</p>
+            <h3 data-i18n="familyTitle">🧬 材料家族</h3>
+            <p class="muted" data-i18n="familyHint">点击标签快速筛选。当前以超导为主题。</p>
             <div class="chips" id="familyChips"></div>
           </div>
         </div>
@@ -1072,41 +1072,41 @@
     <!-- ===== Overview 图片对比 ===== -->
     <section>
       <div class="section-head">
-        <h2>📸 Overview：文章图表直观对比 · Article Figure Comparison</h2>
+        <h2 data-i18n="overviewTitle">📸 直观对比：文章图表</h2>
         <span class="status" id="sourceStatus">从论文提取图表 — 不同材料/技术并排对比</span>
       </div>
       <div class="content">
         <!-- 文章图表对比画廊 -->
         <div>
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-            <h3 style="margin:0;">📊 论文图表对比 · Figure Comparison</h3>
+            <h3 style="margin:0;" data-i18n="figureGalleryTitle">📊 论文图表对比</h3>
             <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-              <span class="muted">筛选图表类型:</span>
-              <button class="fig-filter-chip active" data-figtype="all" style="font-size:11px;padding:3px 10px;border-radius:14px;">全部 All</button>
-              <button class="fig-filter-chip" data-figtype="Fermi surface" style="font-size:11px;padding:3px 10px;border-radius:14px;">费米面 FS</button>
-              <button class="fig-filter-chip" data-figtype="Band structure" style="font-size:11px;padding:3px 10px;border-radius:14px;">能带结构 Band</button>
-              <button class="fig-filter-chip" data-figtype="Gap" style="font-size:11px;padding:3px 10px;border-radius:14px;">能隙 Gap</button>
-              <button class="fig-filter-chip" data-figtype="ARPES spectrum" style="font-size:11px;padding:3px 10px;border-radius:14px;">ARPES谱</button>
-              <button class="fig-filter-chip" data-figtype="Charge order" style="font-size:11px;padding:3px 10px;border-radius:14px;">电荷序 CDW</button>
+              <span class="muted" data-i18n="figureFilterLabel">筛选图表类型:</span>
+              <button class="fig-filter-chip active" data-figtype="all" data-i18n="figTypeAll" style="font-size:11px;padding:3px 10px;border-radius:14px;">全部</button>
+              <button class="fig-filter-chip" data-figtype="Fermi surface" data-i18n="figTypeFermi" style="font-size:11px;padding:3px 10px;border-radius:14px;">费米面</button>
+              <button class="fig-filter-chip" data-figtype="Band structure" data-i18n="figTypeBand" style="font-size:11px;padding:3px 10px;border-radius:14px;">能带结构</button>
+              <button class="fig-filter-chip" data-figtype="Gap" data-i18n="figTypeGap" style="font-size:11px;padding:3px 10px;border-radius:14px;">能隙</button>
+              <button class="fig-filter-chip" data-figtype="ARPES spectrum" data-i18n="figTypeSpectrum" style="font-size:11px;padding:3px 10px;border-radius:14px;">ARPES 谱</button>
+              <button class="fig-filter-chip" data-figtype="Charge order" data-i18n="figTypeCharge" style="font-size:11px;padding:3px 10px;border-radius:14px;">电荷序</button>
               <span id="figCount" class="status"></span>
             </div>
           </div>
           <div id="figureColorLegend"></div>
           <div class="figure-gallery" id="figureGallery"></div>
           <div style="text-align:center; margin-top:8px;" id="figShowMoreWrap">
-            <button id="figShowMoreBtn" style="display:none;">显示更多 Show More</button>
+            <button id="figShowMoreBtn" style="display:none;" data-i18n="showMoreBtn">显示更多</button>
           </div>
         </div>
         <!-- 历史里程碑 + Tc 柱状图 + 光源卡片 -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start;">
           <div class="history-image" aria-label="超导历史与Tc对比">
             <div>
-              <h3>📜 超导历史里程碑 · Milestones</h3>
-              <p class="muted">从1911年至今 — 点击节点查看详情</p>
+              <h3 data-i18n="milestonesTitle">📜 超导历史里程碑</h3>
+              <p class="muted" data-i18n="milestonesHint">从1911年至今的重大发现</p>
             </div>
             <div class="history-line" id="historyLine"></div>
             <div>
-              <h3 style="margin-bottom:8px;">📊 Tc 对比 · Tc Comparison (K)</h3>
+              <h3 style="margin-bottom:8px;" data-i18n="tcChartTitle">📊 Tc 对比 (K)</h3>
               <div class="tc-chart-wrap" id="tcChart"></div>
             </div>
           </div>
@@ -1118,39 +1118,39 @@
     <!-- ===== HDF5 数据管理 ===== -->
     <section>
       <div class="section-head">
-        <h2>📊 HDF5 数据管理 · ARPES Data Library</h2>
-        <span class="status" id="hdf5Status">上传 .h5 文件，解析能带/能量/温度数据，直观对比</span>
+        <h2 data-i18n="hdf5Title">📊 HDF5 数据管理</h2>
+        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">上传 .h5 文件，解析能带/能量/温度数据，直观对比</span>
       </div>
       <div class="content">
         <!-- 上传区域 -->
         <div class="drop-zone" id="hdf5DropZone">
-          <strong>📁 拖放或点击上传 HDF5 (.h5/.hdf5) 文件</strong>
-          <p class="muted">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据</p>
+          <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 文件</strong>
+          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据</p>
           <input type="file" id="hdf5FileInput" accept=".h5,.hdf5" multiple style="display:none;">
         </div>
         <!-- HDF5 文件树 + 元数据 -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div class="card">
-            <h3>📂 文件结构 · HDF5 Structure</h3>
-            <div class="hdf5-tree" id="hdf5Tree"><span class="muted">上传文件后显示结构</span></div>
+            <h3 data-i18n="hdf5StructureTitle">📂 文件结构</h3>
+            <div class="hdf5-tree" id="hdf5Tree"><span class="muted" data-i18n="hdf5TreeEmpty">上传文件后显示结构</span></div>
           </div>
           <div class="card">
-            <h3>🏷️ 元数据 · Metadata</h3>
-            <div id="hdf5Meta"><span class="muted">点击数据集查看元数据</span></div>
+            <h3 data-i18n="hdf5MetaTitle">🏷️ 元数据</h3>
+            <div id="hdf5Meta"><span class="muted" data-i18n="hdf5MetaEmpty">点击数据集查看元数据</span></div>
           </div>
         </div>
         <!-- 已导入的数据集库 -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3>🗄️ 本地数据仓库 · Local Library (IndexedDB)</h3>
+            <h3 data-i18n="localLibraryTitle">🗄️ 本地数据仓库</h3>
             <div style="display:flex; gap:8px;">
-              <input type="search" id="librarySearch" placeholder="搜索：能量范围、温度、材料..." style="width:260px; min-height:34px;">
-              <button id="compareSelectedBtn" class="primary">📊 对比选中 Compare</button>
-              <button id="clearLibraryBtn">🗑️ 清空库</button>
+              <input type="search" id="librarySearch" data-i18n-placeholder="librarySearchPlaceholder" placeholder="搜索：能量范围、温度、材料..." style="width:260px; min-height:34px;">
+              <button id="compareSelectedBtn" class="primary" data-i18n="compareSelectedBtn">📊 对比选中</button>
+              <button id="clearLibraryBtn" data-i18n="clearLibraryBtn">🗑️ 清空库</button>
             </div>
           </div>
           <div class="data-library-grid" id="dataLibraryGrid">
-            <span class="muted">暂无数据。上传 HDF5 文件后添加到库。</span>
+            <span class="muted" data-i18n="libraryEmpty">暂无数据。上传 HDF5 文件后添加到库。</span>
           </div>
         </div>
       </div>
@@ -1159,20 +1159,20 @@
     <!-- ===== 光源词条目录 ===== -->
     <section>
       <div class="section-head">
-        <h2>💡 光源 / 档案目录 · Light Source &amp; Archive Directory</h2>
-        <span class="status">按地区、设施、文章图表、原始数据搜索</span>
+        <h2 data-i18n="sourceTitle">💡 光源 / 档案目录</h2>
+        <span class="status" data-i18n="sourceStatus">按地区、设施、文章图表、原始数据搜索</span>
       </div>
       <div class="content">
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>地区 Region</th>
-                <th>光源 / 档案 Facility</th>
-                <th>ARPES 适用性</th>
-                <th>论文图表 Figure</th>
-                <th>原始数据 Data</th>
-                <th>档案搜索 Archive</th>
+                <th data-i18n="regionCol">地区</th>
+                <th data-i18n="facilityCol">光源/档案</th>
+                <th data-i18n="arpesUseCol">ARPES 适用性</th>
+                <th data-i18n="figureCol">论文图表</th>
+                <th data-i18n="dataCol">原始数据</th>
+                <th data-i18n="archiveCol">档案搜索</th>
               </tr>
             </thead>
             <tbody id="sourceBody"></tbody>
@@ -1184,29 +1184,29 @@
     <!-- ===== 超导材料表 ===== -->
     <section>
       <div class="section-head">
-        <h2>🧪 超导材料表 · Superconducting Materials</h2>
+        <h2 data-i18n="materialsTitle">🧪 超导材料表</h2>
         <span class="status" id="tableStatus">Waiting</span>
       </div>
       <div class="content">
         <div class="compare-panel" id="comparePanel">
-          <h3>📊 材料对比 · Material Comparison</h3>
+          <h3 data-i18n="comparePanelTitle">📊 材料对比</h3>
           <div class="compare-grid" id="compareGrid"></div>
-          <button id="clearCompareBtn" style="margin-top:8px;">清除对比 Clear</button>
+          <button id="clearCompareBtn" style="margin-top:8px;" data-i18n="clearCompareBtn">清除对比</button>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>选择</th>
-                <th>家族 Family</th>
-                <th>材料 Material</th>
-                <th>元素 Elements</th>
-                <th>发现年份</th>
-                <th>Tc (K)</th>
-                <th>ARPES 特性</th>
-                <th>q-dependent</th>
-                <th>光子/ARPES 备注</th>
-                <th>状态</th>
+                <th data-i18n="selectCol">选择</th>
+                <th data-i18n="familyCol">家族</th>
+                <th data-i18n="materialCol">材料</th>
+                <th data-i18n="elementsCol">元素</th>
+                <th data-i18n="discoveredCol">发现年份</th>
+                <th data-i18n="tcCol">Tc (K)</th>
+                <th data-i18n="arpesCol">ARPES 特性</th>
+                <th data-i18n="qCol">q-dependent</th>
+                <th data-i18n="photonCol">光子/ARPES 备注</th>
+                <th data-i18n="statusCol">状态</th>
               </tr>
             </thead>
             <tbody id="materialsBody"></tbody>
@@ -1218,33 +1218,33 @@
     <!-- ===== 材料详情 ===== -->
     <section>
       <div class="section-head">
-        <h2>📋 材料详情 · Material Details</h2>
+        <h2 data-i18n="detailTitle">📋 材料详情</h2>
       </div>
       <div class="content" id="detailPanel">
-        <div class="status">点击材料表中的一行查看详情。</div>
+        <div class="status" data-i18n="detailHint">点击材料表中的一行查看详情。</div>
       </div>
     </section>
 
     <!-- ===== 文章数据 ===== -->
     <section>
       <div class="section-head">
-        <h2>📄 文章数据 · Article Data</h2>
+        <h2 data-i18n="articleTitle">📄 文章数据</h2>
         <span class="status" id="articleStatus">Loading...</span>
       </div>
       <div class="content">
         <div class="toolbar" style="margin-bottom:4px;">
-          <button class="primary" id="importWosBtn">📥 导入 WoS (粘贴CSV/TSV)</button>
-          <button class="primary" id="importScholarBtn">📥 导入 Google Scholar (粘贴BibTeX)</button>
-          <button id="resetArticlesBtn">🔄 恢复默认数据</button>
+          <button class="primary" id="importWosBtn" data-i18n="importWosBtn">📥 导入 WoS</button>
+          <button class="primary" id="importScholarBtn" data-i18n="importScholarBtn">📥 导入 Google Scholar</button>
+          <button id="resetArticlesBtn" data-i18n="resetArticlesBtn">🔄 恢复默认数据</button>
         </div>
         <div id="importPanel" style="display:none; border:2px solid var(--accent-glow); border-radius:10px; padding:12px; background:rgba(15,118,110,0.05);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <strong id="importPanelTitle">导入文章</strong>
+            <strong id="importPanelTitle" data-i18n="importPanelTitle">导入文章</strong>
             <button id="closeImportBtn" style="min-height:28px;padding:2px 8px;">✕</button>
           </div>
-          <textarea id="importTextarea" style="width:100%; min-height:200px; font-family:monospace; font-size:12px;" placeholder="在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本..."></textarea>
+          <textarea id="importTextarea" style="width:100%; min-height:200px; font-family:monospace; font-size:12px;" data-i18n-placeholder="importTextareaPlaceholder" placeholder="在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本..."></textarea>
           <div class="toolbar" style="margin-top:8px;">
-            <button class="primary" id="parseImportBtn">🔍 解析并导入 Parse & Import</button>
+            <button class="primary" id="parseImportBtn" data-i18n="parseImportBtn">🔍 解析并导入</button>
             <span class="status" id="importParseStatus"></span>
           </div>
         </div>
@@ -1255,54 +1255,54 @@
     <!-- ===== Our Data ===== -->
     <section>
       <div class="section-head">
-        <h2>📝 我的数据 · Our Data</h2>
+        <h2 data-i18n="ourDataTitle">📝 我的数据</h2>
         <span class="status" id="ourDataStatus">保存在浏览器本地</span>
       </div>
       <div class="content">
         <div class="card">
-          <h3>✏️ 添加个人超导记录 · Add Personal Record</h3>
+          <h3 data-i18n="addRecordTitle">✏️ 添加个人超导记录</h3>
           <div class="form-grid" style="margin-top:10px;">
-            <label>材料 Material
-              <input id="ourMaterial" placeholder="例: Nd1-xSrxNiO2">
+            <label data-label-i18n="materialField">材料
+              <input id="ourMaterial" data-i18n-placeholder="materialPlaceholder" placeholder="例: Nd1-xSrxNiO2">
             </label>
-            <label>家族 Family
+            <label data-label-i18n="familyField">家族
               <input id="ourFamily" placeholder="nickelate, cuprate, iron-based">
             </label>
-            <label>元素 Elements
+            <label data-label-i18n="elementsField">元素
               <input id="ourElements" placeholder="Ni, Nd, Sr, O">
             </label>
-            <label>Tc (K)
+            <label data-label-i18n="tcField">Tc (K)
               <input id="ourTc" type="number" step="0.01" placeholder="15">
             </label>
-            <label>地区 / 设施 Region
-              <input id="ourRegion" placeholder="上海 SSRF, 北京 BSRF, NSRRC">
+            <label data-label-i18n="regionField">地区 / 设施
+              <input id="ourRegion" data-i18n-placeholder="regionPlaceholder" placeholder="上海 SSRF, 北京 BSRF, NSRRC">
             </label>
-            <label>档案 ID / URL
+            <label data-label-i18n="archiveField">档案 ID / URL
               <input id="ourArchive" placeholder="arXiv, DOI, Web of Science">
             </label>
-            <label>论文图表 URL
-              <input id="ourFigure" placeholder="文章图表链接">
+            <label data-label-i18n="figureField">论文图表 URL
+              <input id="ourFigure" data-i18n-placeholder="figurePlaceholder" placeholder="文章图表链接">
             </label>
-            <label>原始数据 URL
-              <input id="ourOriginalData" placeholder="补充数据、仓库链接">
+            <label data-label-i18n="originalDataField">原始数据 URL
+              <input id="ourOriginalData" data-i18n-placeholder="originalDataPlaceholder" placeholder="补充数据、仓库链接">
             </label>
-            <label class="span-2">ARPES 特殊性质
-              <textarea id="ourSpecial" placeholder="Ni dx2-y2 能带; 稀土口袋"></textarea>
+            <label class="span-2" data-label-i18n="specialField">ARPES 特殊性质
+              <textarea id="ourSpecial" data-i18n-placeholder="specialPlaceholder" placeholder="Ni dx2-y2 能带; 稀土口袋"></textarea>
             </label>
-            <label class="span-2">q-dependent 可观测量
-              <textarea id="ourQ" placeholder="电荷序 q; 费米面重构"></textarea>
+            <label class="span-2" data-label-i18n="qField">q-dependent 可观测量
+              <textarea id="ourQ" data-i18n-placeholder="qPlaceholder" placeholder="电荷序 q; 费米面重构"></textarea>
             </label>
-            <label class="span-2">光子 / ARPES 备注
-              <textarea id="ourPhoton" placeholder="偏振依赖; 光子能量选择"></textarea>
+            <label class="span-2" data-label-i18n="photonField">光子 / ARPES 备注
+              <textarea id="ourPhoton" data-i18n-placeholder="photonPlaceholder" placeholder="偏振依赖; 光子能量选择"></textarea>
             </label>
-            <label class="span-2">备注 / 来源
-              <textarea id="ourNotes" placeholder="实验笔记, DOI, 样品编号"></textarea>
+            <label class="span-2" data-label-i18n="notesField">备注 / 来源
+              <textarea id="ourNotes" data-i18n-placeholder="notesPlaceholder" placeholder="实验笔记, DOI, 样品编号"></textarea>
             </label>
           </div>
           <div class="toolbar" style="margin-top:12px;">
             <button class="primary" id="saveOurDataBtn">💾 保存 Save</button>
-            <button id="exportOurDataBtn">📥 导出 JSON Export</button>
-            <button id="importOurDataBtn" style="position:relative;">📤 导入 Import
+            <button id="exportOurDataBtn">📥 导出 JSON</button>
+            <button id="importOurDataBtn" style="position:relative;" data-label-i18n="importBtn">📤 导入
               <input type="file" id="importFileInput" accept=".json" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
             </button>
             <button id="clearOurDataBtn">🗑️ 清空 Clear</button>
@@ -1312,16 +1312,16 @@
           <table>
             <thead>
               <tr>
-                <th>材料</th>
-                <th>家族</th>
-                <th>元素</th>
-                <th>Tc (K)</th>
-                <th>ARPES 特性</th>
-                <th>q-dependent</th>
-                <th>光子备注</th>
-                <th>备注/来源</th>
-                <th>数据链接</th>
-                <th>操作</th>
+                <th data-i18n="materialCol">材料</th>
+                <th data-i18n="familyCol">家族</th>
+                <th data-i18n="elementsCol">元素</th>
+                <th data-i18n="tcCol">Tc (K)</th>
+                <th data-i18n="arpesCol">ARPES 特性</th>
+                <th data-i18n="qCol">q-dependent</th>
+                <th data-i18n="photonNotesCol">光子备注</th>
+                <th data-i18n="notesField">备注/来源</th>
+                <th data-i18n="dataLinksCol">数据链接</th>
+                <th data-i18n="operationCol">操作</th>
               </tr>
             </thead>
             <tbody id="ourDataBody"></tbody>
@@ -1333,7 +1333,7 @@
     <!-- ===== 模板说明 ===== -->
     <section>
       <div class="section-head">
-        <h2>📌 模板说明 · Template Notes</h2>
+        <h2 data-i18n="notesTitle">📌 模板说明</h2>
       </div>
       <div class="content">
         <div class="card">
@@ -1367,6 +1367,7 @@
         resetBtn: "🔄 重置",
         compareBtn: "📊 对比",
         superconductorBtn: "⚡ 超导 SUPERCONDUCTOR ⚡",
+        superconductorTab: "⚡ 超导",
         topologicalTab: "🔷 拓扑材料",
         photonicTab: "💎 光子晶体",
         searchFilterTitle: "🔍 搜索与筛选",
@@ -1376,10 +1377,25 @@
         selectElementHint: "点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。",
         familyTitle: "🧬 材料家族",
         familyHint: "点击标签快速筛选。当前以超导为主题。",
-        overviewTitle: "📸 直观对比：文章图表 · Overview",
+        overviewTitle: "📸 直观对比：文章图表",
         overviewStatus: "从论文提取图表 — 不同材料/技术并排对比",
-        figureGalleryTitle: "📊 论文图表对比 · Figure Comparison Gallery",
+        figureGalleryTitle: "📊 论文图表对比",
         figureGalleryHint: "以下图表来自真实超导 ARPES 论文，按类型并排对比：费米面、能带色散、能隙分布、电荷序。点击跳转原文。",
+        figureFilterLabel: "筛选图表类型:",
+        figTypeAll: "全部",
+        figTypeFermi: "费米面",
+        figTypeBand: "能带结构",
+        figTypeGap: "能隙",
+        figTypeSpectrum: "ARPES 谱",
+        figTypeCharge: "电荷序",
+        figTypeComparison: "对比图",
+        showMoreBtn: "显示更多",
+        filteredFigures: "筛选出 {count} 张已核验真实论文图",
+        totalFigures: "共 {count} 张已核验真实论文图",
+        remainingFigures: "{count} 张剩余",
+        figureFallback: "该真实论文图像无法直连显示",
+        viewFigureSource: "查看图源",
+        rowsLabel: "行",
         milestonesTitle: "📜 超导历史里程碑",
         milestonesHint: "从1911年至今的重大发现 — 点击节点查看详情",
         tcChartTitle: "📊 Tc 对比 (K)",
@@ -1392,6 +1408,12 @@
         detailHint: "点击材料表中的一行查看详情。",
         articleTitle: "📄 文章数据 (来自 articles.json)",
         articleLoading: "加载文章中...",
+        importWosBtn: "📥 导入 WoS",
+        importScholarBtn: "📥 导入 Google Scholar",
+        resetArticlesBtn: "🔄 恢复默认数据",
+        importPanelTitle: "导入文章",
+        importTextareaPlaceholder: "在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本...",
+        parseImportBtn: "🔍 解析并导入",
         noArticles: "暂无文章数据。",
         ourDataTitle: "📝 我的数据",
         ourDataStatus: "保存在浏览器本地",
@@ -1401,6 +1423,19 @@
         importBtn: "📤 导入",
         clearBtn: "🗑️ 清空",
         notesTitle: "📌 模板说明",
+        hdf5Title: "📊 HDF5 数据管理",
+        hdf5StatusInitial: "上传 .h5 文件，解析能带、能量、温度数据，直观对比",
+        hdf5DropTitle: "📁 拖放或点击上传 HDF5 文件",
+        hdf5DropHint: "支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据",
+        hdf5StructureTitle: "📂 文件结构",
+        hdf5TreeEmpty: "上传文件后显示结构",
+        hdf5MetaTitle: "🏷️ 元数据",
+        hdf5MetaEmpty: "点击数据集查看元数据",
+        localLibraryTitle: "🗄️ 本地数据仓库",
+        librarySearchPlaceholder: "搜索：能量范围、温度、材料...",
+        compareSelectedBtn: "📊 对比选中",
+        clearLibraryBtn: "🗑️ 清空库",
+        libraryEmpty: "暂无数据。上传 HDF5 文件后添加到库。",
         comparePanelTitle: "📊 材料对比",
         clearCompareBtn: "清除对比",
         selectCompare: "请先勾选材料行进行对比",
@@ -1429,6 +1464,7 @@
         arpesCol: "ARPES 特性",
         qCol: "q-dependent",
         photonCol: "光子/ARPES 备注",
+        photonNotesCol: "光子备注",
         statusCol: "状态",
         selectCol: "选择",
         regionCol: "地区",
@@ -1451,6 +1487,27 @@
         notesField: "备注 / 来源",
         operationCol: "操作",
         dataLinksCol: "数据链接",
+        materialPlaceholder: "例: Nd1-xSrxNiO2",
+        regionPlaceholder: "上海 SSRF, 北京 BSRF, NSRRC",
+        figurePlaceholder: "文章图表链接",
+        originalDataPlaceholder: "补充数据、仓库链接",
+        specialPlaceholder: "Ni dx2-y2 能带; 稀土口袋",
+        qPlaceholder: "电荷序 q; 费米面重构",
+        photonPlaceholder: "偏振依赖; 光子能量选择",
+        notesPlaceholder: "实验笔记, DOI, 样品编号",
+        emptyFile: "空文件",
+        elementCount: "元素数",
+        addToLibraryBtn: "➕ 添加到数据仓库",
+        detectedDatasets: "检测到的 ARPES 数据集",
+        detectedDatasetStatus: "✅ {filename} | 检测到 {count} 个 ARPES 相关数据集",
+        libraryCleared: "🗑️ 数据仓库已清空",
+        selectTwoDatasets: "请至少选择2个数据集进行对比",
+        bandComparisonTitle: "📊 能带图对比",
+        highSymmetryHint: "⚡ 高对称方向 · ML 扩展接口预留",
+        exportBandDataBtn: "📥 导出数据 JSON",
+        sourceFileLabel: "来源文件",
+        tagsLabel: "标签",
+        schematicBand: "📊 示意能带：上传含 energy/k 轴的 HDF5 数据可显示真实能带",
         noFigureMatch: "暂无匹配的论文图表。尝试修改筛选条件。",
         viewPaper: "查看原文",
         viewPaperChip: "🔗 查看原文",
@@ -1460,6 +1517,18 @@
         photonPol: "光子/偏振",
         sourceNote: "来源备注",
         discovery: "发现/合成",
+        compareFamily: "家族",
+        compareElements: "元素",
+        compareDiscovered: "发现",
+        comparePhoton: "光子备注",
+        compareStatus: "状态",
+        compareFigureTitle: "🖼️ 同类型 ARPES 图对比",
+        compareFigureHint: "自动统一图类型：当前图表筛选优先；未筛选时选择覆盖最多选中材料的真实论文图类型。",
+        missingFigure: "暂无 {type} 类型的精选真实论文图。",
+        techniqueLabel: "技术",
+        materialLabel: "材料",
+        elementLabel: "元素",
+        keywordLabel: "关键词",
         noMatch: "无匹配材料。",
         rows: "行",
         entries: "条光源 / 档案",
@@ -1484,6 +1553,7 @@
         resetBtn: "🔄 Reset",
         compareBtn: "📊 Compare",
         superconductorBtn: "⚡ SUPERCONDUCTOR ⚡",
+        superconductorTab: "⚡ Superconductor",
         topologicalTab: "🔷 Topological",
         photonicTab: "💎 Photonic",
         searchFilterTitle: "🔍 Search & Filter",
@@ -1497,6 +1567,21 @@
         overviewStatus: "Figures from papers — side-by-side comparison across materials/techniques",
         figureGalleryTitle: "📊 Figure Comparison Gallery",
         figureGalleryHint: "These figures come from real ARPES papers, grouped by type: Fermi surface, band dispersion, gap distribution, charge order. Click to view original paper.",
+        figureFilterLabel: "Figure type:",
+        figTypeAll: "All",
+        figTypeFermi: "Fermi surface",
+        figTypeBand: "Band structure",
+        figTypeGap: "Gap",
+        figTypeSpectrum: "ARPES spectrum",
+        figTypeCharge: "Charge order",
+        figTypeComparison: "Comparison",
+        showMoreBtn: "Show more",
+        filteredFigures: "{count} verified real paper figures found",
+        totalFigures: "{count} verified real paper figures",
+        remainingFigures: "{count} remaining",
+        figureFallback: "This real paper figure cannot be displayed directly",
+        viewFigureSource: "View figure source",
+        rowsLabel: "Rows",
         milestonesTitle: "📜 Superconductivity Milestones",
         milestonesHint: "Major discoveries from 1911 to present — click a node for details",
         tcChartTitle: "📊 Tc Comparison (K)",
@@ -1509,6 +1594,12 @@
         detailHint: "Click a row in the materials table for details.",
         articleTitle: "📄 Article Data (from articles.json)",
         articleLoading: "Loading articles...",
+        importWosBtn: "📥 Import WoS",
+        importScholarBtn: "📥 Import Google Scholar",
+        resetArticlesBtn: "🔄 Restore Defaults",
+        importPanelTitle: "Import Articles",
+        importTextareaPlaceholder: "Paste Web of Science CSV/TSV export text, or Google Scholar BibTeX text...",
+        parseImportBtn: "🔍 Parse & Import",
         noArticles: "No article data.",
         ourDataTitle: "📝 Our Data",
         ourDataStatus: "Stored in this browser",
@@ -1518,6 +1609,19 @@
         importBtn: "📤 Import",
         clearBtn: "🗑️ Clear",
         notesTitle: "📌 Template Notes",
+        hdf5Title: "📊 HDF5 Data Library",
+        hdf5StatusInitial: "Upload .h5 files to parse band, energy, and temperature data for comparison",
+        hdf5DropTitle: "📁 Drop or click to upload HDF5 files",
+        hdf5DropHint: "Supports ARPES-style files with energy/k axes, temperature, photon energy, and metadata",
+        hdf5StructureTitle: "📂 HDF5 Structure",
+        hdf5TreeEmpty: "Structure appears after upload",
+        hdf5MetaTitle: "🏷️ Metadata",
+        hdf5MetaEmpty: "Click a dataset to inspect metadata",
+        localLibraryTitle: "🗄️ Local Data Library",
+        librarySearchPlaceholder: "Search: energy range, temperature, material...",
+        compareSelectedBtn: "📊 Compare Selected",
+        clearLibraryBtn: "🗑️ Clear Library",
+        libraryEmpty: "No data yet. Upload an HDF5 file and add datasets to the library.",
         comparePanelTitle: "📊 Material Comparison",
         clearCompareBtn: "Clear Compare",
         selectCompare: "Select materials to compare first",
@@ -1546,6 +1650,7 @@
         arpesCol: "ARPES Props",
         qCol: "q-dependent",
         photonCol: "Photon Notes",
+        photonNotesCol: "Photon Notes",
         statusCol: "Status",
         selectCol: "Select",
         regionCol: "Region",
@@ -1568,6 +1673,27 @@
         notesField: "Notes / Source",
         operationCol: "Action",
         dataLinksCol: "Data Links",
+        materialPlaceholder: "e.g. Nd1-xSrxNiO2",
+        regionPlaceholder: "SSRF, BSRF, NSRRC, ALS",
+        figurePlaceholder: "Paper figure link",
+        originalDataPlaceholder: "Supplementary data or repository link",
+        specialPlaceholder: "Ni dx2-y2 band; rare-earth pocket",
+        qPlaceholder: "charge-order q; Fermi-surface reconstruction",
+        photonPlaceholder: "polarization dependence; photon-energy choice",
+        notesPlaceholder: "lab notes, DOI, sample ID",
+        emptyFile: "Empty file",
+        elementCount: "Element count",
+        addToLibraryBtn: "➕ Add to Data Library",
+        detectedDatasets: "Detected ARPES datasets",
+        detectedDatasetStatus: "✅ {filename} | {count} ARPES-related datasets detected",
+        libraryCleared: "🗑️ Data library cleared",
+        selectTwoDatasets: "Select at least two datasets to compare",
+        bandComparisonTitle: "📊 Band Structure Comparison",
+        highSymmetryHint: "⚡ High-symmetry directions · ML extension placeholder",
+        exportBandDataBtn: "📥 Export Data JSON",
+        sourceFileLabel: "Source file",
+        tagsLabel: "Tags",
+        schematicBand: "📊 Schematic band plot: upload HDF5 data with energy/k axes to display real bands",
         noFigureMatch: "No matching figures. Try adjusting filters.",
         viewPaper: "View Paper",
         viewPaperChip: "🔗 View Paper",
@@ -1577,6 +1703,18 @@
         photonPol: "Photon/Polarization",
         sourceNote: "Source Note",
         discovery: "Discovery/Synthesis",
+        compareFamily: "Family",
+        compareElements: "Elements",
+        compareDiscovered: "Discovered",
+        comparePhoton: "Photon Notes",
+        compareStatus: "Status",
+        compareFigureTitle: "🖼️ Same-Type ARPES Figure Comparison",
+        compareFigureHint: "Automatically normalizes figure type: current figure filter first; otherwise selects the real paper figure type covering the most selected materials.",
+        missingFigure: "No curated real paper figure for {type}.",
+        techniqueLabel: "Technique",
+        materialLabel: "Material",
+        elementLabel: "Elements",
+        keywordLabel: "Keywords",
         noMatch: "No matching materials.",
         rows: "rows",
         entries: "entries",
@@ -1596,6 +1734,10 @@
       return (I18N[currentLang] && I18N[currentLang][key]) || (I18N["en"][key]) || key;
     }
 
+    function tf(key, values = {}) {
+      return t(key).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
+    }
+
     function switchLang(lang) {
       currentLang = lang;
       localStorage.setItem(LANG_STORAGE_KEY, lang);
@@ -1607,6 +1749,7 @@
       applyFilters();
       renderOurData();
       renderArticles();
+      renderLibrary().catch(() => {});
       // Update static i18n elements
       document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.dataset.i18n;
@@ -1615,6 +1758,10 @@
       document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
         const key = el.dataset.i18nPlaceholder;
         if (key) el.placeholder = t(key);
+      });
+      document.querySelectorAll("[data-label-i18n]").forEach(el => {
+        const key = el.dataset.labelI18n;
+        if (key) setLeadingText(el, t(key));
       });
       // Update template notes
       const notesEl = document.querySelector("#templateNotesText");
@@ -1629,7 +1776,19 @@
       document.querySelector("#exportOurDataBtn").innerHTML = t("exportBtn");
       document.querySelector("#clearOurDataBtn").innerHTML = t("clearBtn");
       document.querySelector("#sourceStatus").textContent = t("sourceStatus");
+      if (state.db) {
+        renderFamilyFilter();
+        renderSourceFilters();
+      }
       loadStatus.textContent = `${state.db ? state.db.materials.length : 0} ${t("seedMaterials")}`;
+    }
+
+    function setLeadingText(el, text) {
+      if (el.firstChild && el.firstChild.nodeType === Node.TEXT_NODE) {
+        el.firstChild.textContent = `${text}\n              `;
+      } else {
+        el.insertBefore(document.createTextNode(`${text}\n              `), el.firstChild);
+      }
     }
 
     document.querySelector("#langToggle").addEventListener("click", (e) => {
@@ -2312,17 +2471,23 @@
 
     // ===== 渲染函数 =====
     function renderFamilyFilter() {
-      familyFilter.innerHTML = `<option value="">全部家族 All</option>` +
+      const selected = familyFilter.value;
+      familyFilter.innerHTML = `<option value="">${esc(t("allFamilies"))}</option>` +
         state.db.families.map(f => `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join("");
+      familyFilter.value = selected;
     }
 
     function renderSourceFilters() {
+      const selectedRegion = regionFilter.value;
+      const selectedType = sourceTypeFilter.value;
       const regions = uniq(sourceEntries.map(e => e.region));
       const types = uniq(sourceEntries.map(e => e.type));
-      regionFilter.innerHTML = `<option value="">全部地区 All</option>` +
+      regionFilter.innerHTML = `<option value="">${esc(t("allRegions"))}</option>` +
         regions.map(r => `<option value="${esc(r)}">${esc(r)}</option>`).join("");
-      sourceTypeFilter.innerHTML = `<option value="">全部类型 All</option>` +
+      sourceTypeFilter.innerHTML = `<option value="">${esc(t("allTypes"))}</option>` +
         types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
+      regionFilter.value = selectedRegion;
+      sourceTypeFilter.value = selectedType;
     }
 
     function renderFamilyChips() {
@@ -2499,9 +2664,9 @@
       const families = uniq(state.filtered.map(r => r.family));
       const elements = uniq(state.filtered.flatMap(r => r.elements));
       metrics.innerHTML = [
-        met(`${t("materials")} / Rows`, String(state.filtered.length)),
-        met(`${t("families")} / Families`, String(families.length)),
-        met(`${t("elements")} / Elements`, String(elements.length)),
+        met(`${t("materials")}`, String(state.filtered.length)),
+        met(`${t("families")}`, String(families.length)),
+        met(`${t("elements")}`, String(elements.length)),
         met(`${t("maxTc")}`, maxTc === null ? "-" : `${maxTc} K`)
       ].join("");
     }
@@ -2539,9 +2704,9 @@
       const topSources = filteredSourceEntries().slice(0, 4);
       sourceCards.innerHTML = topSources.map(entry => `
         <div class="source-card">
-          <strong>${esc(entry.source)}</strong>
-          <span class="muted">📍 ${esc(entry.region)} · ${esc(entry.type)}</span>
-          <span>${esc(entry.arpes)}</span>
+          <strong>${esc(localizedMixedText(entry.source))}</strong>
+          <span class="muted">📍 ${esc(localizedMixedText(entry.region))} · ${esc(localizedMixedText(entry.type))}</span>
+          <span>${esc(localizedMixedText(entry.arpes))}</span>
           <div class="source-links">
             <a href="${esc(entry.archive)}" target="_blank" rel="noreferrer">🔗 ${esc(entry.archiveLabel)}</a>
           </div>
@@ -2621,11 +2786,11 @@
       const hiddenFigs = totalFigs - shownFigs.length;
 
       figCount.textContent = term || family || figFilterType !== "all"
-        ? `筛选出 ${totalFigs} 张已核验真实论文图`
-        : `共 ${totalFigs} 张已核验真实论文图`;
+        ? tf("filteredFigures", { count: totalFigs })
+        : tf("totalFigures", { count: totalFigs });
 
       if (!shownFigs.length) {
-        figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${t("noFigureMatch")} — 尝试搜索材料名如 "FeSe"、"Bi2212"、"ARPES"</p></div>`;
+        figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${t("noFigureMatch")}</p></div>`;
         figShowMoreBtn.style.display = "none";
         return;
       }
@@ -2650,8 +2815,8 @@
               onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">
             <div style="display:none;place-items:center;gap:6px;padding:20px;text-align:center;position:absolute;inset:0;">
               <div style="font-size:32px;">📊</div>
-              <div style="font-size:11px;color:var(--muted);">该真实论文图像无法直连显示</div>
-              <a href="${esc(fig.original_figure_url || fig.article_url || imgSrc)}" target="_blank" class="chip good" style="font-size:10px;">📖 查看论文图源</a>
+              <div style="font-size:11px;color:var(--muted);">${esc(t("figureFallback"))}</div>
+              <a href="${esc(fig.original_figure_url || fig.article_url || imgSrc)}" target="_blank" class="chip good" style="font-size:10px;">📖 ${esc(t("viewFigureSource"))}</a>
             </div>
           </div>`;
 
@@ -2672,7 +2837,7 @@
       // 显示更多按钮
       if (hiddenFigs > 0) {
         figShowMoreBtn.style.display = "inline-block";
-        figShowMoreBtn.textContent = `显示更多 (${hiddenFigs} 张剩余) Show ${hiddenFigs} more`;
+        figShowMoreBtn.textContent = `${t("showMoreBtn")} (${tf("remainingFigures", { count: hiddenFigs })})`;
       } else {
         figShowMoreBtn.style.display = "none";
       }
@@ -2713,11 +2878,11 @@
       }
       sourceBody.innerHTML = rows.map(entry => `
         <tr>
-          <td>📍 ${esc(entry.region)}</td>
-          <td><strong>${esc(entry.source)}</strong><br><span class="muted">${esc(entry.type)}</span></td>
-          <td>${esc(entry.arpes)}</td>
-          <td>${esc(entry.figure)}</td>
-          <td>${esc(entry.originalData)}</td>
+          <td>📍 ${esc(localizedMixedText(entry.region))}</td>
+          <td><strong>${esc(localizedMixedText(entry.source))}</strong><br><span class="muted">${esc(localizedMixedText(entry.type))}</span></td>
+          <td>${esc(localizedMixedText(entry.arpes))}</td>
+          <td>${esc(localizedMixedText(entry.figure))}</td>
+          <td>${esc(localizedMixedText(entry.originalData))}</td>
           <td><a href="${esc(entry.archive)}" target="_blank" rel="noreferrer">🔗 ${esc(entry.archiveLabel)}</a></td>
         </tr>
       `).join("");
@@ -2778,10 +2943,10 @@
     function showMaterialDetail(row) {
       detailPanel.innerHTML = `
         <div class="metric-grid">
-          ${met(`${t("materialCol")} / Material`, row.display_name || row.material)}
-          ${met(`${t("familyCol")} / Family`, familyName(row.family))}
+          ${met(t("materialCol"), row.display_name || row.material)}
+          ${met(t("familyCol"), familyName(row.family))}
           ${met("Tc", `${row.transition_temperature_K} K`)}
-          ${met(`${t("statusCol")} / Status`, row.verification_status)}
+          ${met(t("statusCol"), row.verification_status)}
         </div>
         <div class="card">
           <h3>${t("arpesNotes")}</h3>
@@ -2812,23 +2977,23 @@
           <div class="compare-card">
             <h4>${esc(row.display_name || row.material)}</h4>
             <div style="font-size:12px;display:grid;gap:4px;">
-              <div>🏷️ <strong>家族:</strong> ${esc(familyName(row.family))}</div>
+              <div>🏷️ <strong>${t("compareFamily")}:</strong> ${esc(familyName(row.family))}</div>
               <div>🌡️ <strong>Tc:</strong> ${esc(row.transition_temperature_K)} K</div>
-              <div>🧪 <strong>元素:</strong> ${(row.elements || []).join(", ")}</div>
-              <div>📅 <strong>发现:</strong> ${esc(row.synthesized_or_discovered)}</div>
+              <div>🧪 <strong>${t("compareElements")}:</strong> ${(row.elements || []).join(", ")}</div>
+              <div>📅 <strong>${t("compareDiscovered")}:</strong> ${esc(row.synthesized_or_discovered)}</div>
               <div>📊 <strong>ARPES:</strong> ${esc((row.arpes_special_properties || []).join(", "))}</div>
               <div>📐 <strong>q-vector:</strong> ${esc((row.q_dependent_observables || []).join(", "))}</div>
-              <div>💡 <strong>光子备注:</strong> ${esc(row.photon_arpes_notes || "-")}</div>
-              <div>✅ <strong>状态:</strong> ${esc(row.verification_status)}</div>
+              <div>💡 <strong>${t("comparePhoton")}:</strong> ${esc(row.photon_arpes_notes || "-")}</div>
+              <div>✅ <strong>${t("compareStatus")}:</strong> ${esc(row.verification_status)}</div>
             </div>
           </div>
         `).join("")}
         <div style="grid-column:1/-1;">
           <div class="compare-subhead">
-            <h4 style="margin:0;color:var(--accent-glow);">🖼️ 同类型 ARPES 图对比 · Same-type Figure Comparison</h4>
+            <h4 style="margin:0;color:var(--accent-glow);">${t("compareFigureTitle")}</h4>
             <span class="chip trusted">${esc(figureComparison.typeLabel)}</span>
           </div>
-          <p class="muted" style="margin-top:0;">自动统一图类型：当前图表筛选优先；未筛选时选择覆盖最多选中材料的真实论文图类型。</p>
+          <p class="muted" style="margin-top:0;">${t("compareFigureHint")}</p>
           ${typeColorLegendHtml()}
           <div class="figure-compare-grid">
             ${figureComparison.items.map(item => renderCompareFigureCard(item, figureComparison.typeLabel)).join("")}
@@ -2893,7 +3058,7 @@
           <div class="figure-compare-card missing">
             <div>
               <strong>${esc(material)}</strong>
-              <p>暂无 ${esc(typeLabel)} 类型的 curated 真实论文图。</p>
+              <p>${esc(tf("missingFigure", { type: typeLabel }))}</p>
             </div>
           </div>
         `;
@@ -2910,7 +3075,7 @@
             <strong>${esc(fig.caption)}</strong>
             <span>📄 ${esc(fig.article_title || "")}</span>
             <span>✅ ${esc(fig.data_quality || "curated_real_article_figure")}</span>
-            <a href="${esc(fig.article_url || fig.original_figure_url || fig.image_url)}" target="_blank" rel="noreferrer" class="chip good" style="width:max-content;">查看图源</a>
+            <a href="${esc(fig.article_url || fig.original_figure_url || fig.image_url)}" target="_blank" rel="noreferrer" class="chip good" style="width:max-content;">${esc(t("viewFigureSource"))}</a>
           </div>
         </div>
       `;
@@ -2933,12 +3098,12 @@
 
     function typeColorLegendHtml() {
       const items = [
-        ["Fermi surface", "Fermi surface"],
-        ["Band structure", "Band / ARPES spectrum"],
-        ["Gap map", "Gap"],
-        ["Charge order", "Charge order"],
+        ["Fermi surface", t("figTypeFermi")],
+        ["Band structure", t("figTypeBand")],
+        ["Gap map", t("figTypeGap")],
+        ["Charge order", t("figTypeCharge")],
         ["EDC analysis", "EDC"],
-        ["Comparison", "Comparison"]
+        ["Comparison", t("figTypeComparison")]
       ];
       return `<div class="figure-color-legend">
         ${items.map(([type, label]) => `<span><i style="--legend-color:${figureTypeColor(type)}"></i>${esc(label)}</span>`).join("")}
@@ -2975,10 +3140,10 @@
         <div class="article-card" onclick="window.open('${esc(a.url || "#")}', '_blank')">
           <div class="title">📄 ${esc(a.title)}</div>
           <div class="meta">📅 ${esc(a.year)} · ${esc(a.source)} · ${esc(a.verification_status)}</div>
-          <div class="meta">🔬 技术: ${esc((a.techniques || []).join(", "))}</div>
-          <div class="meta">🧪 材料: ${esc((a.materials || []).join(", "))} | 元素: ${esc((a.elements || []).join(", "))}</div>
-          <div class="meta">🏷️ 关键词: ${esc((a.keywords || []).join(", "))}</div>
-          ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noreferrer" class="chip good" style="font-size:11px;">🔗 查看论文</a>` : ""}
+          <div class="meta">🔬 ${t("techniqueLabel")}: ${esc((a.techniques || []).join(", "))}</div>
+          <div class="meta">🧪 ${t("materialLabel")}: ${esc((a.materials || []).join(", "))} | ${t("elementLabel")}: ${esc((a.elements || []).join(", "))}</div>
+          <div class="meta">🏷️ ${t("keywordLabel")}: ${esc((a.keywords || []).join(", "))}</div>
+          ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noreferrer" class="chip good" style="font-size:11px;">${t("viewPaperChip")}</a>` : ""}
         </div>
       `).join("");
     }
@@ -3043,9 +3208,9 @@
           <td>${esc(rec.photon || "-")}</td>
           <td>${esc(rec.notes || "-")}${rec.region ? `<br><span class="muted">📍 ${esc(rec.region)}</span>` : ""}<br><span class="muted">${esc(rec.saved_at || "")}</span></td>
           <td>
-            ${rec.figure ? linkChipHtml(rec.figure, "图表") : `<span class="muted">-</span>`}
-            ${rec.originalData ? linkChipHtml(rec.originalData, "数据") : `<span class="muted">-</span>`}
-            ${rec.archive ? linkChipHtml(rec.archive, "档案") : `<span class="muted">-</span>`}
+            ${rec.figure ? linkChipHtml(rec.figure, t("figureCol")) : `<span class="muted">-</span>`}
+            ${rec.originalData ? linkChipHtml(rec.originalData, t("dataCol")) : `<span class="muted">-</span>`}
+            ${rec.archive ? linkChipHtml(rec.archive, t("archiveCol")) : `<span class="muted">-</span>`}
           </td>
           <td><button data-delete="${esc(rec.id)}">🗑️</button></td>
         </tr>
@@ -3134,6 +3299,19 @@
       }[ch]));
     }
 
+    function localizedMixedText(value) {
+      const text = String(value || "");
+      if (!text.includes(" / ")) return text;
+      const parts = text.split(/\s+\/\s+/).filter(Boolean);
+      const hasCjk = (part) => /[\u3400-\u9fff]/.test(part);
+      if (currentLang === "zh") {
+        const cjk = parts.find(hasCjk);
+        const acronym = parts.find(part => /^[A-Z0-9-]{2,12}$/.test(part));
+        return cjk ? (acronym && !cjk.includes(acronym) ? `${cjk} (${acronym})` : cjk) : parts[0];
+      }
+      return parts.find(part => !hasCjk(part)) || parts[0];
+    }
+
     // ============================================================
     //  HDF5 数据管理 · ARPES Data Library
     //  使用 jsfive 解析 .h5, IndexedDB 存储, Canvas 绘制能带图
@@ -3171,19 +3349,19 @@
     });
 
     async function handleHDF5File(file) {
-      if (!window.jsfive) { hdf5Status.textContent = "❌ HDF5 库未加载，请刷新重试"; return; }
-      hdf5Status.textContent = `⏳ 解析 ${file.name}...`;
+      if (!window.jsfive) { hdf5Status.textContent = currentLang === "zh" ? "❌ HDF5 库未加载，请刷新重试" : "❌ HDF5 library not loaded. Refresh and try again."; return; }
+      hdf5Status.textContent = currentLang === "zh" ? `⏳ 解析 ${file.name}...` : `⏳ Parsing ${file.name}...`;
       try {
         const buffer = await file.arrayBuffer();
         const data = new Uint8Array(buffer);
         const h5 = new jsfive.File(data);
         currentH5 = h5;
         renderHDF5Tree(h5);
-        hdf5Status.textContent = `✅ 已加载: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)`;
+        hdf5Status.textContent = currentLang === "zh" ? `✅ 已加载: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)` : `✅ Loaded: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)`;
         // 自动扫描 ARPES 相关数据集
         autoScanARPES(h5, file.name);
       } catch (e) {
-        hdf5Status.textContent = `❌ 无法解析 ${file.name}: ${e.message}`;
+        hdf5Status.textContent = currentLang === "zh" ? `❌ 无法解析 ${file.name}: ${e.message}` : `❌ Cannot parse ${file.name}: ${e.message}`;
       }
     }
 
@@ -3212,7 +3390,7 @@
         }
       }
       walk(h5, "", 0);
-      hdf5Tree.innerHTML = html || "<span class='muted'>空文件</span>";
+      hdf5Tree.innerHTML = html || `<span class='muted'>${esc(t("emptyFile"))}</span>`;
     }
 
     // 导航到 H5 group
@@ -3227,10 +3405,10 @@
           renderHDF5Tree(node);
           let html = `<strong>📁 ${path}</strong><br>`;
           if (node.attrs) Object.entries(node.attrs).forEach(([k, v]) => { html += `📌 ${esc(k)}: ${esc(String(v))}<br>`; });
-          if (node.keys) html += `📊 包含 ${node.keys.length} 个子项<br>`;
+          if (node.keys) html += currentLang === "zh" ? `📊 包含 ${node.keys.length} 个子项<br>` : `📊 Contains ${node.keys.length} child items<br>`;
           hdf5Meta.innerHTML = html;
         }
-      } catch(e) { hdf5Meta.innerHTML = "无法导航: " + e.message; }
+      } catch(e) { hdf5Meta.innerHTML = currentLang === "zh" ? "无法导航: " + e.message : "Cannot navigate: " + e.message; }
     };
 
     // 查看数据集详情
@@ -3244,9 +3422,9 @@
         const dtype = node.dtype || "unknown";
         const size = shape.reduce((a,b) => a*b, 1);
         let html = `<strong>📊 ${path.split("/").pop()}</strong><br>`;
-        html += `维度: [${shape.join(", ")}]<br>`;
-        html += `类型: ${dtype}<br>`;
-        html += `元素数: ${size.toLocaleString()}<br>`;
+        html += currentLang === "zh" ? `维度: [${shape.join(", ")}]<br>` : `Shape: [${shape.join(", ")}]<br>`;
+        html += currentLang === "zh" ? `类型: ${dtype}<br>` : `Type: ${dtype}<br>`;
+        html += `${t("elementCount")}: ${size.toLocaleString()}<br>`;
         if (node.attrs) {
           Object.entries(node.attrs).forEach(([k, v]) => {
             html += `📌 ${esc(k)}: ${esc(String(v))}<br>`;
@@ -3256,13 +3434,13 @@
         if (size <= 100 && size > 0) {
           try {
             const vals = node.value;
-            html += `值: ${esc(JSON.stringify(Array.from(vals.flat ? vals.flat().slice(0,20) : [vals]).slice(0,20)))}<br>`;
+            html += currentLang === "zh" ? `值: ${esc(JSON.stringify(Array.from(vals.flat ? vals.flat().slice(0,20) : [vals]).slice(0,20)))}<br>` : `Values: ${esc(JSON.stringify(Array.from(vals.flat ? vals.flat().slice(0,20) : [vals]).slice(0,20)))}<br>`;
           } catch(e) {}
         }
-        html += `<br><button class="primary" onclick="addDatasetToLibrary('${esc(path)}')" style="font-size:12px;">➕ 添加到数据仓库</button>`;
+        html += `<br><button class="primary" onclick="addDatasetToLibrary('${esc(path)}')" style="font-size:12px;">${esc(t("addToLibraryBtn"))}</button>`;
         hdf5Meta.innerHTML = html;
       } catch(e) {
-        hdf5Meta.innerHTML = "读取失败: " + e.message;
+        hdf5Meta.innerHTML = currentLang === "zh" ? "读取失败: " + e.message : "Read failed: " + e.message;
       }
     };
 
@@ -3285,8 +3463,8 @@
       }
       scan(h5, "");
       if (arpesDatasets.length) {
-        hdf5Status.textContent = `✅ ${filename} | 检测到 ${arpesDatasets.length} 个 ARPES 相关数据集`;
-        hdf5Meta.innerHTML = `<strong>🔍 检测到的 ARPES 数据集:</strong><br>` +
+        hdf5Status.textContent = tf("detectedDatasetStatus", { filename, count: arpesDatasets.length });
+        hdf5Meta.innerHTML = `<strong>🔍 ${t("detectedDatasets")}:</strong><br>` +
           arpesDatasets.map(d => `📊 ${esc(d.name)} [${(d.shape||[]).join("×")}] ${esc(d.dtype)}`).join("<br>");
       }
     }
@@ -3345,9 +3523,9 @@
           tags: autoTag(name, attrs)
         };
         await addToLibrary(record);
-        showToast(`✅ ${name} 已添加到仓库`);
+        showToast(currentLang === "zh" ? `✅ ${name} 已添加到仓库` : `✅ ${name} added to library`);
       } catch(e) {
-        showToast("添加失败: " + e.message);
+        showToast(currentLang === "zh" ? "添加失败: " + e.message : "Add failed: " + e.message);
       }
     };
 
@@ -3378,7 +3556,7 @@
       }) : all;
 
       if (!filtered.length) {
-        dataLibraryGrid.innerHTML = "<span class='muted'>暂无数据。上传 HDF5 文件，点击数据集旁的 ➕ 添加到仓库。</span>";
+        dataLibraryGrid.innerHTML = `<span class='muted'>${esc(t("libraryEmpty"))}</span>`;
         return;
       }
       dataLibraryGrid.innerHTML = filtered.map(r => {
@@ -3386,7 +3564,7 @@
         return `<div class="library-card ${sel}" data-id="${esc(r.id)}" onclick="toggleLibrarySelect('${esc(r.id)}')">
           <strong>📊 ${esc(r.name)}</strong>
           <span class="muted">[${(r.shape||[]).join("×")}] ${esc(r.dtype)}</span>
-          <span class="muted">📁 ${esc(r.source_file)}</span>
+          <span class="muted">📁 ${t("sourceFileLabel")}: ${esc(r.source_file)}</span>
           <div class="chips">${(r.tags||[]).map(t => `<span class="chip good">${esc(t)}</span>`).join("")}</div>
           <span class="muted">${esc(r.imported_at?.slice(0,16) || "")}</span>
         </div>`;
@@ -3405,11 +3583,11 @@
       await new Promise((resolve) => { tx.objectStore("datasets").clear().onsuccess = resolve; });
       librarySelection.clear();
       renderLibrary();
-      showToast("🗑️ 数据仓库已清空");
+      showToast(t("libraryCleared"));
     });
 
     compareSelectedBtn.addEventListener("click", async () => {
-      if (librarySelection.size < 2) { showToast("请至少选择2个数据集进行对比"); return; }
+      if (librarySelection.size < 2) { showToast(t("selectTwoDatasets")); return; }
       const db = await openIDB();
       const tx = db.transaction("datasets", "readonly");
       const all = await new Promise((resolve) => { tx.objectStore("datasets").getAll().onsuccess = (e) => resolve(e.target.result || []); });
@@ -3433,11 +3611,11 @@
       const n = datasets.length;
       const cols = n <= 2 ? n : Math.min(n, 3);
       const rows = Math.ceil(n / cols);
-      container.innerHTML = `<h3>📊 能带图对比 · Band Structure Comparison</h3>
+      container.innerHTML = `<h3>${t("bandComparisonTitle")}</h3>
         <div style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:12px;" id="bandPlots"></div>
         <div class="toolbar" style="margin-top:8px;">
-          <span class="muted">⚡ 高对称方向 · High-symmetry directions · ML 扩展接口预留</span>
-          <button id="exportBandDataBtn">📥 导出数据 JSON</button>
+          <span class="muted">${t("highSymmetryHint")}</span>
+          <button id="exportBandDataBtn">${t("exportBandDataBtn")}</button>
         </div>`;
       const plotsDiv = document.querySelector("#bandPlots");
 
@@ -3450,7 +3628,7 @@
         canvas.style.width = "100%";
         canvas.style.height = "auto";
         wrap.appendChild(canvas);
-        wrap.innerHTML += `<div style="padding:6px 10px; font-size:11px;"><strong>${esc(ds.name)}</strong> · ${esc(ds.source_file)} · tags: ${(ds.tags||[]).join(", ")}</div>`;
+        wrap.innerHTML += `<div style="padding:6px 10px; font-size:11px;"><strong>${esc(ds.name)}</strong> · ${t("sourceFileLabel")}: ${esc(ds.source_file)} · ${t("tagsLabel")}: ${(ds.tags||[]).join(", ")}</div>`;
         plotsDiv.appendChild(wrap);
         drawBandPlot(canvas, ds, i);
       });
@@ -3573,8 +3751,7 @@
         ctx.fillStyle = color;
         ctx.font = "11px sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText("📊 示意能带 (上传含energy/k轴的HDF5数据可显示真实能带)", margin.left + 8, margin.top + 16);
-        ctx.fillText("Schematic — upload real HDF5 with E/k data", margin.left + 8, margin.top + 32);
+        ctx.fillText(t("schematicBand"), margin.left + 8, margin.top + 16);
       }
     }
 
