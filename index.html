@@ -771,6 +771,59 @@
       padding: 12px;
     }
     .compare-card h4 { margin: 0 0 8px; color: var(--accent-glow); }
+    .compare-subhead {
+      margin: 14px 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .figure-compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .figure-compare-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0d1520;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 330px;
+    }
+    .figure-compare-card.missing {
+      place-items: center;
+      padding: 16px;
+      color: var(--muted);
+      text-align: center;
+      border-style: dashed;
+    }
+    .figure-compare-image {
+      min-height: 190px;
+      background: #080d14;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .figure-compare-image img {
+      width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+    }
+    .figure-compare-meta {
+      padding: 9px 10px;
+      border-top: 1px solid var(--line);
+      font-size: 11px;
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+    }
+    .figure-compare-meta strong {
+      color: var(--ink);
+      font-size: 12px;
+    }
 
     /* === 文章面板 === */
     .article-card {
@@ -2345,6 +2398,7 @@
         figFilterType = chip.dataset.figtype;
         figShowLimit = 12;
         renderFigureGallery();
+        if (comparePanel.classList.contains("active") && state.compareSet.size) renderComparePanel();
       });
     });
     figShowMoreBtn.addEventListener("click", () => {
@@ -2543,6 +2597,7 @@
           if (cb.checked) state.compareSet.add(idx);
           else state.compareSet.delete(idx);
           updateCompareUI();
+          if (comparePanel.classList.contains("active") && state.compareSet.size) renderComparePanel();
           // 高亮行
           const tr = cb.closest("tr");
           tr.classList.toggle("selected-row", cb.checked);
@@ -2589,23 +2644,136 @@
     function renderComparePanel() {
       const rows = [...state.compareSet].map(i => state.filtered[i]).filter(Boolean);
       if (!rows.length) return;
+      const figureComparison = buildSameTypeFigureComparison(rows);
       comparePanel.classList.add("active");
-      compareGrid.innerHTML = rows.map(row => `
-        <div class="compare-card">
-          <h4>${esc(row.display_name || row.material)}</h4>
-          <div style="font-size:12px;display:grid;gap:4px;">
-            <div>🏷️ <strong>家族:</strong> ${esc(familyName(row.family))}</div>
-            <div>🌡️ <strong>Tc:</strong> ${esc(row.transition_temperature_K)} K</div>
-            <div>🧪 <strong>元素:</strong> ${(row.elements || []).join(", ")}</div>
-            <div>📅 <strong>发现:</strong> ${esc(row.synthesized_or_discovered)}</div>
-            <div>📊 <strong>ARPES:</strong> ${esc((row.arpes_special_properties || []).join(", "))}</div>
-            <div>📐 <strong>q-vector:</strong> ${esc((row.q_dependent_observables || []).join(", "))}</div>
-            <div>💡 <strong>光子备注:</strong> ${esc(row.photon_arpes_notes || "-")}</div>
-            <div>✅ <strong>状态:</strong> ${esc(row.verification_status)}</div>
+      compareGrid.innerHTML = `
+        ${rows.map(row => `
+          <div class="compare-card">
+            <h4>${esc(row.display_name || row.material)}</h4>
+            <div style="font-size:12px;display:grid;gap:4px;">
+              <div>🏷️ <strong>家族:</strong> ${esc(familyName(row.family))}</div>
+              <div>🌡️ <strong>Tc:</strong> ${esc(row.transition_temperature_K)} K</div>
+              <div>🧪 <strong>元素:</strong> ${(row.elements || []).join(", ")}</div>
+              <div>📅 <strong>发现:</strong> ${esc(row.synthesized_or_discovered)}</div>
+              <div>📊 <strong>ARPES:</strong> ${esc((row.arpes_special_properties || []).join(", "))}</div>
+              <div>📐 <strong>q-vector:</strong> ${esc((row.q_dependent_observables || []).join(", "))}</div>
+              <div>💡 <strong>光子备注:</strong> ${esc(row.photon_arpes_notes || "-")}</div>
+              <div>✅ <strong>状态:</strong> ${esc(row.verification_status)}</div>
+            </div>
+          </div>
+        `).join("")}
+        <div style="grid-column:1/-1;">
+          <div class="compare-subhead">
+            <h4 style="margin:0;color:var(--accent-glow);">🖼️ 同类型 ARPES 图对比 · Same-type Figure Comparison</h4>
+            <span class="chip trusted">${esc(figureComparison.typeLabel)}</span>
+          </div>
+          <p class="muted" style="margin-top:0;">自动统一图类型：当前图表筛选优先；未筛选时选择覆盖最多选中材料的真实论文图类型。</p>
+          <div class="figure-compare-grid">
+            ${figureComparison.items.map(item => renderCompareFigureCard(item, figureComparison.typeLabel)).join("")}
           </div>
         </div>
-      `).join("");
+      `;
       comparePanel.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function buildSameTypeFigureComparison(rows) {
+      const figuresByMaterial = rows.map(row => ({
+        row,
+        figures: collectFiguresForMaterial(row)
+      }));
+      const wantedType = figFilterType !== "all" ? normalizeFigureType(figFilterType) : "";
+      const allTypes = uniq(figuresByMaterial.flatMap(item => item.figures.map(fig => normalizeFigureType(fig.type))));
+      const typeScores = allTypes.map(type => ({
+        type,
+        coverage: figuresByMaterial.filter(item => item.figures.some(fig => normalizeFigureType(fig.type) === type)).length,
+        count: figuresByMaterial.reduce((sum, item) => sum + item.figures.filter(fig => normalizeFigureType(fig.type) === type).length, 0)
+      })).sort((a, b) => b.coverage - a.coverage || b.count - a.count || a.type.localeCompare(b.type));
+      const selectedType = wantedType || typeScores[0]?.type || "No matched figure type";
+      return {
+        typeLabel: selectedType,
+        items: figuresByMaterial.map(item => ({
+          row: item.row,
+          figure: item.figures.find(fig => normalizeFigureType(fig.type) === selectedType) || null
+        }))
+      };
+    }
+
+    function collectFiguresForMaterial(row) {
+      const rowNames = materialAliases(row);
+      const rowElements = new Set(row.elements || []);
+      const candidates = [];
+      for (const article of curatedArticles()) {
+        const articleMaterials = (article.materials || []).map(value => normalizeMaterialName(value));
+        const exactMaterialMatch = articleMaterials.some(value => rowNames.has(value));
+        const elementMatch = (article.elements || []).length && (article.elements || []).every(element => rowElements.has(element));
+        if (!exactMaterialMatch && !elementMatch) continue;
+        for (const fig of article.figures || []) {
+          const imageUrl = resolveFigureImage(fig, article);
+          if (!imageUrl) continue;
+          candidates.push({
+            ...fig,
+            image_url: imageUrl,
+            article_title: article.title,
+            article_url: article.ar5iv_url || article.url,
+            article_source: article.source,
+            year: article.year,
+            data_quality: article.data_quality || article.verification_status
+          });
+        }
+      }
+      return candidates;
+    }
+
+    function renderCompareFigureCard(item, typeLabel) {
+      const material = item.row.display_name || item.row.material;
+      if (!item.figure) {
+        return `
+          <div class="figure-compare-card missing">
+            <div>
+              <strong>${esc(material)}</strong>
+              <p>暂无 ${esc(typeLabel)} 类型的 curated 真实论文图。</p>
+            </div>
+          </div>
+        `;
+      }
+      const fig = item.figure;
+      return `
+        <div class="figure-compare-card ${figureTypeClass[fig.type] || "fig-type-other"}">
+          <div class="figure-card-header">${esc(material)} · ${esc(normalizeFigureType(fig.type))} · ${esc(fig.year || "")}</div>
+          <div class="figure-compare-image">
+            <img src="${esc(fig.image_url)}" alt="${esc(fig.caption)}" referrerpolicy="no-referrer" loading="eager">
+          </div>
+          <div class="figure-compare-meta">
+            <strong>${esc(fig.caption)}</strong>
+            <span>📄 ${esc(fig.article_title || "")}</span>
+            <span>✅ ${esc(fig.data_quality || "curated_real_article_figure")}</span>
+            <a href="${esc(fig.article_url || fig.original_figure_url || fig.image_url)}" target="_blank" rel="noreferrer" class="chip good" style="width:max-content;">查看图源</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function normalizeFigureType(type) {
+      const value = String(type || "").toLowerCase();
+      if (value.includes("fermi")) return "Fermi surface";
+      if (value.includes("band")) return "Band structure";
+      if (value.includes("gap")) return "Gap map";
+      if (value.includes("charge") || value.includes("cdw")) return "Charge order";
+      if (value.includes("spectrum") || value.includes("arpes")) return "ARPES spectrum";
+      if (value.includes("comparison")) return "Comparison";
+      return type || "Other";
+    }
+
+    function normalizeMaterialName(value) {
+      return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    function materialAliases(row) {
+      const values = [row.material, row.display_name];
+      if (/bi2sr2cacu2o8/i.test(values.join(" "))) values.push("Bi2212");
+      if (/cecoin5/i.test(values.join(" "))) values.push("CeCoIn5");
+      if (/mg/i.test(row.material || "") && /b2/i.test(row.material || "")) values.push("MgB2");
+      return new Set(values.filter(Boolean).map(normalizeMaterialName));
     }
 
     // ===== 文章数据渲染 =====
