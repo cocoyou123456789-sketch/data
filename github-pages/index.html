@@ -324,6 +324,67 @@
       border-radius: 999px;
     }
 
+    .import-workflow {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(255,255,255,0.018);
+    }
+
+    .import-workflow ol {
+      margin: 8px 0 0 18px;
+      padding: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .import-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .import-metric {
+      min-height: 68px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      background: #101923;
+    }
+
+    .import-metric strong {
+      display: block;
+      font-size: 20px;
+      color: var(--accent-glow);
+    }
+
+    .import-metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .import-file-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    .import-file-row input[type="file"] {
+      max-width: 320px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      .import-workflow { grid-template-columns: 1fr; }
+      .import-metrics { grid-template-columns: 1fr; }
+    }
+
     .topic-tabs {
       display: flex;
       flex-wrap: wrap;
@@ -1283,6 +1344,30 @@
         <span class="status" id="articleStatus">Loading...</span>
       </div>
       <div class="content">
+        <div class="import-workflow">
+          <div>
+            <h3 data-i18n="wosWorkflowTitle">🧭 WoS / Scholar 批量导入流程</h3>
+            <ol>
+              <li data-i18n="wosWorkflowStep1">在 Web of Science 或 Google Scholar 先按 ARPES、材料、超导关键词检索。</li>
+              <li data-i18n="wosWorkflowStep2">从 WoS 使用 Export 导出 CSV/TSV/TXT；从 Scholar 或 Publish or Perish 导出 BibTeX。</li>
+              <li data-i18n="wosWorkflowStep3">上传文件或粘贴文本，网站自动提取标题、年份、DOI、材料、元素、技术和关键词。</li>
+            </ol>
+          </div>
+          <div class="import-metrics" aria-label="Import summary">
+            <div class="import-metric">
+              <strong id="importMetricRecords">28</strong>
+              <span data-i18n="importMetricRecords">当前文章记录</span>
+            </div>
+            <div class="import-metric">
+              <strong id="importMetricWos">16</strong>
+              <span data-i18n="importMetricWos">WoS/出版商记录</span>
+            </div>
+            <div class="import-metric">
+              <strong id="importMetricFigures">20</strong>
+              <span data-i18n="importMetricFigures">已核验论文图</span>
+            </div>
+          </div>
+        </div>
         <div class="toolbar" style="margin-bottom:4px;">
           <button class="primary" id="importWosBtn" data-i18n="importWosBtn">📥 导入 WoS</button>
           <button class="primary" id="importScholarBtn" data-i18n="importScholarBtn">📥 导入 Google Scholar</button>
@@ -1292,6 +1377,11 @@
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <strong id="importPanelTitle" data-i18n="importPanelTitle">导入文章</strong>
             <button id="closeImportBtn" style="min-height:28px;padding:2px 8px;">✕</button>
+          </div>
+          <div class="status" id="importHelpText" data-i18n="importHelpText">推荐从 WoS 结果页点击 Export，选择 CSV/TSV/TXT 后上传或粘贴；截图页面本身不能提供完整元数据。</div>
+          <div class="import-file-row">
+            <input type="file" id="articleImportFile" accept=".csv,.tsv,.txt,.bib,.ris">
+            <span class="status" id="articleImportFileStatus"></span>
           </div>
           <textarea id="importTextarea" style="width:100%; min-height:200px; font-family:monospace; font-size:12px;" data-i18n-placeholder="importTextareaPlaceholder" placeholder="在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本..."></textarea>
           <div class="toolbar" style="margin-top:8px;">
@@ -1461,10 +1551,18 @@
         detailHint: "点击材料表中的一行查看详情。",
         articleTitle: "📄 文章数据 (来自 articles.json)",
         articleLoading: "加载文章中...",
+        wosWorkflowTitle: "🧭 WoS / Scholar 批量导入流程",
+        wosWorkflowStep1: "在 Web of Science 或 Google Scholar 先按 ARPES、材料、超导关键词检索。",
+        wosWorkflowStep2: "从 WoS 使用 Export 导出 CSV/TSV/TXT；从 Scholar 或 Publish or Perish 导出 BibTeX。",
+        wosWorkflowStep3: "上传文件或粘贴文本，网站自动提取标题、年份、DOI、材料、元素、技术和关键词。",
+        importMetricRecords: "当前文章记录",
+        importMetricWos: "WoS/出版商记录",
+        importMetricFigures: "已核验论文图",
         importWosBtn: "📥 导入 WoS",
         importScholarBtn: "📥 导入 Google Scholar",
         resetArticlesBtn: "🔄 恢复默认数据",
         importPanelTitle: "导入文章",
+        importHelpText: "推荐从 WoS 结果页点击 Export，选择 CSV/TSV/TXT 后上传或粘贴；截图页面本身不能提供完整元数据。",
         importTextareaPlaceholder: "在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本...",
         parseImportBtn: "🔍 解析并导入",
         noArticles: "暂无文章数据。",
@@ -1649,10 +1747,18 @@
         detailHint: "Click a row in the materials table for details.",
         articleTitle: "📄 Article Data (from articles.json)",
         articleLoading: "Loading articles...",
+        wosWorkflowTitle: "🧭 WoS / Scholar Bulk Import Workflow",
+        wosWorkflowStep1: "Search Web of Science or Google Scholar with ARPES, material, and superconductivity keywords.",
+        wosWorkflowStep2: "Export CSV/TSV/TXT from WoS; export BibTeX from Scholar or Publish or Perish.",
+        wosWorkflowStep3: "Upload the file or paste text; the site extracts title, year, DOI, materials, elements, techniques, and keywords.",
+        importMetricRecords: "Current records",
+        importMetricWos: "WoS/publisher records",
+        importMetricFigures: "Verified paper figures",
         importWosBtn: "📥 Import WoS",
         importScholarBtn: "📥 Import Google Scholar",
         resetArticlesBtn: "🔄 Restore Defaults",
         importPanelTitle: "Import Articles",
+        importHelpText: "Recommended: click Export on the WoS results page, choose CSV/TSV/TXT, then upload or paste it. A screenshot alone does not contain complete metadata.",
         importTextareaPlaceholder: "Paste Web of Science CSV/TSV export text, or Google Scholar BibTeX text...",
         parseImportBtn: "🔍 Parse & Import",
         noArticles: "No article data.",
@@ -1805,6 +1911,7 @@
       renderOurData();
       renderArticles();
       renderKeywordChips();
+      updateImportMetrics();
       renderLibrary().catch(() => {});
       // Update static i18n elements
       document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -1911,6 +2018,11 @@
     const importTextarea = $("#importTextarea");
     const parseImportBtn = $("#parseImportBtn");
     const importParseStatus = $("#importParseStatus");
+    const articleImportFile = $("#articleImportFile");
+    const articleImportFileStatus = $("#articleImportFileStatus");
+    const importMetricRecords = $("#importMetricRecords");
+    const importMetricWos = $("#importMetricWos");
+    const importMetricFigures = $("#importMetricFigures");
     const closeImportBtn = $("#closeImportBtn");
     const comparePanel = $("#comparePanel");
     const compareGrid = $("#compareGrid");
@@ -2324,6 +2436,8 @@
       importPanelTitle.textContent = "📥 粘贴 Web of Science 导出 (CSV/TSV)";
       importTextarea.placeholder = "从 Web of Science 导出 → 全选复制粘贴到这里...";
       importParseStatus.textContent = "";
+      articleImportFileStatus.textContent = "";
+      articleImportFile.value = "";
       importTextarea.value = "";
       importTextarea.focus();
       importTextarea.dataset.mode = "wos";
@@ -2333,11 +2447,22 @@
       importPanelTitle.textContent = "📥 粘贴 Google Scholar BibTeX";
       importTextarea.placeholder = "在 Google Scholar 搜索 → 点击 Cite → BibTeX → 复制粘贴到这里...";
       importParseStatus.textContent = "";
+      articleImportFileStatus.textContent = "";
+      articleImportFile.value = "";
       importTextarea.value = "";
       importTextarea.focus();
       importTextarea.dataset.mode = "scholar";
     });
     closeImportBtn.addEventListener("click", () => { importPanel.style.display = "none"; });
+    articleImportFile.addEventListener("change", async () => {
+      const file = articleImportFile.files && articleImportFile.files[0];
+      if (!file) return;
+      const text = await file.text();
+      importTextarea.value = text;
+      articleImportFileStatus.textContent = `${file.name} · ${(file.size / 1024).toFixed(1)} KB`;
+      if (/\.(bib|ris)$/i.test(file.name)) importTextarea.dataset.mode = "scholar";
+      if (/\.(csv|tsv|txt)$/i.test(file.name)) importTextarea.dataset.mode = "wos";
+    });
     parseImportBtn.addEventListener("click", () => {
       const text = importTextarea.value.trim();
       if (!text) { importParseStatus.textContent = "请先粘贴文本"; return; }
@@ -2359,14 +2484,18 @@
       state.articles = [...newArticles, ...state.articles];
       renderArticles();
       renderKeywordChips();
+      updateImportMetrics();
       importPanel.style.display = "none";
-      showToast("导入了 " + newArticles.length + " 篇文章");
+      const arpesCount = newArticles.filter(a => (a.techniques || []).includes("ARPES")).length;
+      const materialCount = new Set(newArticles.flatMap(a => a.materials || [])).size;
+      showToast(`导入了 ${newArticles.length} 篇文章 · ARPES ${arpesCount} · 材料 ${materialCount}`);
     });
     resetArticlesBtn.addEventListener("click", async () => {
       try { state.articles = await loadJson("data/articles.json"); }
       catch { state.articles = []; }
       renderArticles();
       renderKeywordChips();
+      updateImportMetrics();
       showToast("已恢复默认文章数据");
     });
 
@@ -2426,35 +2555,82 @@
     function parseWoSExport(text) {
       const lines = text.split(/\r?\n/).filter(l => l.trim());
       if (lines.length < 2) throw new Error("Need header + data rows");
-      const sep = lines[0].includes("\t") ? "\t" : ",";
-      const headers = lines[0].split(sep).map(h => h.trim().toLowerCase().replace(/"/g, ""));
+      const sep = detectDelimiter(lines[0]);
+      const headers = parseDelimitedLine(lines[0], sep).map(normalizeImportHeader);
       const articles = [];
       for (let i = 1; i < lines.length; i++) {
-        const vals = lines[i].split(sep).map(v => v.trim().replace(/^"|"$/g, ""));
+        const vals = parseDelimitedLine(lines[i], sep);
         if (vals.length < 2) continue;
         const row = {};
         headers.forEach((h, j) => { row[h] = vals[j] || ""; });
         const title = row["article title"] || row["ti"] || row["title"] || "";
         if (!title) continue;
         const doi = row["doi"] || row["di"] || "";
-        const uid = row["ut (unique wos id)"] || row["ut"] || "";
+        const uid = row["ut unique wos id"] || row["ut"] || row["accession number"] || "";
         const year = parseInt(row["publication year"] || row["py"] || "0") || null;
-        const allText = [title, row["abstract"] || "", row["author keywords"] || "", row["keywords plus"] || ""].join(" ");
+        const authorKeywords = row["author keywords"] || row["de"] || "";
+        const keywordsPlus = row["keywords plus"] || row["id"] || "";
+        const allText = [title, row["abstract"] || row["ab"] || "", authorKeywords, keywordsPlus].join(" ");
         const elements = extractElements(allText);
         articles.push({
           id: uid || `wos-${Date.now()}-${i}`,
-          title, year, source: "Web of Science",
+          title, year, source: "Web of Science export",
           source_title: row["source title"] || row["so"] || "",
           authors: row["authors"] || row["au"] || "",
           url: uid ? `https://www.webofscience.com/wos/woscc/full-record/${uid}` : "",
           doi, materials: extractMaterials(allText), elements,
           dopants: [], techniques: extractTechniques(allText),
-          keywords: (row["author keywords"] || "").split(/[;|]/).map(k => k.trim()).filter(Boolean),
+          keywords: `${authorKeywords};${keywordsPlus}`.split(/[;|]/).map(k => k.trim()).filter(Boolean),
           temperature_K: null, photon_energy_eV: null, beamline: "",
-          properties: [], evidence: [title], verification_status: "wos_imported", figures: []
+          properties: [], evidence: [title, doi ? `DOI: ${doi}` : "", uid ? `WoS ID: ${uid}` : ""].filter(Boolean),
+          verification_status: "wos_imported_metadata", figures: []
         });
       }
       return articles;
+    }
+
+    function detectDelimiter(headerLine) {
+      const tabCount = (headerLine.match(/\t/g) || []).length;
+      const commaCount = (headerLine.match(/,/g) || []).length;
+      const semicolonCount = (headerLine.match(/;/g) || []).length;
+      if (tabCount >= commaCount && tabCount >= semicolonCount) return "\t";
+      if (semicolonCount > commaCount) return ";";
+      return ",";
+    }
+
+    function parseDelimitedLine(line, delimiter) {
+      const values = [];
+      let current = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
+        if (char === "\"") {
+          if (inQuotes && next === "\"") {
+            current += "\"";
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === delimiter && !inQuotes) {
+          values.push(current.trim());
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+      values.push(current.trim());
+      return values.map(value => value.replace(/^"|"$/g, "").trim());
+    }
+
+    function normalizeImportHeader(header) {
+      return header
+        .trim()
+        .toLowerCase()
+        .replace(/["']/g, "")
+        .replace(/[()[\]{}:/.-]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
     }
 
     // ===== Google Scholar BibTeX 解析器 =====
@@ -2510,6 +2686,7 @@
         renderOurData();
         renderArticles();
         renderKeywordChips();
+        updateImportMetrics();
         loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       } catch (error) {
         loadStatus.textContent = `${t("loadingFailed")}: ${error.message}`;
@@ -3193,6 +3370,7 @@
     function renderArticles() {
       const rows = filteredArticles();
       articleStatus.textContent = `${rows.length} / ${state.articles.length} ${t("records")}`;
+      updateImportMetrics();
       if (!rows.length) {
         articleGrid.innerHTML = `<p class="muted">${t("noArticles")}</p>`;
         return;
@@ -3222,6 +3400,18 @@
         ...(article.techniques || []), ...(article.keywords || []), ...(article.properties || []),
         article.doi, article.url
       ].join(" ").toLowerCase();
+    }
+
+    function updateImportMetrics() {
+      const articles = state.articles || [];
+      const wosCount = articles.filter(article => {
+        const text = [article.source, article.verification_status, article.wos_uid].join(" ").toLowerCase();
+        return text.includes("wos") || text.includes("web of science") || text.includes("publisher");
+      }).length;
+      const figureCount = articles.reduce((sum, article) => sum + (article.figures || []).length, 0);
+      if (importMetricRecords) importMetricRecords.textContent = articles.length;
+      if (importMetricWos) importMetricWos.textContent = wosCount;
+      if (importMetricFigures) importMetricFigures.textContent = figureCount;
     }
 
     function renderKeywordChips() {
