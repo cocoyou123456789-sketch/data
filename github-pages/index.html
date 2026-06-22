@@ -112,10 +112,13 @@
       margin: 0 auto;
       padding: 22px clamp(14px, 3vw, 36px) 42px;
       display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
       gap: 16px;
       position: relative;
       z-index: 1;
     }
+
+    main > section { grid-column: 2; }
 
     section {
       background: var(--panel);
@@ -123,6 +126,98 @@
       border-radius: 12px;
       box-shadow: var(--shadow);
       overflow: hidden;
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        linear-gradient(135deg, rgba(10,14,20,0.94), rgba(13,24,32,0.92)),
+        radial-gradient(circle at 20% 20%, rgba(20,184,166,0.18), transparent 32%);
+    }
+
+    .login-card {
+      width: min(520px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px;
+      background: #111922;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+      display: grid;
+      gap: 14px;
+    }
+
+    .login-card h2 {
+      font-size: 24px;
+    }
+
+    .login-card .form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    body.locked header,
+    body.locked main {
+      filter: blur(4px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .toc-panel {
+      grid-column: 1;
+      grid-row: 1 / span 20;
+      position: sticky;
+      top: 16px;
+      align-self: start;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+    }
+
+    .toc-panel h2 {
+      font-size: 14px;
+      color: var(--accent-glow);
+    }
+
+    .toc-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .toc-link {
+      min-height: 34px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 9px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.018);
+    }
+
+    .toc-link.active,
+    .toc-link:hover {
+      color: var(--accent-glow);
+      border-color: rgba(20,184,166,0.35);
+      background: var(--accent-soft);
+    }
+
+    .toc-note {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .section-head {
@@ -408,10 +503,13 @@
     .periodic-wrap {
       overflow-x: auto;
       padding-bottom: 4px;
+      display: flex;
+      justify-content: center;
     }
 
     .periodic {
       min-width: 920px;
+      width: 920px;
       display: grid;
       grid-template-columns: repeat(18, 46px);
       grid-auto-rows: 46px;
@@ -528,6 +626,13 @@
     }
 
     /* === Overview 区域 === */
+    .milestone-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
     .overview-visual {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -536,10 +641,12 @@
     }
 
     .history-image {
-      min-height: 360px;
+      min-height: 280px;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: linear-gradient(180deg, #111922, #0f1822);
+      background:
+        linear-gradient(180deg, rgba(15,118,110,0.08), transparent 38%),
+        linear-gradient(135deg, #111922, #0f1822);
       padding: 16px;
       display: grid;
       grid-template-rows: auto 1fr auto;
@@ -548,7 +655,7 @@
 
     .history-line {
       position: relative;
-      min-height: 140px;
+      min-height: 170px;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       align-items: center;
@@ -562,7 +669,8 @@
       top: 50%;
       height: 3px;
       border-radius: 999px;
-      background: linear-gradient(90deg, #2a4a5a, var(--accent-glow), #60d0ff, var(--accent-glow), #2a4a5a);
+      background: linear-gradient(90deg, #34515b, var(--accent-glow), #60d0ff, #d7a86b, #d87979);
+      box-shadow: 0 0 22px rgba(20,184,166,0.28);
     }
 
     .history-node {
@@ -576,11 +684,11 @@
       color: var(--muted);
     }
     .history-dot {
-      width: 48px;
-      height: 48px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       border: 2px solid #ffffff;
-      background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+      background: linear-gradient(135deg, #0f766e, #14b8a6 52%, #60d0ff);
       color: #ffffff;
       display: grid;
       place-items: center;
@@ -591,6 +699,31 @@
     }
     .history-dot:hover {
       transform: scale(1.2);
+    }
+
+    .history-node:nth-child(even) {
+      transform: translateY(28px);
+    }
+
+    .history-node:nth-child(odd) {
+      transform: translateY(-18px);
+    }
+
+    .workbench-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .model-interface {
+      border: 1px dashed rgba(20,184,166,0.45);
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(15,118,110,0.04);
+      display: grid;
+      gap: 8px;
     }
 
     /* === Tc 柱状图 === */
@@ -1080,14 +1213,41 @@
 
     @media (max-width: 980px) {
       header { align-items: flex-start; flex-direction: column; }
-      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip { grid-template-columns: 1fr; }
+      main { grid-template-columns: 1fr; }
+      main > section, .toc-panel { grid-column: 1; }
+      .toc-panel {
+        position: relative;
+        top: 0;
+        grid-row: auto;
+        max-height: none;
+      }
+      .toc-list { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .login-card .form-grid { grid-template-columns: 1fr; }
       .span-2, .span-4 { grid-column: auto; }
       input[type="search"] { width: 100%; }
     }
   </style>
 <script src="https://cdn.jsdelivr.net/npm/jsfive@0.5.2/dist/browser/jsfive.min.js"></script>
 </head>
-<body>
+<body class="locked">
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div>
+        <h2 data-i18n="loginTitle">登录 ARPES 工作台</h2>
+        <p class="muted" data-i18n="loginHint">进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。</p>
+      </div>
+      <div class="form-grid">
+        <label data-label-i18n="loginNameLabel">姓名 / 用户
+          <input id="loginName" autocomplete="name" placeholder="ARPES user">
+        </label>
+        <label data-label-i18n="loginGroupLabel">课题组 / 光源站
+          <input id="loginGroup" placeholder="SSRF BL07U">
+        </label>
+      </div>
+      <button class="primary" id="loginBtn" data-i18n="loginBtn">进入工作台</button>
+      <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
+    </div>
+  </div>
   <!-- 粒子背景 -->
   <div class="particles-container" id="particles"></div>
 
@@ -1111,13 +1271,47 @@
         <span class="lang-option active" data-lang="zh">中文</span>
         <span class="lang-option" data-lang="en">EN</span>
       </div>
+      <button class="primary" id="generateReportBtn" data-i18n="generateReportBtn">生成调研报告</button>
       <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">📦 GitHub</a>
     </div>
   </header>
 
   <main>
+    <aside class="toc-panel">
+      <h2 data-i18n="tocTitle">电子书目录</h2>
+      <div class="toc-list" id="tocList"></div>
+      <div class="toc-note" id="tocNote" data-i18n="tocNote">目录会随主题、元素和材料筛选自动变化。</div>
+    </aside>
+    <!-- ===== Milestones ===== -->
+    <section id="section-milestones">
+      <div class="section-head">
+        <h2 data-i18n="milestonesTitle">📜 超导历史里程碑</h2>
+        <span class="status" data-i18n="milestonesHint">从1911年至今的重大发现 — 点击节点查看详情</span>
+      </div>
+      <div class="content">
+        <div class="milestone-stage">
+          <div class="history-image" aria-label="超导历史与Tc对比">
+            <div>
+              <h3 data-i18n="milestonesTitle">📜 超导历史里程碑</h3>
+              <p class="muted" data-i18n="milestonesHint">从1911年至今的重大发现</p>
+            </div>
+            <div class="history-line" id="historyLine"></div>
+          </div>
+          <div class="history-image">
+            <h3 style="margin-bottom:8px;" data-i18n="tcChartTitle">📊 Tc 对比 (K)</h3>
+            <div class="tc-chart-wrap" id="tcChart"></div>
+            <div class="model-interface">
+              <strong data-i18n="modelInterfaceTitle">计算模型接口</strong>
+              <span class="muted" data-i18n="modelInterfaceHint">预留 API：window.ARPESModelHub.registerModel(name, predictFn)</span>
+              <button id="modelProbeBtn" data-i18n="modelProbeBtn">检查接口</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== 搜索 & 筛选 ===== -->
-    <section>
+    <section id="section-search">
       <div class="section-head">
         <h2 data-i18n="searchFilterTitle">🔍 搜索与筛选</h2>
         <span class="status" id="loadStatus">Loading...</span>
@@ -1158,7 +1352,7 @@
     </section>
 
     <!-- ===== 周期表 ===== -->
-    <section>
+    <section id="section-periodic">
       <div class="section-head">
         <h2 data-i18n="periodicTitle">🗂️ 元素周期表</h2>
         <span class="status" data-i18n="periodicStatus">🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!</span>
@@ -1182,7 +1376,7 @@
     </section>
 
     <!-- ===== Overview 图片对比 ===== -->
-    <section>
+    <section id="section-overview">
       <div class="section-head">
         <h2 data-i18n="overviewTitle">📸 直观对比：文章图表</h2>
         <span class="status" id="sourceStatus">从论文提取图表 — 不同材料/技术并排对比</span>
@@ -1209,72 +1403,17 @@
             <button id="figShowMoreBtn" style="display:none;" data-i18n="showMoreBtn">显示更多</button>
           </div>
         </div>
-        <!-- 历史里程碑 + Tc 柱状图 + 光源卡片 -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start;">
-          <div class="history-image" aria-label="超导历史与Tc对比">
-            <div>
-              <h3 data-i18n="milestonesTitle">📜 超导历史里程碑</h3>
-              <p class="muted" data-i18n="milestonesHint">从1911年至今的重大发现</p>
-            </div>
-            <div class="history-line" id="historyLine"></div>
-            <div>
-              <h3 style="margin-bottom:8px;" data-i18n="tcChartTitle">📊 Tc 对比 (K)</h3>
-              <div class="tc-chart-wrap" id="tcChart"></div>
-            </div>
-          </div>
-          <div class="source-map" id="sourceCards"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== HDF5 数据管理 ===== -->
-    <section>
-      <div class="section-head">
-        <h2 data-i18n="hdf5Title">📊 HDF5 数据管理</h2>
-        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">上传 .h5 文件，解析能带/能量/温度数据，直观对比</span>
-      </div>
-      <div class="content">
-        <!-- 上传区域 -->
-        <div class="drop-zone" id="hdf5DropZone">
-          <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 文件</strong>
-          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据</p>
-          <input type="file" id="hdf5FileInput" accept=".h5,.hdf5" multiple style="display:none;">
-        </div>
-        <!-- HDF5 文件树 + 元数据 -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-          <div class="card">
-            <h3 data-i18n="hdf5StructureTitle">📂 文件结构</h3>
-            <div class="hdf5-tree" id="hdf5Tree"><span class="muted" data-i18n="hdf5TreeEmpty">上传文件后显示结构</span></div>
-          </div>
-          <div class="card">
-            <h3 data-i18n="hdf5MetaTitle">🏷️ 元数据</h3>
-            <div id="hdf5Meta"><span class="muted" data-i18n="hdf5MetaEmpty">点击数据集查看元数据</span></div>
-          </div>
-        </div>
-        <!-- 已导入的数据集库 -->
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 data-i18n="localLibraryTitle">🗄️ 本地数据仓库</h3>
-            <div style="display:flex; gap:8px;">
-              <input type="search" id="librarySearch" data-i18n-placeholder="librarySearchPlaceholder" placeholder="搜索：能量范围、温度、材料..." style="width:260px; min-height:34px;">
-              <button id="compareSelectedBtn" class="primary" data-i18n="compareSelectedBtn">📊 对比选中</button>
-              <button id="clearLibraryBtn" data-i18n="clearLibraryBtn">🗑️ 清空库</button>
-            </div>
-          </div>
-          <div class="data-library-grid" id="dataLibraryGrid">
-            <span class="muted" data-i18n="libraryEmpty">暂无数据。上传 HDF5 文件后添加到库。</span>
-          </div>
-        </div>
       </div>
     </section>
 
     <!-- ===== 光源词条目录 ===== -->
-    <section>
+    <section id="section-sources">
       <div class="section-head">
         <h2 data-i18n="sourceTitle">💡 光源 / 档案目录</h2>
         <span class="status" data-i18n="sourceStatus">按地区、设施、文章图表、原始数据搜索</span>
       </div>
       <div class="content">
+        <div class="source-map" id="sourceCards"></div>
         <div class="table-wrap">
           <table>
             <thead>
@@ -1294,7 +1433,7 @@
     </section>
 
     <!-- ===== 超导材料表 ===== -->
-    <section>
+    <section id="section-materials">
       <div class="section-head">
         <h2 data-i18n="materialsTitle">🧪 超导材料表</h2>
         <span class="status" id="tableStatus">Waiting</span>
@@ -1328,7 +1467,7 @@
     </section>
 
     <!-- ===== 材料详情 ===== -->
-    <section>
+    <section id="section-detail">
       <div class="section-head">
         <h2 data-i18n="detailTitle">📋 材料详情</h2>
       </div>
@@ -1338,7 +1477,7 @@
     </section>
 
     <!-- ===== 文章数据 ===== -->
-    <section>
+    <section id="section-articles">
       <div class="section-head">
         <h2 data-i18n="articleTitle">📄 文章数据</h2>
         <span class="status" id="articleStatus">Loading...</span>
@@ -1393,8 +1532,46 @@
       </div>
     </section>
 
+    <!-- ===== HDF5 数据管理 ===== -->
+    <section id="section-hdf5">
+      <div class="section-head">
+        <h2 data-i18n="hdf5Title">📊 HDF5 数据管理</h2>
+        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">上传 .h5 文件，解析能带/能量/温度数据，直观对比</span>
+      </div>
+      <div class="content">
+        <div class="drop-zone" id="hdf5DropZone">
+          <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 文件</strong>
+          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据</p>
+          <input type="file" id="hdf5FileInput" accept=".h5,.hdf5" multiple style="display:none;">
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="card">
+            <h3 data-i18n="hdf5StructureTitle">📂 文件结构</h3>
+            <div class="hdf5-tree" id="hdf5Tree"><span class="muted" data-i18n="hdf5TreeEmpty">上传文件后显示结构</span></div>
+          </div>
+          <div class="card">
+            <h3 data-i18n="hdf5MetaTitle">🏷️ 元数据</h3>
+            <div id="hdf5Meta"><span class="muted" data-i18n="hdf5MetaEmpty">点击数据集查看元数据</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+            <h3 data-i18n="localLibraryTitle">🗄️ 本地数据仓库</h3>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <input type="search" id="librarySearch" data-i18n-placeholder="librarySearchPlaceholder" placeholder="搜索：能量范围、温度、材料..." style="width:260px; min-height:34px;">
+              <button id="compareSelectedBtn" class="primary" data-i18n="compareSelectedBtn">📊 对比选中</button>
+              <button id="clearLibraryBtn" data-i18n="clearLibraryBtn">🗑️ 清空库</button>
+            </div>
+          </div>
+          <div class="data-library-grid" id="dataLibraryGrid">
+            <span class="muted" data-i18n="libraryEmpty">暂无数据。上传 HDF5 文件后添加到库。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== Our Data ===== -->
-    <section>
+    <section id="section-our-data">
       <div class="section-head">
         <h2 data-i18n="ourDataTitle">📝 我的数据</h2>
         <span class="status" id="ourDataStatus">保存在浏览器本地</span>
@@ -1472,7 +1649,7 @@
     </section>
 
     <!-- ===== 模板说明 ===== -->
-    <section>
+    <section id="section-notes">
       <div class="section-head">
         <h2 data-i18n="notesTitle">📌 模板说明</h2>
       </div>
@@ -1495,10 +1672,36 @@
   <script>
     // ===== 国际化 i18n =====
     const LANG_STORAGE_KEY = "arpes-explorer-lang-v1";
+    const USER_STORAGE_KEY = "arpes-explorer-user-v1";
     const I18N = {
       zh: {
         title: "⚡ ARPES 超导材料探索器",
         subtitle: "超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析",
+        loginTitle: "登录 ARPES 工作台",
+        loginHint: "进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。",
+        loginNameLabel: "姓名 / 用户",
+        loginGroupLabel: "课题组 / 光源站",
+        loginBtn: "进入工作台",
+        loginPrivacy: "本登录只保存在当前浏览器，用于个性化目录和报告署名。",
+        tocTitle: "电子书目录",
+        tocNote: "目录会随主题、元素和材料筛选自动变化。",
+        generateReportBtn: "生成调研报告",
+        modelInterfaceTitle: "计算模型接口",
+        modelInterfaceHint: "预留 API：window.ARPESModelHub.registerModel(name, predictFn)",
+        modelProbeBtn: "检查接口",
+        modelReadyToast: "计算模型接口已就绪",
+        reportToast: "调研报告已生成",
+        tocSearch: "检索与主题",
+        tocMilestones: "历史与模型",
+        tocPeriodic: "元素周期表",
+        tocOverview: "论文图对比",
+        tocSources: "光源与档案",
+        tocMaterials: "材料表",
+        tocDetail: "材料详情",
+        tocArticles: "文献导入",
+        tocHdf5: "HDF5 数据",
+        tocOurData: "个人数据",
+        tocNotes: "模板说明",
         loading: "加载中...",
         searchPlaceholder: "搜索：上海、北京、NSRRC、arXiv、Cu、Ni、铜氧化物、铁基超导...",
         allFamilies: "全部家族",
@@ -1695,6 +1898,31 @@
       en: {
         title: "⚡ ARPES Superconductivity Explorer",
         subtitle: "Superconducting materials · Periodic Table · Light Sources · Article Data · Comparison",
+        loginTitle: "Login to ARPES Workbench",
+        loginHint: "Search materials, import WoS/Scholar literature, save personal data, and generate research reports.",
+        loginNameLabel: "Name / User",
+        loginGroupLabel: "Group / Beamline",
+        loginBtn: "Enter Workbench",
+        loginPrivacy: "This login is stored only in this browser for personalized contents and report authorship.",
+        tocTitle: "E-book Contents",
+        tocNote: "The contents update with topic, element, and material filters.",
+        generateReportBtn: "Generate Report",
+        modelInterfaceTitle: "Computation Model Interface",
+        modelInterfaceHint: "Reserved API: window.ARPESModelHub.registerModel(name, predictFn)",
+        modelProbeBtn: "Check Interface",
+        modelReadyToast: "Computation model interface is ready",
+        reportToast: "Research report generated",
+        tocSearch: "Search & Topic",
+        tocMilestones: "History & Model",
+        tocPeriodic: "Periodic Table",
+        tocOverview: "Paper Figures",
+        tocSources: "Sources & Archives",
+        tocMaterials: "Materials",
+        tocDetail: "Material Details",
+        tocArticles: "Literature Import",
+        tocHdf5: "HDF5 Data",
+        tocOurData: "Our Data",
+        tocNotes: "Template Notes",
         loading: "Loading...",
         searchPlaceholder: "Search: Shanghai, Beijing, NSRRC, arXiv, Cu, Ni, cuprate, iron-based...",
         allFamilies: "All Families",
@@ -1929,6 +2157,7 @@
       // Update template notes
       const notesEl = document.querySelector("#templateNotesText");
       if (notesEl) notesEl.innerHTML = t("seedDataNote");
+      renderToc();
       // Update section headings, buttons, etc.
       document.querySelector("#superconductorBtn").innerHTML = t("superconductorBtn");
       document.querySelector("#searchBtn").innerHTML = t("searchBtn");
@@ -1986,6 +2215,14 @@
     const resetBtn = $("#resetBtn");
     const compareBtn = $("#compareBtn");
     const keywordChips = $("#keywordChips");
+    const loginScreen = $("#loginScreen");
+    const loginName = $("#loginName");
+    const loginGroup = $("#loginGroup");
+    const loginBtn = $("#loginBtn");
+    const tocList = $("#tocList");
+    const tocNote = $("#tocNote");
+    const generateReportBtn = $("#generateReportBtn");
+    const modelProbeBtn = $("#modelProbeBtn");
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -2358,40 +2595,38 @@
     init();
 
     // ===== 事件绑定 =====
+    generateReportBtn?.addEventListener("click", generateResearchReport);
+    modelProbeBtn?.addEventListener("click", () => {
+      const hub = window.ARPESModelHub || window.ARPES_ML;
+      showToast(`${t("modelReadyToast")} · v${hub?.version || "0.1.0"}`);
+    });
+
     // ===== 主题切换 =====
     document.querySelectorAll(".topic-tab").forEach(tab => {
       tab.addEventListener("click", () => {
-        state.topic = tab.dataset.topic;
-        document.querySelectorAll(".topic-tab").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        familyFilter.value = "";
-        searchInput.value = "";
-        state.selectedElement = "";
-        applyFilters();
-        if (state.topic === "sc") {
-          dancePeriodicTable();
-          spawnSparkles();
-          activateSoundBars();
-          periodicTable.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+        setTopic(tab.dataset.topic, { dance: tab.dataset.topic === "sc" });
       });
     });
     // 默认激活超导tab
     document.querySelector('.topic-tab[data-topic="sc"]').classList.add("active");
 
     superconductorBtn.addEventListener("click", () => {
-      state.topic = "sc";
-      document.querySelectorAll(".topic-tab").forEach(t => t.classList.remove("active"));
-      document.querySelector('.topic-tab[data-topic="sc"]').classList.add("active");
+      setTopic("sc", { dance: true });
+    });
+    function setTopic(topic, options = {}) {
+      state.topic = topic;
+      document.querySelectorAll(".topic-tab").forEach(t => t.classList.toggle("active", t.dataset.topic === topic));
       familyFilter.value = "";
       searchInput.value = "";
       state.selectedElement = "";
       applyFilters();
-      dancePeriodicTable();
-      spawnSparkles();
-      activateSoundBars();
-      periodicTable.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
+      renderToc();
+      if (options.dance) {
+        dancePeriodicTable();
+        spawnSparkles();
+        activateSoundBars();
+      }
+    }
     searchBtn.addEventListener("click", applyFilters);
     resetBtn.addEventListener("click", () => {
       state.selectedElement = "";
@@ -2687,6 +2922,8 @@
         renderArticles();
         renderKeywordChips();
         updateImportMetrics();
+        initLogin();
+        renderToc();
         loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       } catch (error) {
         loadStatus.textContent = `${t("loadingFailed")}: ${error.message}`;
@@ -2825,6 +3062,105 @@
       setTimeout(() => t.remove(), 2200);
     }
 
+    function initLogin() {
+      const user = loadUser();
+      if (user.name || user.group) unlockWorkbench(user);
+      loginBtn?.addEventListener("click", () => {
+        const user = {
+          name: loginName.value.trim() || "ARPES user",
+          group: loginGroup.value.trim() || "",
+          login_at: new Date().toISOString()
+        };
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+        unlockWorkbench(user);
+      });
+    }
+
+    function loadUser() {
+      try { return JSON.parse(localStorage.getItem(USER_STORAGE_KEY) || "{}"); }
+      catch { return {}; }
+    }
+
+    function unlockWorkbench(user) {
+      document.body.classList.remove("locked");
+      if (loginScreen) loginScreen.style.display = "none";
+      if (loginName && user.name) loginName.value = user.name;
+      if (loginGroup && user.group) loginGroup.value = user.group;
+      renderToc();
+    }
+
+    function renderToc() {
+      if (!tocList) return;
+      const topicLabel = {
+        sc: currentLang === "zh" ? "超导" : "Superconductor",
+        topo: currentLang === "zh" ? "拓扑材料" : "Topological",
+        photo: currentLang === "zh" ? "光子晶体" : "Photonic"
+      }[state.topic || "sc"];
+      const element = state.selectedElement ? ` · ${state.selectedElement}` : "";
+      const count = state.filtered ? state.filtered.length : 0;
+      const items = [
+        ["section-milestones", t("tocMilestones")],
+        ["section-search", `${t("tocSearch")} · ${topicLabel}`],
+        ["section-periodic", `${t("tocPeriodic")}${element}`],
+        ["section-overview", t("tocOverview")],
+        ["section-sources", t("tocSources")],
+        ["section-materials", `${t("tocMaterials")} · ${count}`],
+        ["section-detail", t("tocDetail")],
+        ["section-articles", `${t("tocArticles")} · ${(state.articles || []).length}`],
+        ["section-hdf5", t("tocHdf5")],
+        ["section-our-data", `${t("tocOurData")} · ${(state.ourData || []).length}`],
+        ["section-notes", t("tocNotes")]
+      ];
+      tocList.innerHTML = items.map(([id, label], index) =>
+        `<a class="toc-link ${index === 0 ? "active" : ""}" href="#${id}">${esc(label)}</a>`
+      ).join("");
+      if (tocNote) tocNote.textContent = `${t("tocNote")} ${currentLang === "zh" ? "当前" : "Current"}: ${topicLabel}${element}.`;
+    }
+
+    function generateResearchReport() {
+      const user = loadUser();
+      const selected = state.filtered || [];
+      const articleRows = filteredArticles ? filteredArticles() : (state.articles || []);
+      const figureCount = (state.articles || []).reduce((sum, article) => sum + (article.figures || []).length, 0);
+      const lines = [
+        "# ARPES Superconductivity Research Report",
+        "",
+        `Generated: ${new Date().toISOString()}`,
+        `User: ${user.name || "ARPES user"}`,
+        `Group: ${user.group || ""}`,
+        `Topic: ${state.topic || "sc"}`,
+        `Selected element: ${state.selectedElement || "none"}`,
+        `Search term: ${searchInput.value || "none"}`,
+        "",
+        "## Summary",
+        `- Materials in current view: ${selected.length}`,
+        `- Article records: ${(state.articles || []).length}`,
+        `- Articles after keyword filter: ${articleRows.length}`,
+        `- Verified paper figures: ${figureCount}`,
+        `- Personal records: ${(state.ourData || []).length}`,
+        "",
+        "## Representative Materials",
+        ...selected.slice(0, 20).map(row => `- ${row.display_name || row.material}: ${row.family}, Tc=${row.tc_K ?? "n/a"} K, elements ${(row.elements || []).join(", ")}`),
+        "",
+        "## Literature Records",
+        ...articleRows.slice(0, 25).map(article => `- ${article.year || ""} ${article.title} ${article.doi ? `DOI: ${article.doi}` : ""}`),
+        "",
+        "## Personal Data",
+        ...(state.ourData || []).slice(0, 20).map(row => `- ${row.material}: ${row.notes || row.archive || "no notes"}`),
+        "",
+        "## Model Interface",
+        "- Reserved browser API: window.ARPESModelHub.registerModel(name, predictFn)",
+        "- Reserved prediction call: window.ARPESModelHub.predict(modelName, datasetId)"
+      ];
+      const blob = new Blob([lines.join("\n")], { type: "text/markdown" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `arpes-research-report-${new Date().toISOString().slice(0,10)}.md`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast(t("reportToast"));
+    }
+
     // ===== 筛选逻辑 (支持中英文) =====
     const regionAlias = {
       "上海": "Shanghai", "北京": "Beijing", "合肥": "Hefei", "大连": "Dalian",
@@ -2860,6 +3196,9 @@
         if (topic === "topo") {
           const topoKeywords = ["topological", "dirac", "weyl", "surface state", "topological insulator", "chern", "berry", "spin-momentum", "helical"];
           topicOk = topoKeywords.some(kw => text.includes(kw));
+        } else if (topic === "photo") {
+          const photonicKeywords = ["photonic", "optical", "photon", "polariton", "light", "cavity", "plasmon", "laser"];
+          topicOk = photonicKeywords.some(kw => text.includes(kw));
         }
         return elemOk && famOk && termOk && topicOk;
       });
@@ -2871,6 +3210,7 @@
       renderOverview();
       renderSourceDirectory();
       updateCompareUI();
+      renderToc();
     }
 
     function updateSelectedElement() {
@@ -3891,8 +4231,7 @@
       const all = await new Promise((resolve) => { tx.objectStore("datasets").getAll().onsuccess = (e) => resolve(e.target.result || []); });
       const selected = all.filter(r => librarySelection.has(r.id));
       drawBandComparison(selected);
-      // 滚动到 Overview 区域
-      document.querySelector("section:nth-of-type(3)").scrollIntoView({ behavior: "smooth" });
+      document.querySelector("#section-overview")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     // ===== 能带图 Canvas 绘制 =====
@@ -3900,7 +4239,7 @@
       // 在 Overview 区域下方显示
       let container = document.querySelector("#bandCompareContainer");
       if (!container) {
-        const overviewSection = document.querySelector("section:nth-of-type(3)");
+        const overviewSection = document.querySelector("#section-overview");
         container = document.createElement("div");
         container.id = "bandCompareContainer";
         container.style.cssText = "padding:16px;";
@@ -4087,6 +4426,7 @@
       },
       _models: {}
     };
+    window.ARPESModelHub = window.ARPES_ML;
   </script>
 </body>
 </html>
