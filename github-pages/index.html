@@ -309,6 +309,20 @@
     .chip.good { background: var(--accent-soft); color: var(--accent-glow); }
     .chip.trusted { background: var(--blue-soft); color: #60a5fa; }
     .chip.note { background: var(--warn-soft); color: var(--warn); }
+    .keyword-panel {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.018);
+    }
+    .keyword-panel .chips button {
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 999px;
+    }
 
     .topic-tabs {
       display: flex;
@@ -1072,6 +1086,13 @@
           <button id="compareBtn" style="border-color:var(--accent-glow);">📊 对比 (<span id="compareCount">0</span>)</button>
         </div>
         <div class="metric-grid" id="metrics"></div>
+        <div class="keyword-panel">
+          <div>
+            <strong data-i18n="keywordSearchTitle">🏷️ 搜索关键词</strong>
+            <span class="muted" data-i18n="keywordSearchHint">点击关键词快速筛选文章、图表和材料</span>
+          </div>
+          <div class="chips" id="keywordChips"></div>
+        </div>
       </div>
     </section>
 
@@ -1396,6 +1417,8 @@
         searchBtn: "🔍 搜索",
         resetBtn: "🔄 重置",
         compareBtn: "📊 对比",
+        keywordSearchTitle: "🏷️ 搜索关键词",
+        keywordSearchHint: "点击关键词快速筛选文章、图表和材料",
         superconductorBtn: "⚡ 超导 SUPERCONDUCTOR ⚡",
         superconductorTab: "⚡ 超导",
         topologicalTab: "🔷 拓扑材料",
@@ -1582,6 +1605,8 @@
         searchBtn: "🔍 Search",
         resetBtn: "🔄 Reset",
         compareBtn: "📊 Compare",
+        keywordSearchTitle: "🏷️ Search Keywords",
+        keywordSearchHint: "Click a keyword to filter articles, figures, and materials",
         superconductorBtn: "⚡ SUPERCONDUCTOR ⚡",
         superconductorTab: "⚡ Superconductor",
         topologicalTab: "🔷 Topological",
@@ -1779,6 +1804,7 @@
       applyFilters();
       renderOurData();
       renderArticles();
+      renderKeywordChips();
       renderLibrary().catch(() => {});
       // Update static i18n elements
       document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -1852,6 +1878,7 @@
     const searchBtn = $("#searchBtn");
     const resetBtn = $("#resetBtn");
     const compareBtn = $("#compareBtn");
+    const keywordChips = $("#keywordChips");
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -2283,6 +2310,10 @@
     searchInput.addEventListener("keydown", e => {
       if (e.key === "Enter") applyFilters();
     });
+    searchInput.addEventListener("input", () => {
+      clearTimeout(searchInput._searchTimer);
+      searchInput._searchTimer = setTimeout(applyFilters, 180);
+    });
     saveOurDataBtn.addEventListener("click", saveOurData);
     exportOurDataBtn.addEventListener("click", exportOurData);
     clearOurDataBtn.addEventListener("click", clearOurData);
@@ -2327,6 +2358,7 @@
       const newArticles = parsed.filter(a => !existingIds.has(a.id));
       state.articles = [...newArticles, ...state.articles];
       renderArticles();
+      renderKeywordChips();
       importPanel.style.display = "none";
       showToast("导入了 " + newArticles.length + " 篇文章");
     });
@@ -2334,6 +2366,7 @@
       try { state.articles = await loadJson("data/articles.json"); }
       catch { state.articles = []; }
       renderArticles();
+      renderKeywordChips();
       showToast("已恢复默认文章数据");
     });
 
@@ -2476,6 +2509,7 @@
         applyFilters();
         renderOurData();
         renderArticles();
+        renderKeywordChips();
         loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       } catch (error) {
         loadStatus.textContent = `${t("loadingFailed")}: ${error.message}`;
@@ -3157,12 +3191,13 @@
 
     // ===== 文章数据渲染 =====
     function renderArticles() {
-      articleStatus.textContent = `${state.articles.length} ${t("records")}`;
-      if (!state.articles.length) {
+      const rows = filteredArticles();
+      articleStatus.textContent = `${rows.length} / ${state.articles.length} ${t("records")}`;
+      if (!rows.length) {
         articleGrid.innerHTML = `<p class="muted">${t("noArticles")}</p>`;
         return;
       }
-      articleGrid.innerHTML = state.articles.map(a => `
+      articleGrid.innerHTML = rows.map(a => `
         <div class="article-card" onclick="window.open('${esc(a.url || "#")}', '_blank')">
           <div class="title">📄 ${esc(a.title)}</div>
           <div class="meta">📅 ${esc(a.year)} · ${esc(a.source)} · ${esc(a.verification_status)}</div>
@@ -3172,6 +3207,53 @@
           ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noreferrer" class="chip good" style="font-size:11px;">${t("viewPaperChip")}</a>` : ""}
         </div>
       `).join("");
+    }
+
+    function filteredArticles() {
+      const term = (searchInput.value || "").trim().toLowerCase();
+      if (!term) return state.articles;
+      return state.articles.filter(article => articleSearchText(article).includes(term));
+    }
+
+    function articleSearchText(article) {
+      return [
+        article.title, article.source, article.source_title, article.verification_status,
+        ...(article.materials || []), ...(article.elements || []), ...(article.dopants || []),
+        ...(article.techniques || []), ...(article.keywords || []), ...(article.properties || []),
+        article.doi, article.url
+      ].join(" ").toLowerCase();
+    }
+
+    function renderKeywordChips() {
+      if (!keywordChips) return;
+      const counts = new Map();
+      const add = (value, weight = 1) => {
+        const key = String(value || "").trim();
+        if (!key || key.length > 32) return;
+        const normalized = key.replace(/\s+/g, " ");
+        counts.set(normalized, (counts.get(normalized) || 0) + weight);
+      };
+      for (const article of state.articles || []) {
+        (article.keywords || []).forEach(value => add(value, 3));
+        (article.materials || []).forEach(value => add(value, 4));
+        (article.elements || []).forEach(value => add(value, 1));
+        (article.techniques || []).forEach(value => add(value, 2));
+      }
+      const priority = ["FeSe", "Bi2212", "BaK122", "MgB2", "KFe2As2", "cuprate", "iron-based", "superconducting gap", "Fermi surface", "ARPES", "Web of Science", "Nature", "APS"];
+      priority.forEach(value => {
+        if ([...counts.keys()].some(k => k.toLowerCase() === value.toLowerCase())) add(value, 6);
+      });
+      const terms = [...counts.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 22)
+        .map(([term]) => term);
+      keywordChips.innerHTML = terms.map(term => `<button data-keyword="${esc(term)}">${esc(term)}</button>`).join("");
+      keywordChips.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          searchInput.value = btn.dataset.keyword;
+          applyFilters();
+        });
+      });
     }
 
     // ===== Our Data =====
