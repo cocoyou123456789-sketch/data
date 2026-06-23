@@ -740,11 +740,55 @@
       gap: 0;
     }
 
+    .history-chart-wrap {
+      position: relative;
+      background: #f8fafc;
+    }
+
     .history-figure img {
       width: 100%;
       height: auto;
       display: block;
       background: #f8fafc;
+    }
+
+    .history-hotspot {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: 18px;
+      height: 18px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      background: #0f766e;
+      box-shadow: 0 0 0 2px rgba(15,118,110,0.32), 0 6px 16px rgba(0,0,0,0.28);
+      cursor: pointer;
+      padding: 0;
+      min-height: 0;
+    }
+
+    .history-hotspot:hover,
+    .history-hotspot.active {
+      background: #d87979;
+      transform: translate(-50%, -50%) scale(1.25);
+      box-shadow: 0 0 0 4px rgba(216,121,121,0.24), 0 8px 18px rgba(0,0,0,0.34);
+    }
+
+    .history-point-card {
+      border-top: 1px solid #d7dee8;
+      padding: 10px 12px;
+      background: #ffffff;
+      color: #243142;
+      display: grid;
+      gap: 4px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .history-point-card strong {
+      color: #0f766e;
+      font-size: 14px;
     }
 
     .history-figure figcaption {
@@ -1358,7 +1402,14 @@
             </div>
             <div class="history-line" id="historyLine"></div>
             <figure class="history-figure">
-              <img src="assets/superconductivity-history-tc.png" alt="Historical superconducting critical temperature record chart">
+              <div class="history-chart-wrap">
+                <img src="assets/superconductivity-history-tc.png" alt="Historical superconducting critical temperature record chart">
+                <div id="historyChartHotspots"></div>
+              </div>
+              <div class="history-point-card" id="historyPointCard">
+                <strong data-i18n="historyPointTitle">点击图上的点</strong>
+                <span data-i18n="historyPointHint">选择一个材料点，查看它在超导历史中的简单介绍。</span>
+              </div>
               <figcaption data-i18n="historyFigureCaption">历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。</figcaption>
             </figure>
           </div>
@@ -1820,6 +1871,8 @@
         rowsLabel: "行",
         milestonesTitle: "📜 超导历史里程碑",
         milestonesHint: "从1911年至今的重大发现 — 点击节点查看详情",
+        historyPointTitle: "点击图上的点",
+        historyPointHint: "选择一个材料点，查看它在超导历史中的简单介绍。",
         historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
         tcChartTitle: "📊 Tc 对比 (K)",
         noMaterials: "筛选后无材料数据",
@@ -2053,6 +2106,8 @@
         rowsLabel: "Rows",
         milestonesTitle: "📜 Superconductivity Milestones",
         milestonesHint: "Major discoveries from 1911 to present — click a node for details",
+        historyPointTitle: "Click a point on the chart",
+        historyPointHint: "Select a material point to see a short historical note.",
         historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
         tcChartTitle: "📊 Tc Comparison (K)",
         noMaterials: "No materials match current filters",
@@ -2246,6 +2301,11 @@
       // Update template notes
       const notesEl = document.querySelector("#templateNotesText");
       if (notesEl) notesEl.innerHTML = t("seedDataNote");
+      const activeHistoryPoint = document.querySelector(".history-hotspot.active")?.dataset.historyPoint;
+      if (activeHistoryPoint) {
+        const point = historyChartPoints.find(item => item.id === activeHistoryPoint);
+        if (point) renderHistoryPointCard(point);
+      }
       renderToc();
       if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
       // Update section headings, buttons, etc.
@@ -2334,6 +2394,8 @@
     const detailPanel = $("#detailPanel");
     const sourceStatus = $("#sourceStatus");
     const historyLine = $("#historyLine");
+    const historyChartHotspots = $("#historyChartHotspots");
+    const historyPointCard = $("#historyPointCard");
     const figureStrip = $("#figureStrip");
     const figureGallery = $("#figureGallery");
     const figCount = $("#figCount");
@@ -2403,6 +2465,49 @@
       { year: "2008", label: "铁基超导", family: "多带体系", en: "Iron-based" },
       { year: "2019", label: "镍基超导", family: "Ni-基", en: "Nickelates" },
       { year: "2026", label: "ARPES + 数据", family: "数据驱动", en: "Data-driven" }
+    ];
+
+    const historyChartPoints = [
+      {
+        id: "hg-1911", label: "Hg", year: "1911", tc: "4 K", x: "11%", y: "86%",
+        zh: "汞是第一个被发现的超导体，1911 年 Onnes 在低温下观察到电阻突然消失，开启了超导研究。",
+        en: "Mercury was the first discovered superconductor. In 1911, Onnes observed its resistance vanish at low temperature."
+      },
+      {
+        id: "nb3sn-1954", label: "Nb3Sn", year: "1954", tc: "18 K", x: "19%", y: "77%",
+        zh: "Nb3Sn 是重要的 A15 常规超导体，临界温度和临界场较高，后来成为强磁场应用中的代表材料。",
+        en: "Nb3Sn is an important A15 conventional superconductor with relatively high Tc and critical field, widely used in high-field applications."
+      },
+      {
+        id: "ybco-1987", label: "YBCO", year: "1987", tc: "92 K", x: "33%", y: "38%",
+        zh: "YBa2Cu3O7 是液氮温区高温超导的代表铜氧化物，推动了铜氧化物电子结构和 ARPES 研究。",
+        en: "YBa2Cu3O7 is a landmark liquid-nitrogen-temperature cuprate superconductor and drove extensive ARPES studies of cuprate electronic structure."
+      },
+      {
+        id: "bi2212-1988", label: "Bi2212", year: "1988", tc: "90 K", x: "39%", y: "33%",
+        zh: "Bi2212 是 ARPES 研究中最常见的铜氧化物之一，常用于研究费米面、赝能隙和 d 波超导能隙。",
+        en: "Bi2212 is one of the most studied cuprates in ARPES, central for Fermi-surface, pseudogap, and d-wave gap studies."
+      },
+      {
+        id: "mgb2-2001", label: "MgB2", year: "2001", tc: "39 K", x: "53%", y: "62%",
+        zh: "MgB2 的 39 K 超导展示了多带常规超导的重要性，是能带、声子耦合和超导能隙对比的经典体系。",
+        en: "MgB2 highlighted multiband conventional superconductivity at 39 K and remains a classic system for comparing bands, phonons, and gaps."
+      },
+      {
+        id: "feas-2008", label: "FeAs", year: "2008", tc: "55 K", x: "65%", y: "55%",
+        zh: "铁基超导在 2008 年后快速发展，Fe-As 层、多轨道、多费米面结构使 ARPES 成为理解配对机制的关键工具。",
+        en: "Iron-based superconductors grew rapidly after 2008; their Fe-As layers, multiorbital bands, and multiple Fermi surfaces made ARPES essential."
+      },
+      {
+        id: "h3s-2015", label: "H3S", year: "2015", tc: "203 K", x: "73%", y: "19%",
+        zh: "H3S 在高压下展现超过 200 K 的超导转变温度，代表高压氢化物超导研究的突破。",
+        en: "H3S showed superconductivity above 200 K under high pressure, marking a breakthrough in high-pressure hydride superconductivity."
+      },
+      {
+        id: "lah10-2019", label: "LaH10", year: "2019", tc: "250 K", x: "80%", y: "12%",
+        zh: "LaH10 是高压氢化物近室温超导候选体系之一，显示了轻元素高压化合物的巨大潜力。",
+        en: "LaH10 is a near-room-temperature high-pressure hydride candidate, showing the potential of light-element compounds under compression."
+      }
     ];
 
     // ===== 图表类型 → 颜色标记 =====
@@ -3444,6 +3549,7 @@
           <span>${esc(item.family)}</span>
         </div>
       `).join("");
+      renderHistoryChartPoints();
 
       // Tc 柱状图
       const topMaterials = [...state.filtered]
@@ -3475,6 +3581,35 @@
           </div>
         </div>
       `).join("");
+    }
+
+    function renderHistoryChartPoints() {
+      if (!historyChartHotspots || historyChartHotspots.dataset.rendered === "true") return;
+      historyChartHotspots.innerHTML = historyChartPoints.map(point => `
+        <button class="history-hotspot" type="button"
+          style="--x:${esc(point.x)};--y:${esc(point.y)}"
+          data-history-point="${esc(point.id)}"
+          aria-label="${esc(point.label)} ${esc(point.year)}"></button>
+      `).join("");
+      historyChartHotspots.dataset.rendered = "true";
+      historyChartHotspots.querySelectorAll(".history-hotspot").forEach(button => {
+        button.addEventListener("click", () => {
+          const point = historyChartPoints.find(item => item.id === button.dataset.historyPoint);
+          if (!point) return;
+          historyChartHotspots.querySelectorAll(".history-hotspot").forEach(item => item.classList.remove("active"));
+          button.classList.add("active");
+          renderHistoryPointCard(point);
+        });
+      });
+    }
+
+    function renderHistoryPointCard(point) {
+      if (!historyPointCard) return;
+      const note = currentLang === "zh" ? point.zh : point.en;
+      historyPointCard.innerHTML = `
+        <strong>${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)}</strong>
+        <span>${esc(note)}</span>
+      `;
     }
 
     // ===== 图表类型筛选按钮 =====
