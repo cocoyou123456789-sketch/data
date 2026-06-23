@@ -756,23 +756,34 @@
       position: absolute;
       left: var(--x);
       top: var(--y);
-      width: 18px;
-      height: 18px;
       transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 2px solid #ffffff;
-      background: #0f766e;
-      box-shadow: 0 0 0 2px rgba(15,118,110,0.32), 0 6px 16px rgba(0,0,0,0.28);
+      border-radius: 999px;
+      border: 1px solid #ffffff;
+      background: rgba(15,118,110,0.88);
+      color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(15,118,110,0.22), 0 6px 16px rgba(0,0,0,0.24);
       cursor: pointer;
-      padding: 0;
-      min-height: 0;
+      padding: 3px 6px;
+      min-height: 22px;
+      min-width: 22px;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1;
+      z-index: 2;
     }
 
     .history-hotspot:hover,
     .history-hotspot.active {
       background: #d87979;
-      transform: translate(-50%, -50%) scale(1.25);
+      transform: translate(-50%, -50%) scale(1.12);
       box-shadow: 0 0 0 4px rgba(216,121,121,0.24), 0 8px 18px rgba(0,0,0,0.34);
+    }
+
+    .history-hotspot.compact {
+      padding: 0;
+      width: 18px;
+      height: 18px;
+      font-size: 0;
     }
 
     .history-point-card {
@@ -2468,46 +2479,39 @@
     ];
 
     const historyChartPoints = [
-      {
-        id: "hg-1911", label: "Hg", year: "1911", tc: "4 K", x: "11%", y: "86%",
-        zh: "汞是第一个被发现的超导体，1911 年 Onnes 在低温下观察到电阻突然消失，开启了超导研究。",
-        en: "Mercury was the first discovered superconductor. In 1911, Onnes observed its resistance vanish at low temperature."
-      },
-      {
-        id: "nb3sn-1954", label: "Nb3Sn", year: "1954", tc: "18 K", x: "19%", y: "77%",
-        zh: "Nb3Sn 是重要的 A15 常规超导体，临界温度和临界场较高，后来成为强磁场应用中的代表材料。",
-        en: "Nb3Sn is an important A15 conventional superconductor with relatively high Tc and critical field, widely used in high-field applications."
-      },
-      {
-        id: "ybco-1987", label: "YBCO", year: "1987", tc: "92 K", x: "33%", y: "38%",
-        zh: "YBa2Cu3O7 是液氮温区高温超导的代表铜氧化物，推动了铜氧化物电子结构和 ARPES 研究。",
-        en: "YBa2Cu3O7 is a landmark liquid-nitrogen-temperature cuprate superconductor and drove extensive ARPES studies of cuprate electronic structure."
-      },
-      {
-        id: "bi2212-1988", label: "Bi2212", year: "1988", tc: "90 K", x: "39%", y: "33%",
-        zh: "Bi2212 是 ARPES 研究中最常见的铜氧化物之一，常用于研究费米面、赝能隙和 d 波超导能隙。",
-        en: "Bi2212 is one of the most studied cuprates in ARPES, central for Fermi-surface, pseudogap, and d-wave gap studies."
-      },
-      {
-        id: "mgb2-2001", label: "MgB2", year: "2001", tc: "39 K", x: "53%", y: "62%",
-        zh: "MgB2 的 39 K 超导展示了多带常规超导的重要性，是能带、声子耦合和超导能隙对比的经典体系。",
-        en: "MgB2 highlighted multiband conventional superconductivity at 39 K and remains a classic system for comparing bands, phonons, and gaps."
-      },
-      {
-        id: "feas-2008", label: "FeAs", year: "2008", tc: "55 K", x: "65%", y: "55%",
-        zh: "铁基超导在 2008 年后快速发展，Fe-As 层、多轨道、多费米面结构使 ARPES 成为理解配对机制的关键工具。",
-        en: "Iron-based superconductors grew rapidly after 2008; their Fe-As layers, multiorbital bands, and multiple Fermi surfaces made ARPES essential."
-      },
-      {
-        id: "h3s-2015", label: "H3S", year: "2015", tc: "203 K", x: "73%", y: "19%",
-        zh: "H3S 在高压下展现超过 200 K 的超导转变温度，代表高压氢化物超导研究的突破。",
-        en: "H3S showed superconductivity above 200 K under high pressure, marking a breakthrough in high-pressure hydride superconductivity."
-      },
-      {
-        id: "lah10-2019", label: "LaH10", year: "2019", tc: "250 K", x: "80%", y: "12%",
-        zh: "LaH10 是高压氢化物近室温超导候选体系之一，显示了轻元素高压化合物的巨大潜力。",
-        en: "LaH10 is a near-room-temperature high-pressure hydride candidate, showing the potential of light-element compounds under compression."
-      }
+      { id:"hg-1911", label:"Hg", year:"1911", tc:"4 K", x:"11%", y:"86%", family:"常规低温超导", zh:"汞是第一个被发现的超导体，标志超导研究正式开始。", en:"Mercury was the first discovered superconductor and opened the field." },
+      { id:"pb-1913", label:"Pb", year:"1913", tc:"7 K", x:"10%", y:"82%", family:"常规低温超导", zh:"铅是早期常规超导代表材料，常用于低温超导和能隙研究。", en:"Lead is an early conventional superconductor often used in gap studies." },
+      { id:"nb-1930", label:"Nb", year:"1930", tc:"9 K", x:"13%", y:"79%", family:"常规低温超导", zh:"铌是重要元素超导体，也是许多实用超导合金和化合物的基础元素。", en:"Niobium is a key elemental superconductor and basis for practical compounds." },
+      { id:"nbn-1941", label:"NbN", year:"1941", tc:"16 K", x:"14%", y:"75%", family:"氮化物", zh:"NbN 是重要氮化物超导体，薄膜器件和探测器中常见。", en:"NbN is an important nitride superconductor used in thin films and detectors." },
+      { id:"nb3sn-1954", label:"Nb3Sn", year:"1954", tc:"18 K", x:"17%", y:"72%", family:"A15 常规超导", zh:"Nb3Sn 是 A15 常规超导代表，因高临界场常用于强磁体。", en:"Nb3Sn is a representative A15 superconductor used for high-field magnets." },
+      { id:"nb3ge-1973", label:"Nb3Ge", year:"1973", tc:"23 K", x:"21%", y:"68%", family:"A15 常规超导", zh:"Nb3Ge 曾是 A15 超导体中 Tc 记录材料，展示了常规超导的上限探索。", en:"Nb3Ge once held an A15 Tc record and helped probe limits of conventional superconductivity." },
+      { id:"cecu2si2", label:"CeCu2Si2", year:"1979", tc:"0.6 K", x:"23%", y:"90%", family:"重费米子", zh:"CeCu2Si2 是第一个重费米子超导体，体现强关联电子体系中的非常规超导。", en:"CeCu2Si2 was the first heavy-fermion superconductor, showing unconventional pairing in correlated systems." },
+      { id:"ube13", label:"UBe13", year:"1983", tc:"0.9 K", x:"28%", y:"90%", family:"重费米子", zh:"UBe13 是重费米子超导代表，常用于非常规配对研究。", en:"UBe13 is a heavy-fermion superconductor used to study unconventional pairing." },
+      { id:"up3", label:"UPt3", year:"1984", tc:"0.5 K", x:"33%", y:"90%", family:"重费米子", zh:"UPt3 具有复杂多相超导行为，是重费米子和拓扑超导讨论中的经典材料。", en:"UPt3 has complex superconducting phases and is central in heavy-fermion/topological discussions." },
+      { id:"lasrcuo", label:"LaSrCuO", year:"1986", tc:"35 K", x:"37%", y:"62%", family:"铜氧化物", zh:"La-Sr-Cu-O 的发现开启高温铜氧化物超导时代。", en:"La-Sr-Cu-O launched the high-Tc cuprate era." },
+      { id:"ybco", label:"YBCO", year:"1987", tc:"92 K", x:"39%", y:"40%", family:"铜氧化物", zh:"YBCO 是液氮温区高温超导代表，推动了铜氧化物电子结构研究。", en:"YBCO is a landmark liquid-nitrogen-temperature cuprate superconductor." },
+      { id:"bisrcacuo", label:"BiSrCaCuO", year:"1988", tc:"110 K", x:"41%", y:"34%", family:"铜氧化物", zh:"Bi-Sr-Ca-Cu-O 包含 Bi2212 等 ARPES 经典铜氧化物体系。", en:"Bi-Sr-Ca-Cu-O includes Bi2212, a classic ARPES cuprate system." },
+      { id:"tlbacacuo", label:"TlBaCaCuO", year:"1988", tc:"125 K", x:"43%", y:"30%", family:"铜氧化物", zh:"Tl 基铜氧化物推动了多层铜氧化物高 Tc 记录。", en:"Tl-based cuprates pushed high-Tc records in multilayer copper oxides." },
+      { id:"hgbacacuo", label:"HgBaCaCuO", year:"1993", tc:"135 K", x:"49%", y:"28%", family:"铜氧化物", zh:"Hg 基铜氧化物在常压铜氧化物中达到很高 Tc，是高温超导历史重要节点。", en:"Hg-based cuprates reached very high Tc among ambient-pressure cuprates." },
+      { id:"hgbacacuo-30gpa", label:"HgCuO 30GPa", year:"1994", tc:"164 K", x:"53%", y:"22%", family:"高压铜氧化物", zh:"HgBaCaCuO 在压力下 Tc 进一步升高，说明结构和压力对高温超导很关键。", en:"Pressurized Hg cuprates show how structure and pressure tune Tc." },
+      { id:"bkbo", label:"BKBO", year:"1988", tc:"30 K", x:"41%", y:"65%", family:"氧化物", zh:"BKBO 是无铜氧化物超导体，常用于对比铜氧化物机制。", en:"BKBO is a non-cuprate oxide superconductor useful for comparison with cuprates." },
+      { id:"rbcs60", label:"RbC60", year:"1991", tc:"30 K", x:"45%", y:"61%", family:"富勒烯", zh:"RbC60 属于富勒烯超导体系，体现分子晶体中的电子-声子耦合超导。", en:"RbC60 belongs to fullerene superconductors with molecular-crystal electron-phonon physics." },
+      { id:"k3c60", label:"K3C60", year:"1991", tc:"19 K", x:"45%", y:"74%", family:"富勒烯", zh:"K3C60 是早期富勒烯超导体，展示 C60 分子固体也可超导。", en:"K3C60 showed that C60 molecular solids can become superconducting." },
+      { id:"c60-cesium", label:"Cs3C60", year:"1995", tc:"38 K", x:"51%", y:"58%", family:"富勒烯", zh:"Cs3C60 在压力/调控下具有较高 Tc，是富勒烯超导的重要记录。", en:"Cs3C60 is an important fullerene superconductor with relatively high Tc under tuning." },
+      { id:"ybpd2b2c", label:"YPd2B2C", year:"1994", tc:"23 K", x:"52%", y:"71%", family:"硼碳化物", zh:"硼碳化物超导体连接磁性、晶格和常规超导研究。", en:"Borocarbide superconductors connect magnetism, lattice physics, and superconductivity." },
+      { id:"mgb2-2001", label:"MgB2", year:"2001", tc:"39 K", x:"61%", y:"60%", family:"硼化物", zh:"MgB2 的 39 K 超导展示了多带常规超导的重要性。", en:"MgB2 highlighted multiband conventional superconductivity at 39 K." },
+      { id:"cecoin5", label:"CeCoIn5", year:"2001", tc:"2 K", x:"60%", y:"89%", family:"重费米子", zh:"CeCoIn5 是 ARPES 和强关联超导研究中的重要重费米子体系。", en:"CeCoIn5 is a key heavy-fermion system in ARPES and correlated superconductivity." },
+      { id:"lic33gpa", label:"Li 33GPa", year:"2002", tc:"20 K", x:"61%", y:"77%", family:"高压元素", zh:"锂在高压下出现超导，说明简单元素在压缩下也会产生复杂电子态。", en:"Lithium superconducts under pressure, showing compressed elements can host complex electronic states." },
+      { id:"cnt", label:"CNT", year:"2001", tc:"0.5 K", x:"63%", y:"91%", family:"碳材料", zh:"碳纳米管相关超导体现低维碳材料中的相干输运可能性。", en:"Carbon nanotube superconductivity relates to coherent transport in low-dimensional carbon." },
+      { id:"diamond", label:"diamond", year:"2004", tc:"4 K", x:"67%", y:"87%", family:"碳材料", zh:"掺硼金刚石超导说明宽禁带共价材料也可以通过掺杂进入超导态。", en:"Boron-doped diamond shows that doped covalent semiconductors can become superconducting." },
+      { id:"cnt-2005", label:"CNT", year:"2005", tc:"12 K", x:"70%", y:"79%", family:"碳材料", zh:"碳基低维材料的超导信号提示维度、掺杂和界面对配对有影响。", en:"Carbon-based low-dimensional superconductivity highlights dimensionality, doping, and interface effects." },
+      { id:"laofep", label:"LaOFeP", year:"2006", tc:"4 K", x:"71%", y:"90%", family:"铁基", zh:"LaOFeP 是早期铁磷族超导体，为后来的铁基高温超导铺路。", en:"LaOFeP was an early iron-pnictide superconductor preceding high-Tc iron-based systems." },
+      { id:"laoffeas", label:"LaOFeAs", year:"2008", tc:"26 K", x:"73%", y:"70%", family:"铁基", zh:"LaOFeAs 的发现开启铁基高温超导时代。", en:"LaOFeAs launched the iron-based high-Tc superconductivity era." },
+      { id:"srfefas", label:"SrFeAs", year:"2008", tc:"37 K", x:"75%", y:"61%", family:"铁基", zh:"SrFeAs 相关 122 铁基材料展示多带费米面和磁性涨落的重要性。", en:"SrFeAs-related 122 systems show multiband Fermi surfaces and magnetic fluctuations." },
+      { id:"feas-2008", label:"FeAs", year:"2008", tc:"55 K", x:"83%", y:"37%", family:"铁基", zh:"铁基超导具有多轨道、多费米面结构，是 ARPES 理解配对机制的关键体系。", en:"Iron-based superconductors have multiorbital bands and multiple Fermi surfaces central to ARPES studies." },
+      { id:"h2s-2015", label:"H2S", year:"2015", tc:"203 K", x:"84%", y:"21%", family:"高压氢化物", zh:"H2S/H3S 高压超导突破 200 K，是高压氢化物超导的重要里程碑。", en:"H2S/H3S high-pressure superconductivity broke the 200 K scale in hydrides." },
+      { id:"lah10-2019", label:"LaH10", year:"2019", tc:"250 K", x:"91%", y:"11%", family:"高压氢化物", zh:"LaH10 是近室温高压氢化物超导候选体系之一。", en:"LaH10 is a near-room-temperature high-pressure hydride candidate." },
+      { id:"csh", label:"C-S-H", year:"2020", tc:"287 K", x:"94%", y:"6%", family:"高压氢化物", zh:"C-S-H 曾报告接近室温的高压超导信号，是高压超导历史中很受关注也需要谨慎核验的节点。", en:"C-S-H was reported near room temperature under pressure, a highly discussed and carefully scrutinized hydride milestone." }
     ];
 
     // ===== 图表类型 → 颜色标记 =====
@@ -3589,7 +3593,8 @@
         <button class="history-hotspot" type="button"
           style="--x:${esc(point.x)};--y:${esc(point.y)}"
           data-history-point="${esc(point.id)}"
-          aria-label="${esc(point.label)} ${esc(point.year)}"></button>
+          title="${esc(point.label)} ${esc(point.year)} Tc ${esc(point.tc)}"
+          aria-label="${esc(point.label)} ${esc(point.year)}">${esc(point.label)}</button>
       `).join("");
       historyChartHotspots.dataset.rendered = "true";
       historyChartHotspots.querySelectorAll(".history-hotspot").forEach(button => {
@@ -3608,6 +3613,7 @@
       const note = currentLang === "zh" ? point.zh : point.en;
       historyPointCard.innerHTML = `
         <strong>${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)}</strong>
+        <span>${esc(point.family || "")}</span>
         <span>${esc(note)}</span>
       `;
     }
