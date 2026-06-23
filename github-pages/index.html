@@ -776,13 +776,20 @@
     }
 
     .history-svg-item text {
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 760;
       fill: #243142;
       paint-order: stroke;
       stroke: #ffffff;
-      stroke-width: 3px;
+      stroke-width: 2.5px;
       stroke-linejoin: round;
+    }
+
+    .history-label-line {
+      stroke: #526071;
+      stroke-width: 0.7;
+      opacity: 0.42;
+      pointer-events: none;
     }
 
     .history-svg-item:hover circle,
@@ -3604,7 +3611,7 @@
       if (!historyInteractiveChart || historyInteractiveChart.dataset.rendered === "true") return;
       const width = 920;
       const height = 520;
-      const margin = { left: 70, right: 24, top: 28, bottom: 58 };
+      const margin = { left: 70, right: 46, top: 28, bottom: 58 };
       const yearMin = 1900;
       const yearMax = 2025;
       const tcMin = 0;
@@ -3629,7 +3636,42 @@
         "高压氢化物": "#76a96a",
         default: "#0f766e"
       };
+      const labelOverrides = {
+        "Hg": [10, 18],
+        "Pb": [-22, -10],
+        "Nb": [10, -12],
+        "NbN": [-34, -12],
+        "Nb3Sn": [-52, -18],
+        "Nb3Ge": [12, -18],
+        "CeCu2Si2": [-62, 14],
+        "UBe13": [-40, -16],
+        "UPt3": [10, 18],
+        "LaSrCuO": [-58, -12],
+        "YBCO": [-44, 0],
+        "BiSrCaCuO": [-74, -2],
+        "TlBaCaCuO": [-78, -18],
+        "HgBaCaCuO": [12, 18],
+        "HgCuO 30GPa": [12, -18],
+        "BKBO": [-42, 20],
+        "RbC60": [-44, -14],
+        "K3C60": [-42, 18],
+        "Cs3C60": [10, -20],
+        "YPd2B2C": [12, 18],
+        "MgB2": [12, -8],
+        "CeCoIn5": [-58, -8],
+        "Li 33GPa": [-60, 18],
+        "CNT": [-38, 24],
+        "diamond": [10, 20],
+        "LaOFeP": [10, 20],
+        "LaOFeAs": [-74, 4],
+        "SrFeAs": [12, -12],
+        "FeAs": [10, -10],
+        "H2S": [-48, -10],
+        "LaH10": [-60, -10],
+        "C-S-H": [-52, -10]
+      };
       const labelOffset = point => {
+        if (labelOverrides[point.label]) return labelOverrides[point.label];
         if ((parseFloat(point.tc) || 0) < 8) return [8, -8];
         if (String(point.family).includes("铜氧化物")) return [8, -10];
         if (String(point.family).includes("高压氢化物")) return [-48, -10];
@@ -3645,9 +3687,13 @@
         const cy = y(tcValue);
         const [dx, dy] = labelOffset(point);
         const color = colors[point.family] || colors.default;
+        const tx = cx + dx;
+        const ty = cy + dy;
         return `<g class="history-svg-item" data-history-point="${esc(point.id)}" tabindex="0" role="button" aria-label="${esc(point.label)} ${esc(point.year)} Tc ${esc(point.tc)}">
+          <title>${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)}</title>
+          <line class="history-label-line" x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}"></line>
           <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5.8" fill="${color}"></circle>
-          <text x="${(cx + dx).toFixed(1)}" y="${(cy + dy).toFixed(1)}">${esc(point.label)}</text>
+          <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${esc(point.label)}</text>
         </g>`;
       }).join("");
       historyInteractiveChart.innerHTML = `
