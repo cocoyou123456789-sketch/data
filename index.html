@@ -155,6 +155,28 @@
       font-size: 24px;
     }
 
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 5px;
+      background: #0d1520;
+    }
+
+    .auth-tab {
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .auth-tab.active {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
     .login-card .form-grid {
       grid-template-columns: 1fr 1fr;
     }
@@ -1236,12 +1258,19 @@
         <h2 data-i18n="loginTitle">登录 ARPES 工作台</h2>
         <p class="muted" data-i18n="loginHint">进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。</p>
       </div>
+      <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+        <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab">登录</button>
+        <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab">创建账号</button>
+      </div>
       <div class="form-grid">
         <label data-label-i18n="loginEmailLabel">Email
           <input id="loginEmail" type="email" autocomplete="email" placeholder="name@lab.edu">
         </label>
         <label data-label-i18n="loginPasswordLabel">密码
           <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
+        </label>
+        <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" style="display:none;">确认密码
+          <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="••••••••">
         </label>
         <label data-label-i18n="loginNameLabel">姓名 / 用户
           <input id="loginName" autocomplete="name" placeholder="ARPES user">
@@ -1252,6 +1281,7 @@
       </div>
       <span class="status" id="loginStatus"></span>
       <button class="primary" id="loginBtn" data-i18n="loginBtn">进入工作台</button>
+      <button id="guestLoginBtn" type="button" data-i18n="guestLoginBtn">以访客身份进入</button>
       <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
     </div>
   </div>
@@ -1686,14 +1716,21 @@
         subtitle: "超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析",
         loginTitle: "登录 ARPES 工作台",
         loginHint: "进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。",
+        signInTab: "登录",
+        createAccountTab: "创建账号",
         loginEmailLabel: "Email",
         loginPasswordLabel: "密码",
+        confirmPasswordLabel: "确认密码",
         loginNameLabel: "姓名 / 用户",
         loginGroupLabel: "课题组 / 光源站",
         loginBtn: "进入工作台",
+        createAccountBtn: "创建账号并进入",
+        guestLoginBtn: "以访客身份进入",
         loginPrivacy: "本登录只保存在当前浏览器，用于个性化目录和报告署名。",
         loginEmailRequired: "请输入有效 Email",
         loginPasswordRequired: "请输入密码",
+        loginPasswordMismatch: "两次输入的密码不一致",
+        accountCreatedToast: "账号已创建",
         tocTitle: "电子书目录",
         tocNote: "目录会随主题、元素和材料筛选自动变化。",
         generateReportBtn: "生成调研报告",
@@ -1911,14 +1948,21 @@
         subtitle: "Superconducting materials · Periodic Table · Light Sources · Article Data · Comparison",
         loginTitle: "Login to ARPES Workbench",
         loginHint: "Search materials, import WoS/Scholar literature, save personal data, and generate research reports.",
+        signInTab: "Sign In",
+        createAccountTab: "Create Account",
         loginEmailLabel: "Email",
         loginPasswordLabel: "Password",
+        confirmPasswordLabel: "Confirm Password",
         loginNameLabel: "Name / User",
         loginGroupLabel: "Group / Beamline",
         loginBtn: "Enter Workbench",
+        createAccountBtn: "Create Account & Enter",
+        guestLoginBtn: "Continue as Guest",
         loginPrivacy: "This login is stored only in this browser for personalized contents and report authorship.",
         loginEmailRequired: "Enter a valid email",
         loginPasswordRequired: "Enter a password",
+        loginPasswordMismatch: "Passwords do not match",
+        accountCreatedToast: "Account created",
         tocTitle: "E-book Contents",
         tocNote: "The contents update with topic, element, and material filters.",
         generateReportBtn: "Generate Report",
@@ -2173,6 +2217,7 @@
       const notesEl = document.querySelector("#templateNotesText");
       if (notesEl) notesEl.innerHTML = t("seedDataNote");
       renderToc();
+      if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
       // Update section headings, buttons, etc.
       document.querySelector("#superconductorBtn").innerHTML = t("superconductorBtn");
       document.querySelector("#searchBtn").innerHTML = t("searchBtn");
@@ -2231,11 +2276,16 @@
     const compareBtn = $("#compareBtn");
     const keywordChips = $("#keywordChips");
     const loginScreen = $("#loginScreen");
+    const signInTab = $("#signInTab");
+    const createAccountTab = $("#createAccountTab");
     const loginEmail = $("#loginEmail");
     const loginPassword = $("#loginPassword");
+    const confirmPassword = $("#confirmPassword");
+    const confirmPasswordWrap = $("#confirmPasswordWrap");
     const loginName = $("#loginName");
     const loginGroup = $("#loginGroup");
     const loginBtn = $("#loginBtn");
+    const guestLoginBtn = $("#guestLoginBtn");
     const loginStatus = $("#loginStatus");
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
@@ -3083,6 +3133,17 @@
     function initLogin() {
       const user = loadUser();
       if (user.email || user.name || user.group) unlockWorkbench(user);
+      let authMode = "signin";
+      const setAuthMode = (mode) => {
+        authMode = mode;
+        signInTab?.classList.toggle("active", mode === "signin");
+        createAccountTab?.classList.toggle("active", mode === "signup");
+        if (confirmPasswordWrap) confirmPasswordWrap.style.display = mode === "signup" ? "grid" : "none";
+        if (loginBtn) loginBtn.textContent = mode === "signup" ? t("createAccountBtn") : t("loginBtn");
+        loginStatus.textContent = "";
+      };
+      signInTab?.addEventListener("click", () => setAuthMode("signin"));
+      createAccountTab?.addEventListener("click", () => setAuthMode("signup"));
       const submitLogin = () => {
         const email = loginEmail.value.trim();
         const password = loginPassword.value;
@@ -3096,24 +3157,45 @@
           loginPassword.focus();
           return;
         }
+        if (authMode === "signup" && password !== confirmPassword.value) {
+          loginStatus.textContent = t("loginPasswordMismatch");
+          confirmPassword.focus();
+          return;
+        }
         const user = {
           email,
           password_set: true,
           name: loginName.value.trim() || email.split("@")[0] || "ARPES user",
           group: loginGroup.value.trim() || "",
+          account_mode: authMode === "signup" ? "created_local_account" : "local_signin",
           login_at: new Date().toISOString()
         };
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
         loginPassword.value = "";
+        if (confirmPassword) confirmPassword.value = "";
         loginStatus.textContent = "";
         unlockWorkbench(user);
+        if (authMode === "signup") showToast(t("accountCreatedToast"));
       };
       loginBtn?.addEventListener("click", submitLogin);
-      [loginEmail, loginPassword, loginName, loginGroup].forEach(input => {
+      guestLoginBtn?.addEventListener("click", () => {
+        const guest = {
+          email: "",
+          password_set: false,
+          name: "Guest",
+          group: "",
+          account_mode: "guest",
+          login_at: new Date().toISOString()
+        };
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(guest));
+        unlockWorkbench(guest);
+      });
+      [loginEmail, loginPassword, confirmPassword, loginName, loginGroup].forEach(input => {
         input?.addEventListener("keydown", event => {
           if (event.key === "Enter") submitLogin();
         });
       });
+      setAuthMode("signin");
     }
 
     function loadUser() {
