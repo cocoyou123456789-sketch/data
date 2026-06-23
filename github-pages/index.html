@@ -2671,17 +2671,23 @@
 
     // ===== 主题切换 =====
     document.querySelectorAll(".topic-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        setTopic(tab.dataset.topic, { dance: tab.dataset.topic === "sc" });
+      tab.addEventListener("mousedown", event => event.preventDefault());
+      tab.addEventListener("click", event => {
+        event.preventDefault();
+        setTopic(tab.dataset.topic, { dance: tab.dataset.topic === "sc", preserveScroll: true });
       });
     });
     // 默认激活超导tab
     document.querySelector('.topic-tab[data-topic="sc"]').classList.add("active");
 
-    superconductorBtn.addEventListener("click", () => {
-      setTopic("sc", { dance: true });
+    superconductorBtn.addEventListener("mousedown", event => event.preventDefault());
+    superconductorBtn.addEventListener("click", event => {
+      event.preventDefault();
+      setTopic("sc", { dance: true, preserveScroll: true });
     });
     function setTopic(topic, options = {}) {
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
       state.topic = topic;
       document.querySelectorAll(".topic-tab").forEach(t => t.classList.toggle("active", t.dataset.topic === topic));
       familyFilter.value = "";
@@ -2693,6 +2699,9 @@
         dancePeriodicTable();
         spawnSparkles();
         activateSoundBars();
+      }
+      if (options.preserveScroll) {
+        requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
       }
     }
     searchBtn.addEventListener("click", applyFilters);
