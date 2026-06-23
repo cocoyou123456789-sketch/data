@@ -743,47 +743,63 @@
     .history-chart-wrap {
       position: relative;
       background: #f8fafc;
+      min-height: 360px;
     }
 
-    .history-figure img {
+    .history-svg {
       width: 100%;
       height: auto;
       display: block;
-      background: #f8fafc;
+      background: #ffffff;
     }
 
-    .history-hotspot {
-      position: absolute;
-      left: var(--x);
-      top: var(--y);
-      transform: translate(-50%, -50%);
-      border-radius: 999px;
-      border: 1px solid #ffffff;
-      background: rgba(15,118,110,0.88);
-      color: #ffffff;
-      box-shadow: 0 0 0 2px rgba(15,118,110,0.22), 0 6px 16px rgba(0,0,0,0.24);
+    .history-axis,
+    .history-grid {
+      stroke: #8b96a3;
+      stroke-width: 1;
+    }
+
+    .history-grid {
+      stroke-dasharray: 3 3;
+      opacity: 0.7;
+    }
+
+    .history-svg-item {
       cursor: pointer;
-      padding: 3px 6px;
-      min-height: 22px;
-      min-width: 22px;
-      font-size: 10px;
-      font-weight: 800;
-      line-height: 1;
-      z-index: 2;
     }
 
-    .history-hotspot:hover,
-    .history-hotspot.active {
-      background: #d87979;
-      transform: translate(-50%, -50%) scale(1.12);
-      box-shadow: 0 0 0 4px rgba(216,121,121,0.24), 0 8px 18px rgba(0,0,0,0.34);
+    .history-svg-item circle {
+      stroke: #ffffff;
+      stroke-width: 2;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.22));
+      transition: r 0.18s ease, fill 0.18s ease;
     }
 
-    .history-hotspot.compact {
-      padding: 0;
-      width: 18px;
-      height: 18px;
-      font-size: 0;
+    .history-svg-item text {
+      font-size: 12px;
+      font-weight: 760;
+      fill: #243142;
+      paint-order: stroke;
+      stroke: #ffffff;
+      stroke-width: 3px;
+      stroke-linejoin: round;
+    }
+
+    .history-svg-item:hover circle,
+    .history-svg-item.active circle {
+      r: 8;
+      fill: #d87979;
+    }
+
+    .history-axis-label {
+      fill: #243142;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .history-tick-label {
+      fill: #526071;
+      font-size: 11px;
     }
 
     .history-point-card {
@@ -1413,10 +1429,7 @@
             </div>
             <div class="history-line" id="historyLine"></div>
             <figure class="history-figure">
-              <div class="history-chart-wrap">
-                <img src="assets/superconductivity-history-tc.png" alt="Historical superconducting critical temperature record chart">
-                <div id="historyChartHotspots"></div>
-              </div>
+              <div class="history-chart-wrap" id="historyInteractiveChart"></div>
               <div class="history-point-card" id="historyPointCard">
                 <strong data-i18n="historyPointTitle">点击图上的点</strong>
                 <span data-i18n="historyPointHint">选择一个材料点，查看它在超导历史中的简单介绍。</span>
@@ -2312,7 +2325,7 @@
       // Update template notes
       const notesEl = document.querySelector("#templateNotesText");
       if (notesEl) notesEl.innerHTML = t("seedDataNote");
-      const activeHistoryPoint = document.querySelector(".history-hotspot.active")?.dataset.historyPoint;
+      const activeHistoryPoint = document.querySelector(".history-svg-item.active")?.dataset.historyPoint;
       if (activeHistoryPoint) {
         const point = historyChartPoints.find(item => item.id === activeHistoryPoint);
         if (point) renderHistoryPointCard(point);
@@ -2405,7 +2418,7 @@
     const detailPanel = $("#detailPanel");
     const sourceStatus = $("#sourceStatus");
     const historyLine = $("#historyLine");
-    const historyChartHotspots = $("#historyChartHotspots");
+    const historyInteractiveChart = $("#historyInteractiveChart");
     const historyPointCard = $("#historyPointCard");
     const figureStrip = $("#figureStrip");
     const figureGallery = $("#figureGallery");
@@ -3588,22 +3601,80 @@
     }
 
     function renderHistoryChartPoints() {
-      if (!historyChartHotspots || historyChartHotspots.dataset.rendered === "true") return;
-      historyChartHotspots.innerHTML = historyChartPoints.map(point => `
-        <button class="history-hotspot" type="button"
-          style="--x:${esc(point.x)};--y:${esc(point.y)}"
-          data-history-point="${esc(point.id)}"
-          title="${esc(point.label)} ${esc(point.year)} Tc ${esc(point.tc)}"
-          aria-label="${esc(point.label)} ${esc(point.year)}">${esc(point.label)}</button>
-      `).join("");
-      historyChartHotspots.dataset.rendered = "true";
-      historyChartHotspots.querySelectorAll(".history-hotspot").forEach(button => {
-        button.addEventListener("click", () => {
-          const point = historyChartPoints.find(item => item.id === button.dataset.historyPoint);
+      if (!historyInteractiveChart || historyInteractiveChart.dataset.rendered === "true") return;
+      const width = 920;
+      const height = 520;
+      const margin = { left: 70, right: 24, top: 28, bottom: 58 };
+      const yearMin = 1900;
+      const yearMax = 2025;
+      const tcMin = 0;
+      const tcMax = 300;
+      const x = year => margin.left + ((Number(year) - yearMin) / (yearMax - yearMin)) * (width - margin.left - margin.right);
+      const y = tc => height - margin.bottom - ((Number(tc) - tcMin) / (tcMax - tcMin)) * (height - margin.top - margin.bottom);
+      const yearTicks = [1900, 1920, 1940, 1960, 1980, 1990, 2000, 2010, 2020, 2025];
+      const tcTicks = [0, 20, 40, 50, 100, 150, 200, 250, 300];
+      const colors = {
+        "常规低温超导": "#6aa36f",
+        "A15 常规超导": "#6aa36f",
+        "氮化物": "#6aa36f",
+        "重费米子": "#9fb94c",
+        "铜氧化物": "#4c9ab0",
+        "高压铜氧化物": "#4c9ab0",
+        "富勒烯": "#b067bd",
+        "硼碳化物": "#6aa36f",
+        "硼化物": "#6aa36f",
+        "高压元素": "#9fb94c",
+        "碳材料": "#d96a55",
+        "铁基": "#e99a31",
+        "高压氢化物": "#76a96a",
+        default: "#0f766e"
+      };
+      const labelOffset = point => {
+        if ((parseFloat(point.tc) || 0) < 8) return [8, -8];
+        if (String(point.family).includes("铜氧化物")) return [8, -10];
+        if (String(point.family).includes("高压氢化物")) return [-48, -10];
+        return [8, -8];
+      };
+      const grid = [
+        ...yearTicks.map(tick => `<line class="history-grid" x1="${x(tick)}" y1="${margin.top}" x2="${x(tick)}" y2="${height - margin.bottom}"></line><text class="history-tick-label" x="${x(tick)}" y="${height - margin.bottom + 20}" text-anchor="middle">${tick}</text>`),
+        ...tcTicks.map(tick => `<line class="history-grid" x1="${margin.left}" y1="${y(tick)}" x2="${width - margin.right}" y2="${y(tick)}"></line><text class="history-tick-label" x="${margin.left - 12}" y="${y(tick) + 4}" text-anchor="end">${tick}</text>`)
+      ].join("");
+      const points = historyChartPoints.map(point => {
+        const tcValue = parseFloat(point.tc) || 0;
+        const cx = x(point.year);
+        const cy = y(tcValue);
+        const [dx, dy] = labelOffset(point);
+        const color = colors[point.family] || colors.default;
+        return `<g class="history-svg-item" data-history-point="${esc(point.id)}" tabindex="0" role="button" aria-label="${esc(point.label)} ${esc(point.year)} Tc ${esc(point.tc)}">
+          <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5.8" fill="${color}"></circle>
+          <text x="${(cx + dx).toFixed(1)}" y="${(cy + dy).toFixed(1)}">${esc(point.label)}</text>
+        </g>`;
+      }).join("");
+      historyInteractiveChart.innerHTML = `
+        <svg class="history-svg" viewBox="0 0 ${width} ${height}" aria-label="Interactive superconductivity history chart">
+          <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff"></rect>
+          ${grid}
+          <line class="history-axis" x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}"></line>
+          <line class="history-axis" x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}"></line>
+          <text class="history-axis-label" x="${width / 2}" y="${height - 16}" text-anchor="middle">Year</text>
+          <text class="history-axis-label" x="18" y="${height / 2}" text-anchor="middle" transform="rotate(-90 18 ${height / 2})">Critical temperature Tc (K)</text>
+          ${points}
+        </svg>`;
+      historyInteractiveChart.dataset.rendered = "true";
+      historyInteractiveChart.querySelectorAll(".history-svg-item").forEach(item => {
+        const activate = () => {
+          const point = historyChartPoints.find(entry => entry.id === item.dataset.historyPoint);
           if (!point) return;
-          historyChartHotspots.querySelectorAll(".history-hotspot").forEach(item => item.classList.remove("active"));
-          button.classList.add("active");
+          historyInteractiveChart.querySelectorAll(".history-svg-item").forEach(node => node.classList.remove("active"));
+          item.classList.add("active");
           renderHistoryPointCard(point);
+        };
+        item.addEventListener("click", activate);
+        item.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            activate();
+          }
         });
       });
     }
