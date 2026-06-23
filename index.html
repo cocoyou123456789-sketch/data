@@ -731,6 +731,30 @@
       transform: translateY(-18px);
     }
 
+    .history-figure {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f8fafc;
+      overflow: hidden;
+      display: grid;
+      gap: 0;
+    }
+
+    .history-figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #f8fafc;
+    }
+
+    .history-figure figcaption {
+      padding: 9px 12px;
+      color: #243142;
+      background: #eef3f8;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     .workbench-actions {
       display: flex;
       flex-wrap: wrap;
@@ -1333,6 +1357,10 @@
               <p class="muted" data-i18n="milestonesHint">从1911年至今的重大发现</p>
             </div>
             <div class="history-line" id="historyLine"></div>
+            <figure class="history-figure">
+              <img src="assets/superconductivity-history-tc.png" alt="Historical superconducting critical temperature record chart">
+              <figcaption data-i18n="historyFigureCaption">历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。</figcaption>
+            </figure>
           </div>
           <div class="history-image">
             <h3 style="margin-bottom:8px;" data-i18n="tcChartTitle">📊 Tc 对比 (K)</h3>
@@ -1792,6 +1820,7 @@
         rowsLabel: "行",
         milestonesTitle: "📜 超导历史里程碑",
         milestonesHint: "从1911年至今的重大发现 — 点击节点查看详情",
+        historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
         tcChartTitle: "📊 Tc 对比 (K)",
         noMaterials: "筛选后无材料数据",
         sourceTitle: "💡 光源 / 档案目录",
@@ -2024,6 +2053,7 @@
         rowsLabel: "Rows",
         milestonesTitle: "📜 Superconductivity Milestones",
         milestonesHint: "Major discoveries from 1911 to present — click a node for details",
+        historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
         tcChartTitle: "📊 Tc Comparison (K)",
         noMaterials: "No materials match current filters",
         sourceTitle: "💡 Light Source & Archive Directory",
@@ -3354,15 +3384,35 @@
       const families = uniq(rows.map(r => familyName(r.family)));
       const mats = rows.map(r => r.display_name || r.material);
       const articleRows = curatedArticles().filter(article => (article.elements || []).includes(state.selectedElement));
+      const meta = elementMeta[state.selectedElement] || [state.selectedElement, ""];
+      const intro = elementIntro(state.selectedElement, rows, articleRows);
       elementPanel.innerHTML = `
-        <h3>${esc(state.selectedElement)}：curated ARPES articles</h3>
+        <h3>${esc(state.selectedElement)} · ${esc(meta[0])}</h3>
+        <p class="muted">${esc(intro)}</p>
         <div class="chips">
+          <span class="chip good">${esc(rows.length)} seed material rows</span>
           ${families.map(v => `<span class="chip good">${esc(v)}</span>`).join("")}
           <span class="chip trusted">${articleRows.length} real article records</span>
         </div>
-        <ul>${articleRows.map(article => `<li>${esc(article.title)} <span class="muted">(${esc(article.year)})</span></li>`).join("")}</ul>
-        <p class="muted">Seed material rows for this element: ${esc(mats.join(", ") || "-")}</p>
+        <p><strong>${currentLang === "zh" ? "代表材料" : "Representative materials"}:</strong> ${esc(mats.slice(0, 8).join(", ") || "-")}</p>
+        <ul>${articleRows.slice(0, 5).map(article => `<li>${esc(article.title)} <span class="muted">(${esc(article.year)})</span></li>`).join("") || `<li class="muted">${currentLang === "zh" ? "暂无精选真实论文图记录。" : "No curated real-figure article record yet."}</li>`}</ul>
       `;
+    }
+
+    function elementIntro(symbol, rows, articleRows) {
+      const familyList = uniq(rows.map(r => familyName(r.family))).slice(0, 3).join(", ");
+      const materialList = rows.map(r => r.display_name || r.material).slice(0, 3).join(", ");
+      const articleText = articleRows.length
+        ? (currentLang === "zh" ? `已有 ${articleRows.length} 条精选 ARPES 真实论文图记录。` : `${articleRows.length} curated ARPES real-figure article records are available.`)
+        : (currentLang === "zh" ? "目前还没有精选真实论文图记录，可通过 WoS/Scholar 导入补充。" : "No curated real-figure record yet; add more through WoS/Scholar import.");
+      const role = rows.length
+        ? (currentLang === "zh"
+          ? `${symbol} 出现在 ${rows.length} 个种子材料条目中，主要关联 ${familyList || "若干超导材料家族"}，例如 ${materialList || "待补充材料"}。`
+          : `${symbol} appears in ${rows.length} seed material rows, mainly linked to ${familyList || "several superconducting families"}, such as ${materialList || "materials to be added"}.`)
+        : (currentLang === "zh"
+          ? `${symbol} 暂无种子材料条目，但可以作为后续文献和实验数据导入的候选元素。`
+          : `${symbol} has no seed material row yet, but can be used as a candidate element for future literature and experimental data imports.`);
+      return `${role} ${articleText}`;
     }
 
     function highlightPeriodicTable() {
