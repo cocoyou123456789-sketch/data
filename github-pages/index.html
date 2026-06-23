@@ -1237,6 +1237,12 @@
         <p class="muted" data-i18n="loginHint">进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。</p>
       </div>
       <div class="form-grid">
+        <label data-label-i18n="loginEmailLabel">Email
+          <input id="loginEmail" type="email" autocomplete="email" placeholder="name@lab.edu">
+        </label>
+        <label data-label-i18n="loginPasswordLabel">密码
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
+        </label>
         <label data-label-i18n="loginNameLabel">姓名 / 用户
           <input id="loginName" autocomplete="name" placeholder="ARPES user">
         </label>
@@ -1244,6 +1250,7 @@
           <input id="loginGroup" placeholder="SSRF BL07U">
         </label>
       </div>
+      <span class="status" id="loginStatus"></span>
       <button class="primary" id="loginBtn" data-i18n="loginBtn">进入工作台</button>
       <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
     </div>
@@ -1679,10 +1686,14 @@
         subtitle: "超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析",
         loginTitle: "登录 ARPES 工作台",
         loginHint: "进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。",
+        loginEmailLabel: "Email",
+        loginPasswordLabel: "密码",
         loginNameLabel: "姓名 / 用户",
         loginGroupLabel: "课题组 / 光源站",
         loginBtn: "进入工作台",
         loginPrivacy: "本登录只保存在当前浏览器，用于个性化目录和报告署名。",
+        loginEmailRequired: "请输入有效 Email",
+        loginPasswordRequired: "请输入密码",
         tocTitle: "电子书目录",
         tocNote: "目录会随主题、元素和材料筛选自动变化。",
         generateReportBtn: "生成调研报告",
@@ -1900,10 +1911,14 @@
         subtitle: "Superconducting materials · Periodic Table · Light Sources · Article Data · Comparison",
         loginTitle: "Login to ARPES Workbench",
         loginHint: "Search materials, import WoS/Scholar literature, save personal data, and generate research reports.",
+        loginEmailLabel: "Email",
+        loginPasswordLabel: "Password",
         loginNameLabel: "Name / User",
         loginGroupLabel: "Group / Beamline",
         loginBtn: "Enter Workbench",
         loginPrivacy: "This login is stored only in this browser for personalized contents and report authorship.",
+        loginEmailRequired: "Enter a valid email",
+        loginPasswordRequired: "Enter a password",
         tocTitle: "E-book Contents",
         tocNote: "The contents update with topic, element, and material filters.",
         generateReportBtn: "Generate Report",
@@ -2216,9 +2231,12 @@
     const compareBtn = $("#compareBtn");
     const keywordChips = $("#keywordChips");
     const loginScreen = $("#loginScreen");
+    const loginEmail = $("#loginEmail");
+    const loginPassword = $("#loginPassword");
     const loginName = $("#loginName");
     const loginGroup = $("#loginGroup");
     const loginBtn = $("#loginBtn");
+    const loginStatus = $("#loginStatus");
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
     const generateReportBtn = $("#generateReportBtn");
@@ -3064,15 +3082,37 @@
 
     function initLogin() {
       const user = loadUser();
-      if (user.name || user.group) unlockWorkbench(user);
-      loginBtn?.addEventListener("click", () => {
+      if (user.email || user.name || user.group) unlockWorkbench(user);
+      const submitLogin = () => {
+        const email = loginEmail.value.trim();
+        const password = loginPassword.value;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          loginStatus.textContent = t("loginEmailRequired");
+          loginEmail.focus();
+          return;
+        }
+        if (!password.trim()) {
+          loginStatus.textContent = t("loginPasswordRequired");
+          loginPassword.focus();
+          return;
+        }
         const user = {
-          name: loginName.value.trim() || "ARPES user",
+          email,
+          password_set: true,
+          name: loginName.value.trim() || email.split("@")[0] || "ARPES user",
           group: loginGroup.value.trim() || "",
           login_at: new Date().toISOString()
         };
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+        loginPassword.value = "";
+        loginStatus.textContent = "";
         unlockWorkbench(user);
+      };
+      loginBtn?.addEventListener("click", submitLogin);
+      [loginEmail, loginPassword, loginName, loginGroup].forEach(input => {
+        input?.addEventListener("keydown", event => {
+          if (event.key === "Enter") submitLogin();
+        });
       });
     }
 
@@ -3084,6 +3124,7 @@
     function unlockWorkbench(user) {
       document.body.classList.remove("locked");
       if (loginScreen) loginScreen.style.display = "none";
+      if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.name) loginName.value = user.name;
       if (loginGroup && user.group) loginGroup.value = user.group;
       renderToc();
