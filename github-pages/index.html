@@ -803,6 +803,7 @@
       stroke: #ffffff;
       stroke-width: 1.5;
       filter: drop-shadow(0 3px 5px rgba(15,118,110,0.32));
+      pointer-events: all;
     }
 
     .history-milestone-node text {
@@ -813,6 +814,12 @@
       stroke: #ffffff;
       stroke-width: 2.5px;
       stroke-linejoin: round;
+      pointer-events: all;
+    }
+
+    .history-milestone-node.active rect {
+      fill: #14b8a6;
+      filter: drop-shadow(0 0 8px rgba(20,184,166,0.55));
     }
 
     .history-svg-item:hover circle,
@@ -871,6 +878,32 @@
       background: rgba(15,118,110,0.04);
       display: grid;
       gap: 8px;
+    }
+
+    .model-status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .model-status-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      background: rgba(255,255,255,0.026);
+      display: grid;
+      gap: 3px;
+      min-height: 64px;
+    }
+
+    .model-status-card span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .model-status-card strong {
+      color: var(--accent-glow);
+      font-size: 15px;
     }
 
     .history-side-panel {
@@ -1575,7 +1608,8 @@
       .figure-compare-grid,
       .data-library-grid,
       .cube-controls,
-      .model-control-grid {
+      .model-control-grid,
+      .model-status-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1877,6 +1911,20 @@
             <div class="model-interface">
               <strong data-i18n="modelInterfaceTitle">计算模型接口</strong>
               <span class="muted" data-i18n="modelInterfaceHint">预留 API：window.ARPESModelHub.registerModel(name, predictFn)</span>
+              <div class="model-status-grid">
+                <div class="model-status-card">
+                  <span data-i18n="modelStatusApi">接口状态</span>
+                  <strong id="modelApiStatus">Ready</strong>
+                </div>
+                <div class="model-status-card">
+                  <span data-i18n="modelStatusRegistry">已注册模型</span>
+                  <strong id="modelRegistryCount">0</strong>
+                </div>
+                <div class="model-status-card">
+                  <span data-i18n="modelStatusSource">输入来源</span>
+                  <strong data-i18n="modelStatusSourceValue">页面表单</strong>
+                </div>
+              </div>
               <div class="model-control-grid">
                 <label data-label-i18n="modelMaterialLabel">材料 / 元素
                   <input id="modelMaterialInput" placeholder="FeSe, Cu, Ni, hydride">
@@ -1899,6 +1947,7 @@
                 <button class="primary" id="modelRunBtn" type="button" data-i18n="modelRunBtn">运行模型</button>
                 <button id="modelProbeBtn" type="button" data-i18n="modelProbeBtn">检查接口</button>
               </div>
+              <div class="model-output" id="modelRegistryOutput" data-i18n="modelRegistryDefault">暂无外部模型注册；当前使用规则化预览。</div>
               <div class="model-output" id="modelOutput" data-i18n="modelOutputDefault">等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。</div>
             </div>
           </div>
@@ -2312,6 +2361,14 @@
         modelFeatureLabel: "特征关键词",
         modelRunBtn: "运行模型",
         modelOutputDefault: "等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。",
+        modelStatusApi: "接口状态",
+        modelStatusRegistry: "已注册模型",
+        modelStatusSource: "输入来源",
+        modelStatusSourceValue: "页面表单",
+        modelRegistryDefault: "暂无外部模型注册；当前使用规则化预览。",
+        modelRegistryTemplate: "已注册模型：",
+        modelPayloadTitle: "模型输入包",
+        modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
         reportToast: "调研报告已生成",
         tocSearch: "检索与主题",
@@ -2568,6 +2625,14 @@
         modelFeatureLabel: "Feature Keywords",
         modelRunBtn: "Run Model",
         modelOutputDefault: "Waiting for model input. This preview is rule-based now and can connect to a real computation model later.",
+        modelStatusApi: "API Status",
+        modelStatusRegistry: "Registered Models",
+        modelStatusSource: "Input Source",
+        modelStatusSourceValue: "Page Form",
+        modelRegistryDefault: "No external models registered; using the rule-based preview.",
+        modelRegistryTemplate: "Registered models:",
+        modelPayloadTitle: "Model Input Packet",
+        modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
         reportToast: "Research report generated",
         tocSearch: "Search & Topic",
@@ -2833,6 +2898,7 @@
         renderHistoryChartPoints();
       }
       renderCubeReadout("cuprate");
+      renderModelRegistry();
       renderToc();
       if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
       // Update section headings, buttons, etc.
@@ -2915,6 +2981,9 @@
     const modelTemperatureInput = $("#modelTemperatureInput");
     const modelFeatureInput = $("#modelFeatureInput");
     const modelOutput = $("#modelOutput");
+    const modelApiStatus = $("#modelApiStatus");
+    const modelRegistryCount = $("#modelRegistryCount");
+    const modelRegistryOutput = $("#modelRegistryOutput");
     const historyCube = $("#historyCube");
     const cubeViewport = $("#cubeViewport");
     const cubeZoom = $("#cubeZoom");
@@ -3328,6 +3397,7 @@
     generateReportBtn?.addEventListener("click", generateResearchReport);
     modelProbeBtn?.addEventListener("click", () => {
       const hub = window.ARPESModelHub || window.ARPES_ML;
+      renderModelRegistry();
       showToast(`${t("modelReadyToast")} · v${hub?.version || "0.1.0"}`);
     });
     modelRunBtn?.addEventListener("click", runModelPreview);
@@ -3673,11 +3743,12 @@
         renderPeriodicTable();
         applyFilters();
         renderOurData();
-        renderArticles();
-        renderKeywordChips();
-        updateImportMetrics();
-        initLogin();
-        renderToc();
+      renderArticles();
+      renderKeywordChips();
+      updateImportMetrics();
+      initLogin();
+      renderModelRegistry();
+      renderToc();
         loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       } catch (error) {
         loadStatus.textContent = `${t("loadingFailed")}: ${error.message}`;
@@ -4266,10 +4337,29 @@
           const point = historyChartPoints.find(entry => entry.id === item.dataset.historyPoint);
           if (!point) return;
           historyInteractiveChart.querySelectorAll(".history-svg-item").forEach(node => node.classList.remove("active"));
+          historyInteractiveChart.querySelectorAll(".history-milestone-node").forEach(node => node.classList.remove("active"));
           item.classList.add("active");
           renderHistoryPointCard(point);
         };
         item.addEventListener("click", activate);
+        item.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            activate();
+          }
+        });
+      });
+      historyInteractiveChart.querySelectorAll(".history-milestone-node").forEach(item => {
+        const activate = () => {
+          const milestone = historyMilestones.find(entry => entry.year === item.dataset.milestoneYear);
+          if (!milestone) return;
+          historyInteractiveChart.querySelectorAll(".history-svg-item").forEach(node => node.classList.remove("active"));
+          historyInteractiveChart.querySelectorAll(".history-milestone-node").forEach(node => node.classList.remove("active"));
+          item.classList.add("active");
+          renderHistoryMilestoneCard(milestone);
+        };
+        item.addEventListener("click", activate);
+        item.querySelectorAll("rect,text").forEach(child => child.addEventListener("click", activate));
         item.addEventListener("keydown", event => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
@@ -4285,6 +4375,20 @@
       historyPointCard.innerHTML = `
         <strong>${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)}</strong>
         <span>${esc(point.family || "")}</span>
+        <span>${esc(note)}</span>
+      `;
+    }
+
+    function renderHistoryMilestoneCard(milestone) {
+      if (!historyPointCard) return;
+      const label = currentLang === "zh" ? milestone.label : milestone.en;
+      const family = currentLang === "zh" ? milestone.family : milestone.family;
+      const note = currentLang === "zh"
+        ? `这是超导历史中的年度大事件节点，用来把材料点按研究阶段组织起来。${milestone.year} 年附近的材料点可以作为该阶段的代表体系继续比较。`
+        : `This is a yearly milestone node in superconductivity history. Nearby material points can be compared as representative systems from this stage.`;
+      historyPointCard.innerHTML = `
+        <strong>${esc(milestone.year)} · ${esc(label)}</strong>
+        <span>${esc(family || "")}</span>
         <span>${esc(note)}</span>
       `;
     }
@@ -4380,19 +4484,40 @@
       }).slice(0, 3) : [];
       const hub = window.ARPESModelHub || window.ARPES_ML;
       const zh = currentLang === "zh";
-      const lines = [
-        zh ? `任务: ${task}` : `Task: ${task}`,
-        zh ? `输入: ${material || "未填写"}${temperature ? ` · ${temperature} K` : ""}` : `Input: ${material || "empty"}${temperature ? ` · ${temperature} K` : ""}`,
-        zh ? `特征: ${feature || "未填写"}` : `Features: ${feature || "empty"}`,
-        zh ? `模型接口: ${hub?.version || "0.1.0"} 已就绪` : `Model hub: ${hub?.version || "0.1.0"} ready`
+      const payload = {
+        task,
+        material_or_element: material || null,
+        temperature_K: temperature ? Number(temperature) : null,
+        features: feature ? feature.split(",").map(item => item.trim()).filter(Boolean) : [],
+        registered_models: Object.keys(hub?._models || {}),
+        timestamp: new Date().toISOString()
+      };
+      const confidence = matched.length ? Math.min(0.92, 0.56 + matched.length * 0.12) : 0.34;
+      const resultLines = [
+        `${zh ? "模型接口" : "Model hub"}: v${hub?.version || "0.1.0"}`,
+        `${zh ? "预览置信度" : "Preview confidence"}: ${Math.round(confidence * 100)}%`,
+        matched.length
+          ? `${zh ? "候选匹配" : "Candidate matches"}: ${matched.map(row => `${row.display_name || row.material} / ${familyName(row.family)} / Tc ${row.transition_temperature_K ?? "-"} K`).join("; ")}`
+          : (zh ? "候选匹配: 暂无，可作为新材料输入后续模型。" : "Candidate matches: none yet; treat as new input for future models.")
       ];
-      if (matched.length) {
-        lines.push(zh ? "候选匹配:" : "Candidate matches:");
-        matched.forEach(row => lines.push(`- ${row.display_name || row.material} · ${familyName(row.family)} · Tc ${row.transition_temperature_K ?? "-"} K`));
-      } else {
-        lines.push(zh ? "候选匹配: 暂无，可作为新材料输入后续模型。" : "Candidate matches: none yet; treat as new input for future models.");
+      modelOutput.innerHTML = `
+        <strong style="color:var(--accent-glow);">${esc(t("modelPayloadTitle"))}</strong>
+        <pre style="white-space:pre-wrap;margin:6px 0 10px;font-size:11px;">${esc(JSON.stringify(payload, null, 2))}</pre>
+        <strong style="color:var(--accent-glow);">${esc(t("modelResultTitle"))}</strong><br>
+        ${resultLines.map(line => esc(line)).join("<br>")}
+      `;
+    }
+
+    function renderModelRegistry() {
+      const hub = window.ARPESModelHub || window.ARPES_ML;
+      const names = Object.keys(hub?._models || {});
+      if (modelApiStatus) modelApiStatus.textContent = hub ? `Ready v${hub.version || "0.1.0"}` : "Offline";
+      if (modelRegistryCount) modelRegistryCount.textContent = String(names.length);
+      if (modelRegistryOutput) {
+        modelRegistryOutput.textContent = names.length
+          ? `${t("modelRegistryTemplate")} ${names.join(", ")}`
+          : t("modelRegistryDefault");
       }
-      modelOutput.innerHTML = lines.map(line => esc(line)).join("<br>");
     }
 
     // ===== 图表类型筛选按钮 =====
@@ -5513,6 +5638,7 @@
           if (!this._models) this._models = {};
           this._models[name] = predictFn;
           console.log(`ML model "${name}" registered`);
+          renderModelRegistry();
         },
         // 获取高对称方向数据
         async getHighSymmetryData(datasetId) {
@@ -5532,6 +5658,7 @@
         _models: {}
       };
       window.ARPESModelHub = window.ARPES_ML;
+      renderModelRegistry();
     }
 
     // ===== 启动页面 =====
