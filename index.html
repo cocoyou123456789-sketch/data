@@ -1135,6 +1135,56 @@
       background: rgba(255,255,255,0.026);
     }
 
+    .cube-face {
+      position: absolute;
+      left: 53px;
+      bottom: 53px;
+      width: 154px;
+      height: 154px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 10px;
+      background:
+        linear-gradient(135deg, rgba(20,184,166,0.2), rgba(96,208,255,0.1)),
+        rgba(13,21,32,0.72);
+      box-shadow: inset 0 0 26px rgba(20,184,166,0.13), 0 12px 34px rgba(0,0,0,0.22);
+      display: grid;
+      align-content: center;
+      gap: 6px;
+      padding: 12px;
+      text-align: center;
+      backface-visibility: visible;
+      cursor: pointer;
+    }
+
+    .cube-face strong {
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .cube-face span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .cube-face.front { transform: translateZ(77px); }
+    .cube-face.back { transform: rotateY(180deg) translateZ(77px); }
+    .cube-face.right { transform: rotateY(90deg) translateZ(77px); }
+    .cube-face.left { transform: rotateY(-90deg) translateZ(77px); }
+    .cube-face.top { transform: rotateX(90deg) translateZ(77px); }
+    .cube-face.bottom { transform: rotateX(-90deg) translateZ(77px); }
+
+    .cube-view-cube .axis-plane,
+    .cube-view-cube .axis-line,
+    .cube-view-cube .axis-label,
+    .cube-view-cube #axisPointLayer {
+      display: none;
+    }
+
+    .cube-view-axis .cube-face {
+      display: none;
+    }
+
     .cube-controls,
     .model-control-grid {
       display: grid;
@@ -2083,7 +2133,7 @@
                 <p class="muted" data-i18n="historyCubeHint">拖动旋转，缩放查看不同超导家族和数据面。</p>
               </div>
               <div class="cube-viewport" id="cubeViewport">
-                <div class="history-cube" id="historyCube" aria-label="3D Tc year pressure chart">
+                <div class="history-cube cube-view-axis" id="historyCube" aria-label="3D Tc year pressure chart">
                   <div class="axis-plane xy"></div>
                   <div class="axis-plane xz"></div>
                   <div class="axis-plane yz"></div>
@@ -2094,6 +2144,12 @@
                   <span class="axis-label y">Y · Pressure</span>
                   <span class="axis-label z">Z · Tc</span>
                   <div id="axisPointLayer"></div>
+                  <button class="cube-face front" type="button" data-cube-face="cuprate"><strong>Cuprate</strong><span>1986 · high Tc</span></button>
+                  <button class="cube-face back" type="button" data-cube-face="hydride"><strong>Hydride</strong><span>2015+ · pressure</span></button>
+                  <button class="cube-face right" type="button" data-cube-face="iron"><strong>Fe-based</strong><span>2008 · multiband</span></button>
+                  <button class="cube-face left" type="button" data-cube-face="conventional"><strong>Classic</strong><span>1911 · BCS roots</span></button>
+                  <button class="cube-face top" type="button" data-cube-face="arpes"><strong>ARPES</strong><span>bands · gaps</span></button>
+                  <button class="cube-face bottom" type="button" data-cube-face="personal"><strong>Our Data</strong><span>local records</span></button>
                 </div>
               </div>
               <div class="axis-legend">
@@ -2103,6 +2159,7 @@
               </div>
               <div class="cube-controls">
                 <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
+                <button id="cubeViewModeBtn" type="button" data-i18n="cubeViewModeCube">六面魔方</button>
                 <button id="axisModeBtn" type="button" data-i18n="axisModeShowAll">显示全部点</button>
                 <label data-label-i18n="cubeZoomLabel">缩放
                   <input id="cubeZoom" type="range" min="70" max="140" value="100">
@@ -2637,6 +2694,8 @@
         historyCubeHint: "透明三轴图：X 轴为年份，Y 轴为压力，Z 轴为 Tc 温度；拖动旋转，缩放查看材料点。",
         cubeResetBtn: "重置视角",
         cubeZoomLabel: "缩放",
+        cubeViewModeCube: "六面魔方",
+        cubeViewModeAxis: "三轴坐标",
         axisModeShowAll: "显示全部点",
         axisModeShowCore: "显示核心点",
         cubeReadoutDefault: "默认显示核心代表点以减少重叠；点击材料点查看年份、压力和 Tc，或切换为全部点。",
@@ -2907,6 +2966,8 @@
         historyCubeHint: "Transparent 3-axis view: X is year, Y is pressure, and Z is Tc; drag to rotate and zoom material points.",
         cubeResetBtn: "Reset View",
         cubeZoomLabel: "Zoom",
+        cubeViewModeCube: "Six-Face Cube",
+        cubeViewModeAxis: "3-Axis Plot",
         axisModeShowAll: "Show All Points",
         axisModeShowCore: "Show Core Points",
         cubeReadoutDefault: "Core representative points are shown by default to reduce overlap. Click a point for year, pressure, and Tc, or switch to all points.",
@@ -3113,6 +3174,7 @@
       }
       renderCubeReadout("cuprate");
       renderAxisPoints();
+      applyCubeViewMode();
       renderModelRegistry();
       renderToc();
       if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
@@ -3206,6 +3268,7 @@
     const cubeReadout = $("#cubeReadout");
     const axisPointLayer = $("#axisPointLayer");
     const axisModeBtn = $("#axisModeBtn");
+    const cubeViewModeBtn = $("#cubeViewModeBtn");
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -4612,11 +4675,38 @@
 
     let cubeRotation = { x: -18, y: 32 };
     let axisMode = "core";
+    let cubeViewMode = "axis";
     const coreAxisPointIds = new Set([
       "hg-1911", "nb3ge-1973", "ybco", "bisrcacuo", "hgbacacuo-30gpa",
       "mgb2-2001", "cecoin5", "laofep", "srfefas", "feas-2008",
       "h2s-2015", "lah10-2019", "csh"
     ]);
+    const cubeFaces = {
+      conventional: {
+        zh: ["常规超导", "Hg, Pb, Nb, Nb3Sn 等低温常规超导是历史基线。"],
+        en: ["Conventional", "Hg, Pb, Nb and Nb3Sn form the low-temperature historical baseline."]
+      },
+      cuprate: {
+        zh: ["铜氧化物", "1986 后的高温超导主线，ARPES 常看费米弧、赝能隙和 d-wave gap。"],
+        en: ["Cuprates", "The high-Tc line after 1986, with ARPES focus on Fermi arcs, pseudogap and d-wave gaps."]
+      },
+      iron: {
+        zh: ["铁基超导", "多轨道、多费米面和 q-dependent 磁/电荷涨落适合做对比分析。"],
+        en: ["Iron-based", "Multiorbital, multifermi-surface systems with q-dependent fluctuation signatures."]
+      },
+      hydride: {
+        zh: ["高压氢化物", "H3S、LaH10、C-S-H 等把 Tc 推向高温，但依赖高压和严格核验。"],
+        en: ["Hydrides", "H3S, LaH10 and C-S-H push Tc upward under high pressure and need careful verification."]
+      },
+      arpes: {
+        zh: ["ARPES 数据面", "把论文图、能带、费米面、能隙、温度依赖统一到可比较视图。"],
+        en: ["ARPES Data", "Unifies paper figures, bands, Fermi surfaces, gaps and temperature dependence for comparison."]
+      },
+      personal: {
+        zh: ["Our Data", "个人上传的 HDF5、文章和实验记录保存在浏览器本地，可继续接入模型。"],
+        en: ["Our Data", "Personal HDF5, article and experiment records stay in the browser and can feed future models."]
+      }
+    };
 
     function applyCubeTransform() {
       if (!historyCube) return;
@@ -4624,6 +4714,16 @@
       historyCube.style.setProperty("--cube-x", `${cubeRotation.x}deg`);
       historyCube.style.setProperty("--cube-y", `${cubeRotation.y}deg`);
       historyCube.style.setProperty("--cube-scale", String(scale));
+    }
+
+    function applyCubeViewMode() {
+      if (!historyCube) return;
+      historyCube.classList.toggle("cube-view-axis", cubeViewMode === "axis");
+      historyCube.classList.toggle("cube-view-cube", cubeViewMode === "cube");
+      if (axisModeBtn) axisModeBtn.style.display = cubeViewMode === "axis" ? "" : "none";
+      if (cubeViewModeBtn) cubeViewModeBtn.textContent = cubeViewMode === "axis" ? t("cubeViewModeCube") : t("cubeViewModeAxis");
+      if (cubeViewMode === "axis") renderCubeReadout();
+      else renderCubeFaceReadout("cuprate");
     }
 
     function estimatePressureGPa(point) {
@@ -4732,11 +4832,25 @@
       `;
     }
 
+    function renderCubeFaceReadout(faceKey) {
+      if (!cubeReadout) return;
+      const face = cubeFaces[faceKey] || cubeFaces.cuprate;
+      const [title, body] = face[currentLang] || face.zh;
+      cubeReadout.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}`;
+    }
+
     function setupHistoryCube() {
       if (!historyCube || !cubeViewport) return;
       applyCubeTransform();
       renderAxisPoints();
       cubeZoom?.addEventListener("input", applyCubeTransform);
+      historyCube.querySelectorAll(".cube-face").forEach(face => {
+        face.addEventListener("click", () => renderCubeFaceReadout(face.dataset.cubeFace));
+      });
+      cubeViewModeBtn?.addEventListener("click", () => {
+        cubeViewMode = cubeViewMode === "axis" ? "cube" : "axis";
+        applyCubeViewMode();
+      });
       axisModeBtn?.addEventListener("click", () => {
         axisMode = axisMode === "core" ? "all" : "core";
         renderAxisPoints();
@@ -4766,6 +4880,7 @@
       const stopDrag = () => { dragging = false; };
       cubeViewport.addEventListener("pointerup", stopDrag);
       cubeViewport.addEventListener("pointercancel", stopDrag);
+      applyCubeViewMode();
     }
 
     function runModelPreview() {
