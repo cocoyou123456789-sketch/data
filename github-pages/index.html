@@ -1021,7 +1021,7 @@
       min-height: 260px;
       display: grid;
       place-items: center;
-      perspective: 900px;
+      perspective: 1600px;
       overflow: hidden;
       touch-action: none;
     }
@@ -1075,14 +1075,7 @@
     }
 
     .axis-label {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      color: #dce8f3;
-      font-size: 11px;
-      font-weight: 760;
-      text-shadow: 0 1px 8px rgba(0,0,0,0.75);
-      pointer-events: none;
+      display: none;
     }
 
     .axis-label.x { transform: translate3d(220px, -18px, 0); }
@@ -1093,22 +1086,30 @@
       position: absolute;
       left: 28px;
       bottom: 28px;
-      width: 9px;
-      height: 9px;
-      border: 1px solid rgba(255,255,255,0.75);
+      width: 5px;
+      height: 5px;
+      border: 0.5px solid rgba(255,255,255,0.66);
       border-radius: 50%;
       background: var(--point-color, var(--accent-glow));
       transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(-1 * var(--py)));
-      box-shadow: 0 0 12px var(--point-color, var(--accent-glow));
+      box-shadow: 0 0 8px var(--point-color, var(--accent-glow));
       cursor: pointer;
+      opacity: 0.78;
       pointer-events: auto;
+    }
+
+    .axis-point.is-core {
+      width: 7px;
+      height: 7px;
+      opacity: 0.92;
     }
 
     .axis-point:hover,
     .axis-point.active {
-      width: 13px;
-      height: 13px;
-      box-shadow: 0 0 18px var(--point-color, var(--accent-glow));
+      width: 11px;
+      height: 11px;
+      opacity: 1;
+      box-shadow: 0 0 16px var(--point-color, var(--accent-glow));
     }
 
     #axisPointLayer {
@@ -1116,6 +1117,22 @@
       inset: 0;
       transform-style: preserve-3d;
       pointer-events: auto;
+    }
+
+    .axis-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .axis-legend span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: rgba(255,255,255,0.026);
     }
 
     .cube-controls,
@@ -2079,8 +2096,14 @@
                   <div id="axisPointLayer"></div>
                 </div>
               </div>
+              <div class="axis-legend">
+                <span>X = Year</span>
+                <span>Y = Pressure (GPa)</span>
+                <span>Z = Tc (K)</span>
+              </div>
               <div class="cube-controls">
                 <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
+                <button id="axisModeBtn" type="button" data-i18n="axisModeShowAll">显示全部点</button>
                 <label data-label-i18n="cubeZoomLabel">缩放
                   <input id="cubeZoom" type="range" min="70" max="140" value="100">
                 </label>
@@ -2614,7 +2637,9 @@
         historyCubeHint: "透明三轴图：X 轴为年份，Y 轴为压力，Z 轴为 Tc 温度；拖动旋转，缩放查看材料点。",
         cubeResetBtn: "重置视角",
         cubeZoomLabel: "缩放",
-        cubeReadoutDefault: "点击一个材料点查看年份、压力和 Tc；压力值先按公开记录/材料家族估算，后续可替换为真实实验列。",
+        axisModeShowAll: "显示全部点",
+        axisModeShowCore: "显示核心点",
+        cubeReadoutDefault: "默认显示核心代表点以减少重叠；点击材料点查看年份、压力和 Tc，或切换为全部点。",
         tcChartTitle: "📊 Tc 对比 (K)",
         noMaterials: "筛选后无材料数据",
         sourceTitle: "💡 光源 / 档案目录",
@@ -2882,7 +2907,9 @@
         historyCubeHint: "Transparent 3-axis view: X is year, Y is pressure, and Z is Tc; drag to rotate and zoom material points.",
         cubeResetBtn: "Reset View",
         cubeZoomLabel: "Zoom",
-        cubeReadoutDefault: "Click a material point to inspect year, pressure, and Tc. Pressure is estimated from records/families until a real experiment column is connected.",
+        axisModeShowAll: "Show All Points",
+        axisModeShowCore: "Show Core Points",
+        cubeReadoutDefault: "Core representative points are shown by default to reduce overlap. Click a point for year, pressure, and Tc, or switch to all points.",
         tcChartTitle: "📊 Tc Comparison (K)",
         noMaterials: "No materials match current filters",
         sourceTitle: "💡 Light Source & Archive Directory",
@@ -3085,6 +3112,7 @@
         renderHistoryChartPoints();
       }
       renderCubeReadout("cuprate");
+      renderAxisPoints();
       renderModelRegistry();
       renderToc();
       if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
@@ -3177,6 +3205,7 @@
     const cubeResetBtn = $("#cubeResetBtn");
     const cubeReadout = $("#cubeReadout");
     const axisPointLayer = $("#axisPointLayer");
+    const axisModeBtn = $("#axisModeBtn");
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -4581,7 +4610,13 @@
       `;
     }
 
-    let cubeRotation = { x: -22, y: 38 };
+    let cubeRotation = { x: -18, y: 32 };
+    let axisMode = "core";
+    const coreAxisPointIds = new Set([
+      "hg-1911", "nb3ge-1973", "ybco", "bisrcacuo", "hgbacacuo-30gpa",
+      "mgb2-2001", "cecoin5", "laofep", "srfefas", "feas-2008",
+      "h2s-2015", "lah10-2019", "csh"
+    ]);
 
     function applyCubeTransform() {
       if (!historyCube) return;
@@ -4624,15 +4659,35 @@
         "铁基": "#e99a31",
         "高压氢化物": "#76a96a"
       };
-      axisPointLayer.innerHTML = historyChartPoints.map(point => {
+      const familyLane = family => {
+        const lanes = {
+          "常规低温超导": 0,
+          "A15 常规超导": 5,
+          "氮化物": 10,
+          "重费米子": 15,
+          "铜氧化物": 20,
+          "富勒烯": 25,
+          "硼化物": 30,
+          "碳材料": 35,
+          "铁基": 40
+        };
+        return lanes[family] ?? 8;
+      };
+      const sourcePoints = axisMode === "core"
+        ? historyChartPoints.filter(point => coreAxisPointIds.has(point.id))
+        : historyChartPoints;
+      axisPointLayer.innerHTML = sourcePoints.map((point, index) => {
         const year = Number(point.year);
         const tc = parseFloat(point.tc) || 0;
         const pressure = estimatePressureGPa(point);
-        const px = Math.max(0, Math.min(190, ((year - yearMin) / (yearMax - yearMin)) * 190));
-        const py = Math.max(0, Math.min(190, (pressure / pressureMax) * 190));
-        const pz = Math.max(0, Math.min(190, (tc / tcMax) * 190));
+        const jitter = axisMode === "core" ? 0 : ((index % 5) - 2) * 2.8;
+        const pressureLane = pressure ? pressure : familyLane(point.family || "");
+        const px = Math.max(0, Math.min(190, ((year - yearMin) / (yearMax - yearMin)) * 190 + jitter));
+        const py = Math.max(0, Math.min(190, (pressureLane / pressureMax) * 190));
+        const pz = Math.max(0, Math.min(190, (tc / tcMax) * 190 + (axisMode === "core" ? 0 : ((index % 3) - 1) * 2)));
         const color = colors[point.family] || "#14b8a6";
-        return `<button class="axis-point" type="button" data-history-point="${esc(point.id)}"
+        const coreClass = coreAxisPointIds.has(point.id) ? " is-core" : "";
+        return `<button class="axis-point${coreClass}" type="button" data-history-point="${esc(point.id)}"
           style="--px:${px.toFixed(1)}px;--py:${py.toFixed(1)}px;--pz:${pz.toFixed(1)}px;--point-color:${esc(color)}"
           aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
           title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa"></button>`;
@@ -4658,6 +4713,7 @@
         const pointEl = event.target.closest?.(".axis-point");
         if (pointEl) activatePoint(pointEl);
       });
+      if (axisModeBtn) axisModeBtn.textContent = axisMode === "core" ? t("axisModeShowAll") : t("axisModeShowCore");
     }
 
     function renderCubeReadout(point) {
@@ -4681,8 +4737,13 @@
       applyCubeTransform();
       renderAxisPoints();
       cubeZoom?.addEventListener("input", applyCubeTransform);
+      axisModeBtn?.addEventListener("click", () => {
+        axisMode = axisMode === "core" ? "all" : "core";
+        renderAxisPoints();
+        renderCubeReadout();
+      });
       cubeResetBtn?.addEventListener("click", () => {
-        cubeRotation = { x: -22, y: 38 };
+        cubeRotation = { x: -18, y: 32 };
         if (cubeZoom) cubeZoom.value = "100";
         applyCubeTransform();
       });
