@@ -141,7 +141,7 @@
     }
 
     .login-card {
-      width: min(520px, 100%);
+      width: min(920px, 100%);
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 24px;
@@ -149,6 +149,56 @@
       box-shadow: 0 24px 80px rgba(0,0,0,0.55);
       display: grid;
       gap: 14px;
+    }
+
+    .login-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .login-column {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .login-feature {
+      border: 1px solid rgba(20,184,166,0.32);
+      border-radius: 12px;
+      padding: 16px;
+      background:
+        linear-gradient(180deg, rgba(20,184,166,0.1), rgba(96,208,255,0.035)),
+        #0e1721;
+      display: grid;
+      gap: 12px;
+      min-height: 100%;
+    }
+
+    .login-feature .super-button {
+      width: 100%;
+    }
+
+    .login-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .login-feature-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: rgba(255,255,255,0.025);
+      display: grid;
+      gap: 4px;
+      min-height: 74px;
+    }
+
+    .login-feature-item strong {
+      color: var(--accent-glow);
+      font-size: 13px;
     }
 
     .login-card h2 {
@@ -675,73 +725,6 @@
       gap: 12px;
     }
 
-    .history-line {
-      position: relative;
-      min-height: 230px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      align-items: center;
-      gap: 10px;
-    }
-    .history-line::before {
-      content: "";
-      position: absolute;
-      left: 4%;
-      right: 4%;
-      top: 50%;
-      height: 3px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #34515b, var(--accent-glow), #60d0ff, #d7a86b, #d87979);
-      box-shadow: 0 0 22px rgba(20,184,166,0.28);
-    }
-
-    .history-node {
-      position: relative;
-      z-index: 1;
-      min-height: 230px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .history-dot {
-      position: absolute;
-      left: 50%;
-      top: calc(50% - 28px);
-      transform: translateX(-50%);
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      border: 2px solid #ffffff;
-      background: linear-gradient(135deg, #0f766e, #14b8a6 52%, #60d0ff);
-      color: #ffffff;
-      display: grid;
-      place-items: center;
-      font-weight: 760;
-      font-size: 11px;
-      box-shadow: 0 8px 18px rgba(15, 118, 110, 0.35);
-      transition: transform 0.3s;
-    }
-    .history-dot:hover {
-      transform: translateX(-50%) scale(1.2);
-    }
-
-    .history-copy {
-      position: absolute;
-      left: 0;
-      right: 0;
-      display: grid;
-      gap: 5px;
-      padding: 0 4px;
-    }
-
-    .history-node.is-top .history-copy {
-      bottom: calc(50% + 38px);
-    }
-
-    .history-node.is-bottom .history-copy {
-      top: calc(50% + 38px);
-    }
-
     .history-figure {
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -803,6 +786,35 @@
       pointer-events: none;
     }
 
+    .history-milestone-line {
+      stroke: #0f766e;
+      stroke-width: 1.2;
+      stroke-dasharray: 4 4;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .history-milestone-node {
+      cursor: pointer;
+    }
+
+    .history-milestone-node rect {
+      fill: #0f766e;
+      stroke: #ffffff;
+      stroke-width: 1.5;
+      filter: drop-shadow(0 3px 5px rgba(15,118,110,0.32));
+    }
+
+    .history-milestone-node text {
+      font-size: 10px;
+      font-weight: 760;
+      fill: #243142;
+      paint-order: stroke;
+      stroke: #ffffff;
+      stroke-width: 2.5px;
+      stroke-linejoin: round;
+    }
+
     .history-svg-item:hover circle,
     .history-svg-item.active circle {
       r: 8;
@@ -861,25 +873,103 @@
       gap: 8px;
     }
 
-    /* === Tc 柱状图 === */
-    .tc-chart-wrap {
+    .history-side-panel {
       display: grid;
-      gap: 8px;
-      padding: 4px 0;
+      gap: 12px;
     }
-    .tc-bar-row {
+
+    .history-cube-panel {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at 50% 34%, rgba(20,184,166,0.18), transparent 34%),
+        linear-gradient(135deg, #101923, #0b1119);
+      padding: 14px;
       display: grid;
-      grid-template-columns: 80px 1fr 40px;
-      gap: 8px;
-      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .cube-viewport {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      perspective: 900px;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .history-cube {
+      width: 154px;
+      height: 154px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(var(--cube-x, -22deg)) rotateY(var(--cube-y, 38deg)) scale(var(--cube-scale, 1));
+      transition: transform 0.25s ease;
+    }
+
+    .cube-face {
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 10px;
+      background:
+        linear-gradient(135deg, rgba(20,184,166,0.22), rgba(96,208,255,0.12)),
+        rgba(13,21,32,0.92);
+      box-shadow: inset 0 0 28px rgba(20,184,166,0.12), 0 10px 28px rgba(0,0,0,0.3);
+      display: grid;
+      align-content: center;
+      gap: 6px;
+      padding: 12px;
+      text-align: center;
+      backface-visibility: hidden;
+      cursor: pointer;
+    }
+
+    .cube-face strong {
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .cube-face span {
+      color: var(--muted);
       font-size: 11px;
+      line-height: 1.3;
     }
-    .tc-bar-fill {
-      height: 18px;
-      border-radius: 4px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-glow));
-      min-width: 2px;
-      transition: width 0.6s ease;
+
+    .cube-face.front { transform: translateZ(77px); }
+    .cube-face.back { transform: rotateY(180deg) translateZ(77px); }
+    .cube-face.right { transform: rotateY(90deg) translateZ(77px); }
+    .cube-face.left { transform: rotateY(-90deg) translateZ(77px); }
+    .cube-face.top { transform: rotateX(90deg) translateZ(77px); }
+    .cube-face.bottom { transform: rotateX(-90deg) translateZ(77px); }
+
+    .cube-controls,
+    .model-control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .cube-controls label,
+    .model-control-grid label {
+      min-width: 0;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-glow);
+    }
+
+    .cube-readout,
+    .model-output {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: rgba(255,255,255,0.026);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .figure-strip {
@@ -1450,6 +1540,8 @@
         font-size: 20px;
       }
 
+      .login-layout,
+      .login-feature-grid,
       .auth-tabs,
       .login-card .form-grid {
         grid-template-columns: 1fr;
@@ -1481,9 +1573,27 @@
       .import-metrics,
       .compare-grid,
       .figure-compare-grid,
-      .data-library-grid {
+      .data-library-grid,
+      .cube-controls,
+      .model-control-grid {
         grid-template-columns: 1fr;
       }
+
+      .cube-viewport {
+        min-height: 220px;
+      }
+
+      .history-cube {
+        width: 132px;
+        height: 132px;
+      }
+
+      .cube-face.front { transform: translateZ(66px); }
+      .cube-face.back { transform: rotateY(180deg) translateZ(66px); }
+      .cube-face.right { transform: rotateY(90deg) translateZ(66px); }
+      .cube-face.left { transform: rotateY(-90deg) translateZ(66px); }
+      .cube-face.top { transform: rotateX(90deg) translateZ(66px); }
+      .cube-face.bottom { transform: rotateX(-90deg) translateZ(66px); }
 
       .milestone-stage,
       .layout-two,
@@ -1496,52 +1606,6 @@
       .history-image {
         min-height: 0;
         padding: 12px;
-      }
-
-      .history-line {
-        min-height: 420px;
-        grid-template-columns: 1fr;
-        gap: 0;
-        align-items: stretch;
-      }
-
-      .history-line::before {
-        left: 28px;
-        right: auto;
-        top: 18px;
-        bottom: 18px;
-        width: 3px;
-        height: auto;
-        background: linear-gradient(180deg, #34515b, var(--accent-glow), #60d0ff, #d7a86b, #d87979);
-      }
-
-      .history-node {
-        min-height: 78px;
-        text-align: left;
-      }
-
-      .history-dot {
-        left: 28px;
-        top: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 10px;
-        transform: translate(-50%, -50%);
-      }
-
-      .history-dot:hover {
-        transform: translate(-50%, -50%) scale(1.08);
-      }
-
-      .history-copy,
-      .history-node.is-top .history-copy,
-      .history-node.is-bottom .history-copy {
-        left: 68px;
-        right: 0;
-        top: 50%;
-        bottom: auto;
-        transform: translateY(-50%);
-        padding: 0;
       }
 
       .history-chart-wrap {
@@ -1670,35 +1734,64 @@
 <body class="locked">
   <div class="login-screen" id="loginScreen">
     <div class="login-card">
-      <div>
-        <h2 data-i18n="loginTitle">登录 ARPES 工作台</h2>
-        <p class="muted" data-i18n="loginHint">进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。</p>
+      <div class="login-layout">
+        <div class="login-column">
+          <div>
+            <h2 data-i18n="loginTitle">登录 ARPES 工作台</h2>
+            <p class="muted" data-i18n="loginHint">进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。</p>
+          </div>
+          <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+            <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab">登录</button>
+            <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab">创建账号</button>
+          </div>
+          <div class="form-grid">
+            <label data-label-i18n="loginEmailLabel">Email
+              <input id="loginEmail" type="email" autocomplete="email" placeholder="name@lab.edu">
+            </label>
+            <label data-label-i18n="loginPasswordLabel">密码
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
+            </label>
+            <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" style="display:none;">确认密码
+              <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="••••••••">
+            </label>
+            <label data-label-i18n="loginNameLabel">姓名 / 用户
+              <input id="loginName" autocomplete="name" placeholder="ARPES user">
+            </label>
+            <label data-label-i18n="loginGroupLabel">课题组 / 光源站
+              <input id="loginGroup" placeholder="SSRF BL07U">
+            </label>
+          </div>
+          <span class="status" id="loginStatus"></span>
+          <button class="primary" id="loginBtn" data-i18n="loginBtn">进入工作台</button>
+          <button id="guestLoginBtn" type="button" data-i18n="guestLoginBtn">以访客身份进入</button>
+          <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
+        </div>
+        <div class="login-feature">
+          <div>
+            <h2 data-i18n="loginSuperTitle">Superconductor</h2>
+            <p class="muted" data-i18n="loginSuperHint">从超导主题进入：历史、周期表、ARPES 图表、个人数据和模型接口会作为一个工作台加载。</p>
+          </div>
+          <button class="super-button" id="loginSuperBtn" type="button">⚡ SUPERCONDUCTOR ⚡</button>
+          <div class="login-feature-grid">
+            <div class="login-feature-item">
+              <strong data-i18n="loginFeatureHistory">历史图</strong>
+              <span class="muted" data-i18n="loginFeatureHistoryHint">大事件已合并到 Tc 历史图。</span>
+            </div>
+            <div class="login-feature-item">
+              <strong data-i18n="loginFeatureCube">3D 魔方</strong>
+              <span class="muted" data-i18n="loginFeatureCubeHint">旋转、缩放查看超导家族。</span>
+            </div>
+            <div class="login-feature-item">
+              <strong data-i18n="loginFeatureData">个人数据</strong>
+              <span class="muted" data-i18n="loginFeatureDataHint">保存本机浏览器数据。</span>
+            </div>
+            <div class="login-feature-item">
+              <strong data-i18n="loginFeatureModel">模型接口</strong>
+              <span class="muted" data-i18n="loginFeatureModelHint">预留计算模型输入输出。</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
-        <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab">登录</button>
-        <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab">创建账号</button>
-      </div>
-      <div class="form-grid">
-        <label data-label-i18n="loginEmailLabel">Email
-          <input id="loginEmail" type="email" autocomplete="email" placeholder="name@lab.edu">
-        </label>
-        <label data-label-i18n="loginPasswordLabel">密码
-          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
-        </label>
-        <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" style="display:none;">确认密码
-          <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="••••••••">
-        </label>
-        <label data-label-i18n="loginNameLabel">姓名 / 用户
-          <input id="loginName" autocomplete="name" placeholder="ARPES user">
-        </label>
-        <label data-label-i18n="loginGroupLabel">课题组 / 光源站
-          <input id="loginGroup" placeholder="SSRF BL07U">
-        </label>
-      </div>
-      <span class="status" id="loginStatus"></span>
-      <button class="primary" id="loginBtn" data-i18n="loginBtn">进入工作台</button>
-      <button id="guestLoginBtn" type="button" data-i18n="guestLoginBtn">以访客身份进入</button>
-      <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
     </div>
   </div>
   <!-- 粒子背景 -->
@@ -1748,7 +1841,6 @@
               <h3 data-i18n="milestonesTitle">📜 超导历史里程碑</h3>
               <p class="muted" data-i18n="milestonesHint">从1911年至今的重大发现</p>
             </div>
-            <div class="history-line" id="historyLine"></div>
             <figure class="history-figure">
               <div class="history-chart-wrap" id="historyInteractiveChart"></div>
               <div class="history-point-card" id="historyPointCard">
@@ -1758,13 +1850,56 @@
               <figcaption data-i18n="historyFigureCaption">历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。</figcaption>
             </figure>
           </div>
-          <div class="history-image">
-            <h3 style="margin-bottom:8px;" data-i18n="tcChartTitle">📊 Tc 对比 (K)</h3>
-            <div class="tc-chart-wrap" id="tcChart"></div>
+          <div class="history-side-panel">
+            <div class="history-cube-panel">
+              <div>
+                <h3 data-i18n="historyCubeTitle">🧊 3D 超导历史魔方</h3>
+                <p class="muted" data-i18n="historyCubeHint">拖动旋转，缩放查看不同超导家族和数据面。</p>
+              </div>
+              <div class="cube-viewport" id="cubeViewport">
+                <div class="history-cube" id="historyCube" aria-label="3D superconductivity cube">
+                  <button class="cube-face front" type="button" data-cube-face="cuprate"><strong>Cuprate</strong><span>1986 · high Tc</span></button>
+                  <button class="cube-face back" type="button" data-cube-face="hydride"><strong>Hydride</strong><span>2015+ · pressure</span></button>
+                  <button class="cube-face right" type="button" data-cube-face="iron"><strong>Fe-based</strong><span>2008 · multiband</span></button>
+                  <button class="cube-face left" type="button" data-cube-face="conventional"><strong>Classic</strong><span>1911 · BCS roots</span></button>
+                  <button class="cube-face top" type="button" data-cube-face="arpes"><strong>ARPES</strong><span>bands · gaps</span></button>
+                  <button class="cube-face bottom" type="button" data-cube-face="personal"><strong>Our Data</strong><span>local records</span></button>
+                </div>
+              </div>
+              <div class="cube-controls">
+                <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
+                <label data-label-i18n="cubeZoomLabel">缩放
+                  <input id="cubeZoom" type="range" min="70" max="140" value="100">
+                </label>
+              </div>
+              <div class="cube-readout" id="cubeReadout" data-i18n="cubeReadoutDefault">点击魔方的一个面查看对应材料家族。</div>
+            </div>
             <div class="model-interface">
               <strong data-i18n="modelInterfaceTitle">计算模型接口</strong>
               <span class="muted" data-i18n="modelInterfaceHint">预留 API：window.ARPESModelHub.registerModel(name, predictFn)</span>
-              <button id="modelProbeBtn" data-i18n="modelProbeBtn">检查接口</button>
+              <div class="model-control-grid">
+                <label data-label-i18n="modelMaterialLabel">材料 / 元素
+                  <input id="modelMaterialInput" placeholder="FeSe, Cu, Ni, hydride">
+                </label>
+                <label data-label-i18n="modelTaskLabel">任务
+                  <select id="modelTaskSelect">
+                    <option value="identify">Identify material</option>
+                    <option value="tc">Estimate Tc trend</option>
+                    <option value="arpes">ARPES features</option>
+                  </select>
+                </label>
+                <label data-label-i18n="modelTemperatureLabel">温度 (K)
+                  <input id="modelTemperatureInput" type="number" step="0.1" placeholder="20">
+                </label>
+                <label data-label-i18n="modelFeatureLabel">特征关键词
+                  <input id="modelFeatureInput" placeholder="gap, Fermi surface, q-dependent">
+                </label>
+              </div>
+              <div class="toolbar">
+                <button class="primary" id="modelRunBtn" type="button" data-i18n="modelRunBtn">运行模型</button>
+                <button id="modelProbeBtn" type="button" data-i18n="modelProbeBtn">检查接口</button>
+              </div>
+              <div class="model-output" id="modelOutput" data-i18n="modelOutputDefault">等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。</div>
             </div>
           </div>
         </div>
@@ -2151,6 +2286,16 @@
         createAccountBtn: "创建账号并进入",
         guestLoginBtn: "以访客身份进入",
         loginPrivacy: "本登录只保存在当前浏览器，用于个性化目录和报告署名。",
+        loginSuperTitle: "Superconductor",
+        loginSuperHint: "从超导主题进入：历史、周期表、ARPES 图表、个人数据和模型接口会作为一个工作台加载。",
+        loginFeatureHistory: "历史图",
+        loginFeatureHistoryHint: "大事件已合并到 Tc 历史图。",
+        loginFeatureCube: "3D 魔方",
+        loginFeatureCubeHint: "旋转、缩放查看超导家族。",
+        loginFeatureData: "个人数据",
+        loginFeatureDataHint: "保存本机浏览器数据。",
+        loginFeatureModel: "模型接口",
+        loginFeatureModelHint: "预留计算模型输入输出。",
         loginEmailRequired: "请输入有效 Email",
         loginPasswordRequired: "请输入密码",
         loginPasswordMismatch: "两次输入的密码不一致",
@@ -2161,6 +2306,12 @@
         modelInterfaceTitle: "计算模型接口",
         modelInterfaceHint: "预留 API：window.ARPESModelHub.registerModel(name, predictFn)",
         modelProbeBtn: "检查接口",
+        modelMaterialLabel: "材料 / 元素",
+        modelTaskLabel: "任务",
+        modelTemperatureLabel: "温度 (K)",
+        modelFeatureLabel: "特征关键词",
+        modelRunBtn: "运行模型",
+        modelOutputDefault: "等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。",
         modelReadyToast: "计算模型接口已就绪",
         reportToast: "调研报告已生成",
         tocSearch: "检索与主题",
@@ -2219,6 +2370,11 @@
         historyPointTitle: "点击图上的点",
         historyPointHint: "选择一个材料点，查看它在超导历史中的简单介绍。",
         historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
+        historyCubeTitle: "🧊 3D 超导历史魔方",
+        historyCubeHint: "拖动旋转，缩放查看不同超导家族和数据面。",
+        cubeResetBtn: "重置视角",
+        cubeZoomLabel: "缩放",
+        cubeReadoutDefault: "点击魔方的一个面查看对应材料家族。",
         tcChartTitle: "📊 Tc 对比 (K)",
         noMaterials: "筛选后无材料数据",
         sourceTitle: "💡 光源 / 档案目录",
@@ -2386,6 +2542,16 @@
         createAccountBtn: "Create Account & Enter",
         guestLoginBtn: "Continue as Guest",
         loginPrivacy: "This login is stored only in this browser for personalized contents and report authorship.",
+        loginSuperTitle: "Superconductor",
+        loginSuperHint: "Enter through the superconductivity topic: history, periodic table, ARPES figures, personal data and model interface load as one workbench.",
+        loginFeatureHistory: "History Chart",
+        loginFeatureHistoryHint: "Milestones are merged into the Tc chart.",
+        loginFeatureCube: "3D Cube",
+        loginFeatureCubeHint: "Rotate and zoom superconducting families.",
+        loginFeatureData: "Personal Data",
+        loginFeatureDataHint: "Stored in this browser.",
+        loginFeatureModel: "Model Interface",
+        loginFeatureModelHint: "Reserved inputs and outputs for computation models.",
         loginEmailRequired: "Enter a valid email",
         loginPasswordRequired: "Enter a password",
         loginPasswordMismatch: "Passwords do not match",
@@ -2396,6 +2562,12 @@
         modelInterfaceTitle: "Computation Model Interface",
         modelInterfaceHint: "Reserved API: window.ARPESModelHub.registerModel(name, predictFn)",
         modelProbeBtn: "Check Interface",
+        modelMaterialLabel: "Material / Element",
+        modelTaskLabel: "Task",
+        modelTemperatureLabel: "Temperature (K)",
+        modelFeatureLabel: "Feature Keywords",
+        modelRunBtn: "Run Model",
+        modelOutputDefault: "Waiting for model input. This preview is rule-based now and can connect to a real computation model later.",
         modelReadyToast: "Computation model interface is ready",
         reportToast: "Research report generated",
         tocSearch: "Search & Topic",
@@ -2454,6 +2626,11 @@
         historyPointTitle: "Click a point on the chart",
         historyPointHint: "Select a material point to see a short historical note.",
         historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
+        historyCubeTitle: "🧊 3D Superconductivity Cube",
+        historyCubeHint: "Drag to rotate and zoom across superconducting families and data faces.",
+        cubeResetBtn: "Reset View",
+        cubeZoomLabel: "Zoom",
+        cubeReadoutDefault: "Click a cube face to inspect a material family.",
         tcChartTitle: "📊 Tc Comparison (K)",
         noMaterials: "No materials match current filters",
         sourceTitle: "💡 Light Source & Archive Directory",
@@ -2651,6 +2828,11 @@
         const point = historyChartPoints.find(item => item.id === activeHistoryPoint);
         if (point) renderHistoryPointCard(point);
       }
+      if (historyInteractiveChart) {
+        historyInteractiveChart.dataset.rendered = "false";
+        renderHistoryChartPoints();
+      }
+      renderCubeReadout("cuprate");
       renderToc();
       if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
       // Update section headings, buttons, etc.
@@ -2721,11 +2903,23 @@
     const loginGroup = $("#loginGroup");
     const loginBtn = $("#loginBtn");
     const guestLoginBtn = $("#guestLoginBtn");
+    const loginSuperBtn = $("#loginSuperBtn");
     const loginStatus = $("#loginStatus");
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
     const generateReportBtn = $("#generateReportBtn");
     const modelProbeBtn = $("#modelProbeBtn");
+    const modelRunBtn = $("#modelRunBtn");
+    const modelMaterialInput = $("#modelMaterialInput");
+    const modelTaskSelect = $("#modelTaskSelect");
+    const modelTemperatureInput = $("#modelTemperatureInput");
+    const modelFeatureInput = $("#modelFeatureInput");
+    const modelOutput = $("#modelOutput");
+    const historyCube = $("#historyCube");
+    const cubeViewport = $("#cubeViewport");
+    const cubeZoom = $("#cubeZoom");
+    const cubeResetBtn = $("#cubeResetBtn");
+    const cubeReadout = $("#cubeReadout");
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -2738,7 +2932,6 @@
     const materialsBody = $("#materialsBody");
     const detailPanel = $("#detailPanel");
     const sourceStatus = $("#sourceStatus");
-    const historyLine = $("#historyLine");
     const historyInteractiveChart = $("#historyInteractiveChart");
     const historyPointCard = $("#historyPointCard");
     const figureStrip = $("#figureStrip");
@@ -2749,7 +2942,6 @@
     let figFilterType = "all";
     let figShowLimit = 12;
     const sourceBody = $("#sourceBody");
-    const tcChart = $("#tcChart");
     const articleStatus = $("#articleStatus");
     const articleGrid = $("#articleGrid");
     const importWosBtn = $("#importWosBtn");
@@ -3132,16 +3324,28 @@
       }
     ];
 
-    // ===== 初始化 =====
-    init();
-
     // ===== 事件绑定 =====
     generateReportBtn?.addEventListener("click", generateResearchReport);
     modelProbeBtn?.addEventListener("click", () => {
       const hub = window.ARPESModelHub || window.ARPES_ML;
       showToast(`${t("modelReadyToast")} · v${hub?.version || "0.1.0"}`);
     });
-
+    modelRunBtn?.addEventListener("click", runModelPreview);
+    loginSuperBtn?.addEventListener("click", () => {
+      const user = loadUser();
+      if (!user.name && !user.email) {
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify({
+          email: "",
+          password_set: false,
+          name: "Superconductor user",
+          group: "",
+          account_mode: "superconductor_guest",
+          login_at: new Date().toISOString()
+        }));
+      }
+      unlockWorkbench(loadUser());
+      setTopic("sc", { dance: true, preserveScroll: true });
+    });
     // ===== 主题切换 =====
     document.querySelectorAll(".topic-tab").forEach(tab => {
       tab.addEventListener("mousedown", event => event.preventDefault());
@@ -3691,6 +3895,11 @@
       if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.name) loginName.value = user.name;
       if (loginGroup && user.group) loginGroup.value = user.group;
+      renderOverview();
+      renderCubeReadout("cuprate");
+      applyFilters();
+      renderOurData();
+      renderArticles();
       renderToc();
     }
 
@@ -3717,9 +3926,39 @@
         ["section-notes", t("tocNotes")]
       ];
       tocList.innerHTML = items.map(([id, label], index) =>
-        `<a class="toc-link ${index === 0 ? "active" : ""}" href="#${id}">${esc(label)}</a>`
+        `<a class="toc-link ${index === 0 ? "active" : ""}" data-section-id="${id}" href="#${id}">${esc(label)}</a>`
       ).join("");
       if (tocNote) tocNote.textContent = `${t("tocNote")} ${currentLang === "zh" ? "当前" : "Current"}: ${topicLabel}${element}.`;
+      updateTocActiveSection();
+    }
+
+    function updateTocActiveSection() {
+      if (!tocList) return;
+      const sections = [...document.querySelectorAll("main > section")];
+      const current = sections
+        .map(section => ({ section, distance: Math.abs(section.getBoundingClientRect().top - 92) }))
+        .sort((a, b) => a.distance - b.distance)[0]?.section;
+      if (!current) return;
+      tocList.querySelectorAll(".toc-link").forEach(link => {
+        const isActive = link.dataset.sectionId === current.id;
+        link.classList.toggle("active", isActive);
+        if (isActive) link.scrollIntoView({ block: "nearest", inline: "nearest" });
+      });
+    }
+
+    function setupTocScrollSpy() {
+      let ticking = false;
+      const update = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          updateTocActiveSection();
+          ticking = false;
+        });
+      };
+      window.addEventListener("scroll", update, { passive: true });
+      window.addEventListener("resize", update);
+      updateTocActiveSection();
     }
 
     function generateResearchReport() {
@@ -3879,32 +4118,8 @@
 
     // ===== Overview 渲染（文章图表对比） =====
     function renderOverview() {
-      // 历史里程碑
-      historyLine.innerHTML = historyMilestones.map((item, index) => `
-        <div class="history-node ${index % 2 === 0 ? "is-top" : "is-bottom"}">
-          <div class="history-dot">${esc(item.year)}</div>
-          <div class="history-copy">
-            <strong>${esc(item.label)}</strong>
-            <span>${esc(item.family)}</span>
-          </div>
-        </div>
-      `).join("");
       renderHistoryChartPoints();
-
-      // Tc 柱状图
-      const topMaterials = [...state.filtered]
-        .sort((a, b) => (b.transition_temperature_K || 0) - (a.transition_temperature_K || 0))
-        .slice(0, 8);
-      const maxTcVal = topMaterials.length ? Math.max(...topMaterials.map(r => r.transition_temperature_K || 0)) : 100;
-      tcChart.innerHTML = topMaterials.map(r => {
-        const tc = r.transition_temperature_K || 0;
-        const pct = Math.max(2, (tc / maxTcVal) * 100);
-        return `<div class="tc-bar-row">
-          <span>${esc(r.display_name || r.material)}</span>
-          <div class="tc-bar-fill" style="width:${pct}%;"></div>
-          <span style="color:var(--accent-glow);font-weight:700;">${tc} K</span>
-        </div>`;
-      }).join("") || `<p class="muted">${t("noMaterials")}</p>`;
+      renderCubeReadout("cuprate");
 
       // 文章图表对比画廊
       renderFigureGallery();
@@ -3983,8 +4198,8 @@
         "SrFeAs": [16, -16],
         "FeAs": [10, -34],
         "H2S": [-48, -10],
-        "LaH10": [-60, -10],
-        "C-S-H": [-52, -10]
+        "LaH10": [-64, -42],
+        "C-S-H": [-58, -38]
       };
       const pointLabelOverrides = {
         "cnt": [-50, -18],
@@ -4005,6 +4220,19 @@
         ...yearTicks.map(tick => `<line class="history-grid" x1="${x(tick)}" y1="${margin.top}" x2="${x(tick)}" y2="${height - margin.bottom}"></line><text class="history-tick-label" x="${x(tick)}" y="${height - margin.bottom + 20}" text-anchor="middle">${tick}</text>`),
         ...tcTicks.map(tick => `<line class="history-grid" x1="${margin.left}" y1="${y(tick)}" x2="${width - margin.right}" y2="${y(tick)}"></line><text class="history-tick-label" x="${margin.left - 12}" y="${y(tick) + 4}" text-anchor="end">${tick}</text>`)
       ].join("");
+      const milestones = historyMilestones.map((item, index) => {
+        const mx = Math.min(width - margin.right - 18, Math.max(margin.left + 18, x(item.year)));
+        const my = margin.top + 24 + (index % 2) * 36;
+        const label = currentLang === "zh" ? item.label : item.en;
+        const family = currentLang === "zh" ? item.family : item.family;
+        return `<g class="history-milestone-node" data-milestone-year="${esc(item.year)}" tabindex="0" role="button" aria-label="${esc(label)} ${esc(item.year)}">
+          <line class="history-milestone-line" x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${height - margin.bottom}"></line>
+          <rect x="${(mx - 16).toFixed(1)}" y="${(my - 16).toFixed(1)}" width="32" height="32" rx="8" transform="rotate(45 ${mx.toFixed(1)} ${my.toFixed(1)})"></rect>
+          <text x="${mx.toFixed(1)}" y="${(my - 22).toFixed(1)}" text-anchor="middle">${esc(item.year)}</text>
+          <text x="${mx.toFixed(1)}" y="${(my + 34).toFixed(1)}" text-anchor="middle">${esc(label)}</text>
+          <title>${esc(item.year)} · ${esc(label)} · ${esc(family)}</title>
+        </g>`;
+      }).join("");
       const points = historyChartPoints.map(point => {
         const tcValue = parseFloat(point.tc) || 0;
         const cx = x(point.year);
@@ -4029,6 +4257,7 @@
           <line class="history-axis" x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}"></line>
           <text class="history-axis-label" x="${width / 2}" y="${height - 16}" text-anchor="middle">Year</text>
           <text class="history-axis-label" x="18" y="${height / 2}" text-anchor="middle" transform="rotate(-90 18 ${height / 2})">Critical temperature Tc (K)</text>
+          ${milestones}
           ${points}
         </svg>`;
       historyInteractiveChart.dataset.rendered = "true";
@@ -4058,6 +4287,112 @@
         <span>${esc(point.family || "")}</span>
         <span>${esc(note)}</span>
       `;
+    }
+
+    const cubeFaces = {
+      conventional: {
+        zh: ["常规超导", "Hg, Pb, Nb, Nb3Sn 等低温常规超导是历史基线。"],
+        en: ["Conventional", "Hg, Pb, Nb and Nb3Sn form the low-temperature historical baseline."]
+      },
+      cuprate: {
+        zh: ["铜氧化物", "1986 后的高温超导主线，ARPES 常看费米弧、赝能隙和 d-wave gap。"],
+        en: ["Cuprates", "The high-Tc line after 1986, with ARPES focus on Fermi arcs, pseudogap and d-wave gaps."]
+      },
+      iron: {
+        zh: ["铁基超导", "多轨道、多费米面和 q-dependent 磁/电荷涨落适合做对比分析。"],
+        en: ["Iron-based", "Multiorbital, multifermi-surface systems with q-dependent fluctuation signatures."]
+      },
+      hydride: {
+        zh: ["高压氢化物", "H3S、LaH10、C-S-H 等把 Tc 推向高温，但依赖高压和严格核验。"],
+        en: ["Hydrides", "H3S, LaH10 and C-S-H push Tc upward under high pressure and need careful verification."]
+      },
+      arpes: {
+        zh: ["ARPES 数据面", "把论文图、能带、费米面、能隙、温度依赖统一到可比较视图。"],
+        en: ["ARPES Data", "Unifies paper figures, bands, Fermi surfaces, gaps and temperature dependence for comparison."]
+      },
+      personal: {
+        zh: ["Our Data", "个人上传的 HDF5、文章和实验记录保存在浏览器本地，可继续接入模型。"],
+        en: ["Our Data", "Personal HDF5, article and experiment records stay in the browser and can feed future models."]
+      }
+    };
+
+    let cubeRotation = { x: -22, y: 38 };
+
+    function applyCubeTransform() {
+      if (!historyCube) return;
+      const scale = cubeZoom ? Number(cubeZoom.value) / 100 : 1;
+      historyCube.style.setProperty("--cube-x", `${cubeRotation.x}deg`);
+      historyCube.style.setProperty("--cube-y", `${cubeRotation.y}deg`);
+      historyCube.style.setProperty("--cube-scale", String(scale));
+    }
+
+    function renderCubeReadout(faceKey) {
+      if (!cubeReadout) return;
+      const face = cubeFaces[faceKey] || cubeFaces.cuprate;
+      const [title, body] = face[currentLang] || face.zh;
+      cubeReadout.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}`;
+    }
+
+    function setupHistoryCube() {
+      if (!historyCube || !cubeViewport) return;
+      applyCubeTransform();
+      historyCube.querySelectorAll(".cube-face").forEach(face => {
+        face.addEventListener("click", () => renderCubeReadout(face.dataset.cubeFace));
+      });
+      cubeZoom?.addEventListener("input", applyCubeTransform);
+      cubeResetBtn?.addEventListener("click", () => {
+        cubeRotation = { x: -22, y: 38 };
+        if (cubeZoom) cubeZoom.value = "100";
+        applyCubeTransform();
+      });
+      let dragging = false;
+      let last = { x: 0, y: 0 };
+      cubeViewport.addEventListener("pointerdown", event => {
+        dragging = true;
+        last = { x: event.clientX, y: event.clientY };
+        cubeViewport.setPointerCapture?.(event.pointerId);
+      });
+      cubeViewport.addEventListener("pointermove", event => {
+        if (!dragging) return;
+        const dx = event.clientX - last.x;
+        const dy = event.clientY - last.y;
+        cubeRotation.y += dx * 0.45;
+        cubeRotation.x -= dy * 0.35;
+        last = { x: event.clientX, y: event.clientY };
+        applyCubeTransform();
+      });
+      const stopDrag = () => { dragging = false; };
+      cubeViewport.addEventListener("pointerup", stopDrag);
+      cubeViewport.addEventListener("pointercancel", stopDrag);
+    }
+
+    function runModelPreview() {
+      if (!modelOutput) return;
+      const material = (modelMaterialInput?.value || "").trim();
+      const task = modelTaskSelect?.value || "identify";
+      const temperature = (modelTemperatureInput?.value || "").trim();
+      const feature = (modelFeatureInput?.value || "").trim();
+      const knownRows = state.db?.materials || [];
+      const term = material.toLowerCase();
+      const matched = term ? knownRows.filter(row => {
+        const text = [row.material, row.display_name, row.family, ...(row.elements || [])].join(" ").toLowerCase();
+        return text.includes(term);
+      }).slice(0, 3) : [];
+      const hub = window.ARPESModelHub || window.ARPES_ML;
+      const zh = currentLang === "zh";
+      const lines = [
+        zh ? `任务: ${task}` : `Task: ${task}`,
+        zh ? `输入: ${material || "未填写"}${temperature ? ` · ${temperature} K` : ""}` : `Input: ${material || "empty"}${temperature ? ` · ${temperature} K` : ""}`,
+        zh ? `特征: ${feature || "未填写"}` : `Features: ${feature || "empty"}`,
+        zh ? `模型接口: ${hub?.version || "0.1.0"} 已就绪` : `Model hub: ${hub?.version || "0.1.0"} ready`
+      ];
+      if (matched.length) {
+        lines.push(zh ? "候选匹配:" : "Candidate matches:");
+        matched.forEach(row => lines.push(`- ${row.display_name || row.material} · ${familyName(row.family)} · Tc ${row.transition_temperature_K ?? "-"} K`));
+      } else {
+        lines.push(zh ? "候选匹配: 暂无，可作为新材料输入后续模型。" : "Candidate matches: none yet; treat as new input for future models.");
+      }
+      modelOutput.innerHTML = lines.map(line => esc(line)).join("<br>");
     }
 
     // ===== 图表类型筛选按钮 =====
@@ -5158,40 +5493,52 @@
     }
 
     // ===== 搜索库 =====
-    librarySearch.addEventListener("input", renderLibrary);
-    librarySearch.addEventListener("keydown", (e) => { if (e.key === "Enter") renderLibrary(); });
+    installModelHub();
+    librarySearch?.addEventListener("input", renderLibrary);
+    librarySearch?.addEventListener("keydown", (e) => { if (e.key === "Enter") renderLibrary(); });
 
     // 初始化 IndexedDB
-    openIDB().then(() => renderLibrary()).catch(() => {});
+    try {
+      openIDB().then(() => renderLibrary()).catch(() => {});
+    } catch {}
 
     // ===== ML 扩展接口 (预留) =====
-    // 外部模型可通过 window.ARPES_ML 接入
-    window.ARPES_ML = {
-      version: "0.1.0",
-      // 注册模型
-      registerModel(name, predictFn) {
-        if (!this._models) this._models = {};
-        this._models[name] = predictFn;
-        console.log(`ML model "${name}" registered`);
-      },
-      // 获取高对称方向数据
-      async getHighSymmetryData(datasetId) {
-        const db = await openIDB();
-        const tx = db.transaction("datasets", "readonly");
-        return new Promise((resolve) => {
-          tx.objectStore("datasets").get(datasetId).onsuccess = (e) => resolve(e.target.result);
-        });
-      },
-      // 运行预测
-      async predict(modelName, datasetId) {
-        const data = await this.getHighSymmetryData(datasetId);
-        if (!data) throw new Error("Dataset not found");
-        if (!this._models || !this._models[modelName]) throw new Error("Model not registered");
-        return this._models[modelName](data);
-      },
-      _models: {}
-    };
-    window.ARPESModelHub = window.ARPES_ML;
+    function installModelHub() {
+      if (window.ARPESModelHub) return;
+      // 外部模型可通过 window.ARPES_ML 接入
+      window.ARPES_ML = {
+        version: "0.1.0",
+        // 注册模型
+        registerModel(name, predictFn) {
+          if (!this._models) this._models = {};
+          this._models[name] = predictFn;
+          console.log(`ML model "${name}" registered`);
+        },
+        // 获取高对称方向数据
+        async getHighSymmetryData(datasetId) {
+          const db = await openIDB();
+          const tx = db.transaction("datasets", "readonly");
+          return new Promise((resolve) => {
+            tx.objectStore("datasets").get(datasetId).onsuccess = (e) => resolve(e.target.result);
+          });
+        },
+        // 运行预测
+        async predict(modelName, datasetId) {
+          const data = await this.getHighSymmetryData(datasetId);
+          if (!data) throw new Error("Dataset not found");
+          if (!this._models || !this._models[modelName]) throw new Error("Model not registered");
+          return this._models[modelName](data);
+        },
+        _models: {}
+      };
+      window.ARPESModelHub = window.ARPES_ML;
+    }
+
+    // ===== 启动页面 =====
+    installModelHub();
+    setupHistoryCube();
+    setupTocScrollSpy();
+    init();
   </script>
 </body>
 </html>
