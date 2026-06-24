@@ -3953,40 +3953,48 @@
         default: "#0f766e"
       };
       const labelOverrides = {
-        "Hg": [10, 18],
+        "Hg": [10, -8],
         "Pb": [-22, -10],
-        "Nb": [10, -12],
-        "NbN": [-34, -12],
+        "Nb": [18, -8],
+        "NbN": [-48, -24],
         "Nb3Sn": [-52, -18],
-        "Nb3Ge": [12, -18],
-        "CeCu2Si2": [-62, 14],
-        "UBe13": [-40, -16],
-        "UPt3": [10, 18],
-        "LaSrCuO": [-58, -12],
+        "Nb3Ge": [-16, -34],
+        "CeCu2Si2": [-58, -18],
+        "UBe13": [-28, -42],
+        "UPt3": [0, -48],
+        "LaSrCuO": [-92, -32],
         "YBCO": [-44, 0],
         "BiSrCaCuO": [-74, -2],
         "TlBaCaCuO": [-78, -18],
         "HgBaCaCuO": [12, 18],
         "HgCuO 30GPa": [12, -18],
-        "BKBO": [-42, 20],
-        "RbC60": [-44, -14],
-        "K3C60": [-42, 18],
+        "BKBO": [-74, -16],
+        "RbC60": [-10, -34],
+        "K3C60": [-48, 8],
         "Cs3C60": [10, -20],
-        "YPd2B2C": [12, 18],
-        "MgB2": [12, -8],
-        "CeCoIn5": [-58, -8],
-        "Li 33GPa": [-60, 18],
-        "CNT": [-38, 24],
-        "diamond": [10, 20],
-        "LaOFeP": [10, 20],
-        "LaOFeAs": [-74, 4],
-        "SrFeAs": [12, -12],
-        "FeAs": [10, -10],
+        "YPd2B2C": [16, -24],
+        "MgB2": [36, -36],
+        "CeCoIn5": [120, -112],
+        "Li 33GPa": [16, -38],
+        "CNT": [-22, -24],
+        "diamond": [-38, -28],
+        "LaOFeP": [22, -12],
+        "LaOFeAs": [-76, -18],
+        "SrFeAs": [16, -16],
+        "FeAs": [10, -34],
         "H2S": [-48, -10],
         "LaH10": [-60, -10],
         "C-S-H": [-52, -10]
       };
+      const pointLabelOverrides = {
+        "cnt": [-50, -18],
+        "cnt-2005": [20, -22],
+        "laofep": [28, -8],
+        "lic33gpa": [70, -60],
+        "ybpd2b2c": [18, -28]
+      };
       const labelOffset = point => {
+        if (pointLabelOverrides[point.id]) return pointLabelOverrides[point.id];
         if (labelOverrides[point.label]) return labelOverrides[point.label];
         if ((parseFloat(point.tc) || 0) < 8) return [8, -8];
         if (String(point.family).includes("铜氧化物")) return [8, -10];
@@ -4005,11 +4013,12 @@
         const color = colors[point.family] || colors.default;
         const tx = cx + dx;
         const ty = cy + dy;
+        const anchor = dx < 0 ? "end" : "start";
         return `<g class="history-svg-item" data-history-point="${esc(point.id)}" tabindex="0" role="button" aria-label="${esc(point.label)} ${esc(point.year)} Tc ${esc(point.tc)}">
           <title>${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)}</title>
           <line class="history-label-line" x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}"></line>
           <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5.8" fill="${color}"></circle>
-          <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${esc(point.label)}</text>
+          <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="${anchor}">${esc(point.label)}</text>
         </g>`;
       }).join("");
       historyInteractiveChart.innerHTML = `
