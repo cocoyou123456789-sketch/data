@@ -136,44 +136,138 @@
       place-items: center;
       padding: 20px;
       background:
-        linear-gradient(135deg, rgba(10,14,20,0.94), rgba(13,24,32,0.92)),
-        radial-gradient(circle at 20% 20%, rgba(20,184,166,0.18), transparent 32%);
+        radial-gradient(circle at 50% 20%, rgba(96,208,255,0.18), transparent 36%),
+        linear-gradient(135deg, rgba(4,9,16,0.96), rgba(13,24,32,0.94));
     }
 
     .login-card {
-      width: min(920px, 100%);
+      width: min(1120px, 100%);
       border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 24px;
-      background: #111922;
+      padding: 0;
+      background: #0b1119;
       box-shadow: 0 24px 80px rgba(0,0,0,0.55);
-      display: grid;
-      gap: 14px;
+      overflow: hidden;
     }
 
     .login-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
-      gap: 18px;
+      grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+      gap: 0;
       align-items: stretch;
+      min-height: 620px;
     }
 
     .login-column {
+      position: relative;
       display: grid;
       gap: 14px;
-      align-content: start;
+      align-content: end;
+      padding: 24px;
+      min-height: 620px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(5,10,17,0.2), rgba(5,10,17,0.78)),
+        url("assets/ustc-login-ring.png") center / cover no-repeat;
+    }
+
+    .login-column::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 52% 48%, rgba(96,208,255,0.18), transparent 24%),
+        linear-gradient(90deg, rgba(5,10,17,0.62), rgba(5,10,17,0.16) 45%, rgba(5,10,17,0.72));
+      pointer-events: none;
+    }
+
+    .login-column > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .login-badge {
+      width: fit-content;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(5,10,17,0.44);
+      color: #e6f7ff;
+      font-size: 12px;
+      font-weight: 720;
+      backdrop-filter: blur(12px);
+    }
+
+    .login-form-panel {
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 12px;
+      padding: 16px;
+      background: rgba(9,15,24,0.76);
+      backdrop-filter: blur(14px);
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.38);
     }
 
     .login-feature {
-      border: 1px solid rgba(20,184,166,0.32);
-      border-radius: 12px;
-      padding: 16px;
+      position: relative;
+      border-left: 1px solid var(--line);
+      padding: 24px;
       background:
-        linear-gradient(180deg, rgba(20,184,166,0.1), rgba(96,208,255,0.035)),
+        radial-gradient(circle at 50% 30%, rgba(20,184,166,0.16), transparent 36%),
+        linear-gradient(180deg, rgba(20,184,166,0.08), rgba(96,208,255,0.035)),
         #0e1721;
       display: grid;
-      gap: 12px;
-      min-height: 100%;
+      gap: 16px;
+      align-content: center;
+      overflow: hidden;
+    }
+
+    .virtual-eye {
+      width: min(260px, 78vw);
+      aspect-ratio: 1.85;
+      margin: 0 auto 4px;
+      border: 1px solid rgba(96,208,255,0.38);
+      border-radius: 999px 999px 60px 60px;
+      background:
+        radial-gradient(circle at 50% 50%, #0b1119 0 13%, #14b8a6 14% 22%, rgba(96,208,255,0.92) 23% 27%, transparent 28%),
+        radial-gradient(ellipse at 50% 50%, rgba(96,208,255,0.22), transparent 58%),
+        linear-gradient(135deg, rgba(20,184,166,0.18), rgba(96,208,255,0.08));
+      position: relative;
+      box-shadow: 0 0 30px rgba(20,184,166,0.22), inset 0 0 36px rgba(96,208,255,0.14);
+    }
+
+    .virtual-eye::before,
+    .virtual-eye::after {
+      content: "";
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(96,208,255,0.75), transparent);
+    }
+
+    .virtual-eye::before {
+      top: 34%;
+    }
+
+    .virtual-eye::after {
+      bottom: 30%;
+    }
+
+    .virtual-eye span {
+      position: absolute;
+      inset: 16% 30%;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      box-shadow: inset 0 0 18px rgba(96,208,255,0.18);
     }
 
     .login-feature .super-button {
@@ -1481,6 +1575,17 @@
       }
       .toc-list { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
       .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .login-card .form-grid { grid-template-columns: 1fr; }
+      .login-layout {
+        grid-template-columns: 1fr;
+        min-height: 0;
+      }
+      .login-column {
+        min-height: 520px;
+      }
+      .login-feature {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
       .span-2, .span-4 { grid-column: auto; }
       input[type="search"] { width: 100%; }
     }
@@ -1578,6 +1683,29 @@
       .auth-tabs,
       .login-card .form-grid {
         grid-template-columns: 1fr;
+      }
+
+      .login-screen {
+        align-items: start;
+        overflow-y: auto;
+      }
+
+      .login-card {
+        margin: 0;
+      }
+
+      .login-column,
+      .login-feature {
+        min-height: auto;
+        padding: 18px;
+      }
+
+      .login-column {
+        background-position: center top;
+      }
+
+      .virtual-eye {
+        width: min(240px, 72vw);
       }
 
       .topic-tabs,
@@ -1770,42 +1898,49 @@
     <div class="login-card">
       <div class="login-layout">
         <div class="login-column">
+          <div class="login-badge-row">
+            <span class="login-badge" data-i18n="loginUstcBadge">USTC · ARPES Lab Access</span>
+            <span class="login-badge" data-i18n="loginOfficialBadge">真实账户入口</span>
+          </div>
           <div>
             <h2 data-i18n="loginTitle">登录 ARPES 工作台</h2>
             <p class="muted" data-i18n="loginHint">进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。</p>
           </div>
-          <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
-            <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab">登录</button>
-            <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab">创建账号</button>
+          <div class="login-form-panel">
+            <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+              <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab">登录</button>
+              <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab">创建账号</button>
+            </div>
+            <div class="form-grid">
+              <label data-label-i18n="loginEmailLabel">Email
+                <input id="loginEmail" type="email" autocomplete="email" placeholder="name@ustc.edu.cn">
+              </label>
+              <label data-label-i18n="loginPasswordLabel">密码
+                <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
+              </label>
+              <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" style="display:none;">确认密码
+                <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="••••••••">
+              </label>
+              <label data-label-i18n="loginNameLabel">姓名 / 用户
+                <input id="loginName" autocomplete="name" placeholder="USTC ARPES user">
+              </label>
+              <label data-label-i18n="loginGroupLabel">课题组 / 光源站
+                <input id="loginGroup" placeholder="USTC / NSRL / ARPES">
+              </label>
+            </div>
+            <span class="status" id="loginStatus"></span>
+            <button class="primary" id="loginBtn" data-i18n="loginBtn">进入工作台</button>
+            <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
           </div>
-          <div class="form-grid">
-            <label data-label-i18n="loginEmailLabel">Email
-              <input id="loginEmail" type="email" autocomplete="email" placeholder="name@lab.edu">
-            </label>
-            <label data-label-i18n="loginPasswordLabel">密码
-              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
-            </label>
-            <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" style="display:none;">确认密码
-              <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="••••••••">
-            </label>
-            <label data-label-i18n="loginNameLabel">姓名 / 用户
-              <input id="loginName" autocomplete="name" placeholder="ARPES user">
-            </label>
-            <label data-label-i18n="loginGroupLabel">课题组 / 光源站
-              <input id="loginGroup" placeholder="SSRF BL07U">
-            </label>
-          </div>
-          <span class="status" id="loginStatus"></span>
-          <button class="primary" id="loginBtn" data-i18n="loginBtn">进入工作台</button>
-          <button id="guestLoginBtn" type="button" data-i18n="guestLoginBtn">以访客身份进入</button>
-          <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
         </div>
         <div class="login-feature">
+          <div class="virtual-eye" aria-hidden="true"><span></span></div>
           <div>
-            <h2 data-i18n="loginSuperTitle">Superconductor</h2>
-            <p class="muted" data-i18n="loginSuperHint">从超导主题进入：历史、周期表、ARPES 图表、个人数据和模型接口会作为一个工作台加载。</p>
+            <h2 data-i18n="loginGuestTitle">External Preview</h2>
+            <p class="muted" data-i18n="loginGuestHint">其他访问者进入虚拟眼睛入口，只打开演示工作台；正式实验室数据仍建议使用左侧 USTC 账户入口。</p>
           </div>
           <button class="super-button" id="loginSuperBtn" type="button">⚡ SUPERCONDUCTOR ⚡</button>
+          <button id="guestLoginBtn" type="button" data-i18n="guestLoginBtn">以访客身份进入</button>
           <div class="login-feature-grid">
             <div class="login-feature-item">
               <strong data-i18n="loginFeatureHistory">历史图</strong>
@@ -2322,8 +2457,8 @@
       zh: {
         title: "⚡ ARPES 超导材料探索器",
         subtitle: "超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析",
-        loginTitle: "登录 ARPES 工作台",
-        loginHint: "进入后可以检索材料、导入 WoS/Scholar 文献、保存个人数据并生成调研报告。",
+        loginTitle: "中科大 ARPES 工作台",
+        loginHint: "面向 USTC / NSRL / ARPES 站的正式入口，用于检索材料、导入文献、保存实验数据并生成调研报告。",
         signInTab: "登录",
         createAccountTab: "创建账号",
         loginEmailLabel: "Email",
@@ -2335,6 +2470,10 @@
         createAccountBtn: "创建账号并进入",
         guestLoginBtn: "以访客身份进入",
         loginPrivacy: "本登录只保存在当前浏览器，用于个性化目录和报告署名。",
+        loginUstcBadge: "USTC · ARPES Lab Access",
+        loginOfficialBadge: "真实账户入口",
+        loginGuestTitle: "External Preview",
+        loginGuestHint: "其他访问者进入虚拟眼睛入口，只打开演示工作台；正式实验室数据仍建议使用左侧 USTC 账户入口。",
         loginSuperTitle: "Superconductor",
         loginSuperHint: "从超导主题进入：历史、周期表、ARPES 图表、个人数据和模型接口会作为一个工作台加载。",
         loginFeatureHistory: "历史图",
@@ -2586,8 +2725,8 @@
       en: {
         title: "⚡ ARPES Superconductivity Explorer",
         subtitle: "Superconducting materials · Periodic Table · Light Sources · Article Data · Comparison",
-        loginTitle: "Login to ARPES Workbench",
-        loginHint: "Search materials, import WoS/Scholar literature, save personal data, and generate research reports.",
+        loginTitle: "USTC ARPES Workbench",
+        loginHint: "Official access for USTC / NSRL / ARPES users to search materials, import literature, save experiment data, and generate reports.",
         signInTab: "Sign In",
         createAccountTab: "Create Account",
         loginEmailLabel: "Email",
@@ -2599,6 +2738,10 @@
         createAccountBtn: "Create Account & Enter",
         guestLoginBtn: "Continue as Guest",
         loginPrivacy: "This login is stored only in this browser for personalized contents and report authorship.",
+        loginUstcBadge: "USTC · ARPES Lab Access",
+        loginOfficialBadge: "Official Account",
+        loginGuestTitle: "External Preview",
+        loginGuestHint: "External visitors enter through the virtual-eye preview. Formal lab data should use the USTC account panel on the left.",
         loginSuperTitle: "Superconductor",
         loginSuperHint: "Enter through the superconductivity topic: history, periodic table, ARPES figures, personal data and model interface load as one workbench.",
         loginFeatureHistory: "History Chart",
