@@ -897,7 +897,7 @@
       stroke: #ffffff;
       stroke-width: 1.5;
       filter: drop-shadow(0 3px 5px rgba(15,118,110,0.32));
-      pointer-events: all;
+      pointer-events: auto;
     }
 
     .history-milestone-node text {
@@ -1027,49 +1027,96 @@
     }
 
     .history-cube {
-      width: 154px;
-      height: 154px;
+      width: 260px;
+      height: 260px;
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(var(--cube-x, -22deg)) rotateY(var(--cube-y, 38deg)) scale(var(--cube-scale, 1));
       transition: transform 0.25s ease;
     }
 
-    .cube-face {
+    .axis-plane {
+      position: absolute;
+      left: 28px;
+      bottom: 28px;
+      width: 190px;
+      height: 190px;
+      border: 1px solid rgba(96,208,255,0.22);
+      background:
+        linear-gradient(rgba(96,208,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,208,255,0.08) 1px, transparent 1px);
+      background-size: 38px 38px;
+      opacity: 0.72;
+      transform-origin: left bottom;
+      pointer-events: none;
+    }
+
+    .axis-plane.xy { transform: rotateX(90deg); }
+    .axis-plane.xz { transform: translateZ(190px); }
+    .axis-plane.yz { transform: rotateY(-90deg); }
+
+    .axis-line {
+      position: absolute;
+      left: 28px;
+      bottom: 28px;
+      height: 2px;
+      width: 210px;
+      background: linear-gradient(90deg, var(--accent-glow), rgba(96,208,255,0.1));
+      transform-origin: left center;
+      box-shadow: 0 0 12px rgba(96,208,255,0.42);
+      pointer-events: none;
+    }
+
+    .axis-line.x { transform: translateZ(0); }
+    .axis-line.y { transform: rotateY(-90deg); }
+    .axis-line.z {
+      transform: rotateZ(-90deg);
+      background: linear-gradient(90deg, #d87979, rgba(216,121,121,0.1));
+    }
+
+    .axis-label {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      color: #dce8f3;
+      font-size: 11px;
+      font-weight: 760;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.75);
+      pointer-events: none;
+    }
+
+    .axis-label.x { transform: translate3d(220px, -18px, 0); }
+    .axis-label.y { transform: translate3d(22px, -22px, -214px); }
+    .axis-label.z { transform: translate3d(-14px, -232px, 0); color: #ffb4b4; }
+
+    .axis-point {
+      position: absolute;
+      left: 28px;
+      bottom: 28px;
+      width: 9px;
+      height: 9px;
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 50%;
+      background: var(--point-color, var(--accent-glow));
+      transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(-1 * var(--py)));
+      box-shadow: 0 0 12px var(--point-color, var(--accent-glow));
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .axis-point:hover,
+    .axis-point.active {
+      width: 13px;
+      height: 13px;
+      box-shadow: 0 0 18px var(--point-color, var(--accent-glow));
+    }
+
+    #axisPointLayer {
       position: absolute;
       inset: 0;
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 10px;
-      background:
-        linear-gradient(135deg, rgba(20,184,166,0.22), rgba(96,208,255,0.12)),
-        rgba(13,21,32,0.92);
-      box-shadow: inset 0 0 28px rgba(20,184,166,0.12), 0 10px 28px rgba(0,0,0,0.3);
-      display: grid;
-      align-content: center;
-      gap: 6px;
-      padding: 12px;
-      text-align: center;
-      backface-visibility: hidden;
-      cursor: pointer;
+      transform-style: preserve-3d;
+      pointer-events: auto;
     }
-
-    .cube-face strong {
-      color: #ffffff;
-      font-size: 14px;
-    }
-
-    .cube-face span {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.3;
-    }
-
-    .cube-face.front { transform: translateZ(77px); }
-    .cube-face.back { transform: rotateY(180deg) translateZ(77px); }
-    .cube-face.right { transform: rotateY(90deg) translateZ(77px); }
-    .cube-face.left { transform: rotateY(-90deg) translateZ(77px); }
-    .cube-face.top { transform: rotateX(90deg) translateZ(77px); }
-    .cube-face.bottom { transform: rotateX(-90deg) translateZ(77px); }
 
     .cube-controls,
     .model-control-grid {
@@ -1746,16 +1793,9 @@
       }
 
       .history-cube {
-        width: 132px;
-        height: 132px;
+        width: 238px;
+        height: 238px;
       }
-
-      .cube-face.front { transform: translateZ(66px); }
-      .cube-face.back { transform: rotateY(180deg) translateZ(66px); }
-      .cube-face.right { transform: rotateY(90deg) translateZ(66px); }
-      .cube-face.left { transform: rotateY(-90deg) translateZ(66px); }
-      .cube-face.top { transform: rotateX(90deg) translateZ(66px); }
-      .cube-face.bottom { transform: rotateX(-90deg) translateZ(66px); }
 
       .milestone-stage,
       .layout-two,
@@ -2026,13 +2066,17 @@
                 <p class="muted" data-i18n="historyCubeHint">拖动旋转，缩放查看不同超导家族和数据面。</p>
               </div>
               <div class="cube-viewport" id="cubeViewport">
-                <div class="history-cube" id="historyCube" aria-label="3D superconductivity cube">
-                  <button class="cube-face front" type="button" data-cube-face="cuprate"><strong>Cuprate</strong><span>1986 · high Tc</span></button>
-                  <button class="cube-face back" type="button" data-cube-face="hydride"><strong>Hydride</strong><span>2015+ · pressure</span></button>
-                  <button class="cube-face right" type="button" data-cube-face="iron"><strong>Fe-based</strong><span>2008 · multiband</span></button>
-                  <button class="cube-face left" type="button" data-cube-face="conventional"><strong>Classic</strong><span>1911 · BCS roots</span></button>
-                  <button class="cube-face top" type="button" data-cube-face="arpes"><strong>ARPES</strong><span>bands · gaps</span></button>
-                  <button class="cube-face bottom" type="button" data-cube-face="personal"><strong>Our Data</strong><span>local records</span></button>
+                <div class="history-cube" id="historyCube" aria-label="3D Tc year pressure chart">
+                  <div class="axis-plane xy"></div>
+                  <div class="axis-plane xz"></div>
+                  <div class="axis-plane yz"></div>
+                  <div class="axis-line x"></div>
+                  <div class="axis-line y"></div>
+                  <div class="axis-line z"></div>
+                  <span class="axis-label x">X · Year</span>
+                  <span class="axis-label y">Y · Pressure</span>
+                  <span class="axis-label z">Z · Tc</span>
+                  <div id="axisPointLayer"></div>
                 </div>
               </div>
               <div class="cube-controls">
@@ -2566,11 +2610,11 @@
         historyPointTitle: "点击图上的点",
         historyPointHint: "选择一个材料点，查看它在超导历史中的简单介绍。",
         historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
-        historyCubeTitle: "🧊 3D 超导历史魔方",
-        historyCubeHint: "拖动旋转，缩放查看不同超导家族和数据面。",
+        historyCubeTitle: "🧊 3D Tc-年份-压力坐标",
+        historyCubeHint: "透明三轴图：X 轴为年份，Y 轴为压力，Z 轴为 Tc 温度；拖动旋转，缩放查看材料点。",
         cubeResetBtn: "重置视角",
         cubeZoomLabel: "缩放",
-        cubeReadoutDefault: "点击魔方的一个面查看对应材料家族。",
+        cubeReadoutDefault: "点击一个材料点查看年份、压力和 Tc；压力值先按公开记录/材料家族估算，后续可替换为真实实验列。",
         tcChartTitle: "📊 Tc 对比 (K)",
         noMaterials: "筛选后无材料数据",
         sourceTitle: "💡 光源 / 档案目录",
@@ -2834,11 +2878,11 @@
         historyPointTitle: "Click a point on the chart",
         historyPointHint: "Select a material point to see a short historical note.",
         historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
-        historyCubeTitle: "🧊 3D Superconductivity Cube",
-        historyCubeHint: "Drag to rotate and zoom across superconducting families and data faces.",
+        historyCubeTitle: "🧊 3D Tc-Year-Pressure Axes",
+        historyCubeHint: "Transparent 3-axis view: X is year, Y is pressure, and Z is Tc; drag to rotate and zoom material points.",
         cubeResetBtn: "Reset View",
         cubeZoomLabel: "Zoom",
-        cubeReadoutDefault: "Click a cube face to inspect a material family.",
+        cubeReadoutDefault: "Click a material point to inspect year, pressure, and Tc. Pressure is estimated from records/families until a real experiment column is connected.",
         tcChartTitle: "📊 Tc Comparison (K)",
         noMaterials: "No materials match current filters",
         sourceTitle: "💡 Light Source & Archive Directory",
@@ -3132,6 +3176,7 @@
     const cubeZoom = $("#cubeZoom");
     const cubeResetBtn = $("#cubeResetBtn");
     const cubeReadout = $("#cubeReadout");
+    const axisPointLayer = $("#axisPointLayer");
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -4536,33 +4581,6 @@
       `;
     }
 
-    const cubeFaces = {
-      conventional: {
-        zh: ["常规超导", "Hg, Pb, Nb, Nb3Sn 等低温常规超导是历史基线。"],
-        en: ["Conventional", "Hg, Pb, Nb and Nb3Sn form the low-temperature historical baseline."]
-      },
-      cuprate: {
-        zh: ["铜氧化物", "1986 后的高温超导主线，ARPES 常看费米弧、赝能隙和 d-wave gap。"],
-        en: ["Cuprates", "The high-Tc line after 1986, with ARPES focus on Fermi arcs, pseudogap and d-wave gaps."]
-      },
-      iron: {
-        zh: ["铁基超导", "多轨道、多费米面和 q-dependent 磁/电荷涨落适合做对比分析。"],
-        en: ["Iron-based", "Multiorbital, multifermi-surface systems with q-dependent fluctuation signatures."]
-      },
-      hydride: {
-        zh: ["高压氢化物", "H3S、LaH10、C-S-H 等把 Tc 推向高温，但依赖高压和严格核验。"],
-        en: ["Hydrides", "H3S, LaH10 and C-S-H push Tc upward under high pressure and need careful verification."]
-      },
-      arpes: {
-        zh: ["ARPES 数据面", "把论文图、能带、费米面、能隙、温度依赖统一到可比较视图。"],
-        en: ["ARPES Data", "Unifies paper figures, bands, Fermi surfaces, gaps and temperature dependence for comparison."]
-      },
-      personal: {
-        zh: ["Our Data", "个人上传的 HDF5、文章和实验记录保存在浏览器本地，可继续接入模型。"],
-        en: ["Our Data", "Personal HDF5, article and experiment records stay in the browser and can feed future models."]
-      }
-    };
-
     let cubeRotation = { x: -22, y: 38 };
 
     function applyCubeTransform() {
@@ -4573,19 +4591,95 @@
       historyCube.style.setProperty("--cube-scale", String(scale));
     }
 
-    function renderCubeReadout(faceKey) {
+    function estimatePressureGPa(point) {
+      const label = `${point.label || ""} ${point.family || ""}`;
+      const explicit = label.match(/(\d+(?:\.\d+)?)\s*GPa/i);
+      if (explicit) return Number(explicit[1]);
+      if (point.id === "h2s-2015") return 155;
+      if (point.id === "lah10-2019") return 170;
+      if (point.id === "csh") return 267;
+      if (String(point.family || "").includes("高压氢化物")) return 180;
+      if (String(point.family || "").includes("高压")) return 30;
+      return 0;
+    }
+
+    function renderAxisPoints() {
+      if (!axisPointLayer) return;
+      const yearMin = 1900;
+      const yearMax = 2025;
+      const tcMax = 300;
+      const pressureMax = 300;
+      const colors = {
+        "常规低温超导": "#6aa36f",
+        "A15 常规超导": "#6aa36f",
+        "氮化物": "#6aa36f",
+        "重费米子": "#9fb94c",
+        "铜氧化物": "#4c9ab0",
+        "高压铜氧化物": "#4c9ab0",
+        "富勒烯": "#b067bd",
+        "硼碳化物": "#6aa36f",
+        "硼化物": "#6aa36f",
+        "高压元素": "#9fb94c",
+        "碳材料": "#d96a55",
+        "铁基": "#e99a31",
+        "高压氢化物": "#76a96a"
+      };
+      axisPointLayer.innerHTML = historyChartPoints.map(point => {
+        const year = Number(point.year);
+        const tc = parseFloat(point.tc) || 0;
+        const pressure = estimatePressureGPa(point);
+        const px = Math.max(0, Math.min(190, ((year - yearMin) / (yearMax - yearMin)) * 190));
+        const py = Math.max(0, Math.min(190, (pressure / pressureMax) * 190));
+        const pz = Math.max(0, Math.min(190, (tc / tcMax) * 190));
+        const color = colors[point.family] || "#14b8a6";
+        return `<button class="axis-point" type="button" data-history-point="${esc(point.id)}"
+          style="--px:${px.toFixed(1)}px;--py:${py.toFixed(1)}px;--pz:${pz.toFixed(1)}px;--point-color:${esc(color)}"
+          aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
+          title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa"></button>`;
+      }).join("");
+      const activatePoint = pointEl => {
+        const point = historyChartPoints.find(entry => entry.id === pointEl?.dataset.historyPoint);
+        if (!point) return;
+        axisPointLayer.querySelectorAll(".axis-point").forEach(node => node.classList.remove("active"));
+        pointEl.classList.add("active");
+        renderCubeReadout(point);
+      };
+      axisPointLayer.querySelectorAll(".axis-point").forEach(pointEl => {
+        pointEl.addEventListener("click", () => activatePoint(pointEl));
+        pointEl.addEventListener("pointerdown", () => activatePoint(pointEl));
+        pointEl.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            activatePoint(pointEl);
+          }
+        });
+      });
+      axisPointLayer.addEventListener("click", event => {
+        const pointEl = event.target.closest?.(".axis-point");
+        if (pointEl) activatePoint(pointEl);
+      });
+    }
+
+    function renderCubeReadout(point) {
       if (!cubeReadout) return;
-      const face = cubeFaces[faceKey] || cubeFaces.cuprate;
-      const [title, body] = face[currentLang] || face.zh;
-      cubeReadout.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}`;
+      if (!point || typeof point === "string") {
+        cubeReadout.textContent = t("cubeReadoutDefault");
+        return;
+      }
+      const pressure = estimatePressureGPa(point);
+      const note = currentLang === "zh" ? point.zh : point.en;
+      const pressureNote = pressure ? `${pressure} GPa` : (currentLang === "zh" ? "常压 / 未记录压力" : "ambient / pressure not recorded");
+      cubeReadout.innerHTML = `
+        <strong style="color:var(--accent-glow);">${esc(point.label)} · ${esc(point.year)}</strong><br>
+        X: ${esc(point.year)} · Y: ${esc(pressureNote)} · Z: Tc ${esc(point.tc)}<br>
+        ${esc(note)}
+      `;
     }
 
     function setupHistoryCube() {
       if (!historyCube || !cubeViewport) return;
       applyCubeTransform();
-      historyCube.querySelectorAll(".cube-face").forEach(face => {
-        face.addEventListener("click", () => renderCubeReadout(face.dataset.cubeFace));
-      });
+      renderAxisPoints();
       cubeZoom?.addEventListener("input", applyCubeTransform);
       cubeResetBtn?.addEventListener("click", () => {
         cubeRotation = { x: -22, y: 38 };
