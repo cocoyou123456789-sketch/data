@@ -1,0 +1,3923 @@
+[
+  {
+    "id": "doi:10.1103/revmodphys.75.473",
+    "title": "Angle-resolved photoemission studies of the cuprate superconductors",
+    "year": 2003,
+    "source": "OpenAlex",
+    "source_title": "Reviews of Modern Physics",
+    "authors": "A. Damascelli; Z. Hussain; Zhi‐Xun Shen",
+    "url": "https://doi.org/10.1103/revmodphys.75.473",
+    "doi": "10.1103/revmodphys.75.473",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap",
+      "Fermi surface",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The last decade witnessed significant progress in angle-resolved photoemission spectroscopy (ARPES) and its applications. Today, ARPES experiments with 2-meV energy resolution and $0.2\\ifmmode^\\circ\\else\\textdegree\\fi{}$ angular resolution are a reality even for photoemission on solids. These technological advances and the improved sample quality have enabled ARPES to emerge as a leading tool in the investigation of the high-${T}_{c}$ superconductors. This paper reviews the most recent ARPES results on the cuprate superconductors and their insulating parent and sister compounds, with the purpose of providing an updated summary of the extensive literature. The low-energy excitations are discussed with emphasis on some of the most relevant issues, such as the Fermi surface and remnant Fermi surface, the superconducting gap, the pseudogap and $d$-wave-like dispersion, evidence of electronic inhomogeneity and nanoscale phase separation, the emergence of coherent quasiparticles through the superconducting transition, and many-body effects in the one-particle spectral function due to the interaction of the charge with magnetic and/or lattice degrees of freedom. Given the dynamic nature of the field, we chose to focus mainly on reviewing the experimental data, as on the experimental side a general consensus has been reached, whereas interpretations and related theoretical models can vary significantly. The first part of the paper introduces photoemission spectroscopy in the context of strongly interacting systems, along with an update on the state-of-the-art instrumentation. The second part provides an overview of the scientific issues relevant to the investigation of the low-energy electronic structure by ARPES. The rest of the paper is devoted to the experimental results from the cuprates, and the discussion is organized along conceptual lines: normal-state electronic structure, interlayer interaction, superconducting gap, coherent superconducting peak, pseudogap, electron self-energy, and collective modes. Within each topic, ARPES data from the various copper oxides are presented.",
+    "citation_count": 3763,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0208504",
+    "properties": [
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Angle-resolved photoemission studies of the cuprate superconductors",
+      "https://doi.org/10.1103/revmodphys.75.473"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1038/nmat4153",
+    "title": "Superconductivity above 100 K in single-layer FeSe films on doped SrTiO3",
+    "year": 2014,
+    "source": "OpenAlex + arXiv",
+    "source_title": "Nature Materials",
+    "authors": "Jian-Feng Ge; Zhi Long Liu; Canhua Liu; Chun-Lei Gao; Dong Qian; Qi-Kun Xue; Ying Liu; Jin-Feng Jia",
+    "url": "https://doi.org/10.1038/nmat4153",
+    "doi": "10.1038/nmat4153",
+    "materials": [
+      "FeSe",
+      "SrTiO3"
+    ],
+    "elements": [
+      "Fe",
+      "Se",
+      "Sr",
+      "Ti",
+      "O",
+      "K",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "SrTiO3",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 1127,
+    "open_access_url": "https://arxiv.org/pdf/1406.3435",
+    "properties": [],
+    "evidence": [
+      "Superconductivity above 100 K in single-layer FeSe films on doped SrTiO3",
+      "https://doi.org/10.1038/nmat4153"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.48550/arxiv.1406.3435",
+    "title": "Superconductivity in single-layer films of FeSe with a transition temperature above 100 K",
+    "year": 2014,
+    "source": "OpenAlex",
+    "source_title": "arXiv (Cornell University)",
+    "authors": "Jian-Feng Ge; Zhi Long Liu; Canhua Liu; Chunlei Gao; Dong Qian; Qi‐Kun Xue; Ying Liu; Jinfeng Jia",
+    "url": "https://doi.org/10.48550/arxiv.1406.3435",
+    "doi": "10.48550/arxiv.1406.3435",
+    "materials": [
+      "FeSe",
+      "SrTiO3"
+    ],
+    "elements": [
+      "Fe",
+      "Se",
+      "Sr",
+      "Ti",
+      "O",
+      "K",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "SrTiO3",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Recently, interface has been employed to enhance superconductivity in the single-layer FeSe films grown on SrTiO3(001)(STO) with a possible Tc of ~ 80 K, which is nearly ten times of the Tc of bulk FeSe and is above the Tc record of 56 K for the bulk Fe-based superconductors. This work together with those on superconducting oxides interfaces revives the long-standing idea that electron pairing at a two-dimensional (2D) interface between two different materials is a potential path to high transition temperature (Tc) superconductivity. Subsequent angle-resolved photoemission spectroscopy (ARPES) measurements revealed different electronic structure from those of bulk FeSe with a superconducting-like energy gap closing at around 65K. However, previous ex situ electrical transport measurements could only detect the zero-resistance below ~30 K. Here we report the observation of high Tc superconductivity in the FeSe/STO system. By in situ 4-point probe (4PP) electrical transport measurement that can be conducted at an arbitrary position of the FeSe film on STO, we detected superconductivity above 100 K. Our finding makes FeSe/STO the exciting and ideal research platform for higher Tc superconductivity.",
+    "citation_count": 552,
+    "open_access_url": "http://arxiv.org/abs/1406.3435",
+    "properties": [],
+    "evidence": [
+      "Superconductivity in single-layer films of FeSe with a transition temperature above 100 K",
+      "https://doi.org/10.48550/arxiv.1406.3435"
+    ],
+    "free_sources": [
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": []
+  },
+  {
+    "id": "doi:10.1038/nmat2981",
+    "title": "Nodeless superconducting gap in AxFe2Se2 (A=K,Cs) revealed by angle-resolved photoemission spectroscopy",
+    "year": 2011,
+    "source": "OpenAlex",
+    "source_title": "Nature Materials",
+    "authors": "Yiting Zhang; Lexian Yang; Min Xu; Z. R. Ye; F. Chen; C. He; Haichao Xu; Juan Jiang; B. P. Xie; Jianjun Ying; Xiangfeng Wang; X. H. Chen; et al.",
+    "url": "https://doi.org/10.1038/nmat2981",
+    "doi": "10.1038/nmat2981",
+    "materials": [],
+    "elements": [
+      "K",
+      "Cs"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap",
+      "Fermi surface",
+      "iron-based"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 444,
+    "open_access_url": "https://arxiv.org/pdf/1012.5980",
+    "properties": [
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Nodeless superconducting gap in AxFe2Se2 (A=K,Cs) revealed by angle-resolved photoemission spectroscopy",
+      "https://doi.org/10.1038/nmat2981"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1073/pnas.1510435112",
+    "title": "Evidence for superconductivity in Li-decorated monolayer graphene",
+    "year": 2015,
+    "source": "OpenAlex",
+    "source_title": "Proceedings of the National Academy of Sciences",
+    "authors": "B. M. Ludbrook; G. Levy; Pascal Nigge; Marta Zonno; M. Schneider; David Dvořák; C. N. Veenstra; S. Zhdanovich; D. Wong; P. Dosanjh; Carola Straßer; Alexander Stöhr; et al.",
+    "url": "https://doi.org/10.1073/pnas.1510435112",
+    "doi": "10.1073/pnas.1510435112",
+    "materials": [],
+    "elements": [
+      "Li",
+      "F",
+      "Tc",
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "Fermi surface"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Monolayer graphene exhibits many spectacular electronic properties, with superconductivity being arguably the most notable exception. It was theoretically proposed that superconductivity might be induced by enhancing the electron-phonon coupling through the decoration of graphene with an alkali adatom superlattice [Profeta G, Calandra M, Mauri F (2012) Nat Phys 8(2):131-134]. Although experiments have shown an adatom-induced enhancement of the electron-phonon coupling, superconductivity has never been observed. Using angle-resolved photoemission spectroscopy (ARPES), we show that lithium deposited on graphene at low temperature strongly modifies the phonon density of states, leading to an enhancement of the electron-phonon coupling of up to λ ≃ 0.58. On part of the graphene-derived π*-band Fermi surface, we then observe the opening of a Δ ≃ 0.9-meV temperature-dependent pairing gap. This result suggests for the first time, to our knowledge, that Li-decorated monolayer graphene is indeed superconducting, with Tc ≃ 5.9 K.",
+    "citation_count": 351,
+    "open_access_url": "https://www.pnas.org/content/pnas/112/38/11795.full.pdf",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Evidence for superconductivity in Li-decorated monolayer graphene",
+      "https://doi.org/10.1073/pnas.1510435112"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "National Academy of Sciences",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1038/nphys3009",
+    "title": "Energy gaps in high-transition-temperature cuprate superconductors",
+    "year": 2014,
+    "source": "OpenAlex + arXiv",
+    "source_title": "Nature Physics",
+    "authors": "Makoto Hashimoto; Inna Vishik; Ruihua He; Thomas Devereaux; Zhi‐Xun Shen",
+    "url": "https://doi.org/10.1038/nphys3009",
+    "doi": "10.1038/nphys3009",
+    "materials": [],
+    "elements": [
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate",
+      "pseudogap",
+      "superconducting gap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 334,
+    "open_access_url": "https://arxiv.org/pdf/1503.00391",
+    "properties": [],
+    "evidence": [
+      "Energy gaps in high-transition-temperature cuprate superconductors",
+      "https://doi.org/10.1038/nphys3009"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1088/0256-307x/31/1/017401",
+    "title": "Direct Observation of High-Temperature Superconductivity in One-Unit-Cell FeSe Films",
+    "year": 2014,
+    "source": "OpenAlex",
+    "source_title": "Chinese Physics Letters",
+    "authors": "Wenhao Zhang; Yi Sun; Jinsong Zhang; Fang-Sen Li; Ming-Hua Guo; Yan-Fei Zhao; Hui Min Zhang; Jun-Ping Peng; Ying Xing; Huichao Wang; Takeshi Fujita; Akihiko Hirata; et al.",
+    "url": "https://doi.org/10.1088/0256-307x/31/1/017401",
+    "doi": "10.1088/0256-307x/31/1/017401",
+    "materials": [
+      "FeSe",
+      "FeTe"
+    ],
+    "elements": [
+      "Fe",
+      "Se",
+      "Te",
+      "C",
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "FeTe",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Heterostructure based interface engineering has been proved an effective method for finding new superconducting systems and raising superconductivity transition temperature (T C ) 1-7 . In previous work on one unit-cell (UC) thick FeSe films on SrTiO 3 (STO) substrate, a superconducting-like energy gap as large as 20 meV 8 , was revealed by in situ scanning tunneling microscopy/spectroscopy (STM/STS). Angle resolved photoemission spectroscopy (ARPES) further revealed a nearly isotropic gap of above 15 meV, which closes at a temperature of 65 5 K 9-11 . If this transition is indeed the superconducting transition, then the 1-UC FeSe represents the thinnest high T C superconductor discovered so far. However, up to date direct transport measurement of the 1-UC FeSe films has not been reported, mainly because growth of large scale 1-UC FeSe films is challenging and the 1-UC FeSe films are too thin to survive in atmosphere. In this work, we successfully prepared 1-UC FeSe films on insulating STO substrates with non-superconducting FeTe protection layers. By direct transport and magnetic measurements, we provide definitive evidence for high temperature superconductivity in the 1-UC FeSe films with an onset T C above 40 K and a extremely large critical current density J C ~ 1.710 6 A/cm 2 at 2 K. Our work may pave the way to enhancing and tailoring superconductivity by interface engineering.",
+    "citation_count": 302,
+    "open_access_url": "https://iopscience.iop.org/article/10.1088/0256-307X/31/1/017401/pdf",
+    "properties": [],
+    "evidence": [
+      "Direct Observation of High-Temperature Superconductivity in One-Unit-Cell FeSe Films",
+      "https://doi.org/10.1088/0256-307x/31/1/017401"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": "http://iopscience.iop.org/info/page/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.1063/1.4752092",
+    "title": "Iron-based superconductors: Magnetism, superconductivity, and electronic structure (Review Article)",
+    "year": 2012,
+    "source": "OpenAlex",
+    "source_title": "Low Temperature Physics",
+    "authors": "A. A. Kordyuk",
+    "url": "https://doi.org/10.1063/1.4752092",
+    "doi": "10.1063/1.4752092",
+    "materials": [],
+    "elements": [
+      "I"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "band structure",
+      "iron-based"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Angle resolved photoemission spectroscopy (ARPES) reveals the features of the electronic structure of quasi-two-dimensional crystals which are crucial for spin and charge ordering and determine the mechanisms of electron–electron interactions, including superconducting pairing. The newly discovered iron-based superconductors (FeSC) promise interesting physics stemming, on one hand, from a coexistence of superconductivity and magnetism and, on the other, from a complex multi-band electronic structure. In this review I want to offer a simple introduction to the physics of FeSC, and to argue that all the complexity of FeSC properties is encapsulated in their electronic structure. For many compounds, this structure has been determined on the basis of numerous ARPES experiments and agrees reasonably well with the results of band structure calculations. Nevertheless, the existing small differences may help to understand the mechanisms of magnetic ordering and superconducting pairing in FeSC.",
+    "citation_count": 228,
+    "open_access_url": "https://arxiv.org/pdf/1209.0140",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "Iron-based superconductors: Magnetism, superconductivity, and electronic structure (Review Article)",
+      "https://doi.org/10.1063/1.4752092"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "AIP Publishing",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1103/physrevlett.83.1652",
+    "title": "A Relation between the Resonance Neutron Peak and ARPES Data in Cuprates",
+    "year": 1999,
+    "source": "OpenAlex",
+    "source_title": "Physical Review Letters",
+    "authors": "Ar. Abanov; Andrey V. Chubukov",
+    "url": "https://doi.org/10.1103/physrevlett.83.1652",
+    "doi": "10.1103/physrevlett.83.1652",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We argue that the resonant peak observed in neutron scattering experiments on superconducting cuprates and the peak/dip/hump features observed in ARPES measurements are by-products of the same physical phenomenon. Both are due to feedback effects on the damping of spin fluctuations in a $d$-wave superconductor. We solve a set of coupled integral equations for fermionic and bosonic propagators, and show that the dynamical spin susceptibility below ${T}_{c}$ possesses the resonance peak at ${\\ensuremath{\\Omega}}_{\\mathrm{res}}\\ensuremath{\\propto}{\\ensuremath{\\xi}}^{\\ensuremath{-}1}$. The scattering of these magnetic excitations by electrons gives rise to a peak/dip/hump behavior of the electronic spectral function, the peak-dip separation is exactly ${\\ensuremath{\\Omega}}_{\\mathrm{res}}$.",
+    "citation_count": 208,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/9906051",
+    "properties": [],
+    "evidence": [
+      "A Relation between the Resonance Neutron Peak and ARPES Data in Cuprates",
+      "https://doi.org/10.1103/physrevlett.83.1652"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1038/s41535-017-0059-y",
+    "title": "Role of the orbital degree of freedom in iron-based superconductors",
+    "year": 2017,
+    "source": "OpenAlex",
+    "source_title": "npj Quantum Materials",
+    "authors": "Ming Yi; Yan Zhang; Zhi‐Xun Shen; Dong-Hui Lu",
+    "url": "https://doi.org/10.1038/s41535-017-0059-y",
+    "doi": "10.1038/s41535-017-0059-y",
+    "materials": [],
+    "elements": [
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate",
+      "iron-based",
+      "nematic"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Abstract Almost a decade has passed since the serendipitous discovery of the iron-based high temperature superconductors (FeSCs) in 2008. The fact that, as in the copper oxide high temperature superconductors, long-range antiferromagnetism in the FeSCs arises in proximity to superconductivity immediately raised the question of the degree of similarity between the two. Despite the great resemblance in their phase diagrams, there exist important differences between the FeSCs and the cuprates that need to be considered in order to paint a full picture of these two families of high temperature superconductors. One of the key differences is the multi-orbital multi-band nature of the FeSCs, which contrasts with the effective single-band nature of the cuprates. Systematic studies of orbital related phenomena in FeSCs have been largely lacking. In this review, we summarize angle-resolved photoemission spectroscopy (ARPES) measurements across various FeSC families that have been reported in literature, focusing on the systematic trends of orbital dependent electron correlations and the role of different Fe 3d orbitals in driving the nematic transition, the spin-density-wave transition, and superconductivity.",
+    "citation_count": 190,
+    "open_access_url": "https://www.nature.com/articles/s41535-017-0059-y.pdf",
+    "properties": [
+      "nematicity"
+    ],
+    "evidence": [
+      "Role of the orbital degree of freedom in iron-based superconductors",
+      "https://doi.org/10.1038/s41535-017-0059-y"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "id": "doi:10.1103/physrevlett.83.5154",
+    "title": "Importance of Matrix Elements in the ARPES Spectra of BISCO",
+    "year": 1999,
+    "source": "OpenAlex + arXiv",
+    "source_title": "Physical Review Letters",
+    "authors": "Arun Bansil; M. Lindroos",
+    "url": "https://doi.org/10.1103/physrevlett.83.5154",
+    "doi": "10.1103/physrevlett.83.5154",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Bi2212"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We have carried out extensive first-principles angle-resolved photointensity (ARPES) simulations in Bi2212 wherein the photoemission process is modeled realistically by taking into account the full crystal wave functions of the initial and final states in the presence of the surface. The spectral weight of the ARPES feature associated with the ${\\mathrm{CuO}}_{2}$ plane bands is found to undergo large and systematic variations with ${k}_{\\ensuremath{\\parallel}}$ as well as the energy and polarization of the incident photons. These theoretical predictions are in good accord with the corresponding measurements, indicating that the remarkable observed changes in the spectral weights in Bi2212 are essentially a matrix element effect and that the importance of matrix elements should be kept in mind in analyzing the ARPES spectra in the high ${T}_{c}$'s.",
+    "citation_count": 146,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/9910496",
+    "properties": [],
+    "evidence": [
+      "Importance of Matrix Elements in the ARPES Spectra of BISCO",
+      "https://doi.org/10.1103/physrevlett.83.5154"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1063/1.4919371",
+    "title": "Pseudogap from ARPES experiment: Three gaps in cuprates and topological superconductivity (Review Article)",
+    "year": 2015,
+    "source": "OpenAlex + arXiv",
+    "source_title": "Low Temperature Physics",
+    "authors": "A. A. Kordyuk",
+    "url": "https://doi.org/10.1063/1.4919371",
+    "doi": "10.1063/1.4919371",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "Fermi surface",
+      "cuprate",
+      "iron-based",
+      "topological",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "A term first coined by Mott back in 1968 a “pseudogap” is the depletion of the electronic density of states at the Fermi level, and pseudogaps have been observed in many systems. However, since the discovery of the high-temperature superconductors (HTSC) in 1986, the central role attributed to the pseudogap in these systems has meant that by many researchers now associate the term pseudogap exclusively with the HTSC phenomenon. Recently, the problem has got a lot of new attention with the rediscovery of two distinct energy scales (“two-gap scenario”) and charge density waves patterns in the cuprates. Despite many excellent reviews on the pseudogap phenomenon in HTSC, published from its very discovery up to now, the mechanism of the pseudogap and its relation to superconductivity are still open questions. The present review represents a contribution dealing with the pseudogap, focusing on results from angle resolved photoemission spectroscopy (ARPES) and ends up with the conclusion that the pseudogap in cuprates is a complex phenomenon which includes at least three different “intertwined” orders: spin and charge density waves and preformed pairs, which appears in different parts of the phase diagram. The density waves in cuprates are competing to superconductivity for the electronic states but, on the other hand, should drive the electronic structure to vicinity of Lifshitz transition, that could be a key similarity between the superconducting cuprates and iron-based superconductors. One may also note that since the pseudogap in cuprates has multiple origins there is no need to recoin the term suggested by Mott.",
+    "citation_count": 144,
+    "open_access_url": "https://arxiv.org/pdf/1501.04154",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Pseudogap from ARPES experiment: Three gaps in cuprates and topological superconductivity (Review Article)",
+      "https://doi.org/10.1063/1.4919371"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "AIP Publishing",
+    "license": ""
+  },
+  {
+    "id": "openalex:W3098682165",
+    "title": "Pseudogap from ARPES experiment: three gaps in cuprates and topological superconductivity (Review Article)",
+    "year": 2015,
+    "source": "OpenAlex",
+    "source_title": "The scientific electronic library of periodicals of the National Academy of Sciences of Ukraine (National Academy of Sciences of Ukraine)",
+    "authors": "A. A. Kordyuk",
+    "url": "http://dspace.nbuv.gov.ua/handle/123456789/122074",
+    "doi": "",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate",
+      "iron-based",
+      "topological",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "A term first coined by Mott back in 1968 a “pseudogap” is the depletion of the electronic density of states at the Fermi level, and pseudogaps have been observed in many systems. However, since the discovery of the hightemperature superconductors (HTSC) in 1986, the central role attributed to the pseudogap in these systems has meant that by many researchers now associate the term pseudogap exclusively with the HTSC phenomenon. Recently, the problem has got a lot of new attention with the rediscovery of two distinct energy scales (“two-gap scenario”) and charge density waves patterns in the cuprates. Despite many excellent reviews on the pseudogap phenomenon in HTSC, published from its very discovery up to now, the mechanism of the pseudogap and its relation to superconductivity are still open questions. The present review represents a contribution dealing with the pseudogap, focusing on results from angle resolved photoemission spectroscopy (ARPES) and ends up with the conclusion that the pseudogap in cuprates is a complex phenomenon which includes at least three different “intertwined” orders: spin and charge density waves and preformed pairs, which appears in different parts of the phase diagram. The density waves in cuprates are competing to superconductivity for the electronic states but, on the other hand, should drive the electronic structure to vicinity of Lifshitz transition, that could be a key similarity between the superconducting cuprates and iron-based superconductors. One may also note that since the pseudogap in cuprates has multiple origins there is no need to recoin the term suggested by Mott.",
+    "citation_count": 131,
+    "open_access_url": "",
+    "properties": [],
+    "evidence": [
+      "Pseudogap from ARPES experiment: three gaps in cuprates and topological superconductivity (Review Article)",
+      "http://dspace.nbuv.gov.ua/handle/123456789/122074"
+    ],
+    "free_sources": [
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": []
+  },
+  {
+    "id": "doi:10.1088/1367-2630/12/10/105008",
+    "title": "ARPES studies of cuprate Fermiology: superconductivity, pseudogap and quasiparticle dynamics",
+    "year": 2010,
+    "source": "OpenAlex + arXiv",
+    "source_title": "New Journal of Physics",
+    "authors": "Inna Vishik; Wei-Sheng Lee; Ruihua He; Makoto Hashimoto; Z. Hussain; Thomas Devereaux; Z.-X. Shen",
+    "url": "https://doi.org/10.1088/1367-2630/12/10/105008",
+    "doi": "10.1088/1367-2630/12/10/105008",
+    "materials": [],
+    "elements": [
+      "Bi"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap",
+      "Fermi surface",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We present angle-resolved photoemission spectroscopy (ARPES) studies of the cuprate high-temperature superconductors which elucidate the relation between superconductivity and the pseudogap and highlight low-energy quasiparticle dynamics in the superconducting state. Our experiments suggest that the pseudogap and superconducting gap represent distinct states, which coexist below T$_c$. Studies on Bi-2212 demonstrate that the near-nodal and near-antinodal regions behave differently as a function of temperature and doping, implying that different orders dominate in different momentum-space regions. However, the ubiquity of sharp quasiparticles all around the Fermi surface in Bi-2212 indicates that superconductivity extends into the momentum-space region dominated by the pseudogap, revealing subtlety in this dichotomy. In Bi-2201, the temperature dependence of antinodal spectra reveals particle-hole asymmetry and anomalous spectral broadening, which may constrain the explanation for the pseudogap. Recognizing that electron-boson coupling is an important aspect of cuprate physics, we close with a discussion of the multiple 'kinks' in the nodal dispersion. Understanding these may be important to establishing which excitations are important to superconductivity.",
+    "citation_count": 127,
+    "open_access_url": "https://iopscience.iop.org/article/10.1088/1367-2630/12/10/105008/pdf",
+    "properties": [
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "evidence": [
+      "ARPES studies of cuprate Fermiology: superconductivity, pseudogap and quasiparticle dynamics",
+      "https://doi.org/10.1088/1367-2630/12/10/105008"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1038/ncomms8699",
+    "title": "Point nodes persisting far beyond Tc in Bi2212",
+    "year": 2015,
+    "source": "OpenAlex",
+    "source_title": "Nature Communications",
+    "authors": "Takeshi Kondo; Walid Malaeb; Y. Ishida; T. Sasagawa; Hideki Sakamoto; Tsunehiro Takeuchi; Takami Tohyama; Shik Shin",
+    "url": "https://doi.org/10.1038/ncomms8699",
+    "doi": "10.1038/ncomms8699",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Bi2212",
+      "superconductivity",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "In contrast to a complex feature of antinodal state, suffering from competing orders, the pairing gap of cuprates is obtained in the nodal region, which therefore holds the key to the superconducting mechanism. One of the biggest question is whether the point nodal state as a hallmark of d-wave pairing collapses at Tc like the BCS-type superconductors, or it instead survives above Tc turning into the preformed pair state. A difficulty in this issue comes from the small magnitude of the nodal gap, which has been preventing experimentalists from solving it. Here we use a laser ARPES capable of ultrahigh-energy resolution, and detect the point nodes surviving far beyond Tc in Bi2212. By tracking the temperature evolution of spectra, we reveal that the superconductivity occurs when the pair-breaking rate is suppressed smaller than the single-particle scattering rate on cooling, which governs the value of Tc in cuprates.",
+    "citation_count": 113,
+    "open_access_url": "https://www.nature.com/articles/ncomms8699.pdf",
+    "properties": [],
+    "evidence": [
+      "Point nodes persisting far beyond Tc in Bi2212",
+      "https://doi.org/10.1038/ncomms8699"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "id": "doi:10.1021/acsaem.0c01846",
+    "title": "High-Quality SnSe<sub>2</sub> Single Crystals: Electronic and Thermoelectric Properties",
+    "year": 2020,
+    "source": "OpenAlex",
+    "source_title": "ACS Applied Energy Materials",
+    "authors": "Anh-Tuan Pham; Thi Hoa Vu; Cheng Chang; Thi Ly Trinh; Jieun Lee; Hyejin Ryu; Choongyu Hwang; Sung‐Kwan Mo; Jungdae Kim; Li‐Dong Zhao; Anh Tuan Duong; Sunglae Cho",
+    "url": "https://doi.org/10.1021/acsaem.0c01846",
+    "doi": "10.1021/acsaem.0c01846",
+    "materials": [
+      "SnSe2",
+      "SnSe",
+      "SnS"
+    ],
+    "elements": [
+      "Sn",
+      "Se",
+      "S",
+      "N",
+      "At",
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "SnSe2",
+      "SnSe",
+      "SnS",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "High-quality SnSe2 single crystals were successfully synthesized using a temperature gradient method. N-type characteristics and strong anisotropic transport properties of SnSe2 single crystals were exhibited between the ab plane and the c-axis. At 673 K, the power factor (PF) value along the ab plane is 3.43 μW cm–1 K–2, while it is 0.92 μW cm–1 K–2 along the c-axis. The ratio between thermal conductivities along the ab plane (κab) and c-axis (κc) is on the order of 7.6 at 300 K, while this value is about 5.6 at 673 K. The thermoelectric figure of merit (ZT) in the c-axis (0.15) is higher than that (0.1) along the ab plane, according to the ultralow out-of-plane thermal conductivity. The electronic band structure results, which were examined by angle-resolved photoemission spectroscopy (ARPES) predicted the potential of improving the thermoelectric performance of SnSe2 single crystals by electron doping.",
+    "citation_count": 63,
+    "open_access_url": "https://www.osti.gov/biblio/1822859",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "High-Quality SnSe<sub>2</sub> Single Crystals: Electronic and Thermoelectric Properties",
+      "https://doi.org/10.1021/acsaem.0c01846"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Chemical Society (ACS)",
+    "license": "https://doi.org/10.15223/policy-029"
+  },
+  {
+    "id": "doi:10.1016/s0022-3697(98)00136-x",
+    "title": "ARPES study of the superconducting gap and pseudogap in Bi2Sr2CaCu2O8+x",
+    "year": 1998,
+    "source": "OpenAlex + arXiv",
+    "source_title": "Journal of Physics and Chemistry of Solids",
+    "authors": "Hong Ding; J. C. Campuzano; M. R. Norman; Mohit Randeria; T. Yokoya; T. Takahashi; Tsunehiro Takeuchi; T. Mochiku; K. Kadowaki; Prasenjit Guptasarma; D. G. Hinks",
+    "url": "https://doi.org/10.1016/s0022-3697(98)00136-x",
+    "doi": "10.1016/s0022-3697(98)00136-x",
+    "materials": [
+      "Bi2Sr2CaCu2O8"
+    ],
+    "elements": [
+      "Bi",
+      "Sr",
+      "Ca",
+      "Cu",
+      "O",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Bi2Sr2CaCu2O8",
+      "superconductivity",
+      "superconducting gap",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 53,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/9712100",
+    "properties": [
+      "superconducting gap"
+    ],
+    "evidence": [
+      "ARPES study of the superconducting gap and pseudogap in Bi2Sr2CaCu2O8+x",
+      "https://doi.org/10.1016/s0022-3697(98)00136-x"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Elsevier BV",
+    "license": "https://www.elsevier.com/tdm/userlicense/1.0/"
+  },
+  {
+    "id": "doi:10.1038/s41598-017-13913-z",
+    "title": "Free surfaces recast superconductivity in few-monolayer MgB2: Combined first-principles and ARPES demonstration",
+    "year": 2017,
+    "source": "OpenAlex",
+    "source_title": "Scientific Reports",
+    "authors": "J Bekaert; Luca Bignardi; Alex Aperis; P. van Abswoude; Cecilia Mattevi; Sergey Gorovikov; L. Petaccia; A. Goldoni; B. Partoens; Peter M. Oppeneer; F. M. Peeters; M. V. Miloševıć; et al.",
+    "url": "https://doi.org/10.1038/s41598-017-13913-z",
+    "doi": "10.1038/s41598-017-13913-z",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "Mg",
+      "B",
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "MgB2",
+      "superconductivity",
+      "superconducting gap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Abstract Two-dimensional materials are known to harbour properties very different from those of their bulk counterparts. Recent years have seen the rise of atomically thin superconductors, with a caveat that superconductivity is strongly depleted unless enhanced by specific substrates, intercalants or adatoms. Surprisingly, the role in superconductivity of electronic states originating from simple free surfaces of two-dimensional materials has remained elusive to date. Here, based on first-principles calculations, anisotropic Eliashberg theory, and angle-resolved photoemission spectroscopy (ARPES), we show that surface states in few-monolayer MgB 2 make a major contribution to the superconducting gap spectrum and density of states, clearly distinct from the widely known, bulk-like σ - and π -gaps. As a proof of principle, we predict and measure the gap opening on the magnesium-based surface band up to a critical temperature as high as ~30 K for merely six monolayers thick MgB 2 . These findings establish free surfaces as an unavoidable ingredient in understanding and further tailoring of superconductivity in atomically thin materials.",
+    "citation_count": 33,
+    "open_access_url": "https://www.nature.com/articles/s41598-017-13913-z.pdf",
+    "properties": [
+      "superconducting gap"
+    ],
+    "evidence": [
+      "Free surfaces recast superconductivity in few-monolayer MgB2: Combined first-principles and ARPES demonstration",
+      "https://doi.org/10.1038/s41598-017-13913-z"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "id": "doi:10.1039/c8ta07090c",
+    "title": "Large enhancement of electrical transport properties of SnS in the out-of-plane direction by n-type doping: a combined ARPES and DFT study",
+    "year": 2018,
+    "source": "OpenAlex",
+    "source_title": "Journal of Materials Chemistry A",
+    "authors": "Juan Cui; Kai Chen; Wenke He; J. Ávila; Li‐Dong Zhao; M. C. Asensio; Jiaqing He; Yue Chen",
+    "url": "https://doi.org/10.1039/c8ta07090c",
+    "doi": "10.1039/c8ta07090c",
+    "materials": [
+      "SnS"
+    ],
+    "elements": [
+      "Sn",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "SnS",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The resonant states induced by pnictogen dopants and a more delocalized charge density suggest a potential improvement of the thermoelectric performance of SnS.",
+    "citation_count": 29,
+    "open_access_url": "",
+    "properties": [],
+    "evidence": [
+      "Large enhancement of electrical transport properties of SnS in the out-of-plane direction by n-type doping: a combined ARPES and DFT study",
+      "https://doi.org/10.1039/c8ta07090c"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Royal Society of Chemistry (RSC)",
+    "license": "http://rsc.li/journals-terms-of-use"
+  },
+  {
+    "id": "doi:10.1063/1.5084147",
+    "title": "Electronic structure of SnSe2 films grown by molecular beam epitaxy",
+    "year": 2019,
+    "source": "OpenAlex",
+    "source_title": "Applied Physics Letters",
+    "authors": "Edward B. Lochocki; Suresh Vishwanath; Xinyu Liu; Małgorzata Dobrowolska; J. K. Furdyna; Huili Grace Xing; Kyle Shen",
+    "url": "https://doi.org/10.1063/1.5084147",
+    "doi": "10.1063/1.5084147",
+    "materials": [
+      "SnSe2",
+      "SnSe",
+      "SnS"
+    ],
+    "elements": [
+      "Sn",
+      "Se",
+      "S",
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "SnSe2",
+      "SnSe",
+      "SnS",
+      "superconductivity",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "SnSe2 is a layered main-group metal dichalcogenide that has exhibited gate-tunable interfacial superconductivity as well as promising optoelectronic applications. Here, we synthesize SnSe2 films by molecular beam epitaxy and investigate their electronic structure with angle-resolved photoemission spectroscopy (ARPES). A comparison between density functional theory calculations and ARPES data from a thick film reveals the importance of spin-orbit coupling and out-of-plane dispersion in the SnSe2 valence bands, which were neglected in previous studies of its electronic structure. We conclude that the conduction band minimum lies along the M-L direction in momentum space, while the valence band maximum lies along Γ−K.",
+    "citation_count": 20,
+    "open_access_url": "",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "Electronic structure of SnSe2 films grown by molecular beam epitaxy",
+      "https://doi.org/10.1063/1.5084147"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "AIP Publishing",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1021/acsnano.3c05818",
+    "title": "Quasi van der Waals Epitaxy of Rhombohedral-Stacked Bilayer WSe<sub>2</sub> on GaP(111) Heterostructure",
+    "year": 2023,
+    "source": "OpenAlex",
+    "source_title": "ACS Nano",
+    "authors": "Aymen Mahmoudi; Meryem Bouaziz; Niels Chapuis; Geoffroy Kremer; Julien Chaste; Davide Romanin; Marco Pala; F. Bertran; Patrick Le Fèvre; Iann C. Gerber; G. Patriarche; Fabrice Oehler; et al.",
+    "url": "https://doi.org/10.1021/acsnano.3c05818",
+    "doi": "10.1021/acsnano.3c05818",
+    "materials": [],
+    "elements": [
+      "B"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The growth of bilayers of two-dimensional (2D) materials on conventional 3D semiconductors results in 2D/3D hybrid heterostructures, which can provide additional advantages over more established 3D semiconductors while retaining some specificities of 2D materials. Understanding and exploiting these phenomena hinge on knowing the electronic properties and the hybridization of these structures. Here, we demonstrate that a rhombohedral-stacked bilayer (AB stacking) can be obtained by molecular beam epitaxy growth of tungsten diselenide (WSe 2 ) on a gallium phosphide (GaP) substrate. We confirm the presence of 3R-stacking of the WSe 2 bilayer structure using scanning transmission electron microscopy (STEM) and micro-Raman spectroscopy. Also, we report high-resolution angle-resolved photoemission spectroscopy (ARPES) on our rhombohedral-stacked WSe 2 bilayer grown on a GaP(111)B substrate. Our ARPES measurements confirm the expected valence band structure of WSe 2 with the band maximum located at the Γ point of the Brillouin zone. The epitaxial growth of WSe 2 /GaP(111)B helps to understand the fundamental properties of these 2D/3D heterostructures, toward their implementation in future devices.",
+    "citation_count": 13,
+    "open_access_url": "https://hal.science/hal-04302601/document",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "Quasi van der Waals Epitaxy of Rhombohedral-Stacked Bilayer WSe<sub>2</sub> on GaP(111) Heterostructure",
+      "https://doi.org/10.1021/acsnano.3c05818"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Chemical Society (ACS)",
+    "license": "https://doi.org/10.15223/policy-029"
+  },
+  {
+    "id": "doi:10.1016/j.physc.2007.04.228",
+    "title": "A re-examination of the oxygen isotope effect in ARPES spectra of Bi2212",
+    "year": 2007,
+    "source": "OpenAlex",
+    "source_title": "Physica C Superconductivity",
+    "authors": "Hideaki Iwasawa; Y. Aiura; T. Saitoh; Hiroshi Eisaki; Hiroshi Bando; A. Ino; Masashi Arita; K. Shimada; H. Namatame; M. Taniguchi; T. Masui; S. Tajima; et al.",
+    "url": "https://doi.org/10.1016/j.physc.2007.04.228",
+    "doi": "10.1016/j.physc.2007.04.228",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Bi2212"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 13,
+    "open_access_url": "",
+    "properties": [],
+    "evidence": [
+      "A re-examination of the oxygen isotope effect in ARPES spectra of Bi2212",
+      "https://doi.org/10.1016/j.physc.2007.04.228"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Elsevier BV",
+    "license": "https://www.elsevier.com/tdm/userlicense/1.0/"
+  },
+  {
+    "id": "doi:10.1088/2516-1075/ac6ea8",
+    "title": "Contribution of the Sn 5s state to the SnS valence band: direct observation via ARPES measurements",
+    "year": 2022,
+    "source": "OpenAlex",
+    "source_title": "Electronic Structure",
+    "authors": "Issei Suzuki; Sakiko Kawanishi; Kiyohisa Tanaka; Takahisa Omata; Shinichiro Tanaka",
+    "url": "https://doi.org/10.1088/2516-1075/ac6ea8",
+    "doi": "10.1088/2516-1075/ac6ea8",
+    "materials": [
+      "SnS"
+    ],
+    "elements": [
+      "Sn",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "SnS"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Abstract Tin sulfide (SnS) is a compound semiconductor that has been studied for a wide range of applications, including solar cells and thermoelectric materials. In this study, the electronic structure of the SnS valence band, which is important for such applications, was investigated via angle-resolved photoelectron spectroscopy with two different excitation energies in the extreme ultraviolet region (21 and 60 eV). The contribution of the Sn 5s state to the SnS valence band was determined in relation to the k -vector by utilizing the fact that the cross section of Sn 5s state varies significantly compared to those of other states in the extreme ultraviolet region. The experimental results demonstrate that the Sn 5s state significantly contributed to the k -vector around the valence band maximum (VBM) and second VBM (VBM1).",
+    "citation_count": 11,
+    "open_access_url": "",
+    "properties": [],
+    "evidence": [
+      "Contribution of the Sn 5s state to the SnS valence band: direct observation via ARPES measurements",
+      "https://doi.org/10.1088/2516-1075/ac6ea8"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": "https://publishingsupport.iopscience.iop.org/iop-standard/v1"
+  },
+  {
+    "id": "doi:10.1088/1361-6528/ac9abe",
+    "title": "Hybridization and localized flat band in the WSe<sub>2</sub>/MoSe<sub>2</sub> heterobilayer",
+    "year": 2022,
+    "source": "OpenAlex",
+    "source_title": "Nanotechnology",
+    "authors": "Lama Khalil; Debora Pierucci; Emilio Vélez-Fort; J. Ávila; Céline Vergnaud; Pavel Dudin; Fabrice Oehler; Julien Chaste; Matthieu Jamet; Emmanuel Lhuillier; Marco Pala; Abdelkarim Ouerghi",
+    "url": "https://doi.org/10.1088/1361-6528/ac9abe",
+    "doi": "10.1088/1361-6528/ac9abe",
+    "materials": [],
+    "elements": [
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Abstract Nearly localized moiré flat bands in momentum space, arising at particular twist angles, are the key to achieve correlated effects in transition-metal dichalcogenides. Here, we use angle-resolved photoemission spectroscopy (ARPES) to visualize the presence of a flat band near the Fermi level of van der Waals WSe 2 /MoSe 2 heterobilayer grown by molecular beam epitaxy. This flat band is localized near the Fermi level and has a width of several hundred meVs. By combining ARPES measurements with density functional theory calculations, we confirm the coexistence of different domains, namely the reference 2H stacking without layer misorientation and regions with arbitrary twist angles. For the 2H-stacked heterobilayer, our ARPES results show strong interlayer hybridization effects, further confirmed by complementary micro- Raman spectroscopy measurements. The spin-splitting of the valence band at K is determined to be 470 meV. The valence band maximum (VBM) position of the heterobilayer is located at the Γ point. The energy difference between the VBM at Γ and the K point is of −60 meV, which is a stark difference compared to individual single monolayer WSe 2 and monolayer WSe 2 , showing both a VBM at K .",
+    "citation_count": 10,
+    "open_access_url": "https://hal.science/hal-03864963/document",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "Hybridization and localized flat band in the WSe<sub>2</sub>/MoSe<sub>2</sub> heterobilayer",
+      "https://doi.org/10.1088/1361-6528/ac9abe"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": "https://publishingsupport.iopscience.iop.org/iop-standard/v1"
+  },
+  {
+    "id": "doi:10.1039/d1cp04553a",
+    "title": "Direct evaluation of hole effective mass of SnS–SnSe solid solutions with ARPES measurement",
+    "year": 2021,
+    "source": "OpenAlex",
+    "source_title": "Physical Chemistry Chemical Physics",
+    "authors": "Issei Suzuki; Zexin Lin; Sakiko Kawanishi; Kiyohisa Tanaka; Yoshitaro Nose; Takahisa Omata; Shinichiro Tanaka",
+    "url": "https://doi.org/10.1039/d1cp04553a",
+    "doi": "10.1039/d1cp04553a",
+    "materials": [
+      "SnSe",
+      "SnS"
+    ],
+    "elements": [
+      "Sn",
+      "Se",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "SnSe",
+      "SnS"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "solid solutions were observed by angle-resolved photoemission spectroscopy (ARPES). The hole effective masses, crucial factors in determining thermoelectric properties, were directly evaluated. They decrease slightly with increasing Se content in the low Se composition range but sharply in the high Se composition range.",
+    "citation_count": 9,
+    "open_access_url": "",
+    "properties": [],
+    "evidence": [
+      "Direct evaluation of hole effective mass of SnS–SnSe solid solutions with ARPES measurement",
+      "https://doi.org/10.1039/d1cp04553a"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Royal Society of Chemistry (RSC)",
+    "license": "http://rsc.li/journals-terms-of-use"
+  },
+  {
+    "id": "doi:10.20944/preprints201804.0150.v1",
+    "title": "A Perspective on the Application of Spatially Resolved ARPES for 2D Materials",
+    "year": 2018,
+    "source": "OpenAlex",
+    "source_title": "Preprints.org",
+    "authors": "Mattia Cattelan; Neil A. Fox",
+    "url": "https://doi.org/10.20944/preprints201804.0150.v1",
+    "doi": "10.20944/preprints201804.0150.v1",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "In this paper a perspective on the application of spatially- and Angle- Resolved PhotoEmission Spectroscopy (ARPES) for the study of two-dimensional (2D) materials is presented. ARPES allows the direct measurement of the electronic band structure of materials generating extremely useful insights into their electronic properties. The possibility to apply this technique to 2D materials is of paramount importance because these ultrathin layers are considered fundamental for future electronic, photonic and spintronic devices. In this review an overview of the technical aspects of spatially localized ARPES is given along with a description of the most advanced setups for laboratory and synchrotron-based equipment. This technique is sensitive to the lateral dimensions of the sample, therefore a discussion on the preparation methods of 2D material is presented. Some of the most interesting results obtained by ARPES are reported in three sections including: graphene, transition metal dichalcogenides (TMDCs) and 2D heterostructures. Graphene has played a key role in ARPES studies because it inspired the use of this technique with other 2D materials. TMDCs are presented for their peculiar transport, optical and spin properties. Finally, the section featuring heterostructures highlights a future direction for research into 2D material structures.",
+    "citation_count": 6,
+    "open_access_url": "https://www.preprints.org/manuscript/201804.0150/v1/download",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "A Perspective on the Application of Spatially Resolved ARPES for 2D Materials",
+      "https://doi.org/10.20944/preprints201804.0150.v1"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "MDPI AG",
+    "license": "http://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "id": "doi:10.1023/a:1023477832477",
+    "title": "Conventional Electronic Structure of MgB2 and ZrB2: LDA vs. de Haas-v. Alphen &amp; ARPES Data",
+    "year": 2003,
+    "source": "OpenAlex",
+    "source_title": "Journal of Low Temperature Physics",
+    "authors": "S.‐L. Drechsler; H. Rösner; J. M. An; Warren E. Pickett; Vito D. P. Servedio; Todor M. Mishonov; E. Forzani; Klaus Winzer",
+    "url": "https://doi.org/10.1023/a:1023477832477",
+    "doi": "10.1023/a:1023477832477",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "Mg",
+      "B"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "MgB2",
+      "superconductivity",
+      "Fermi surface",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 2,
+    "open_access_url": "",
+    "properties": [
+      "Fermi surface",
+      "band structure"
+    ],
+    "evidence": [
+      "Conventional Electronic Structure of MgB2 and ZrB2: LDA vs. de Haas-v. Alphen &amp; ARPES Data",
+      "https://doi.org/10.1023/a:1023477832477"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://www.springernature.com/gp/researchers/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.1103/vy32-xtt9",
+    "title": "Decoupled interband pairing in a bilayer iron-based superconductor evidenced by ultrahigh-resolution ARPES",
+    "year": 2026,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Shichong Wang; Yuanyuan Yang; Yang Li; Wenshan Hong; Huaxun Li; Shaofeng Duan; Lingxiao Gu; Haoran Liu; Jiongyu Huang; Jianzhe Liu; Dong Qian; Guanghan Cao; Huiqian Luo; Wentao Zhang",
+    "url": "https://arxiv.org/abs/2601.07380v1",
+    "doi": "10.1103/vy32-xtt9",
+    "materials": [
+      "Nb"
+    ],
+    "elements": [
+      "Nb",
+      "Fe",
+      "F",
+      "K",
+      "Cs"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Nb",
+      "superconductivity",
+      "superconducting gap",
+      "iron-based"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We present direct experimental evidence of a weakly coupled multiband superconducting state in the bilayer iron-based superconductor ACa$_2$Fe$_4$As$_4$F$_2$ (A = K, Cs) via ultrahigh-resolution angle-resolved photoemission spectroscopy (ARPES). Remarkably, the K-containing compound exhibits two distinct transition temperatures, corresponding to two separate sets of bilayer-split bands, as evidenced by temperature-dependent superconducting gap and spectral weight near the Fermi energy, while its Cs counterpart displays conventional single transition behavior. These experimental observations are well described by the weakly coupled two-band model of Eilenberger theory, which identifies suppressed interband pairing interactions between the bilayer-split bands as the key mechanism. By exploring quantum phenomena in the weak-coupling limit within a multiband system, our findings pave the way for engineering exotic superconductivity via band-selective pairing control.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/2601.07380v1",
+    "properties": [
+      "superconducting gap"
+    ],
+    "evidence": [
+      "Decoupled interband pairing in a bilayer iron-based superconductor evidenced by ultrahigh-resolution ARPES",
+      "https://doi.org/10.1103/vy32-xtt9"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "https://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1038/s41467-024-48610-9",
+    "title": "ARPES Detection of Superconducting Gap Sign in Unconventional Superconductors",
+    "year": 2023,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Qiang Gao; Jin Mo Bok; Ping Ai; Jing Liu; Hongtao Yan; Xiangyu Luo; Yongqing Cai; Cong Li; Yang Wang; Chaohui Yin; Hao Chen; Genda Gu; Fengfeng Zhang; Feng Yang; Shenjin Zhang; Qinjun Peng; Zhihai Zhu; Guodong Liu; Zuyan Xu; Tao Xiang; Lin Zhao; Han-Yong Choi; X. J. Zhou",
+    "url": "https://arxiv.org/abs/2307.16384v1",
+    "doi": "10.1038/s41467-024-48610-9",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap",
+      "cuprate",
+      "iron-based"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Superconductivity is realized by opening a gap in the superconducting state. The gap symmetry is crucial in understanding the underlying superconductivity mechanism. The magnitude and the phase are essential in fully characterizing the superconducting gap. Angle-resolved photoemission spectroscopy (ARPES) has played a key role in determining the gap symmetry in unconventional superconductors. However, it has been considered so far that ARPES can only measure the magnitude of the superconducting gap but not its phase; the phase has to be detected by other phase-sensitive techniques. Here we propose a new method to directly detect the superconducting gap sign by using ARPES. This method is successfully validated in a cuprate superconductor with a well-known $d$-wave gap symmetry. When two bands are nearby in momentum space and have a strong interband interaction, the resulted electronic structures in the superconducting state are sensitive to the relative gap sign between the two bands which can be captured by ARPES measurements. Our present work provides a new way to detect the gap sign and can be applied to various superconductors, particularly those with multiple orbitals like the iron-based superconductors. It also makes ARPES more powerful to determine both the gap magnitude and the phase that are significant in understanding the superconductivity mechanism of unconventional superconductors.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/2307.16384v1",
+    "properties": [
+      "superconducting gap"
+    ],
+    "evidence": [
+      "ARPES Detection of Superconducting Gap Sign in Unconventional Superconductors",
+      "https://doi.org/10.1038/s41467-024-48610-9"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "id": "doi:10.1016/j.physc.2016.12.004",
+    "title": "Fermi surface and band structure of BiPd from ARPES studies",
+    "year": 2023,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "H. Lohani; P. Mishra; Anurag Gupta; V. P. S. Awana; B. R. Sekhar",
+    "url": "https://arxiv.org/abs/2310.18800v1",
+    "doi": "10.1016/j.physc.2016.12.004",
+    "materials": [],
+    "elements": [
+      "Bi",
+      "Pd"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Fermi surface",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We present a detailed electronic structure study of the non-centrosymmetric superconductor BiPd based on our angle resolved photoemission spectroscopy (ARPES) measurements and Density Functional Theory (DFT) based calculations. We observe a high intensity distribution on the Fermi surface (FS) of this compound resulting from various electron and hole like bands which are present in the vicinity of the Fermi energy (E$_f$). The near E$_f$ states are primarily composed of Bi-6p with a little admixture of Pd-4d$_{x^2-y^2/zy}$ orbitals. There are various spin-orbit split bands involved in the crossing of E$_f$ making a complex FS. The FS mainly consists of multi sheets of three dimensions which disfavor the nesting between different sheets of the FS. Our comprehensive study elucidates that BiPd could be a s-wave multiband superconductor.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/2310.18800v1",
+    "properties": [
+      "Fermi surface",
+      "band structure"
+    ],
+    "evidence": [
+      "Fermi surface and band structure of BiPd from ARPES studies",
+      "https://doi.org/10.1016/j.physc.2016.12.004"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Elsevier BV",
+    "license": "https://www.elsevier.com/tdm/userlicense/1.0/"
+  },
+  {
+    "id": "doi:10.3389/fphy.2022.886459",
+    "title": "Nematic fluctuations in the non-superconducting iron pnictide BaFe$_{1.9-x}$Ni$_{0.1}$Cr$_{x}$As$_{2}$",
+    "year": 2022,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Dongliang Gong; Ming Yi; Meng Wang; Tao Xie; Wenliang Zhang; Sergey Danilkin; Guochu Deng; Xinzhi Liu; Jitae T. Park; Kazuhiko Ikeuchi; Kazuya Kamazawa; Sung-Kwan Mo; Makoto Hashimoto; Donghui Lu; Rui Zhang; Pengcheng Dai; Robert J. Birgeneau; Shiliang Li; Huiqian Luo",
+    "url": "https://arxiv.org/abs/2204.11204v1",
+    "doi": "10.3389/fphy.2022.886459",
+    "materials": [],
+    "elements": [
+      "Ni",
+      "Cr",
+      "K",
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Fermi surface",
+      "iron-based",
+      "nematic"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The main driven force of the electronic nematic phase in iron-based superconductors is still under debate. Here, we report a comprehensive study on the nematic fluctuations in a non-superconducting iron pnictide system BaFe$_{1.9-x}$Ni$_{0.1}$Cr$_{x}$As$_{2}$ by electronic transport, angle-resolved photoemission spectroscopy (ARPES) and inelastic neutron scattering (INS) measurements. Previous neutron diffraction and transport measurements suggested that the collinear antiferromagnetism persists to $x=0.8$, with similar Néel temperature $T_N$ and structural transition temperature $T_s$ around 32 K, but the charge carriers change from electron type to hole type around $x=$ 0.5. In this study, we have found that the in-plane resistivity anisotropy also highly depends on the Cr dopings and the type of charge carriers. While ARPES measurements suggest possibly weak orbital anisotropy onset near $T_s$ for both $x=0.05$ and $x=0.5$ compounds, INS experiments reveal clearly different onset temperatures of low-energy spin excitation anisotropy, which is likely related to the energy scale of spin nematicity. These results suggest that the interplay between the local spins on Fe atoms and the itinerant electrons on Fermi surfaces is crucial to the nematic fluctuations of iron pnictides, where the orbital degree of freedom may behave differently from the spin degree of freedom, and the transport properties are intimately related to the spin dynamics.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/2204.11204v1",
+    "properties": [
+      "Fermi surface",
+      "nematicity"
+    ],
+    "evidence": [
+      "Nematic fluctuations in the non-superconducting iron pnictide BaFe$_{1.9-x}$Ni$_{0.1}$Cr$_{x}$As$_{2}$",
+      "https://doi.org/10.3389/fphy.2022.886459"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Frontiers Media SA",
+    "license": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  {
+    "id": "doi:10.1007/s10948-019-05369-1",
+    "title": "ARPES autocorrelation in electron-doped cuprate superconductors",
+    "year": 2020,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Shuning Tan; Yingping Mou; Yiqun Liu; Shiping Feng",
+    "url": "https://arxiv.org/abs/2001.06748v1",
+    "doi": "10.1007/s10948-019-05369-1",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Fermi surface",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The angle-resolved photoemission spectroscopy (ARPES) autocorrelation in the electron-doped cuprate superconductors is studied based on the kinetic-energy driven superconducting (SC) mechanism. It is shown that the strong electron correlation induces the electron Fermi surface (EFS) reconstruction, where the most of the quasiparticles locate at around the hot spots on EFS, and then these hot spots connected by the scattering wave vectors ${\\bf q}_{i}$ construct an {\\it octet} scattering model. In a striking analogy to the hole-doped case, the sharp ARPES autocorrelation peaks are directly correlated with the scattering wave vectors ${\\bf q}_{i}$, and are weakly dispersive in momentum space. However, in a clear contrast to the hole-doped counterparts, the position of the ARPES autocorrelation peaks move toward to the opposite direction with the increase of doping. The theory also indicates that there is an intrinsic connection between the ARPES autocorrelation and quasiparticle scattering interference (QSI) in the electron-doped cuprate superconductors.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/2001.06748v1",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "ARPES autocorrelation in electron-doped cuprate superconductors",
+      "https://doi.org/10.1007/s10948-019-05369-1"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1103/physrevb.97.180501",
+    "title": "3D superconducting gap in FeSe from ARPES",
+    "year": 2018,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Y. S. Kushnirenko; A. V. Fedorov; E. Haubold; S. Thirupathaiah; T. Wolf; S. Aswartham; I. Morozov; T. K. Kim; B. Büchner; S. V. Borisenko",
+    "url": "https://arxiv.org/abs/1802.08668v1",
+    "doi": "10.1103/PhysRevB.97.180501",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "superconducting gap",
+      "Fermi surface",
+      "nematic"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We present a systematic angle-resolved photoemission spectroscopy study of the superconducting gap in FeSe. The gap function is determined in a full Brillouin zone including all Fermi surfaces and kz-dependence. We find significant anisotropy of the superconducting gap in all momentum directions. While the in-plane anisotropy can be explained by both, nematicity-induced pairing anisotropy and orbital-selective pairing, the kz-anisotropy requires additional refinement of theoretical approaches.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1802.08668v1",
+    "properties": [
+      "superconducting gap",
+      "Fermi surface",
+      "nematicity"
+    ],
+    "evidence": [
+      "3D superconducting gap in FeSe from ARPES",
+      "https://doi.org/10.1103/PhysRevB.97.180501"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "https://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/physrevb.100.184511",
+    "title": "Observation of Topological Surface State in High Temperature Superconductor MgB2",
+    "year": 2018,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Xiaoqing Zhou; Kyle N. Gordon; Kyung-Hwan Jin; Haoxiang Li; Dushyant Narayan; Hengdi Zhao; Hao Zheng; Huaqing Huang; Gang Cao; Nikolai D. Zhigadlo; Feng Liu; Daniel S. Dessau",
+    "url": "https://arxiv.org/abs/1805.09240v2",
+    "doi": "10.1103/PhysRevB.100.184511",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "Mg",
+      "B",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "MgB2",
+      "superconductivity",
+      "topological"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The hunt for the benchmark topological superconductor (TSc) has been an extremely active research subject in condensed matter research, with quite a few candidates identified or proposed. However, low transition temperatures (Tc) and/or strong sensitivity to disorder and dopant levels in known TSc candidates have greatly hampered progress in this field. Here, we use Angle-resolved Photoemission Spectroscopy (ARPES) to show the presence of Dirac Nodal Lines (DNLs) and the corresponding topological surface states (TSS's) on the [010] faces of the Tc=39K s-wave BCS superconductor MgB2. Not only is this nearly triple the current record of superconducting Tc among all candidate TSc's, but the nature of these DNL states should make them highly tolerant against disorder and inadvertent doping variations. This makes MgB2 a promising high temperature platform for the study of topological superconductivity.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1805.09240v2",
+    "properties": [],
+    "evidence": [
+      "Observation of Topological Surface State in High Temperature Superconductor MgB2",
+      "https://doi.org/10.1103/PhysRevB.100.184511"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "https://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/physrevb.98.195445",
+    "title": "ARPES and transport studies of the elemental topological insulator $α$-Sn",
+    "year": 2018,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Quentin Barbedienne; Julien Varignon; Nicolas Reyren; Alain Marty; Celine Vergnaud; Matthieu Jamet; Carmen Gomez-Carbonell; Aristide Lemaître; Patrick Le Fèvre; François Bertran; Amina Taleb-Ibrahimi; Henri Jaffrès; Jean-Marie George; Albert Fert",
+    "url": "https://arxiv.org/abs/1807.11377v2",
+    "doi": "10.1103/PhysRevB.98.195445",
+    "materials": [],
+    "elements": [
+      "Sn",
+      "Al",
+      "Ag"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "topological"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Gray tin, also known as $α$-Sn, can be turned into a three-dimensional topological insulator (3D-TI) by strain and finite size effects. Such room temperature 3D-TI is peculiarly interesting for spintronics due to the spin-momentum locking along the Dirac cone (linear dispersion) of the surface states. Angle resolved photoemission spectroscopy (ARPES) has been used to investigate the dispersion close to the Fermi level in thin (0\\,0\\,1)-oriented epitaxially strained films of $α$-Sn, for different film thicknesses as well as for different capping layers (Al, AlO$_x$ and MgO). Indeed a proper capping layer is necessary to be able to use $α$-Sn surface states for spintronics applications. In contrast with free surfaces or surfaces coated with Ag, coating the $α$-Sn surface with Al or AlO$_x$ leads to a drop of the Fermi level below the Dirac point, an important consequence for transport is the presence of bulk states at the Fermi level. $α$-Sn films coated by AlO$_x$ are studied by electrical magnetotransport: despite clear evidence of surface states revealed by Shubnikov-de Haas oscillations, an important part of the magneto-transport properties is governed by \"bulk\" electronic states attributed to the $Γ8$ band, as suggested by {\\it ab-initio} calculations.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1807.11377v2",
+    "properties": [],
+    "evidence": [
+      "ARPES and transport studies of the elemental topological insulator $α$-Sn",
+      "https://doi.org/10.1103/PhysRevB.98.195445"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "https://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/physrevb.97.235416",
+    "title": "Topological surface Fermi arcs in the magnetic Weyl semimetal Co$_3$Sn$_2$S$_2$",
+    "year": 2017,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Qiunan Xu; Enke Liu; Wujun Shi; Lukas Muechler; Jacob Gayles; Claudia Felser; Yan Sun",
+    "url": "https://arxiv.org/abs/1801.00136v3",
+    "doi": "10.1103/PhysRevB.97.235416",
+    "materials": [],
+    "elements": [
+      "Co",
+      "Sn",
+      "S",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "topological"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Very recently, the half-metallic compound Co$_3$Sn$_2$S$_2$ was predicted to be a magnetic WSM with Weyl points only 60 meV above the Fermi level ($E_F$). Owing to the low charge carrier density and large Berry curvature induced,Co$_3$Sn$_2$S$_2$ possesses both a large anomalous Hall conductivity (AHC) and a large anomalous Hall angle (AHA), which provide strong evidence for the existence of Weyl points in Co$_3$Sn$_2$S$_2$. In this work, we theoretically studied the surface topological feature of Co$_3$Sn$_2$S$_2$ and its counterpart Co$_3$Sn$_2$Se$_2$. By cleaving the sample at the weak Sn--S/Se bonds, one can achieve two different surfaces terminated with Sn and S/Se atoms, respectively. The resulting Fermi arc related states can range from the energy of the Weyl points to $E_F$--0.1 eV in the Sn-terminated surface. Therefore, it should be possible to observe the Fermi arcs in angle-resolved photoemission spectroscopy (ARPES) measurements. Furthermore, in order to simulate quasiparticle interference (QPI) in scanning tunneling microscopy (STM) measurements, we also calculated the joint density of states (JDOS) for both terminals. This work would be helpful for a comprehensive understanding of the topological properties of these two magnetic WSMs and further ARPES and STM measurements.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1801.00136v3",
+    "properties": [],
+    "evidence": [
+      "Topological surface Fermi arcs in the magnetic Weyl semimetal Co$_3$Sn$_2$S$_2$",
+      "https://doi.org/10.1103/PhysRevB.97.235416"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "https://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "arxiv:1612.02313v1",
+    "title": "Direct observation of dispersive lower Hubbard band in iron-based superconductor FeSe",
+    "year": 2016,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "D. V. Evtushinsky; M. Aichhorn; Y. Sassa; Z. -H. Liu; J. Maletz; T. Wolf; A. N. Yaresko; S. Biermann; S. V. Borisenko; B. Buchner",
+    "url": "https://arxiv.org/abs/1612.02313v1",
+    "doi": "",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "iron-based"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Electronic correlations were long suggested not only to be responsible for the complexity of many novel materials, but also to form essential prerequisites for their intriguing properties. Electronic behavior of iron-based superconductors is far from conventional, while the reason for that is not yet understood. Here we present a combined study of the electronic spectrum in the iron-based superconductor FeSe by means of angle-resolved photoemission spectroscopy (ARPES) and dynamical mean field theory (DMFT). Both methods in unison reveal strong deviations of the spectrum from single-electron approximation for the whole 3$d$ band of iron: not only the well separated coherent and incoherent parts of the spectral weight are observed, but also a noticeable dispersion of the lower Hubbard band (LHB) is clearly present. This way we demonstrate correlations of the most puzzling intermediate coupling strength in iron superconductors.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1612.02313v1",
+    "properties": [],
+    "evidence": [
+      "Direct observation of dispersive lower Hubbard band in iron-based superconductor FeSe",
+      "https://arxiv.org/abs/1612.02313v1"
+    ],
+    "free_sources": [
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": []
+  },
+  {
+    "id": "doi:10.1088/0953-8984/27/29/293203",
+    "title": "ARPES measurements of the superconducting gap of Fe-based superconductors and their implications to the pairing mechanism",
+    "year": 2015,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "P. Richard; T. Qian; H. Ding",
+    "url": "https://arxiv.org/abs/1503.07269v2",
+    "doi": "10.1088/0953-8984/27/29/293203",
+    "materials": [],
+    "elements": [
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Its direct momentum sensitivity confers to angle-resolved photoemission spectroscopy (ARPES) a unique perspective in investigating the superconducting gap of multi-band systems. In this review we discuss ARPES studies on the superconducting gap of the high-temperature Fe-based superconductors. We show that while Fermi-surface-driven pairing mechanisms fail to provide a universal scheme for the Fe-based superconductors, theoretical approaches based on short-range interactions lead to a more robust and universal description of superconductivity in these materials. Our findings are also discussed in the broader context of unconventional superconductivity.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1503.07269v2",
+    "properties": [
+      "superconducting gap"
+    ],
+    "evidence": [
+      "ARPES measurements of the superconducting gap of Fe-based superconductors and their implications to the pairing mechanism",
+      "https://doi.org/10.1088/0953-8984/27/29/293203"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": "http://iopscience.iop.org/info/page/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.1088/1674-1056/22/8/087407",
+    "title": "Angle-resolved photoemission spectroscopy study on iron-based superconductors",
+    "year": 2013,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Z. R. Ye; Y. Zhang; B. P. Xie; D. L. Feng",
+    "url": "https://arxiv.org/abs/1307.5754v3",
+    "doi": "10.1088/1674-1056/22/8/087407",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap",
+      "band structure",
+      "iron-based"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Angle-resolved photoemission spectroscopy (ARPES) has played an important role in determining the band structure and the superconducting gap structure of iron-based superconductors. Here from the ARPES perspective, we briefly review the main results from our group in the recent years on the iron-based superconductors and their parent compounds, and depict our current understanding on the antiferromagnetism and superconductivity in these materials.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1307.5754v3",
+    "properties": [
+      "superconducting gap",
+      "band structure"
+    ],
+    "evidence": [
+      "Angle-resolved photoemission spectroscopy study on iron-based superconductors",
+      "https://doi.org/10.1088/1674-1056/22/8/087407"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": "http://iopscience.iop.org/info/page/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.1143/jpsj.81.011006",
+    "title": "Pseudogap, Superconducting Gap, and Fermi Arc in High-Tc Cuprates Revealed by Angle-Resolved Photoemission Spectroscopy",
+    "year": 2012,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Teppei Yoshida; Makoto Hashimoto; Inna M. Vishik; Zhi-Xun Shen; Atsushi Fujimori",
+    "url": "https://arxiv.org/abs/1203.0600v1",
+    "doi": "10.1143/JPSJ.81.011006",
+    "materials": [],
+    "elements": [
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We present an overview of angle-resolved photoemission spectroscopy (ARPES) studies of high-temperature cuprate superconductors aiming at elucidating the relationship between the superconductivity, the pseudogap, and the Fermi arc. ARPES studies of underdoped samples show a momentum dependence of the energy gap below Tc which deviates from a simple d-wave form, suggesting the coexistence of multiple energy scales in the superconducting state. Hence, two distinct energy scales have been introduced, namely, the gap near the node (characterized by Delta_0) and in the anti-nodal region (characterized by Delta^*). Dichotomy between them has been demonstrated from the material, doping, and temperature dependence of the energy gap. While Delta^* at the same doping level is approximately material independent, Delta_0 shows a strong material dependence tracking the magnitude of Tc,max. The anti-nodal gap does not close at Tc in contrast to the gap near the node which follows something closer to a BCS-like temperature dependence. An effective superconducting gap Delta_sc defined at the end point of the Fermi arc is found to be proportional to Tc's in various materials.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1203.0600v1",
+    "properties": [
+      "superconducting gap"
+    ],
+    "evidence": [
+      "Pseudogap, Superconducting Gap, and Fermi Arc in High-Tc Cuprates Revealed by Angle-Resolved Photoemission Spectroscopy",
+      "https://doi.org/10.1143/JPSJ.81.011006"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Physical Society of Japan",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1063/1.4773460",
+    "title": "Angle-resolved photoemission studies of the superconducting gap symmetry in Fe-based superconductors",
+    "year": 2012,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Y. -B. Huang; P. Richard; X. -P. Wang; T. Qian; H. Ding",
+    "url": "https://arxiv.org/abs/1208.4717v1",
+    "doi": "10.1063/1.4773460",
+    "materials": [],
+    "elements": [
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The superconducting gap is the fundamental parameter that characterizes the superconducting state, and its symmetry is a direct consequence of the mechanism responsible for Cooper pairing. Here we discuss about angle-resolved photoemission spectroscopy measurements of the superconducting gap in the Fe-based high-temperature superconductors. We show that the superconducting gap is Fermi surface dependent and nodeless with small anisotropy, or more precisely, a function of momentum. We show that while this observation is inconsistent with weak coupling approaches for superconductivity in these materials, it is well supported by strong coupling models and global superconducting gaps. We also suggest that the strong anisotropies measured by other probes sensitive to the residual density of states are not related to the pairing interaction itself, but rather emerge naturally from the smaller lifetime of the superconducting Cooper pairs that is a direct consequence of the momentum dependent interband scattering inherent to these materials.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1208.4717v1",
+    "properties": [
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Angle-resolved photoemission studies of the superconducting gap symmetry in Fe-based superconductors",
+      "https://doi.org/10.1063/1.4773460"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "AIP Publishing",
+    "license": "https://creativecommons.org/licenses/by/3.0/"
+  },
+  {
+    "id": "doi:10.1088/0034-4885/74/12/124512",
+    "title": "Fe-based superconductors: an angle-resolved photoemission spectroscopy perspective",
+    "year": 2011,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "P. Richard; T. Sato; K. Nakayama; T. Takahashi; H. Ding",
+    "url": "https://arxiv.org/abs/1110.6751v1",
+    "doi": "10.1088/0034-4885/74/12/124512",
+    "materials": [],
+    "elements": [
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Angle-resolved photoemission spectroscopy allows direct visualization and experimental determination of the electronic structure of crystals in the momentum space, including the precise characterization of the Fermi surface and the superconducting order parameter. It is thus particularly suited for investigating multiband systems such as the Fe-based superconductors. In this review, we cover several aspects of these recently discovered materials that have been addressed by this technique, with a special emphasis on their superconducting gap and their Fermi surface topology. We provide sufficient experimental evidence to support the reliability and the consistency of the angle-resolved photoemission spectroscopy measurements over a wide range of material compositions.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1110.6751v1",
+    "properties": [
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Fe-based superconductors: an angle-resolved photoemission spectroscopy perspective",
+      "https://doi.org/10.1088/0034-4885/74/12/124512"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1103/physrevb.79.054517",
+    "title": "Momentum dependence of the superconducting gap in Ba$_{1-x}$K$_{x}$Fe$_2$As$_2$",
+    "year": 2008,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "D. V. Evtushinsky; D. S. Inosov; V. B. Zabolotnyy; A. Koitzsch; M. Knupfer; B. Buchner; M. S. Viazovska; G. L. Sun; V. Hinkov; A. V. Boris; C. T. Lin; B. Keimer; A. Varykhalov; A. A. Kordyuk; S. V. Borisenko",
+    "url": "https://arxiv.org/abs/0809.4455v2",
+    "doi": "10.1103/PhysRevB.79.054517",
+    "materials": [],
+    "elements": [
+      "Ba",
+      "K",
+      "Fe",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconducting gap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The precise momentum dependence of the superconducting gap in the iron-arsenide superconductor with Tc = 32K (BKFA) was determined from angle-resolved photoemission spectroscopy (ARPES) via fitting the distribution of the quasiparticle density to a model. The model incorporates finite lifetime and experimental resolution effects, as well as accounts for peculiarities of BKFA electronic structure. We have found that the value of the superconducting gap is practically the same for the inner Gamma-barrel, X-pocket, and \"blade\"-pocket, and equals 9 meV, while the gap on the outer Gamma-barrel is estimated to be less than 4 meV, resulting in 2Delta/kT_c=6.8 for the large gap, and 2Delta/kT_c<3 for the small gap. A large (77 \\pm 3%) non-superconducting component in the photoemission signal is observed below T_c. Details of gap extraction from ARPES data are discussed in Appendix.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/0809.4455v2",
+    "properties": [
+      "superconducting gap"
+    ],
+    "evidence": [
+      "Momentum dependence of the superconducting gap in Ba$_{1-x}$K$_{x}$Fe$_2$As$_2$",
+      "https://doi.org/10.1103/PhysRevB.79.054517"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/physrevlett.91.127001",
+    "title": "Definitive experimental evidence for two-band superconductivity in MgB2",
+    "year": 2003,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "S. Tsuda; T. Yokoya; Y. Takano; H. Kito; A. Matsushita; F. Yin; H. Harima; S. Shin",
+    "url": "https://arxiv.org/abs/0303636v1",
+    "doi": "10.1103/PhysRevLett.91.127001",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "Mg",
+      "B"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "MgB2",
+      "superconductivity",
+      "superconducting gap",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The superconducting gap of MgB2 has been studied by high-resolution angle-resolved photoemission spectroscopy (ARPES). The momentum(k)-resolving capability of ARPES enables us to identify the s- and p-orbital derived bands predicted from band structure calculations and to successfully measure the superconducting gap on each band. The results show that superconducting gaps with values of 5.5 meV and 2.2 meV open on the s-band and the p-band, respectively, but both the gaps close at the bulk transition temperature, providing a definitive experimental evidence for the two-band superconductivity in MgB2. The experiments validate the role of k-dependent electron-phonon coupling as the origin of multiple-gap superconductivity in MgB2.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0303636v1",
+    "properties": [
+      "superconducting gap",
+      "band structure"
+    ],
+    "evidence": [
+      "Definitive experimental evidence for two-band superconductivity in MgB2",
+      "https://doi.org/10.1103/PhysRevLett.91.127001"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/physrevb.66.140502",
+    "title": "Surface states and their possible role in the superconductivity of MgB2",
+    "year": 2001,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "V. D. P. Servedio; S. -L. Drechsler; T. Mishonov",
+    "url": "https://arxiv.org/abs/0111434v2",
+    "doi": "10.1103/PhysRevB.66.140502",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "Mg",
+      "B",
+      "At"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "MgB2",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We report layer-Korringa-Kohn-Rostocker calculations for bulk and surface states as well as the corresponding angle resolved photoemission (ARPES) intensities of MgB2. Our theoretical results reproduce very well the recent ARPES data by Uchiyama et al., cond-mat/0111152. At least two surface states are assigned. Consequences of SFS on the anisotropy of the upper critical fields and other properties in the superconducting state of small grains in micropowder samples are briefly discussed.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0111434v2",
+    "properties": [],
+    "evidence": [
+      "Surface states and their possible role in the superconductivity of MgB2",
+      "https://doi.org/10.1103/PhysRevB.66.140502"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1016/s0921-4534(00)01116-3",
+    "title": "The topology of the Fermi surface of Bi2212 from angle resolved photoemission",
+    "year": 1999,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "M. S. Golden; S. V. Borisenko; S. Legner; T. Pichler; C. Duerr; M. Knupfer; J. Fink; G. Yang; S. Abell; G. Reichardt; R. Mueller; C. Janowitz",
+    "url": "https://arxiv.org/abs/9912332v1",
+    "doi": "10.1016/S0921-4534(00)01116-3",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "Tc",
+      "O"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Bi2212",
+      "Fermi surface"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We present a study of the topology of the normal state Fermi surface (FS) of the high Tc superconductor Bi2212 using angle-resolved photoemission. We present FS mapping experiments, recorded using unpolarised radiation with high (E,k) resolution, and an extremely dense sampling of k-space. In addition, synchrotron radiation-based ARPES has been used to prove the energy independence of the FS as seen by photoemission. We resolve the current controversy regarding the normal state FS in Bi2212. The true picture is simple, self-consistent and robust: the FS is hole-like, with the form of rounded tubes centred on the corners of the Brillouin zone. Two further types of features are also clearly observed: shadow FSs, and diffraction replicas of the main FS caused by passage of the photoelectrons through the modulated Bi-O planes.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/9912332v1",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "The topology of the Fermi surface of Bi2212 from angle resolved photoemission",
+      "https://doi.org/10.1016/S0921-4534(00)01116-3"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Elsevier BV",
+    "license": "https://www.elsevier.com/tdm/userlicense/1.0/"
+  },
+  {
+    "id": "doi:10.1103/physrevb.53.r14737",
+    "title": "Direct observation of particle-hole mixing in the superconducting state by angle-resolved photoemission",
+    "year": 1996,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "J. C. Campuzano; H. Ding; M. R. Norman; M. Randeria; A. F. Bellman; T. Yokoya; T. Takahashi; H. Katayama-Yoshida; T. Mochiku; K. Kadowaki",
+    "url": "https://arxiv.org/abs/9602119v1",
+    "doi": "10.1103/PhysRevB.53.R14737",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Particle-hole (p-h) mixing is a fundamental consequence of the existence of a pair condensate. We present direct experimental evidence for p-h mixing in the angle-resolved photoemission (ARPES) spectra in the superconducting state of Bi_2Sr_2CaCu_2O_{8+δ}. In addition to its pedagogical importance, this establishes unambiguously that the gap observed in ARPES is associated with superconductivity.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/9602119v1",
+    "properties": [],
+    "evidence": [
+      "Direct observation of particle-hole mixing in the superconducting state by angle-resolved photoemission",
+      "https://doi.org/10.1103/PhysRevB.53.R14737"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 1.0,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1126/science.aan4596",
+    "title": "Observation of topological superconductivity on the surface of an iron-based superconductor",
+    "year": 2018,
+    "source": "OpenAlex",
+    "source_title": "Science",
+    "authors": "Peng Zhang; Koichiro Yaji; Takahiro Hashimoto; Y. Ota; Takeshi Kondo; Kozo Okazaki; Zhijun Wang; Jinsheng Wen; Genda Gu; Hong Ding; Shik Shin",
+    "url": "https://doi.org/10.1126/science.aan4596",
+    "doi": "10.1126/science.aan4596",
+    "materials": [
+      "FeTe"
+    ],
+    "elements": [
+      "Fe",
+      "Te",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeTe",
+      "superconductivity",
+      "Fermi surface",
+      "iron-based",
+      "topological"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "A topological superconductor A promising path toward topological quantum computing involves exotic quasiparticles called the Majorana bound states (MBSs). MBSs have been observed in heterostructures that require careful nanofabrication, but the complexity of such systems makes further progress tricky. Zhang et al. identified a topological superconductor in which MBSs may be observed in a simpler way by looking into the cores of vortices induced by an external magnetic field. Using angle-resolved photoemission, the researchers found that the surface of the iron superconductor FeTe 0.55 Se 0.45 satisfies the required conditions for topological superconductivity. Science , this issue p. 182",
+    "citation_count": 709,
+    "open_access_url": "https://arxiv.org/pdf/1706.05163",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Observation of topological superconductivity on the surface of an iron-based superconductor",
+      "https://doi.org/10.1126/science.aan4596"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.99,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Association for the Advancement of Science (AAAS)",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1038/s41567-018-0280-z",
+    "title": "Multiple topological states in iron-based superconductors",
+    "year": 2018,
+    "source": "OpenAlex",
+    "source_title": "Nature Physics",
+    "authors": "Peng Zhang; Zhijun Wang; Xianxin Wu; Koichiro Yaji; Yukiaki Ishida; Yoshimitsu Kohama; Guangyang Dai; Yue Sun; Cedric Bareille; Kenta Kuroda; Takeshi Kondo; Kozo Okazaki; et al.",
+    "url": "https://doi.org/10.1038/s41567-018-0280-z",
+    "doi": "10.1038/s41567-018-0280-z",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "Fermi surface",
+      "iron-based",
+      "topological"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 266,
+    "open_access_url": "https://arxiv.org/pdf/1809.09977",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Multiple topological states in iron-based superconductors",
+      "https://doi.org/10.1038/s41567-018-0280-z"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.99,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1038/nature08521",
+    "title": "Coexistence of Fermi arcs and Fermi pockets in a high-Tc copper oxide superconductor",
+    "year": 2009,
+    "source": "OpenAlex",
+    "source_title": "Nature",
+    "authors": "Jian-Qiao Meng; Guodong Liu; Wentao Zhang; Lin Zhao; Haiyun Liu; Xiaowen Jia; Daixiang Mu; Shanyu Liu; Xiaoli Dong; Jun Zhang; Wei Lü; Guiling Wang; et al.",
+    "url": "https://doi.org/10.1038/nature08521",
+    "doi": "10.1038/nature08521",
+    "materials": [],
+    "elements": [
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "Fermi surface",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 229,
+    "open_access_url": "https://arxiv.org/pdf/0906.2682",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Coexistence of Fermi arcs and Fermi pockets in a high-Tc copper oxide superconductor",
+      "https://doi.org/10.1038/nature08521"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.99,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1038/nphys998",
+    "title": "In situ doping control of the surface of high-temperature superconductors",
+    "year": 2008,
+    "source": "OpenAlex",
+    "source_title": "Nature Physics",
+    "authors": "Md.A. Hossain; J. D. F. Mottershead; D. Fournier; Aaron Bostwick; J. L. McChesney; Eli Rotenberg; R. Liang; W. N. Hardy; G. A. Sawatzky; Ilya Elfimov; D. A. Bonn; A. Damascelli",
+    "url": "https://doi.org/10.1038/nphys998",
+    "doi": "10.1038/nphys998",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "Fermi surface",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 211,
+    "open_access_url": "",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "In situ doping control of the surface of high-temperature superconductors",
+      "https://doi.org/10.1038/nphys998"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.99,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://www.springernature.com/gp/researchers/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.1038/s41467-017-02566-1",
+    "title": "Defects controlled hole doping and multivalley transport in SnSe single crystals",
+    "year": 2017,
+    "source": "OpenAlex",
+    "source_title": "Nature Communications",
+    "authors": "Zhen Wang; Congcong Fan; Zhixuan Shen; Chenqiang Hua; Qifeng Hu; Feng Sheng; Yunhao Lu; Hanyan Fang; Zhizhan Qiu; Jiong Lu; Zhengtai Liu; Wanling Liu; et al.",
+    "url": "https://doi.org/10.1038/s41467-017-02566-1",
+    "doi": "10.1038/s41467-017-02566-1",
+    "materials": [
+      "SnSe",
+      "SnS"
+    ],
+    "elements": [
+      "Sn",
+      "Se",
+      "S"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "SnSe",
+      "SnS",
+      "Fermi surface",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Abstract SnSe is a promising thermoelectric material with record-breaking figure of merit. However, to date a comprehensive understanding of the electronic structure and most critically, the self-hole-doping mechanism in SnSe is still absent. Here we report the highly anisotropic electronic structure of SnSe investigated by angle-resolved photoemission spectroscopy, in which a unique pudding-mould-shaped valence band with quasi-linear energy dispersion is revealed. We prove that p-type doping in SnSe is extrinsically controlled by local phase segregation of SnSe 2 microdomains via interfacial charge transferring. The multivalley nature of the pudding-mould band is manifested in quantum transport by crystallographic axis-dependent weak localisation and exotic non-saturating negative magnetoresistance. Strikingly, quantum oscillations also reveal 3D Fermi surface with unusual interlayer coupling strength in p-SnSe, in which individual monolayers are interwoven by peculiar point dislocation defects. Our results suggest that defect engineering may provide versatile routes in improving the thermoelectric performance of the SnSe family.",
+    "citation_count": 120,
+    "open_access_url": "https://www.nature.com/articles/s41467-017-02566-1.pdf",
+    "properties": [
+      "Fermi surface",
+      "band structure"
+    ],
+    "evidence": [
+      "Defects controlled hole doping and multivalley transport in SnSe single crystals",
+      "https://doi.org/10.1038/s41467-017-02566-1"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.95,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "id": "arxiv:2408.15500v2",
+    "title": "Electronic states in superconducting type-II Dirac semimetal: 1T-PdSeTe",
+    "year": 2024,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Yogendra Kumar; Shiv Kumar; Venkateswara Yenugonda; Ryohei Oishi; Jayita Nayak; Chaoyu Chen; Ravi Prakash Singh; Takahiro Onimaru; Yasuyuki Shimura; Shinichiro Ideta; Kenya Shimada",
+    "url": "https://arxiv.org/abs/2408.15500v2",
+    "doi": "",
+    "materials": [],
+    "elements": [
+      "K",
+      "Se",
+      "Te"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "band structure",
+      "topological"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We have investigated the surface and bulk electronic structures of the superconducting type-II Dirac semimetal 1T-PdSeTe. The superconducting transition temperature $T_C = 3.2$ K was almost twice as high as $T_C = 1.6$ K in 1T-PdTe$_2$. Scanning transmission electron microscopy measurements showed homogeneously mixed Se and Te atoms in the chalcogen layers, consistent with the CdI$_2$-type crystal structure. Angle-resolved photoemission spectroscopy measurements and density functional theory calculations indicated the existence of the topological surface states, and the overall band structures were similar to those of 1T-PdTe$_2$. These results suggest that CdI$_2$-type lattice symmetry dictates the band dispersion, regardless of atomic disorder in the chalcogen layers. As the electronic band dispersion and the local structures were persistent upon substitution, the enhancement of $T_C$ is likely associated with the chemical pressure. Our results provide insight into the effects of the solid solution on the surface and bulk electronic states as well as the superconducting transition temperature.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/2408.15500v2",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "Electronic states in superconducting type-II Dirac semimetal: 1T-PdSeTe",
+      "https://arxiv.org/abs/2408.15500v2"
+    ],
+    "free_sources": [
+      "arXiv"
+    ],
+    "arpes_relevance": 0.95,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": []
+  },
+  {
+    "id": "doi:10.1088/1367-2630/ac9d5e",
+    "title": "Strong surface termination dependence of the electronic structure of polar superconductor LaFeAsO revealed by nano-ARPES",
+    "year": 2022,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Sung Won Jung; Luke C. Rhodes; Matthew D. Watson; Daniil V. Evtushinsky; Cephise Cacho; Saicharan Aswartham; Rhea Kappenberger; Sabine Wurmehl; Bernd Büchner; Timur K. Kim",
+    "url": "https://arxiv.org/abs/2208.05832v1",
+    "doi": "10.1088/1367-2630/ac9d5e",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Fermi surface",
+      "iron-based"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The electronic structures of the iron-based superconductors have been intensively studied by using angleresolved photoemission spectroscopy (ARPES). A considerable amount of research has been focused on the LaFeAsO family, showing the highest transition temperatures, where previous ARPES studies have found much larger Fermi surfaces than bulk theoretical calculations would predict. The discrepancy has been attributed to the presence of termination-dependent surface states. Here, using photoemission spectroscopy with a sub-micron focused beam spot (nano-ARPES) we have successfully measured the electronic structures of both the LaO and FeAs terminations in LaFeAsO. Our data reveal very different band dispersions and core-level spectra for different surface terminations, showing that previous macro-focus ARPES measurements were incomplete. Our results give direct evidence for the surface-driven electronic structure reconstruction in LaFeAsO, including formation of the termination-dependent surface states at the Fermi level. This new experimental technique, which we have shown to be very powerful when applied to this prototypical compound, can now be used to study various materials with different surface terminations.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/2208.05832v1",
+    "properties": [
+      "Fermi surface",
+      "band structure"
+    ],
+    "evidence": [
+      "Strong surface termination dependence of the electronic structure of polar superconductor LaFeAsO revealed by nano-ARPES",
+      "https://doi.org/10.1088/1367-2630/ac9d5e"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.89,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  {
+    "id": "doi:10.1038/382051a0",
+    "title": "Spectroscopic evidence for a pseudogap in the normal state of underdoped high-Tc superconductors",
+    "year": 1996,
+    "source": "OpenAlex",
+    "source_title": "Nature",
+    "authors": "Hong Ding; T. Yokoya; J. C. Campuzano; Tadashi Takahashi; Mohit Randeria; M. R. Norman; T. Mochiku; K. Kadowaki; J. Giapintzakis",
+    "url": "https://doi.org/10.1038/382051a0",
+    "doi": "10.1038/382051a0",
+    "materials": [],
+    "elements": [
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 1330,
+    "open_access_url": "",
+    "properties": [],
+    "evidence": [
+      "Spectroscopic evidence for a pseudogap in the normal state of underdoped high-Tc superconductors",
+      "https://doi.org/10.1038/382051a0"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.87,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1038/nature07263",
+    "title": "Electronic structure of the iron-based superconductor LaOFeP",
+    "year": 2008,
+    "source": "OpenAlex",
+    "source_title": "Nature",
+    "authors": "Dong-Hui Lu; Ming Yi; Sung‐Kwan Mo; A. S. Erickson; James G. Analytis; J.-H. Chu; David J. Singh; Z. Hussain; T. H. Geballe; I. R. Fisher; Zhi‐Xun Shen",
+    "url": "https://doi.org/10.1038/nature07263",
+    "doi": "10.1038/nature07263",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate",
+      "iron-based"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 314,
+    "open_access_url": "https://arxiv.org/pdf/0807.2009",
+    "properties": [],
+    "evidence": [
+      "Electronic structure of the iron-based superconductor LaOFeP",
+      "https://doi.org/10.1038/nature07263"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.87,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1038/s41699-019-0109-3",
+    "title": "Strong interlayer hybridization in the aligned SnS2/WSe2 hetero-bilayer structure",
+    "year": 2019,
+    "source": "OpenAlex",
+    "source_title": "npj 2D Materials and Applications",
+    "authors": "Jihene Zribi; Lama Khalil; Biyuan Zheng; J. Ávila; Debora Pierucci; Thibault Brulé; Julien Chaste; Emmanuel Lhuillier; M. C. Asensio; Anlian Pan; Abdelkarim Ouerghi",
+    "url": "https://doi.org/10.1038/s41699-019-0109-3",
+    "doi": "10.1038/s41699-019-0109-3",
+    "materials": [
+      "WSe2",
+      "SnS2",
+      "SnS"
+    ],
+    "elements": [
+      "W",
+      "Se",
+      "Sn",
+      "S",
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "WSe2",
+      "SnS2",
+      "SnS",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Abstract The combination of monolayers of different two-dimensional (2D) materials into van der Waals hetero-bilayer structures creates unprecedented physical phenomena, acting as a powerful tool for future devices. Understanding and exploiting these phenomena hinge on knowing the electronic structure and the hybridization of hetero-bilayer structures. Here, we show strong hybridization effects arising between the constitutive single layers of a SnS 2 /WSe 2 hetero-bilayer structure grown by chemical vapor deposition. Surprisingly, the valence band maximum position of WSe 2 is moved from the K point for the single layer WSe 2 to the Γ point for the aligned SnS 2 /WSe 2 hetero-bilayer. Additionally, a significant photoluminescence quenching is observed for the SnS 2 /WSe 2 hetero-bilayer structure with respect to the WSe 2 monolayer. Using photoluminescence spectroscopy and nano-angle-resolved photoemission spectroscopy techniques, we demonstrate that the SnS 2 /WSe 2 heterostructure present a type-II band alignment. These findings directly answer many outstanding questions about the electronic band structure and the band offset of SnS 2 /WSe 2 hetero-bilayers for envisaging their applications in nanoelectronics.",
+    "citation_count": 56,
+    "open_access_url": "https://www.nature.com/articles/s41699-019-0109-3.pdf",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "Strong interlayer hybridization in the aligned SnS2/WSe2 hetero-bilayer structure",
+      "https://doi.org/10.1038/s41699-019-0109-3"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.83,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "id": "doi:10.1103/physrevlett.95.077001",
+    "title": "Fermi Surface and Quasiparticle Excitations of overdoped Tl2Ba2CuO6+d by ARPES",
+    "year": 2005,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "M. Plate; J. D. F. Mottershead; I. S. Elfimov; D. C. Peets; Ruixing Liang; D. A. Bonn; W. N. Hardy; S. Chiuzbaian; M. Falub; M. Shi; L. Patthey; A. Damascelli",
+    "url": "https://arxiv.org/abs/0503117v3",
+    "doi": "10.1103/PhysRevLett.95.077001",
+    "materials": [],
+    "elements": [
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconducting gap",
+      "Fermi surface",
+      "cuprate",
+      "topological"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The electronic structure of the high-T_c superconductor Tl2Ba2CuO6+d is studied by ARPES. For a very overdoped Tc=30K sample, the Fermi surface consists of a single large hole pocket centered at (pi,pi) and is approaching a topological transition. Although a superconducting gap with d_x^2-y^2 symmetry is tentatively identified, the quasiparticle evolution with momentum and binding energy exhibits a marked departure from the behavior observed in under and optimally doped cuprates. The relevance of these findings to scattering, many-body, and quantum-critical phenomena is discussed.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0503117v3",
+    "properties": [
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Fermi Surface and Quasiparticle Excitations of overdoped Tl2Ba2CuO6+d by ARPES",
+      "https://doi.org/10.1103/PhysRevLett.95.077001"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.83,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/physrevb.71.212501",
+    "title": "Anomaly at Delta_k in the ARPES spectrum of dirty superconductors",
+    "year": 2004,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "T. Dahm; P. J. Hirschfeld; L. Zhu; D. J. Scalapino",
+    "url": "https://arxiv.org/abs/0410689v2",
+    "doi": "10.1103/PhysRevB.71.212501",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconducting gap",
+      "Fermi surface",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Elastic forward scattering can lead to an anomaly in the ARPES spectrum of the cuprate superconductors. Here we discuss how this anomaly can be used to provide a measurement of the superconducting gap Delta_k for k values away from the Fermi surface.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0410689v2",
+    "properties": [
+      "superconducting gap",
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Anomaly at Delta_k in the ARPES spectrum of dirty superconductors",
+      "https://doi.org/10.1103/PhysRevB.71.212501"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.83,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/revmodphys.75.657",
+    "title": "The superconductivity of<mml:math xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\"><mml:mrow><mml:msub><mml:mrow><mml:mi mathvariant=\"normal\">Sr</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msub></mml:mrow><mml:mrow><mml:msub><mml:mrow><mml:mi mathvariant=\"normal\">RuO</mml:mi></mml:mrow><mml:mrow><mml:mn>4</mml:mn></mml:mrow></mml:msub></mml:mrow></mml:math>and the physics of spin-triplet pairing",
+    "year": 2003,
+    "source": "OpenAlex",
+    "source_title": "Reviews of Modern Physics",
+    "authors": "A. P. Mackenzie; Y. Maeno",
+    "url": "https://doi.org/10.1103/revmodphys.75.657",
+    "doi": "10.1103/revmodphys.75.657",
+    "materials": [],
+    "elements": [
+      "Sr",
+      "At",
+      "Ru"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "Fermi surface"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "This review presents a summary and evaluation of the experimental properties of unconventional superconductivity in ${\\mathrm{Sr}}_{2}{\\mathrm{RuO}}_{4}$ as they were known in the spring of 2002. At the same time, the paper is intended to be useful as an introduction to the physics of spin-triplet superconductivity. First, the authors show how the normal-state properties of ${\\mathrm{Sr}}_{2}{\\mathrm{RuO}}_{4}$ are quantitatively described in terms of a quasi-two-dimensional Fermi liquid. Then they summarize its phenomenological superconducting parameters in the framework of the Ginzburg-Landau model, and discuss the existing evidence for spin-triplet pairing. After a brief introduction to the vector order parameter, they examine the most likely symmetry of the triplet state. The structure of the superconducting energy gap is discussed, as is the effect of symmetry-breaking magnetic fields on the phase diagram. The article concludes with a discussion of some outstanding issues and desirable future work. Appendixes on additional details of the normal state, difficulty in observing the bulk Fermi surface by angle-resolved photoemission, and the enhancement of superconducting transition temperature in a two-phase ${\\mathrm{Sr}}_{2}{\\mathrm{RuO}}_{4}\\ensuremath{-}\\mathrm{Ru}$ system are included.",
+    "citation_count": 1976,
+    "open_access_url": "",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "The superconductivity of<mml:math xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\"><mml:mrow><mml:msub><mml:mrow><mml:mi mathvariant=\"normal\">Sr</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msub></mml:mrow><mml:mrow><mml:msub><mml:mrow><mml:mi mathvariant=\"normal\">RuO</mml:mi></mml:mrow><mml:mrow><mml:mn>4</mml:mn></mml:mrow></mml:msub></mml:mrow></mml:math>and the physics of spin-triplet pairing",
+      "https://doi.org/10.1103/revmodphys.75.657"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.79,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/revmodphys.77.109",
+    "title": "Andreev–Saint-James reflections: A probe of cuprate superconductors",
+    "year": 2005,
+    "source": "OpenAlex",
+    "source_title": "Reviews of Modern Physics",
+    "authors": "G. Deutscher",
+    "url": "https://doi.org/10.1103/revmodphys.77.109",
+    "doi": "10.1103/revmodphys.77.109",
+    "materials": [],
+    "elements": [
+      "Y",
+      "Ba",
+      "Cu",
+      "O",
+      "La",
+      "Sr"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Electrical transport through a normal-metal/superconductor contact at biases smaller than the energy gap can occur via the reflection of an electron as a hole of opposite wave vector. The same mechanism of electron-hole reflection gives rise to low-energy states at the surface of unconventional superconductors having nodes in their order parameter. The occurrence of electron-hole reflections at normal-metal/superconductor interfaces was predicted independently by Saint-James and de Gennes and by Andreev, and their spectroscopic features were discussed in detail by Saint-James in the early sixties. They are generally called Andreev reflections but, in view of the literature, will here be referred to as Andreev--Saint-James (ASJ) reflections. This review presents a historical review of ASJ reflections and spectroscopy in conventional superconductors, and reviews their application to the high-${T}_{c}$ cuprates. The occurrence of ASJ reflections in all studied cuprates is well documented for a broad range of doping levels, implying that there is no large asymmetry between electrons and holes near the Fermi level in the superconducting state. In the underdoped regime, where the pseudogap phenomenon has been observed by other methods such as nuclear magnetic resonance (NMR), angular-resolved photoemission spectroscopy (ARPES), and Giaever tunneling, gap values obtained from ASJ spectroscopy are smaller than pseudogap values, indicating a lack of coherence in the pseudogap energy range. Low-energy surface bound states have been observed in all studied hole-doped cuprates, in agreement with a dominant $d$-wave symmetry order parameter. Results are mixed for electron-doped cuprates. In overdoped $\\mathrm{Y}{\\mathrm{Ba}}_{2}{\\mathrm{Cu}}_{3}{\\mathrm{O}}_{7\\ensuremath{-}\\ensuremath{\\delta}}\\phantom{\\rule{0.3em}{0ex}}(\\ensuremath{\\delta}&lt;0.08)$ and ${\\mathrm{La}}_{2\\ensuremath{-}x}{\\mathrm{Sr}}_{x}\\mathrm{Cu}{\\mathrm{O}}_{4}$, ASJ spectroscopy is consistent with the presence of an additional imaginary component of the order parameter. Results of ASJ spectroscopy under applied magnetic fields are also reviewed. A short section at the end is devoted to some recent results on spin effects.",
+    "citation_count": 383,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0409225",
+    "properties": [],
+    "evidence": [
+      "Andreev–Saint-James reflections: A probe of cuprate superconductors",
+      "https://doi.org/10.1103/revmodphys.77.109"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.77,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/physrevlett.99.247001",
+    "title": "Evolution of the Fermi surface in phase fluctuating d-wave superconductors",
+    "year": 2007,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Erez Berg; Ehud Altman",
+    "url": "https://arxiv.org/abs/0705.1566v2",
+    "doi": "10.1103/PhysRevLett.99.247001",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Fermi surface",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "One of the most puzzling aspects of the high $T_c$ superconductors is the appearance of Fermi arcs in the normal state of the underdoped cuprate materials. These are loci of low energy excitations covering part of the fermi surface, that suddenly appear above $T_c$ instead of the nodal quasiparticles. Based on a semiclassical theory, we argue that partial Fermi surfaces arise naturally in a d-wave superconductor that is destroyed by thermal phase fluctuations. Specifically, we show that the electron spectral function develops a square root singularity at low frequencies for wave-vectors positioned on the bare Fermi surface. We predict a temperature dependence of the arc length that can partially account for results of recent angle resolved photo emission (ARPES) experiments.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/0705.1566v2",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Evolution of the Fermi surface in phase fluctuating d-wave superconductors",
+      "https://doi.org/10.1103/PhysRevLett.99.247001"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.69,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1088/1367-2630/aa8a04",
+    "title": "Electronic anisotropies revealed by detwinned ARPES measurements of FeSe",
+    "year": 2017,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Matthew D Watson; Amir A. Haghighirad; Luke C. Rhodes; Moritz Hoesch; Timur K. Kim",
+    "url": "https://arxiv.org/abs/1705.02286v2",
+    "doi": "10.1088/1367-2630/aa8a04",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se",
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "Fermi surface",
+      "nematic"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We report high resolution ARPES measurements of detwinned FeSe single crystals. The application of a mechanical strain is used to promote the volume fraction of one of the orthorhombic domains in the sample, which we estimate to be 80$\\%$ detwinned. While the full structure of the electron pockets consisting of two crossed ellipses may be observed in the tetragonal phase at temperatures above 90~K, we find that remarkably, only one peanut-shaped electron pocket oriented along the longer $a$ axis contributes to the ARPES measurement at low temperatures in the nematic phase, with the expected pocket along $b$ being not observed. Thus the low temperature Fermi surface of FeSe as experimentally determined by ARPES consists of one elliptical hole pocket and one orthogonally-oriented peanut-shaped electron pocket. Our measurements clarify the long-standing controversies over the interpretation of ARPES measurements of FeSe.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1705.02286v2",
+    "properties": [
+      "Fermi surface",
+      "nematicity"
+    ],
+    "evidence": [
+      "Electronic anisotropies revealed by detwinned ARPES measurements of FeSe",
+      "https://doi.org/10.1088/1367-2630/aa8a04"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": "http://iopscience.iop.org/info/page/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.3367/ufne.2016.06.037825",
+    "title": "High Temperature Superconductivity in FeSe Monolayers",
+    "year": 2016,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "M. V. Sadovskii",
+    "url": "https://arxiv.org/abs/1605.04426v3",
+    "doi": "10.3367/UFNe.2016.06.037825",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "This review discusses the main experiments and theoretical views related to observation of high-temperature superconductivity in intercalated FeSe compounds and single layer films of FeSe on substrates like SrTiO_3. We consider in detail the electronic structure of these systems, both theoretical calculations of this structure at hand and their correspondence with ARPES experiments. It is stressed that electronic spectrum of these systems is qualitatively different from typical picture of the spectrum in well studied FeAs superconductors and the related problems of theoretical description of spectrum formation are also discussed. We also discuss the possible mechanisms of Cooper pairing in monolayers of FeSe and problems appearing here. As single layer films of FeSe on SrTiO_3 can be represented as typical Ginzburg \"sandwiches\", we analyze the possibility of rising the critical temperature of superconducting transition T_c due to different variants of \"excitonic\" mechanism of superconductivity. It is shown, that in its classic variant (as proposed for such systems by Allender, Bray and Bardeen) this mechanism is unable to explain the observed values of T_c, but situation is different when we consider instead of \"excitons\" the optical phonons in SrTiO_3 (with energy of the order of 100 meV). We consider both the simplest model of T_c enhancement due to interaction with such phonons and more specific models with dominant \"forward\" scattering, which allow to understand the growth of T_c as compared with the case of bulk FeSe and intercalated FeSe systems. We also discuss the problems connected with antiadiabatic nature of superconductivity due to such mechanism.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1605.04426v3",
+    "properties": [],
+    "evidence": [
+      "High Temperature Superconductivity in FeSe Monolayers",
+      "https://doi.org/10.3367/UFNe.2016.06.037825"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Uspekhi Fizicheskikh Nauk (UFN) Journal",
+    "license": "http://iopscience.iop.org/info/page/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.1007/s11467-016-0595-0",
+    "title": "Anisotropic evolution of energy gap in Bi2212 superconductor",
+    "year": 2016,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Artur P. Durajski",
+    "url": "https://arxiv.org/abs/1608.01094v1",
+    "doi": "10.1007/s11467-016-0595-0",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Bi2212",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We present a systematic analysis of the energy gap in underdoped Bi2212 superconductor as a function of temperature and hole doping level. Within the framework of the theoretical model containing the electron-phonon and electron-electron-phonon pairing mechanism, we reproduced the measurement results of modern ARPES experiments with very high accuracy. We showed that the energy-gap amplitude is very weakly dependent on the temperature but clearly dependent on the level of doping. The evidence for a non-zero energy gap above the critical temperature, referred to as a pseudogap, was also obtained.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1608.01094v1",
+    "properties": [],
+    "evidence": [
+      "Anisotropic evolution of energy gap in Bi2212 superconductor",
+      "https://doi.org/10.1007/s11467-016-0595-0"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "China Engineering Science Press Co. Ltd.",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1103/physrevb.93.060507",
+    "title": "On peculiarities of superconductivity in the single-layer FeSe/SrTiO3 interfa",
+    "year": 2015,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Lev P. Gor'kov",
+    "url": "https://arxiv.org/abs/1510.03327v2",
+    "doi": "10.1103/PhysRevB.93.060507",
+    "materials": [
+      "FeSe",
+      "SrTiO3"
+    ],
+    "elements": [
+      "Fe",
+      "Se",
+      "Sr",
+      "Ti",
+      "O",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "SrTiO3",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Observation of replica bands in the ARPES spectra of the single-layer FeSe on strontium titanate substrate revealed a phonon component among mechanisms behind high Tc superconductivity there. We study the interaction of the in-layer FeSe electrons with the electric potential of the longitudinal (LO) modes at surface of bulk SrTiO3. A two-dimensional system of charges at the FeSe/SrTiO3 interface includes both the itinerant and immobile electrons. The latter significantly change the interface characteristics, increasing screening at the substrate surface and reducing thereby the strength of the electron-LO phonon interactions. In that follows the dielectric constant serves as a free parameter and is found from the ARPES data for the replicas. The two-dimensional Coulomb screening is accounted for in the random phase approximation. It is shown that the model is applicable within the whole range of the parameters typical for current experiments. The estimates allow concluding that the LO-phonon mediated pairing alone cannot account for the temperatures of the superconducting transition Tc in the single-layer FeSe/SrTiO3 reported in these experiments. This does not exclude that the LO-phonons mechanism can become more significant in the differently and better prepared single layer FeSe films. Available experiments are briefly discussed. Thus far no data exist on the dependence of Tc on the concentration of electrons doped into the in-layer FeSe band.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1510.03327v2",
+    "properties": [],
+    "evidence": [
+      "On peculiarities of superconductivity in the single-layer FeSe/SrTiO3 interfa",
+      "https://doi.org/10.1103/PhysRevB.93.060507"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.1103/physrevb.91.140502",
+    "title": "Strong interaction between electrons and collective excitations in multiband superconductor MgB2",
+    "year": 2015,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Daixiang Mou; Rui Jiang; Valentin Taufour; Rebecca Flint; S. L. Budko; P. C. Canfield; J. S. Wen; Z. J. Xu; Genda Gu; Adam Kaminski",
+    "url": "https://arxiv.org/abs/1503.07069v1",
+    "doi": "10.1103/PhysRevB.91.140502",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "Mg",
+      "B",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "MgB2",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We use a tunable laser ARPES to study the electronic properties of the prototypical multiband BCS superconductor MgB2. Our data reveal a strong renormalization of the dispersion (kink) at ~65 meV, which is caused by coupling of electrons to the E2g phonon mode. In contrast to cuprates, the 65 meV kink in MgB2 does not change significantly across Tc. More interestingly, we observe strong coupling to a second, lower energy collective mode at binding energy of 10 meV. This excitation vanishes above Tc and is likely a signature of the elusive Leggett mode.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1503.07069v1",
+    "properties": [],
+    "evidence": [
+      "Strong interaction between electrons and collective excitations in multiband superconductor MgB2",
+      "https://doi.org/10.1103/PhysRevB.91.140502"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "American Physical Society (APS)",
+    "license": "http://link.aps.org/licenses/aps-default-license"
+  },
+  {
+    "id": "doi:10.7566/jpsj.83.014711",
+    "title": "Multiband Superconductivity in KFe2As2: Evidence for one Isotropic and several Liliputian Energy Gaps",
+    "year": 2013,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Frederic Hardy; Robert Eder; Martin Jackson; Dai Aoki; Carley Paulsen; Thomas Wolf; Philipp Burger; Anna Boehmer; Peter Schweiss; Peter Adelmann; Robert A. Fisher; Christoph Meingast",
+    "url": "https://arxiv.org/abs/1309.5654v1",
+    "doi": "10.7566/JPSJ.83.014711",
+    "materials": [
+      "KFe2As2",
+      "MgB2",
+      "CeCoIn5"
+    ],
+    "elements": [
+      "K",
+      "Fe",
+      "As",
+      "Mg",
+      "B",
+      "Ce",
+      "Co",
+      "In",
+      "H"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "KFe2As2",
+      "MgB2",
+      "CeCoIn5",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We report a detailed low-temperature thermodynamic investigation (heat capacity and magnetization) of the superconducting state of KFe2As2 for H || c axis. Our measurements reveal that the properties of KFe2As2 are dominated by a relatively large nodeless energy gap (Delta?0 = 1.9 kBTc) which excludes dx2-y2 symmetry. We prove the existence of several additional extremely small gaps (?Delta0 < 1.0 kBTc) that have a profound impact on the low-temperature and low-field behavior, similar to MgB2, CeCoIn5 and PrOs4Sb12. The zero-field heat capacity is analyzed in a realistic self-consistent 4-band BCS model which qualitatively reproduces the recent laser ARPES results of Okazaki et al. (Science 337 (2012) 1314). Our results show that extremely low-temperature measurements, i.e. T < 0.1 K, will be required in order to resolve the question of the existence of line nodes in this compound.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1309.5654v1",
+    "properties": [],
+    "evidence": [
+      "Multiband Superconductivity in KFe2As2: Evidence for one Isotropic and several Liliputian Energy Gaps",
+      "https://doi.org/10.7566/JPSJ.83.014711"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Physical Society of Japan",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1140/epjst/e2010-01303-3",
+    "title": "An ARPES view on the high-Tc problem: phonons vs spin-fluctuations",
+    "year": 2010,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "A. A. Kordyuk; V. B. Zabolotnyy; D. V. Evtushinsky; D. S. Inosov; T. K. Kim; B. Buechner; S. V. Borisenko",
+    "url": "https://arxiv.org/abs/1009.4336v1",
+    "doi": "10.1140/epjst/e2010-01303-3",
+    "materials": [],
+    "elements": [
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We review the search for a mediator of high-Tc superconductivity focusing on ARPES experiment. In case of HTSC cuprates, we summarize and discuss a consistent view of electronic interactions that provides natural explanation of both the origin of the pseudogap state and the mechanism for high temperature superconductivity. Within this scenario, the spin-fluctuations play a decisive role in formation of the fermionic excitation spectrum in the normal state and are sufficient to explain the high transition temperatures to the superconducting state while the pseudogap phenomenon is a consequence of a Peierls-type intrinsic instability of electronic system to formation of an incommensurate density wave. On the other hand, a similar analysis being applied to the iron pnictides reveals especially strong electron-phonon coupling that suggests important role of phonons for high-Tc superconductivity in pnictides.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/1009.4336v1",
+    "properties": [],
+    "evidence": [
+      "An ARPES view on the high-Tc problem: phonons vs spin-fluctuations",
+      "https://doi.org/10.1140/epjst/e2010-01303-3"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1016/j.jpcs.2005.10.107",
+    "title": "Life of the nodal quasiparticles in Bi-2212 as seen by ARPES",
+    "year": 2005,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "A. A. Kordyuk; S. V. Borisenko; A. Koitzsch; J. Fink; M. Knupfer; B. Buechner; H. Berger",
+    "url": "https://arxiv.org/abs/0508574v1",
+    "doi": "10.1016/j.jpcs.2005.10.107",
+    "materials": [],
+    "elements": [
+      "Bi"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "While the pronounced doping dependence of the quasiparticle spectral weight in the antinodal region of the superconducting cuprates, as seen by ARPES, unambiguously points to the magnetic origin of the strong electron-boson coupling there, the nature of the electron scattering in the nodal direction remained unclear. Here we present a short review of our recent detailed investigations of the nodal direction of Bi-2212. Our findings prove the existence of well defined quasiparticles even in the pseudogap state and show that the essential part of the quasiparticle scattering rate, which appears on top of Auger-like electron-electron interaction, also implies a magnetic origin.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0508574v1",
+    "properties": [],
+    "evidence": [
+      "Life of the nodal quasiparticles in Bi-2212 as seen by ARPES",
+      "https://doi.org/10.1016/j.jpcs.2005.10.107"
+    ],
+    "free_sources": [
+      "Crossref",
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Elsevier BV",
+    "license": "https://www.elsevier.com/tdm/userlicense/1.0/"
+  },
+  {
+    "id": "arxiv:0409204v1",
+    "title": "Relating STM, ARPES, and Transport in the Cuprate Superconducting State",
+    "year": 2004,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "D. J. Scalapino; T. S. Nunner; P. J. Hirschfeld",
+    "url": "https://arxiv.org/abs/0409204v1",
+    "doi": "",
+    "materials": [
+      "YBCO"
+    ],
+    "elements": [
+      "Y",
+      "B",
+      "C",
+      "O"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "YBCO",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We discuss a wealth of data from various types of experiments which together suggest that the superconducting state of optimally to overdoped BSCCO-2212 can be well-described by the BCS theory with a d-wave gap together with small-angle scattering from out-of-plane defects. These include scanning tunnelling Fourier transform spectroscopy observation of nanoscale inhomogeneity in the local gap edge position, the narrowing of the antinodal ARPES spectrum when BSCCO becomes superconducting, as well as the behavior of the microwave and thermal conductivities. We suggest that the large amount of small-angle scattering in BSCCO can account for the differences between the superconducting properties of BSCCO and YBCO.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0409204v1",
+    "properties": [],
+    "evidence": [
+      "Relating STM, ARPES, and Transport in the Cuprate Superconducting State",
+      "https://arxiv.org/abs/0409204v1"
+    ],
+    "free_sources": [
+      "arXiv"
+    ],
+    "arpes_relevance": 0.57,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": []
+  },
+  {
+    "id": "arxiv:2510.21568v1",
+    "title": "ARPES of Bi2212 interpreted via a particle in a system of dynamic scatterers",
+    "year": 2025,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Udomsilp Pinsook",
+    "url": "https://arxiv.org/abs/2510.21568v1",
+    "doi": "",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "I",
+      "C",
+      "At"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Bi2212"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "In this work, I employ parabolic cylinder functions to quantitatively describe the ARPES spectra of an over-doped Bi2212 across the temperature range 6 - 140K at the antinode k-point. These functions come from the solutions of a particle moving in a system of random scatterers. The parameters, i.e. the overall amplitude (A), the spectral coherence scale (C), and the energy shift (EG), are determined directly by fitting to experimental data. At 140K, the dominated feature of the ARPES spectrum resembles the solution of a particle moving in a one-dimensional random system. According to the present model, the electronic states of the over-doped Bi2212 at the antinode k-point can be viewed as a realization of the theory of a particle moving in dynamic scatterers in 1D with corrections from the ground state solutions at lower temperature.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/2510.21568v1",
+    "properties": [],
+    "evidence": [
+      "ARPES of Bi2212 interpreted via a particle in a system of dynamic scatterers",
+      "https://arxiv.org/abs/2510.21568v1"
+    ],
+    "free_sources": [
+      "arXiv"
+    ],
+    "arpes_relevance": 0.45,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": []
+  },
+  {
+    "id": "arxiv:0610549v2",
+    "title": "ARPES Spectra of Bi2212 give the Coulomb Coupling $λ^{C}\\approx 1$ and the Electron-Phonon Coupling $λ^{EP}=2-3$",
+    "year": 2006,
+    "source": "arXiv",
+    "source_title": "arXiv",
+    "authors": "Miodrag L. Kulic; Oleg V. Dolgov",
+    "url": "https://arxiv.org/abs/0610549v2",
+    "doi": "",
+    "materials": [
+      "Bi2212"
+    ],
+    "elements": [
+      "Bi",
+      "C",
+      "Re"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "Bi2212"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We show that the double kink-structure in the electronic self-energy of Bi2212 near the nodal point at low energy $ω_{1}\\approx 50-70$ $meV$ and at high energy at $ω_{2}\\approx 350$ $meV$, observed recently in the ARPES measurements by Valla et al \\cite{Valla-2006}, gives that the electron-phonon (EPI) coupling constant $λ_{z}^{EP}$in the normal part of the self-energy $Σ(ω)$ is twice larger than the Coulomb coupling $λ_{z}^{C}$. The experimental data for $\\func{Re}Σ(ω)$ up to energies $\\sim 350$ $meV$ can be satisfactory explained by $% λ_{z}^{EP}\\approx 2.1$ and $λ_{z}^{C}\\approx 1.1$. Additionally the low energy slope of the ARPES $\\func{Re}Σ(ω)$ at $ω<20$ $meV$ \\cite{Valla-2006} gives a hint that the low energy phonons might contribute significantly to the EPI coupling, i.e. $λ_{z}^{low,EP}>1$, thus giving the total EPI coupling constant $λ_{z,tot}^{EP}=λ_{z}^{EP}+λ_{z}^{low,EP}>3$. In order to test the role of low frequency phonons by ARPES measurements a much better momentum resolution is needed than that reported in \\cite{Valla-2006}. Possible pairing scenarios based on ARPES, tunnelling and magnetic neutron scattering measurements are discussed.",
+    "citation_count": null,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0610549v2",
+    "properties": [],
+    "evidence": [
+      "ARPES Spectra of Bi2212 give the Coulomb Coupling $λ^{C}\\approx 1$ and the Electron-Phonon Coupling $λ^{EP}=2-3$",
+      "https://arxiv.org/abs/0610549v2"
+    ],
+    "free_sources": [
+      "arXiv"
+    ],
+    "arpes_relevance": 0.45,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": []
+  },
+  {
+    "id": "doi:10.1038/ncomms6044",
+    "title": "Tuning the band structure and superconductivity in single-layer FeSe by interface engineering",
+    "year": 2014,
+    "source": "OpenAlex",
+    "source_title": "Nature Communications",
+    "authors": "Rui Peng; Haishui Xu; Shanjun Tan; H. Y. Cao; Mingxu Xia; Xiaoping Shen; Zhichun Huang; Chenhaoping Wen; Qi Song; Tong Zhang; B. P. Xie; X. G. Gong; et al.",
+    "url": "https://doi.org/10.1038/ncomms6044",
+    "doi": "10.1038/ncomms6044",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "superconductivity",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 255,
+    "open_access_url": "https://www.nature.com/articles/ncomms6044.pdf",
+    "properties": [
+      "band structure"
+    ],
+    "evidence": [
+      "Tuning the band structure and superconductivity in single-layer FeSe by interface engineering",
+      "https://doi.org/10.1038/ncomms6044"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.4,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://www.springernature.com/gp/researchers/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.1088/0034-4885/74/12/124508",
+    "title": "Gap symmetry and structure of Fe-based superconductors",
+    "year": 2011,
+    "source": "OpenAlex",
+    "source_title": "Reports on Progress in Physics",
+    "authors": "P J Hirschfeld; M M Korshunov; I I Mazin",
+    "url": "https://doi.org/10.1088/0034-4885/74/12/124508",
+    "doi": "10.1088/0034-4885/74/12/124508",
+    "materials": [],
+    "elements": [
+      "Fe"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "superconducting gap",
+      "band structure"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "The recently discovered Fe pnictide and chalcogenide superconductors display low temperature properties suggesting superconducting gap structures which appear to vary substantially from family to family, and even within family as a function of doping or pressure. We propose that this apparent nonuniversality can actually be understood by considering the predictions of spin fluctuation theory and accounting for the peculiar electronic structure of these systems, coupled with the likely “sign-changing s-wave” (s<sub>±</sub>) symmetry. Here, we review theoretical aspects, materials properties, and experimental evidence relevant to this suggestion, and discuss which further measurements would be useful to settle these issues.",
+    "citation_count": 1101,
+    "open_access_url": "https://arxiv.org/pdf/1106.3712",
+    "properties": [
+      "superconducting gap",
+      "band structure"
+    ],
+    "evidence": [
+      "Gap symmetry and structure of Fe-based superconductors",
+      "https://doi.org/10.1088/0034-4885/74/12/124508"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.34,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": ""
+  },
+  {
+    "id": "doi:10.1038/s41524-019-0191-2",
+    "title": "Topological superconducting phase in high-Tc superconductor MgB2 with Dirac–nodal-line fermions",
+    "year": 2019,
+    "source": "OpenAlex",
+    "source_title": "npj Computational Materials",
+    "authors": "Kyung-Hwan Jin; Huaqing Huang; Jia-Wei Mei; Zheng Liu; Lih-King Lim; Feng Liu",
+    "url": "https://doi.org/10.1038/s41524-019-0191-2",
+    "doi": "10.1038/s41524-019-0191-2",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "Mg",
+      "B",
+      "Tc"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "MgB2",
+      "superconductivity",
+      "superconducting gap",
+      "topological"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "Abstract Topological superconductors are an intriguing and elusive quantum phase, characterized by topologically protected gapless surface/edge states residing in a bulk superconducting gap, which hosts Majorana fermions. Unfortunately, all currently known topological superconductors have a very low transition temperature, limiting experimental measurements of Majorana fermions. Here we discover the existence of a topological Dirac–nodal-line state in a well-known conventional high-temperature superconductor, MgB 2 . First-principles calculations show that the Dirac–nodal-line structure exhibits a unique one-dimensional dispersive Dirac–nodal line, protected by both spatial-inversion and time-reversal symmetry, which connects the electron and hole Dirac states. Most importantly, we show that the topological superconducting phase can be realized with a conventional s -wave superconducting gap, evidenced by the topological edge mode of the MgB 2 thin films showing chiral edge states. Our discovery may enable the experimental measurement of Majorana fermions at high temperature.",
+    "citation_count": 74,
+    "open_access_url": "https://www.nature.com/articles/s41524-019-0191-2.pdf",
+    "properties": [
+      "superconducting gap"
+    ],
+    "evidence": [
+      "Topological superconducting phase in high-Tc superconductor MgB2 with Dirac–nodal-line fermions",
+      "https://doi.org/10.1038/s41524-019-0191-2"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.26,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "id": "doi:10.1038/ncomms1946",
+    "title": "Electronic origin of high-temperature superconductivity in single-layer FeSe superconductor",
+    "year": 2012,
+    "source": "OpenAlex",
+    "source_title": "Nature Communications",
+    "authors": "Li D; Wenhao Zhang; Daixiang Mou; Jun-Feng He; Yunbo Ou; Qingyan Wang; Zhi Li; Lili Wang; Lin Zhao; Shaolong He; Y. Y. Peng; Xu Liu; et al.",
+    "url": "https://doi.org/10.1038/ncomms1946",
+    "doi": "10.1038/ncomms1946",
+    "materials": [
+      "FeSe"
+    ],
+    "elements": [
+      "Fe",
+      "Se"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "FeSe",
+      "superconductivity",
+      "Fermi surface"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 570,
+    "open_access_url": "https://www.nature.com/articles/ncomms1946.pdf",
+    "properties": [
+      "Fermi surface"
+    ],
+    "evidence": [
+      "Electronic origin of high-temperature superconductivity in single-layer FeSe superconductor",
+      "https://doi.org/10.1038/ncomms1946"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.24,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "https://www.springernature.com/gp/researchers/text-and-data-mining"
+  },
+  {
+    "id": "doi:10.1038/nature26160",
+    "title": "Unconventional superconductivity in magic-angle graphene superlattices",
+    "year": 2018,
+    "source": "OpenAlex",
+    "source_title": "Nature",
+    "authors": "Yuan Cao; Valla Fatemi; Shiang Fang; Kenji Watanabe; Takashi Taniguchi; Efthimios Kaxiras; Pablo Jarillo‐Herrero",
+    "url": "https://doi.org/10.1038/nature26160",
+    "doi": "10.1038/nature26160",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "",
+    "citation_count": 8296,
+    "open_access_url": "https://www.nature.com/articles/nature26160.pdf",
+    "properties": [],
+    "evidence": [
+      "Unconventional superconductivity in magic-angle graphene superlattices",
+      "https://doi.org/10.1038/nature26160"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.12,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "Springer Science and Business Media LLC",
+    "license": "http://www.springer.com/tdm"
+  },
+  {
+    "id": "doi:10.1088/0953-8984/16/24/r02",
+    "title": "The physics behind high-temperature superconducting cuprates: the plain vanilla version of RVB",
+    "year": 2004,
+    "source": "OpenAlex",
+    "source_title": "Journal of Physics Condensed Matter",
+    "authors": "P W Anderson; P A Lee; M Randeria; T M Rice; N Trivedi; F C Zhang",
+    "url": "https://doi.org/10.1088/0953-8984/16/24/r02",
+    "doi": "10.1088/0953-8984/16/24/r02",
+    "materials": [],
+    "elements": [],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "superconductivity",
+      "cuprate",
+      "pseudogap"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "One of the first theoretical proposals for understanding high-temperature superconductivity in the cuprates was Anderson's RVB theory using a Gutzwiller projected BCS wavefunction as an approximate ground state. Recent work by Paramekanti et al has shown that this variational approach gives a semi-quantitative understanding of the doping dependences of a variety of experimental observables in the superconducting state of the cuprates. In this paper we revisit these issues using the 'renormalized mean field theory' of Zhang et al based on the Gutzwiller approximation in which the kinetic and superexchange energies are renormalized by different doping-dependent factors gt and gS respectively. We point out a number of consequences of this early mean field theory for experimental measurements which were not available when it was first explored, and observe that it is able to explain the existence of the pseudogap, properties of nodal quasiparticles and approximate spin-charge separation, the latter leading to large renormalizations of the Drude weight and superfluid density. We use the Lee-Wen theory of the phase transition as caused by thermal excitation of nodal quasiparticles, and also obtain a number of further experimental confirmations. Finally, we remark that superexchange, and not phonons, is responsible for d-wave superconductivity in the cuprates.",
+    "citation_count": 516,
+    "open_access_url": "https://arxiv.org/pdf/cond-mat/0311467",
+    "properties": [],
+    "evidence": [
+      "The physics behind high-temperature superconducting cuprates: the plain vanilla version of RVB",
+      "https://doi.org/10.1088/0953-8984/16/24/r02"
+    ],
+    "free_sources": [
+      "Crossref",
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.12,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": [],
+    "crossref_indexed": true,
+    "publisher": "IOP Publishing",
+    "license": ""
+  },
+  {
+    "id": "doi:10.17877/de290r-3811",
+    "title": "Josephson Effect in MgB2 Break Junctions",
+    "year": 2001,
+    "source": "OpenAlex",
+    "source_title": "PORTO Publications Open Repository TOrino (Politecnico di Torino)",
+    "authors": "Calzolari, A.; Daghero, D.; Gonnelli, R. S.; В. А. Степанов; Ummarino, G. A.",
+    "url": "https://doi.org/10.17877/de290r-3811",
+    "doi": "10.17877/de290r-3811",
+    "materials": [
+      "MgB2"
+    ],
+    "elements": [
+      "Mg",
+      "B",
+      "K"
+    ],
+    "dopants": [],
+    "techniques": [
+      "ARPES"
+    ],
+    "keywords": [
+      "ARPES",
+      "MgB2",
+      "superconductivity"
+    ],
+    "temperature_K": null,
+    "photon_energy_eV": null,
+    "beamline": "",
+    "abstract": "We present the first observation of the dc and ac Josephson effect in MgB2 break junctions. The junctions, obtained at 4.2 K in high-quality, high-density polycrystalline metallic MgB2 samples, show a nonhysteretic dc Josephson effect. By irradiating the junctions with microwaves we observe clear Shapiro steps spaced by the ideal ΔV value. The temperature dependence of the dc Josephson current and the dependence of the height of the steps on the microwave power are obtained. These results directly prove the existence of pairs with charge 2e in MgB2 and give evidence of the superconductor-normal metal-superconductor weak link character of these junctions.",
+    "citation_count": 49,
+    "open_access_url": "http://porto.polito.it/1639277/",
+    "properties": [],
+    "evidence": [
+      "Josephson Effect in MgB2 Break Junctions",
+      "https://doi.org/10.17877/de290r-3811"
+    ],
+    "free_sources": [
+      "OpenAlex"
+    ],
+    "arpes_relevance": 0.12,
+    "data_quality": "free_api_metadata_needs_fulltext",
+    "verification_status": "free_api_metadata_needs_fulltext",
+    "figures": []
+  }
+]

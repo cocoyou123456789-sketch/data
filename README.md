@@ -12,7 +12,8 @@ https://cocoyou123456789-sketch.github.io/data/
 
 - `github-pages/`：可发布到 GitHub Pages 的静态网站。
 - `arpes_lit_extractor/`：本地 Python 文献信息抽取工具。
-- `github-pages/data/articles.json`：文章和图表数据，目前包含 19 篇文章记录，其中 8 条为 WoS indexed / publisher DOI 记录，20 张可直连显示的真实论文图。
+- `github-pages/data/articles.json`：精选/手动导入文章和图表数据，目前包含 28 篇文章记录，其中包含 WoS indexed / publisher DOI 记录和 20 张可直连显示的真实论文图。
+- `github-pages/data/free_arpes_articles.json`：由免费官方/开放 API 导入的 ARPES 题录数据，目前包含 80 条记录，当前由 OpenAlex、arXiv 和 Crossref 生成；这些记录只作为元数据索引，实验数值和图表仍需全文核验。
 - `github-pages/data/superconductivity.json`：超导主题材料模板，目前包含 15 条材料记录。
 - `github-pages/data/search_sources.json`：学术搜索源和数据库清单，目前包含 15 个来源。
 - `github-pages/data/elements.json`：元素基础数据。
@@ -24,6 +25,7 @@ https://cocoyou123456789-sketch.github.io/data/
 - 论文图表对比：展示可核验直连的真实论文图，并按 Fermi surface、Band structure、Gap map、Charge order 等类型统一配色。
 - 统一图像背景：论文图统一放在白色 figure matte 里，避免透明 PNG 在深色网页里变黑。
 - WoS / 出版社记录：文章库包含 DOI 校验过的 WoS indexed / publisher metadata 记录。没有直连图源的记录只进入 Article Data，不混入图表画廊。
+- 免费 ARPES API 导入：可运行 `scripts/import_free_arpes.py` 从 OpenAlex、arXiv 和 Crossref 导入免费题录，网站会自动合并 `free_arpes_articles.json`。
 - Web of Science 导入：支持粘贴 WoS CSV/TSV 导出内容。
 - Google Scholar 导入：支持手动粘贴 Scholar BibTeX。由于 Scholar 没有稳定官方公开 API，本项目不做自动爬取。
 - HDF5 数据管理：可上传 `.h5/.hdf5`，解析数据集结构，并把个人数据保存在浏览器本地 IndexedDB。
@@ -73,8 +75,32 @@ git branch -D codex-gh-pages-deploy
 
 - 只有可直接显示且来源明确的论文图，才写入 `figures` 并进入图表画廊。
 - WoS / Crossref / publisher DOI 记录可以作为文章索引进入 Article Data，但如果没有直连图源，`figures` 保持空数组。
+- OpenAlex / arXiv / Crossref 免费导入记录标记为 `free_api_metadata_needs_fulltext`；它们是官方题录/摘要/DOI/开放链接，不自动等同于已核验实验数据。
 - 代表性 seed 数据可以用于界面模板和演示，但实验指标用于正式分析前需要全文核验。
 - Google Scholar 只作为人工 BibTeX 导入来源，不自动爬取。
+
+## 免费 ARPES 文献导入
+
+先安装任何额外依赖都不需要，脚本只使用 Python 标准库。建议提供联系邮箱给 OpenAlex polite pool：
+
+```bash
+OPENALEX_EMAIL=you@example.com python3 scripts/import_free_arpes.py --per-query 8 --max-records 120
+```
+
+常用参数：
+
+```bash
+python3 scripts/import_free_arpes.py --query "ARPES FeSe superconductivity" --query "ARPES cuprate superconducting gap"
+python3 scripts/import_free_arpes.py --skip-crossref
+```
+
+脚本输出：
+
+```text
+github-pages/data/free_arpes_articles.json
+```
+
+网站打开时会自动读取 `articles.json` 和 `free_arpes_articles.json`，按 DOI 或标题/年份去重后显示在 Article Data 中。
 
 ## 本地抽取工具
 
