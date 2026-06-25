@@ -571,6 +571,31 @@
       font-size: 16px;
     }
 
+    .mini-control {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 6px 4px 10px;
+      background: var(--card-bg);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .mini-control select {
+      min-height: 28px;
+      border: 0;
+      padding: 3px 22px 3px 6px;
+      background: transparent;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
     button {
       min-height: 38px;
       border: 1px solid var(--line);
@@ -2019,6 +2044,15 @@
         align-items: stretch !important;
       }
 
+      .mini-control {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .mini-control select {
+        min-width: 140px;
+      }
+
       h1 {
         font-size: 24px;
         line-height: 1.18;
@@ -2394,6 +2428,14 @@
         <span class="lang-option active" data-lang="zh">中文</span>
         <span class="lang-option" data-lang="en">EN</span>
       </div>
+      <label class="mini-control" data-label-i18n="reportFormatLabel">报告格式
+        <select id="reportFormatSelect" aria-label="Report format">
+          <option value="pdf">PDF</option>
+          <option value="doc">Word / DOC</option>
+          <option value="xls">Excel / XLS</option>
+          <option value="md">Markdown</option>
+        </select>
+      </label>
       <button class="primary" id="generateReportBtn" data-i18n="generateReportBtn">生成调研报告</button>
       <button id="logoutBtn" type="button" data-i18n="logoutBtn">注销</button>
       <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">📦 GitHub</a>
@@ -2989,6 +3031,7 @@
         advancedLibraryHint: "默认折叠，保持主界面简洁",
         tocTitle: "电子书目录",
         tocNote: "主界面只保留历史魔方和元素周期表；资料库可按需展开。",
+        reportFormatLabel: "报告格式",
         generateReportBtn: "生成调研报告",
         modelInterfaceTitle: "计算模型接口",
         modelInterfaceHint: "预留 API：window.ARPESModelHub.registerModel(name, predictFn)",
@@ -3008,7 +3051,8 @@
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
-        reportToast: "Word 调研报告已生成",
+        reportToast: "调研报告已生成",
+        reportPdfToast: "PDF 打印版已打开，可选择 Save as PDF",
         tocSearch: "检索与主题",
         tocMilestones: "历史与模型",
         tocPeriodic: "元素周期表",
@@ -3281,6 +3325,7 @@
         advancedLibraryHint: "Collapsed by default to keep the main interface simple",
         tocTitle: "E-book Contents",
         tocNote: "The main interface keeps only the history cube and periodic table; expand the library when needed.",
+        reportFormatLabel: "Report format",
         generateReportBtn: "Generate Report",
         modelInterfaceTitle: "Computation Model Interface",
         modelInterfaceHint: "Reserved API: window.ARPESModelHub.registerModel(name, predictFn)",
@@ -3300,7 +3345,8 @@
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
-        reportToast: "Word research report generated",
+        reportToast: "Research report generated",
+        reportPdfToast: "PDF print view opened; choose Save as PDF",
         tocSearch: "Search & Topic",
         tocMilestones: "History & Model",
         tocPeriodic: "Periodic Table",
@@ -3647,6 +3693,7 @@
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
     const generateReportBtn = $("#generateReportBtn");
+    const reportFormatSelect = $("#reportFormatSelect");
     const modelProbeBtn = $("#modelProbeBtn");
     const modelRunBtn = $("#modelRunBtn");
     const modelMaterialInput = $("#modelMaterialInput");
@@ -4718,12 +4765,40 @@
       updateTocActiveSection();
     }
 
-    function generateResearchReport() {
+    function reportFilename(ext) {
+      return `arpes-research-report-${new Date().toISOString().slice(0,10)}.${ext}`;
+    }
+
+    function downloadBlob(content, type, filename) {
+      const blob = new Blob(["\ufeff", content], { type });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function collectReportData() {
       const user = loadUser();
       const selected = state.filtered || [];
       const articleRows = filteredArticles ? filteredArticles() : (state.articles || []);
       const figureCount = (state.articles || []).reduce((sum, article) => sum + (article.figures || []).length, 0);
-      const materialRows = selected.slice(0, 20).map(row => `
+      const generatedAt = new Date().toLocaleString(currentLang === "zh" ? "zh-CN" : "en-US");
+      return {
+        user,
+        selected,
+        articleRows,
+        figureCount,
+        personalRows: state.ourData || [],
+        generatedAt,
+        topic: state.topic || "sc",
+        selectedElement: state.selectedElement || "none",
+        searchTerm: searchInput.value || "none"
+      };
+    }
+
+    function buildReportHtml(data, mode = "doc") {
+      const materialRows = data.selected.slice(0, 20).map(row => `
         <tr>
           <td>${esc(row.display_name || row.material || "")}</td>
           <td>${esc(row.family || "")}</td>
@@ -4731,11 +4806,10 @@
           <td>${esc((row.elements || []).join(", "))}</td>
           <td>${esc(row.arpes || row.arpes_features || "")}</td>
         </tr>`).join("");
-      const articleList = articleRows.slice(0, 25).map(article => `
+      const articleList = data.articleRows.slice(0, 25).map(article => `
         <li>${esc(article.year || "")} ${esc(article.title || "")}${article.doi ? ` DOI: ${esc(article.doi)}` : ""}</li>`).join("");
-      const personalList = (state.ourData || []).slice(0, 20).map(row => `
+      const personalList = data.personalRows.slice(0, 20).map(row => `
         <li>${esc(row.material || "")}: ${esc(row.notes || row.archive || "no notes")}</li>`).join("");
-      const generatedAt = new Date().toLocaleString(currentLang === "zh" ? "zh-CN" : "en-US");
       const html = `<!doctype html>
         <html>
         <head>
@@ -4743,6 +4817,7 @@
           <title>ARPES Superconductivity Research Report</title>
           <style>
             body { font-family: Arial, "Microsoft YaHei", sans-serif; color: #1f2937; line-height: 1.45; }
+            ${mode === "pdf" ? "body { max-width: 960px; margin: 28px auto; padding: 0 22px; } @page { margin: 14mm; }" : ""}
             h1 { color: #0f766e; }
             h2 { color: #115e59; border-bottom: 1px solid #d7dee8; padding-bottom: 4px; }
             table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; }
@@ -4753,19 +4828,19 @@
         </head>
         <body>
           <h1>ARPES Superconductivity Research Report</h1>
-          <p class="meta">Generated: ${esc(generatedAt)}<br>
-          User: ${esc(user.name || "ARPES user")}<br>
-          Group: ${esc(user.group || "")}<br>
-          Topic: ${esc(state.topic || "sc")}<br>
-          Selected element: ${esc(state.selectedElement || "none")}<br>
-          Search term: ${esc(searchInput.value || "none")}</p>
+          <p class="meta">Generated: ${esc(data.generatedAt)}<br>
+          User: ${esc(data.user.name || "ARPES user")}<br>
+          Group: ${esc(data.user.group || "")}<br>
+          Topic: ${esc(data.topic)}<br>
+          Selected element: ${esc(data.selectedElement)}<br>
+          Search term: ${esc(data.searchTerm)}</p>
           <h2>Summary</h2>
           <ul>
-            <li>Materials in current view: ${selected.length}</li>
+            <li>Materials in current view: ${data.selected.length}</li>
             <li>Article records: ${(state.articles || []).length}</li>
-            <li>Articles after keyword filter: ${articleRows.length}</li>
-            <li>Verified paper figures: ${figureCount}</li>
-            <li>Personal records: ${(state.ourData || []).length}</li>
+            <li>Articles after keyword filter: ${data.articleRows.length}</li>
+            <li>Verified paper figures: ${data.figureCount}</li>
+            <li>Personal records: ${data.personalRows.length}</li>
           </ul>
           <h2>Representative Materials</h2>
           <table>
@@ -4783,13 +4858,82 @@
           </ul>
         </body>
         </html>`;
-      const blob = new Blob(["\ufeff", html], { type: "application/msword;charset=utf-8" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `arpes-research-report-${new Date().toISOString().slice(0,10)}.doc`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-      showToast(t("reportToast"));
+      return html;
+    }
+
+    function buildReportMarkdown(data) {
+      const materialLines = data.selected.slice(0, 20).map(row =>
+        `| ${row.display_name || row.material || ""} | ${row.family || ""} | ${row.tc_K ?? "n/a"} | ${(row.elements || []).join(", ")} | ${row.arpes || row.arpes_features || ""} |`
+      ).join("\n");
+      const articleLines = data.articleRows.slice(0, 25).map((article, index) =>
+        `${index + 1}. ${article.year || ""} ${article.title || ""}${article.doi ? ` DOI: ${article.doi}` : ""}`
+      ).join("\n");
+      const personalLines = data.personalRows.slice(0, 20).map(row => `- ${row.material || ""}: ${row.notes || row.archive || "no notes"}`).join("\n");
+      return `# ARPES Superconductivity Research Report
+
+Generated: ${data.generatedAt}
+User: ${data.user.name || "ARPES user"}
+Group: ${data.user.group || ""}
+Topic: ${data.topic}
+Selected element: ${data.selectedElement}
+Search term: ${data.searchTerm}
+
+## Summary
+
+- Materials in current view: ${data.selected.length}
+- Article records: ${(state.articles || []).length}
+- Articles after keyword filter: ${data.articleRows.length}
+- Verified paper figures: ${data.figureCount}
+- Personal records: ${data.personalRows.length}
+
+## Representative Materials
+
+| Material | Family | Tc (K) | Elements | ARPES notes |
+| --- | --- | --- | --- | --- |
+${materialLines || "| No current material selection. | | | | |"}
+
+## Literature Records
+
+${articleLines || "No literature records loaded."}
+
+## Personal Data
+
+${personalLines || "- No personal records."}
+
+## Model Interface
+
+- Reserved browser API: window.ARPESModelHub.registerModel(name, predictFn)
+- Reserved prediction call: window.ARPESModelHub.predict(modelName, datasetId)
+`;
+    }
+
+    function generateResearchReport() {
+      const data = collectReportData();
+      const format = reportFormatSelect?.value || "pdf";
+      if (format === "doc") {
+        downloadBlob(buildReportHtml(data, "doc"), "application/msword;charset=utf-8", reportFilename("doc"));
+        showToast(t("reportToast"));
+      } else if (format === "xls") {
+        downloadBlob(buildReportHtml(data, "xls"), "application/vnd.ms-excel;charset=utf-8", reportFilename("xls"));
+        showToast(t("reportToast"));
+      } else if (format === "md") {
+        downloadBlob(buildReportMarkdown(data), "text/markdown;charset=utf-8", reportFilename("md"));
+        showToast(t("reportToast"));
+      } else {
+        const printWindow = window.open("", "_blank");
+        const html = buildReportHtml(data, "pdf");
+        if (printWindow) {
+          printWindow.document.open();
+          printWindow.document.write(html);
+          printWindow.document.close();
+          printWindow.focus();
+          setTimeout(() => printWindow.print(), 250);
+          showToast(t("reportPdfToast"));
+        } else {
+          downloadBlob(html, "text/html;charset=utf-8", reportFilename("html"));
+          showToast(t("reportToast"));
+        }
+      }
     }
 
     // ===== 筛选逻辑 (支持中英文) =====
