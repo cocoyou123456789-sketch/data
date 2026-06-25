@@ -10,6 +10,7 @@ This file records stable snapshots discussed during development. Git tags with t
 | v0.6-responsive-pages | 9485203 | 2026-06-23 | Mobile responsive GitHub Pages layout. |
 | v0.7-3d-tc-pressure | 77dfeea | 2026-06-24 | 3D Tc-year-pressure axis view. |
 | v0.8-login-clarity | 48bcc6a | 2026-06-24 | Clearer USTC login image and virtual eye entrance. |
-| v0.9-simple-workbench | current | 2026-06-25 | Logout, simplified two-function interface, advanced library, Word report, checklist workbook. |
+| v0.9-simple-workbench | be9470c | 2026-06-25 | Logout, simplified two-function interface, advanced library, Word report, checklist workbook. |
+| v1.0-cube-periodic-sketch | current | 2026-06-25 | Match the hand-drawn cube and periodic-table workbench sketches with flow tabs, chat panel, and module index. |
 
 Release principle: keep the main screen focused on two actions, "Learn the history" and "Choose a system to explore"; move deeper paper/data/import tools into the advanced library unless they become part of a guided workflow.
