@@ -1363,6 +1363,31 @@
       z-index: 9;
     }
 
+    #axisHitLayer {
+      position: absolute;
+      inset: 0;
+      z-index: 18;
+      pointer-events: none;
+    }
+
+    .axis-hit {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      transform: translate(-50%, 50%);
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .axis-hit:focus-visible {
+      outline: 2px solid var(--accent-glow);
+      outline-offset: 2px;
+    }
+
     .axis-legend {
       display: flex;
       flex-wrap: wrap;
@@ -1422,7 +1447,8 @@
     .cube-view-cube .axis-plane,
     .cube-view-cube .axis-line,
     .cube-view-cube .axis-label,
-    .cube-view-cube #axisPointLayer {
+    .cube-view-cube #axisPointLayer,
+    .cube-view-cube #axisHitLayer {
       display: none;
     }
 
