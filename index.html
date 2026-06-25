@@ -2464,6 +2464,7 @@
                   <span class="axis-label y">Y · Pressure</span>
                   <span class="axis-label z">Z · Tc</span>
                   <div id="axisPointLayer"></div>
+                  <div id="axisHitLayer" aria-label="Clickable material points"></div>
                   <button class="cube-face front" type="button" data-cube-face="cuprate"><strong>Cuprate</strong><span>1986 · high Tc</span></button>
                   <button class="cube-face back" type="button" data-cube-face="hydride"><strong>Hydride</strong><span>2015+ · pressure</span></button>
                   <button class="cube-face right" type="button" data-cube-face="iron"><strong>Fe-based</strong><span>2008 · multiband</span></button>
@@ -3663,6 +3664,7 @@
     const cubeResetBtn = $("#cubeResetBtn");
     const cubeReadout = $("#cubeReadout");
     const axisPointLayer = $("#axisPointLayer");
+    const axisHitLayer = $("#axisHitLayer");
     const axisModeBtn = $("#axisModeBtn");
     const cubeViewModeBtn = $("#cubeViewModeBtn");
     let compareCount = $("#compareCount");
