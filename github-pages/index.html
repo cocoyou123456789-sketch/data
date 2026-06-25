@@ -1022,6 +1022,80 @@
       line-height: 1.45;
     }
 
+    .roundtable-panel {
+      position: relative;
+      min-height: 390px;
+      border: 1px solid rgba(96,208,255,0.22);
+      border-radius: 48% 44% 50% 42% / 35% 42% 50% 48%;
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(20,184,166,0.2) 0%, rgba(20,184,166,0.08) 37%, transparent 39%),
+        radial-gradient(ellipse at 50% 54%, rgba(96,208,255,0.16), transparent 62%),
+        rgba(8,14,24,0.62);
+      box-shadow: inset 0 0 42px rgba(96,208,255,0.08), 0 18px 40px rgba(0,0,0,0.22);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .roundtable-surface {
+      position: absolute;
+      inset: 64px 54px 54px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(20,184,166,0.18), rgba(14,27,39,0.74) 64%, rgba(4,9,16,0.3) 100%);
+      box-shadow: inset 0 0 26px rgba(20,184,166,0.12);
+      pointer-events: none;
+    }
+
+    .roundtable-center {
+      position: absolute;
+      inset: 138px 96px 118px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      pointer-events: none;
+    }
+
+    .roundtable-center strong {
+      color: var(--accent-glow);
+      font-size: 14px;
+    }
+
+    .roundtable-center span {
+      max-width: 220px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .round-module {
+      position: absolute;
+      z-index: 3;
+      min-height: 30px;
+      padding: 5px 10px;
+      border-color: rgba(20,184,166,0.54);
+      background: rgba(10,22,32,0.9);
+      color: var(--accent-glow);
+      font-size: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.22);
+    }
+
+    .round-module.one { top: 26px; right: 66px; }
+    .round-module.two { top: 64px; left: 44px; }
+    .round-module.three { top: 44%; left: 12px; }
+    .round-module.four { top: 42%; right: 12px; }
+    .round-module.five { bottom: 36px; left: 74px; }
+    .round-module.six { bottom: 34px; right: 72px; }
+
+    .round-module.active,
+    .round-module:hover {
+      border-color: var(--accent-glow);
+      background: linear-gradient(145deg, rgba(20,184,166,0.32), rgba(13,21,32,0.94));
+      color: #fff;
+    }
+
     /* === Overview 区域 === */
     .milestone-stage {
       display: grid;
@@ -2281,6 +2355,30 @@
         scroll-snap-type: x proximity;
       }
 
+      .roundtable-panel {
+        min-height: 330px;
+      }
+
+      .roundtable-surface {
+        inset: 56px 38px 48px;
+      }
+
+      .roundtable-center {
+        inset: 118px 72px 104px;
+      }
+
+      .round-module {
+        font-size: 11px;
+        padding: 5px 8px;
+      }
+
+      .round-module.one { top: 22px; right: 46px; }
+      .round-module.two { top: 58px; left: 28px; }
+      .round-module.three { top: 43%; left: 8px; }
+      .round-module.four { top: 42%; right: 8px; }
+      .round-module.five { bottom: 30px; left: 46px; }
+      .round-module.six { bottom: 30px; right: 46px; }
+
       .periodic {
         min-width: 740px;
         width: 740px;
@@ -2654,18 +2752,17 @@
             <div class="periodic" id="periodicTable"></div>
           </div>
           <div class="periodic-index-panel">
-            <div class="periodic-module-stack">
-              <div class="periodic-module-card">
+            <div class="roundtable-panel" aria-label="Module round table">
+              <div class="roundtable-surface"></div>
+              <button class="round-module one active" type="button" data-module-target="elementPanel" data-i18n="moduleMaterialIndex">Material index</button>
+              <button class="round-module two" type="button" data-module-target="advancedLibrary" data-i18n="moduleLiterature">Literature module</button>
+              <button class="round-module three" type="button" data-module-target="section-search" data-i18n="tocSearch">检索与主题</button>
+              <button class="round-module four" type="button" data-module-target="section-hdf5" data-i18n="tocHdf5">HDF5 数据</button>
+              <button class="round-module five" type="button" data-module-target="modelOutput" data-i18n="moduleModel">Model module</button>
+              <button class="round-module six" type="button" data-module-target="generateReportBtn">Report</button>
+              <div class="roundtable-center">
                 <strong data-i18n="moduleMaterialIndex">Material index</strong>
                 <span data-i18n="moduleMaterialIndexHint">点击左侧元素后，这里显示元素简介、材料家族和文献入口。</span>
-              </div>
-              <div class="periodic-module-card">
-                <strong data-i18n="moduleLiterature">Literature module</strong>
-                <span data-i18n="moduleLiteratureHint">优先使用 DOI、arXiv、出版商和 WoS 导出的官方文献来源。</span>
-              </div>
-              <div class="periodic-module-card">
-                <strong data-i18n="moduleModel">Model module</strong>
-                <span data-i18n="moduleModelHint">后续计算模型可接入这里，对材料性质进行预测或归类。</span>
               </div>
             </div>
             <div class="card" id="elementPanel">
@@ -4820,6 +4917,31 @@
       updateTocActiveSection();
     }
 
+    function setupRoundtableModules() {
+      const buttons = document.querySelectorAll(".round-module");
+      const center = document.querySelector(".roundtable-center");
+      if (!buttons.length || !center) return;
+      const moduleHints = {
+        elementPanel: ["moduleMaterialIndex", "moduleMaterialIndexHint"],
+        advancedLibrary: ["moduleLiterature", "moduleLiteratureHint"],
+        "section-search": ["tocSearch", "keywordSearchHint"],
+        "section-hdf5": ["tocHdf5", "hdf5DropHint"],
+        modelOutput: ["moduleModel", "moduleModelHint"],
+        generateReportBtn: ["generateReportBtn", "reportFormatLabel"]
+      };
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          buttons.forEach(node => node.classList.remove("active"));
+          btn.classList.add("active");
+          const targetId = btn.dataset.moduleTarget;
+          const [titleKey, hintKey] = moduleHints[targetId] || ["moduleMaterialIndex", "moduleMaterialIndexHint"];
+          center.innerHTML = `<strong>${esc(t(titleKey))}</strong><span>${esc(t(hintKey))}</span>`;
+          const target = document.getElementById(targetId);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+      });
+    }
+
     function reportFilename(ext) {
       return `arpes-research-report-${new Date().toISOString().slice(0,10)}.${ext}`;
     }
@@ -6800,6 +6922,7 @@ ${personalLines || "- No personal records."}
     // ===== 启动页面 =====
     installModelHub();
     setupHistoryCube();
+    setupRoundtableModules();
     setupTocScrollSpy();
     init();
   </script>
