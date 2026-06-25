@@ -120,12 +120,100 @@
 
     main > section { grid-column: 2; }
 
+    main > details {
+      grid-column: 2;
+    }
+
     section {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 12px;
       box-shadow: var(--shadow);
       overflow: hidden;
+    }
+
+    .focus-switchboard {
+      grid-column: 2;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .focus-action {
+      min-height: 110px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(20,184,166,0.18), transparent 30%),
+        linear-gradient(135deg, rgba(20,184,166,0.10), rgba(96,208,255,0.04)),
+        var(--panel);
+      color: var(--text);
+      text-decoration: none;
+      display: grid;
+      gap: 8px;
+      align-content: center;
+      box-shadow: var(--shadow);
+    }
+
+    .focus-action strong {
+      color: var(--accent-glow);
+      font-size: 18px;
+    }
+
+    .focus-action span {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .advanced-library {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(13,21,32,0.72);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .advanced-library > summary {
+      min-height: 56px;
+      padding: 14px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--accent-glow);
+      font-weight: 780;
+      list-style: none;
+    }
+
+    .advanced-library > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .advanced-library > summary::after {
+      content: "+";
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+    }
+
+    .advanced-library[open] > summary::after {
+      content: "-";
+    }
+
+    .advanced-section-stack {
+      display: grid;
+      gap: 14px;
+      padding: 0 14px 14px;
+    }
+
+    .advanced-section-stack section {
+      box-shadow: none;
     }
 
     .login-screen {
@@ -811,7 +899,7 @@
     /* === Overview 区域 === */
     .milestone-stage {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 14px;
       align-items: start;
     }
@@ -824,6 +912,7 @@
     }
 
     .history-image {
+      display: none;
       min-height: 280px;
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -831,7 +920,6 @@
         linear-gradient(180deg, rgba(15,118,110,0.08), transparent 38%),
         linear-gradient(135deg, #111922, #0f1822);
       padding: 16px;
-      display: grid;
       gap: 10px;
       align-content: start;
     }
@@ -1076,11 +1164,14 @@
       padding: 14px;
       display: grid;
       gap: 12px;
+      min-height: 620px;
       overflow: hidden;
     }
 
     .cube-viewport {
-      min-height: 260px;
+      min-height: 390px;
+      width: min(940px, 100%);
+      margin: 0 auto;
       display: grid;
       place-items: center;
       perspective: 1600px;
@@ -1746,7 +1837,7 @@
     @media (max-width: 980px) {
       header { align-items: flex-start; flex-direction: column; }
       main { grid-template-columns: 1fr; }
-      main > section, .toc-panel { grid-column: 1; }
+      main > section, main > details, .focus-switchboard, .toc-panel { grid-column: 1; }
       .toc-panel {
         position: relative;
         top: 0;
@@ -1754,7 +1845,7 @@
         max-height: none;
       }
       .toc-list { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .login-card .form-grid { grid-template-columns: 1fr; }
+      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .focus-switchboard, .login-card .form-grid { grid-template-columns: 1fr; }
       .login-layout {
         grid-template-columns: 1fr;
         min-height: 0;
@@ -2146,7 +2237,7 @@
   <header>
     <div>
       <h1 data-i18n="title">⚡ ARPES 超导材料探索器</h1>
-      <p class="subtitle" data-i18n="subtitle">超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析</p>
+      <p class="subtitle" data-i18n="subtitle">了解超导历史 · 选择体系深入探索</p>
     </div>
     <div style="display:flex; gap:10px; align-items:center;">
       <div class="sound-bars" id="soundBars">
@@ -2164,6 +2255,7 @@
         <span class="lang-option" data-lang="en">EN</span>
       </div>
       <button class="primary" id="generateReportBtn" data-i18n="generateReportBtn">生成调研报告</button>
+      <button id="logoutBtn" type="button" data-i18n="logoutBtn">注销</button>
       <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">📦 GitHub</a>
     </div>
   </header>
@@ -2174,6 +2266,16 @@
       <div class="toc-list" id="tocList"></div>
       <div class="toc-note" id="tocNote" data-i18n="tocNote">目录会随主题、元素和材料筛选自动变化。</div>
     </aside>
+    <nav class="focus-switchboard" aria-label="Main workbench actions">
+      <a class="focus-action" href="#section-milestones">
+        <strong data-i18n="focusHistoryTitle">了解历史</strong>
+        <span data-i18n="focusHistoryHint">用 3D Tc-年份-压力魔方查看超导材料发展脉络和里程碑。</span>
+      </a>
+      <a class="focus-action" href="#section-periodic">
+        <strong data-i18n="focusExploreTitle">选择感兴趣的体系进行深入探索</strong>
+        <span data-i18n="focusExploreHint">从元素周期表选择元素或家族，再展开资料库查看文献、数据和图表。</span>
+      </a>
+    </nav>
     <!-- ===== Milestones ===== -->
     <section id="section-milestones">
       <div class="section-head">
@@ -2284,6 +2386,33 @@
       </div>
     </section>
 
+    <!-- ===== 周期表 ===== -->
+    <section id="section-periodic">
+      <div class="section-head">
+        <h2 data-i18n="periodicTitle">🗂️ 元素周期表</h2>
+        <span class="status" data-i18n="periodicStatus">🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!</span>
+      </div>
+      <div class="content">
+        <div class="periodic-wrap">
+          <div class="periodic" id="periodicTable"></div>
+        </div>
+        <div class="layout-two">
+          <div class="card" id="elementPanel">
+            <h3 data-i18n="selectElement">👆 选择一个元素</h3>
+            <p class="muted" data-i18n="selectElementHint">点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。</p>
+          </div>
+          <div class="card" id="familyPanel">
+            <h3 data-i18n="familyTitle">🧬 材料家族</h3>
+            <p class="muted" data-i18n="familyHint">点击标签快速筛选。当前以超导为主题。</p>
+            <div class="chips" id="familyChips"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <details class="advanced-library" id="advancedLibrary">
+      <summary><span data-i18n="advancedLibraryTitle">高级资料库：文献图、数据、模板和导入工具</span><span class="status" data-i18n="advancedLibraryHint">默认折叠，保持主界面简洁</span></summary>
+      <div class="advanced-section-stack">
     <!-- ===== 搜索 & 筛选 ===== -->
     <section id="section-search">
       <div class="section-head">
@@ -2321,30 +2450,6 @@
             <span class="muted" data-i18n="keywordSearchHint">点击关键词快速筛选文章、图表和材料</span>
           </div>
           <div class="chips" id="keywordChips"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 周期表 ===== -->
-    <section id="section-periodic">
-      <div class="section-head">
-        <h2 data-i18n="periodicTitle">🗂️ 元素周期表</h2>
-        <span class="status" data-i18n="periodicStatus">🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!</span>
-      </div>
-      <div class="content">
-        <div class="periodic-wrap">
-          <div class="periodic" id="periodicTable"></div>
-        </div>
-        <div class="layout-two">
-          <div class="card" id="elementPanel">
-            <h3 data-i18n="selectElement">👆 选择一个元素</h3>
-            <p class="muted" data-i18n="selectElementHint">点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。</p>
-          </div>
-          <div class="card" id="familyPanel">
-            <h3 data-i18n="familyTitle">🧬 材料家族</h3>
-            <p class="muted" data-i18n="familyHint">点击标签快速筛选。当前以超导为主题。</p>
-            <div class="chips" id="familyChips"></div>
-          </div>
         </div>
       </div>
     </section>
@@ -2641,6 +2746,8 @@
         </div>
       </div>
     </section>
+      </div>
+    </details>
   </main>
 
   <script>
@@ -2650,7 +2757,7 @@
     const I18N = {
       zh: {
         title: "⚡ ARPES 超导材料探索器",
-        subtitle: "超导材料 · 周期表 · 光源设施 · 文章数据 · 对比分析",
+        subtitle: "了解超导历史 · 选择体系深入探索",
         loginTitle: "中科大 ARPES 工作台",
         loginHint: "面向 USTC / NSRL / ARPES 站的正式入口，用于检索材料、导入文献、保存实验数据并生成调研报告。",
         signInTab: "登录",
@@ -2682,8 +2789,16 @@
         loginPasswordRequired: "请输入密码",
         loginPasswordMismatch: "两次输入的密码不一致",
         accountCreatedToast: "账号已创建",
+        logoutBtn: "注销",
+        logoutToast: "已退出，回到登录界面",
+        focusHistoryTitle: "了解历史",
+        focusHistoryHint: "用 3D Tc-年份-压力魔方查看超导材料发展脉络和里程碑。",
+        focusExploreTitle: "选择感兴趣的体系进行深入探索",
+        focusExploreHint: "从元素周期表选择元素或家族，再展开资料库查看文献、数据和图表。",
+        advancedLibraryTitle: "高级资料库：文献图、数据、模板和导入工具",
+        advancedLibraryHint: "默认折叠，保持主界面简洁",
         tocTitle: "电子书目录",
-        tocNote: "目录会随主题、元素和材料筛选自动变化。",
+        tocNote: "主界面只保留历史魔方和元素周期表；资料库可按需展开。",
         generateReportBtn: "生成调研报告",
         modelInterfaceTitle: "计算模型接口",
         modelInterfaceHint: "预留 API：window.ARPESModelHub.registerModel(name, predictFn)",
@@ -2703,7 +2818,7 @@
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
-        reportToast: "调研报告已生成",
+        reportToast: "Word 调研报告已生成",
         tocSearch: "检索与主题",
         tocMilestones: "历史与模型",
         tocPeriodic: "元素周期表",
@@ -2752,8 +2867,8 @@
         filteredFigures: "筛选出 {count} 张已核验真实论文图",
         totalFigures: "共 {count} 张已核验真实论文图",
         remainingFigures: "{count} 张剩余",
-        figureFallback: "该真实论文图像无法直连显示",
-        viewFigureSource: "查看图源",
+        figureFallback: "图像预览无法直连显示，请打开官方文献入口",
+        viewFigureSource: "打开官方文献",
         rowsLabel: "行",
         milestonesTitle: "📜 超导历史里程碑",
         milestonesHint: "从1911年至今的重大发现 — 点击节点查看详情",
@@ -2772,7 +2887,7 @@
         tcChartTitle: "📊 Tc 对比 (K)",
         noMaterials: "筛选后无材料数据",
         sourceTitle: "💡 光源 / 档案目录",
-        sourceStatus: "按地区、设施、文章图表、原始数据搜索",
+        sourceStatus: "优先使用 DOI、出版商页面、arXiv 和 WoS 导出等文献来源",
         materialsTitle: "🧪 超导材料表",
         materialsStatus: "等待中",
         detailTitle: "📋 材料详情",
@@ -2922,7 +3037,7 @@
       },
       en: {
         title: "⚡ ARPES Superconductivity Explorer",
-        subtitle: "Superconducting materials · Periodic Table · Light Sources · Article Data · Comparison",
+        subtitle: "Learn the history · Choose a system to explore",
         loginTitle: "USTC ARPES Workbench",
         loginHint: "Official access for USTC / NSRL / ARPES users to search materials, import literature, save experiment data, and generate reports.",
         signInTab: "Sign In",
@@ -2954,8 +3069,16 @@
         loginPasswordRequired: "Enter a password",
         loginPasswordMismatch: "Passwords do not match",
         accountCreatedToast: "Account created",
+        logoutBtn: "Log out",
+        logoutToast: "Logged out and returned to the login screen",
+        focusHistoryTitle: "Learn the History",
+        focusHistoryHint: "Use the 3D Tc-year-pressure cube to see superconductivity milestones and material families.",
+        focusExploreTitle: "Choose a System to Explore",
+        focusExploreHint: "Select elements or families from the periodic table, then expand the library for papers, data, and figures.",
+        advancedLibraryTitle: "Advanced Library: paper figures, data, templates, and import tools",
+        advancedLibraryHint: "Collapsed by default to keep the main interface simple",
         tocTitle: "E-book Contents",
-        tocNote: "The contents update with topic, element, and material filters.",
+        tocNote: "The main interface keeps only the history cube and periodic table; expand the library when needed.",
         generateReportBtn: "Generate Report",
         modelInterfaceTitle: "Computation Model Interface",
         modelInterfaceHint: "Reserved API: window.ARPESModelHub.registerModel(name, predictFn)",
@@ -2975,7 +3098,7 @@
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
-        reportToast: "Research report generated",
+        reportToast: "Word research report generated",
         tocSearch: "Search & Topic",
         tocMilestones: "History & Model",
         tocPeriodic: "Periodic Table",
@@ -3024,8 +3147,8 @@
         filteredFigures: "{count} verified real paper figures found",
         totalFigures: "{count} verified real paper figures",
         remainingFigures: "{count} remaining",
-        figureFallback: "This real paper figure cannot be displayed directly",
-        viewFigureSource: "View figure source",
+        figureFallback: "Figure preview cannot be loaded directly; open the official literature entry",
+        viewFigureSource: "Open official paper",
         rowsLabel: "Rows",
         milestonesTitle: "📜 Superconductivity Milestones",
         milestonesHint: "Major discoveries from 1911 to present — click a node for details",
@@ -3044,7 +3167,7 @@
         tcChartTitle: "📊 Tc Comparison (K)",
         noMaterials: "No materials match current filters",
         sourceTitle: "💡 Light Source & Archive Directory",
-        sourceStatus: "Search by region, facility, paper figure, original data",
+        sourceStatus: "Prefer literature sources such as DOI, publisher pages, arXiv, and WoS exports",
         materialsTitle: "🧪 Superconducting Materials",
         materialsStatus: "Waiting",
         detailTitle: "📋 Material Details",
@@ -3318,6 +3441,7 @@
     const guestLoginBtn = $("#guestLoginBtn");
     const loginSuperBtn = $("#loginSuperBtn");
     const loginStatus = $("#loginStatus");
+    const logoutBtn = $("#logoutBtn");
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
     const generateReportBtn = $("#generateReportBtn");
@@ -4297,6 +4421,7 @@
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(guest));
         unlockWorkbench(guest);
       });
+      logoutBtn?.addEventListener("click", logoutWorkbench);
       [loginEmail, loginPassword, confirmPassword, loginName, loginGroup].forEach(input => {
         input?.addEventListener("keydown", event => {
           if (event.key === "Enter") submitLogin();
@@ -4308,6 +4433,16 @@
     function loadUser() {
       try { return JSON.parse(localStorage.getItem(USER_STORAGE_KEY) || "{}"); }
       catch { return {}; }
+    }
+
+    function logoutWorkbench() {
+      localStorage.removeItem(USER_STORAGE_KEY);
+      document.body.classList.add("locked");
+      if (loginScreen) loginScreen.style.display = "grid";
+      if (loginPassword) loginPassword.value = "";
+      if (confirmPassword) confirmPassword.value = "";
+      showToast(t("logoutToast"));
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function unlockWorkbench(user) {
@@ -4326,36 +4461,33 @@
 
     function renderToc() {
       if (!tocList) return;
-      const topicLabel = {
-        sc: currentLang === "zh" ? "超导" : "Superconductor",
-        topo: currentLang === "zh" ? "拓扑材料" : "Topological",
-        photo: currentLang === "zh" ? "光子晶体" : "Photonic"
-      }[state.topic || "sc"];
       const element = state.selectedElement ? ` · ${state.selectedElement}` : "";
-      const count = state.filtered ? state.filtered.length : 0;
       const items = [
-        ["section-milestones", t("tocMilestones")],
-        ["section-search", `${t("tocSearch")} · ${topicLabel}`],
-        ["section-periodic", `${t("tocPeriodic")}${element}`],
-        ["section-overview", t("tocOverview")],
-        ["section-sources", t("tocSources")],
-        ["section-materials", `${t("tocMaterials")} · ${count}`],
-        ["section-detail", t("tocDetail")],
-        ["section-articles", `${t("tocArticles")} · ${(state.articles || []).length}`],
-        ["section-hdf5", t("tocHdf5")],
-        ["section-our-data", `${t("tocOurData")} · ${(state.ourData || []).length}`],
-        ["section-notes", t("tocNotes")]
+        ["section-milestones", t("focusHistoryTitle")],
+        ["section-periodic", `${t("focusExploreTitle")}${element}`],
+        ["advancedLibrary", t("advancedLibraryTitle")]
       ];
       tocList.innerHTML = items.map(([id, label], index) =>
         `<a class="toc-link ${index === 0 ? "active" : ""}" data-section-id="${id}" href="#${id}">${esc(label)}</a>`
       ).join("");
-      if (tocNote) tocNote.textContent = `${t("tocNote")} ${currentLang === "zh" ? "当前" : "Current"}: ${topicLabel}${element}.`;
+      tocList.querySelectorAll(".toc-link").forEach(link => {
+        link.addEventListener("click", () => {
+          if (link.dataset.sectionId === "advancedLibrary") {
+            document.querySelector("#advancedLibrary")?.setAttribute("open", "");
+          }
+        });
+      });
+      if (tocNote) tocNote.textContent = t("tocNote");
       updateTocActiveSection();
     }
 
     function updateTocActiveSection() {
       if (!tocList) return;
-      const sections = [...document.querySelectorAll("main > section")];
+      const sections = [
+        document.querySelector("#section-milestones"),
+        document.querySelector("#section-periodic"),
+        document.querySelector("#advancedLibrary")
+      ].filter(Boolean);
       const current = sections
         .map(section => ({ section, distance: Math.abs(section.getBoundingClientRect().top - 92) }))
         .sort((a, b) => a.distance - b.distance)[0]?.section;
@@ -4387,40 +4519,70 @@
       const selected = state.filtered || [];
       const articleRows = filteredArticles ? filteredArticles() : (state.articles || []);
       const figureCount = (state.articles || []).reduce((sum, article) => sum + (article.figures || []).length, 0);
-      const lines = [
-        "# ARPES Superconductivity Research Report",
-        "",
-        `Generated: ${new Date().toISOString()}`,
-        `User: ${user.name || "ARPES user"}`,
-        `Group: ${user.group || ""}`,
-        `Topic: ${state.topic || "sc"}`,
-        `Selected element: ${state.selectedElement || "none"}`,
-        `Search term: ${searchInput.value || "none"}`,
-        "",
-        "## Summary",
-        `- Materials in current view: ${selected.length}`,
-        `- Article records: ${(state.articles || []).length}`,
-        `- Articles after keyword filter: ${articleRows.length}`,
-        `- Verified paper figures: ${figureCount}`,
-        `- Personal records: ${(state.ourData || []).length}`,
-        "",
-        "## Representative Materials",
-        ...selected.slice(0, 20).map(row => `- ${row.display_name || row.material}: ${row.family}, Tc=${row.tc_K ?? "n/a"} K, elements ${(row.elements || []).join(", ")}`),
-        "",
-        "## Literature Records",
-        ...articleRows.slice(0, 25).map(article => `- ${article.year || ""} ${article.title} ${article.doi ? `DOI: ${article.doi}` : ""}`),
-        "",
-        "## Personal Data",
-        ...(state.ourData || []).slice(0, 20).map(row => `- ${row.material}: ${row.notes || row.archive || "no notes"}`),
-        "",
-        "## Model Interface",
-        "- Reserved browser API: window.ARPESModelHub.registerModel(name, predictFn)",
-        "- Reserved prediction call: window.ARPESModelHub.predict(modelName, datasetId)"
-      ];
-      const blob = new Blob([lines.join("\n")], { type: "text/markdown" });
+      const materialRows = selected.slice(0, 20).map(row => `
+        <tr>
+          <td>${esc(row.display_name || row.material || "")}</td>
+          <td>${esc(row.family || "")}</td>
+          <td>${esc(String(row.tc_K ?? "n/a"))}</td>
+          <td>${esc((row.elements || []).join(", "))}</td>
+          <td>${esc(row.arpes || row.arpes_features || "")}</td>
+        </tr>`).join("");
+      const articleList = articleRows.slice(0, 25).map(article => `
+        <li>${esc(article.year || "")} ${esc(article.title || "")}${article.doi ? ` DOI: ${esc(article.doi)}` : ""}</li>`).join("");
+      const personalList = (state.ourData || []).slice(0, 20).map(row => `
+        <li>${esc(row.material || "")}: ${esc(row.notes || row.archive || "no notes")}</li>`).join("");
+      const generatedAt = new Date().toLocaleString(currentLang === "zh" ? "zh-CN" : "en-US");
+      const html = `<!doctype html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>ARPES Superconductivity Research Report</title>
+          <style>
+            body { font-family: Arial, "Microsoft YaHei", sans-serif; color: #1f2937; line-height: 1.45; }
+            h1 { color: #0f766e; }
+            h2 { color: #115e59; border-bottom: 1px solid #d7dee8; padding-bottom: 4px; }
+            table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; }
+            th, td { border: 1px solid #d7dee8; padding: 6px 8px; vertical-align: top; }
+            th { background: #e7f6f4; }
+            .meta { color: #526071; }
+          </style>
+        </head>
+        <body>
+          <h1>ARPES Superconductivity Research Report</h1>
+          <p class="meta">Generated: ${esc(generatedAt)}<br>
+          User: ${esc(user.name || "ARPES user")}<br>
+          Group: ${esc(user.group || "")}<br>
+          Topic: ${esc(state.topic || "sc")}<br>
+          Selected element: ${esc(state.selectedElement || "none")}<br>
+          Search term: ${esc(searchInput.value || "none")}</p>
+          <h2>Summary</h2>
+          <ul>
+            <li>Materials in current view: ${selected.length}</li>
+            <li>Article records: ${(state.articles || []).length}</li>
+            <li>Articles after keyword filter: ${articleRows.length}</li>
+            <li>Verified paper figures: ${figureCount}</li>
+            <li>Personal records: ${(state.ourData || []).length}</li>
+          </ul>
+          <h2>Representative Materials</h2>
+          <table>
+            <thead><tr><th>Material</th><th>Family</th><th>Tc (K)</th><th>Elements</th><th>ARPES notes</th></tr></thead>
+            <tbody>${materialRows || "<tr><td colspan='5'>No current material selection.</td></tr>"}</tbody>
+          </table>
+          <h2>Literature Records</h2>
+          <ol>${articleList || "<li>No literature records loaded.</li>"}</ol>
+          <h2>Personal Data</h2>
+          <ul>${personalList || "<li>No personal records.</li>"}</ul>
+          <h2>Model Interface</h2>
+          <ul>
+            <li>Reserved browser API: window.ARPESModelHub.registerModel(name, predictFn)</li>
+            <li>Reserved prediction call: window.ARPESModelHub.predict(modelName, datasetId)</li>
+          </ul>
+        </body>
+        </html>`;
+      const blob = new Blob(["\ufeff", html], { type: "application/msword;charset=utf-8" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `arpes-research-report-${new Date().toISOString().slice(0,10)}.md`;
+      a.download = `arpes-research-report-${new Date().toISOString().slice(0,10)}.doc`;
       a.click();
       URL.revokeObjectURL(a.href);
       showToast(t("reportToast"));
@@ -5105,14 +5267,14 @@
           allFigures.push({
             ...fig,
             article_title: article.title,
-            article_url: article.ar5iv_url || article.url,
+            article_url: article.url || article.ar5iv_url,
             article_source: article.source,
             year: article.year,
             materials: article.materials || [],
             techniques: article.techniques || [],
             data_quality: article.data_quality || article.verification_status,
             image_url: imageUrl,
-            original_figure_url: fig.original_figure_url || article.ar5iv_url || article.url,
+            original_figure_url: fig.original_figure_url || article.url || article.ar5iv_url,
             has_ar5iv: !!article.ar5iv_url
           });
         }
@@ -5374,7 +5536,7 @@
             ...fig,
             image_url: imageUrl,
             article_title: article.title,
-            article_url: article.ar5iv_url || article.url,
+            article_url: article.url || article.ar5iv_url,
             article_source: article.source,
             year: article.year,
             data_quality: article.data_quality || article.verification_status
