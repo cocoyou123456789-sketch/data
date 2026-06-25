@@ -413,6 +413,12 @@
       gap: 8px;
     }
 
+    .login-entry-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+    }
+
     .login-feature-item {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -2166,6 +2172,7 @@
 
       .login-layout,
       .login-feature-grid,
+      .login-entry-actions,
       .auth-tabs,
       .login-card .form-grid {
         grid-template-columns: 1fr;
@@ -2412,7 +2419,10 @@
               </label>
             </div>
             <span class="status" id="loginStatus"></span>
-            <button class="primary" id="loginBtn" data-i18n="loginBtn" title="Use local browser account access">进入工作台</button>
+            <div class="login-entry-actions">
+              <button class="primary" id="loginBtn" data-i18n="loginBtn" title="Use local browser account access">进入工作台</button>
+              <button id="quickGuestLoginBtn" type="button" data-i18n="guestLoginBtn" title="Open the demo workbench without an account">以访客身份进入</button>
+            </div>
             <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
           </div>
         </div>
@@ -3728,6 +3738,7 @@
     const loginName = $("#loginName");
     const loginGroup = $("#loginGroup");
     const loginBtn = $("#loginBtn");
+    const quickGuestLoginBtn = $("#quickGuestLoginBtn");
     const guestLoginBtn = $("#guestLoginBtn");
     const loginSuperBtn = $("#loginSuperBtn");
     const loginStatus = $("#loginStatus");
@@ -4702,7 +4713,7 @@
         if (authMode === "signup") showToast(t("accountCreatedToast"));
       };
       loginBtn?.addEventListener("click", submitLogin);
-      guestLoginBtn?.addEventListener("click", () => {
+      const enterGuest = () => {
         const guest = {
           email: "",
           password_set: false,
@@ -4713,7 +4724,9 @@
         };
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(guest));
         unlockWorkbench(guest);
-      });
+      };
+      guestLoginBtn?.addEventListener("click", enterGuest);
+      quickGuestLoginBtn?.addEventListener("click", enterGuest);
       logoutBtn?.addEventListener("click", logoutWorkbench);
       [loginEmail, loginPassword, confirmPassword, loginName, loginGroup].forEach(input => {
         input?.addEventListener("keydown", event => {
