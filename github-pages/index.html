@@ -967,6 +967,50 @@
       font-size: 14px;
     }
 
+    .history-profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin: 2px 0;
+    }
+
+    .history-profile-grid span {
+      border: 1px solid #d7dee8;
+      border-radius: 6px;
+      background: #f8fafc;
+      padding: 5px 6px;
+      color: #526071;
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .history-profile-grid b {
+      display: block;
+      color: #243142;
+      font-size: 12px;
+      margin-top: 1px;
+    }
+
+    .history-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .history-tags span {
+      border-radius: 999px;
+      background: rgba(15,118,110,0.1);
+      color: #0f766e;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .history-why {
+      color: #243142;
+    }
+
     .history-figure figcaption {
       padding: 8px 12px;
       color: #243142;
@@ -1911,6 +1955,10 @@
       .history-point-card,
       .history-figure figcaption {
         font-size: 12px;
+      }
+
+      .history-profile-grid {
+        grid-template-columns: minmax(0, 1fr);
       }
 
       .periodic-wrap {
@@ -4674,10 +4722,19 @@
     function renderHistoryPointCard(point) {
       if (!historyPointCard) return;
       const note = currentLang === "zh" ? point.zh : point.en;
+      const labels = currentLang === "zh"
+        ? { family: "材料家族", year: "发现年份", tc: "临界温度", why: "为什么重要" }
+        : { family: "Family", year: "Year", tc: "Critical Tc", why: "Why it matters" };
+      const tagText = historyPointTags(point).map(tag => `<span>${esc(tag)}</span>`).join("");
       historyPointCard.innerHTML = `
         <strong>${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)}</strong>
-        <span>${esc(point.family || "")}</span>
-        <span>${esc(note)}</span>
+        <div class="history-profile-grid">
+          <span>${esc(labels.family)}<b>${esc(point.family || "")}</b></span>
+          <span>${esc(labels.year)}<b>${esc(point.year)}</b></span>
+          <span>${esc(labels.tc)}<b>${esc(point.tc)}</b></span>
+        </div>
+        <div class="history-tags">${tagText}</div>
+        <span class="history-why"><b>${esc(labels.why)}</b> · ${esc(note)}</span>
       `;
     }
 
@@ -4688,11 +4745,50 @@
       const note = currentLang === "zh"
         ? `这是超导历史中的年度大事件节点，用来把材料点按研究阶段组织起来。${milestone.year} 年附近的材料点可以作为该阶段的代表体系继续比较。`
         : `This is a yearly milestone node in superconductivity history. Nearby material points can be compared as representative systems from this stage.`;
+      const labels = currentLang === "zh"
+        ? { stage: "阶段", year: "年份", view: "图中用途", compare: "历史对比" }
+        : { stage: "Stage", year: "Year", view: "Chart role", compare: "Historical comparison" };
       historyPointCard.innerHTML = `
         <strong>${esc(milestone.year)} · ${esc(label)}</strong>
-        <span>${esc(family || "")}</span>
-        <span>${esc(note)}</span>
+        <div class="history-profile-grid">
+          <span>${esc(labels.stage)}<b>${esc(family || "")}</b></span>
+          <span>${esc(labels.year)}<b>${esc(milestone.year)}</b></span>
+          <span>${esc(labels.view)}<b>${esc(label)}</b></span>
+        </div>
+        <div class="history-tags"><span>${esc(labels.compare)}</span><span>${esc(family || "")}</span></div>
+        <span class="history-why">${esc(note)}</span>
       `;
+    }
+
+    function historyPointTags(point) {
+      const family = String(point.family || "");
+      const label = String(point.label || "");
+      const tc = parseFloat(point.tc) || 0;
+      const tags = [];
+      if (currentLang === "zh") {
+        if (family.includes("重费米子")) tags.push("强关联", "非常规配对", "低 Tc");
+        else if (family.includes("铜氧化物")) tags.push("高温超导", "层状结构", "ARPES 经典");
+        else if (family.includes("铁基")) tags.push("多轨道", "多费米面", "高温超导");
+        else if (family.includes("高压氢化物")) tags.push("高压", "高 Tc", "需谨慎核验");
+        else if (family.includes("碳")) tags.push("碳基材料", "低维", "掺杂/界面");
+        else if (family.includes("富勒烯")) tags.push("分子晶体", "C60", "电子-声子");
+        else if (family.includes("硼")) tags.push("多带", "常规超导", "晶格耦合");
+        else tags.push("历史材料", "Tc 参考", "对比样本");
+        if (tc >= 77) tags.push("液氮温区");
+        if (/Hg|Pb|Nb/.test(label)) tags.push("早期记录");
+      } else {
+        if (family.includes("重费米子")) tags.push("correlated", "unconventional", "low Tc");
+        else if (family.includes("铜氧化物")) tags.push("high Tc", "layered", "ARPES classic");
+        else if (family.includes("铁基")) tags.push("multiorbital", "multi-FS", "high Tc");
+        else if (family.includes("高压氢化物")) tags.push("high pressure", "high Tc", "verify carefully");
+        else if (family.includes("碳")) tags.push("carbon", "low-dimensional", "doping/interface");
+        else if (family.includes("富勒烯")) tags.push("molecular", "C60", "electron-phonon");
+        else if (family.includes("硼")) tags.push("multiband", "conventional", "lattice coupling");
+        else tags.push("historical", "Tc reference", "comparison");
+        if (tc >= 77) tags.push("liquid nitrogen scale");
+        if (/Hg|Pb|Nb/.test(label)) tags.push("early record");
+      }
+      return tags.slice(0, 4);
     }
 
     let cubeRotation = { x: -18, y: 32 };
