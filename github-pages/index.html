@@ -5261,7 +5261,7 @@
         ? historyChartPoints.filter(point => coreAxisPointIds.has(point.id))
         : historyChartPoints;
       const axisSize = 250;
-      axisPointLayer.innerHTML = sourcePoints.map((point, index) => {
+      const plottedPoints = sourcePoints.map((point, index) => {
         const year = Number(point.year);
         const tc = parseFloat(point.tc) || 0;
         const pressure = estimatePressureGPa(point);
@@ -5272,6 +5272,9 @@
         const pz = Math.max(0, Math.min(axisSize, (tc / tcMax) * axisSize + (axisMode === "core" ? 0 : ((index % 3) - 1) * 2)));
         const color = colors[point.family] || "#14b8a6";
         const coreClass = coreAxisPointIds.has(point.id) ? " is-core" : "";
+        return { point, pressure, px, py, pz, color, coreClass };
+      });
+      axisPointLayer.innerHTML = plottedPoints.map(({ point, pressure, px, py, pz, color, coreClass }) => {
         return `<button class="axis-point${coreClass}" type="button" data-history-point="${esc(point.id)}"
           style="--px:${px.toFixed(1)}px;--py:${py.toFixed(1)}px;--pz:${pz.toFixed(1)}px;--point-color:${esc(color)}"
           onclick="window.__selectAxisPoint && window.__selectAxisPoint(this)"
@@ -5279,11 +5282,22 @@
           aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
           title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa"></button>`;
       }).join("");
+      if (axisHitLayer) {
+        axisHitLayer.innerHTML = plottedPoints.map(({ point, pressure, px, pz }) => {
+          return `<button class="axis-hit" type="button" data-history-point="${esc(point.id)}"
+            style="left:${(36 + px).toFixed(1)}px;bottom:${(36 + pz).toFixed(1)}px"
+            aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
+            title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa"></button>`;
+        }).join("");
+      }
       const activatePoint = pointEl => {
         const point = historyChartPoints.find(entry => entry.id === pointEl?.dataset.historyPoint);
         if (!point) return;
         axisPointLayer.querySelectorAll(".axis-point").forEach(node => node.classList.remove("active"));
-        pointEl.classList.add("active");
+        axisHitLayer?.querySelectorAll(".axis-hit").forEach(node => node.classList.remove("active"));
+        const pointId = pointEl.dataset.historyPoint;
+        axisPointLayer.querySelector(`.axis-point[data-history-point="${CSS.escape(pointId)}"]`)?.classList.add("active");
+        axisHitLayer?.querySelector(`.axis-hit[data-history-point="${CSS.escape(pointId)}"]`)?.classList.add("active");
         renderCubeReadout(point);
       };
       window.__selectAxisPoint = activatePoint;
@@ -5300,6 +5314,16 @@
       axisPointLayer.addEventListener("click", event => {
         const pointEl = event.target.closest?.(".axis-point");
         if (pointEl) activatePoint(pointEl);
+      });
+      axisHitLayer?.querySelectorAll(".axis-hit").forEach(pointEl => {
+        pointEl.addEventListener("click", () => activatePoint(pointEl));
+        pointEl.addEventListener("pointerdown", () => activatePoint(pointEl));
+        pointEl.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            activatePoint(pointEl);
+          }
+        });
       });
       if (axisModeBtn) axisModeBtn.textContent = axisMode === "core" ? t("axisModeShowAll") : t("axisModeShowCore");
     }
