@@ -2950,12 +2950,17 @@
               <span data-i18n="importMetricWos">WoS/出版商记录</span>
             </div>
             <div class="import-metric">
+              <strong id="importMetricFree">0</strong>
+              <span data-i18n="importMetricFree">免费 API 题录</span>
+            </div>
+            <div class="import-metric">
               <strong id="importMetricFigures">20</strong>
               <span data-i18n="importMetricFigures">已核验论文图</span>
             </div>
           </div>
         </div>
         <div class="toolbar" style="margin-bottom:4px;">
+          <button class="primary" id="importFreeApiBtn" data-i18n="importFreeApiBtn">🌐 免费 API 导入说明</button>
           <button class="primary" id="importWosBtn" data-i18n="importWosBtn">📥 导入 WoS</button>
           <button class="primary" id="importScholarBtn" data-i18n="importScholarBtn">📥 导入 Google Scholar</button>
           <button id="resetArticlesBtn" data-i18n="resetArticlesBtn">🔄 恢复默认数据</button>
@@ -3283,13 +3288,16 @@
         wosWorkflowStep3: "上传文件或粘贴文本，网站自动提取标题、年份、DOI、材料、元素、技术和关键词。",
         importMetricRecords: "当前文章记录",
         importMetricWos: "WoS/出版商记录",
+        importMetricFree: "免费 API 题录",
         importMetricFigures: "已核验论文图",
+        importFreeApiBtn: "🌐 免费 API 导入说明",
         importWosBtn: "📥 导入 WoS",
         importScholarBtn: "📥 导入 Google Scholar",
         resetArticlesBtn: "🔄 恢复默认数据",
         importPanelTitle: "导入文章",
-        importHelpText: "推荐从 WoS 结果页点击 Export，选择 CSV/TSV/TXT 后上传或粘贴；截图页面本身不能提供完整元数据。",
+        importHelpText: "免费 API 导入请运行 scripts/import_free_arpes.py；WoS/Scholar 可上传或粘贴导出文件。截图页面本身不能提供完整元数据。",
         importTextareaPlaceholder: "在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本...",
+        freeApiImportHelp: "免费导入流程：在本地运行 python3 scripts/import_free_arpes.py，脚本会从 OpenAlex、arXiv、Crossref 拉取 ARPES 题录，生成 data/free_arpes_articles.json。网页会自动合并显示；这些记录只代表官方元数据，需要全文核验后才作为实验数据。",
         parseImportBtn: "🔍 解析并导入",
         noArticles: "暂无文章数据。",
         ourDataTitle: "📝 我的数据",
@@ -3328,7 +3336,7 @@
         noPersonalRecords: "暂无个人记录。在上方添加，数据保存在浏览器中。",
         noMatchSource: "未找到匹配的光源或档案。试试搜索\"上海\"、\"北京\"、\"NSRRC\"、\"ALS\"、\"arXiv\"。",
         seedMaterials: "种子材料",
-        seedDataNote: "本页面是超导主题的交互式探索模板。Tc 值和历史记录为代表性和种子数据，非最终精选条目。个人数据保存在浏览器 localStorage 中。点击 SUPERCONDUCTOR 按钮让周期表元素跳舞！支持按地区搜索光源设施（上海 SSRF、北京 BSRF、合肥 NSRL、台湾 NSRRC 及全球各地）。文章数据从 articles.json 加载，包含 arXiv 预印本和已发表文献。",
+        seedDataNote: "本页面是超导主题的交互式探索模板。Tc 值和历史记录为代表性和种子数据，非最终精选条目。个人数据保存在浏览器 localStorage 中。点击 SUPERCONDUCTOR 按钮让周期表元素跳舞！支持按地区搜索光源设施（上海 SSRF、北京 BSRF、合肥 NSRL、台湾 NSRRC 及全球各地）。文章数据从 articles.json 和 free_arpes_articles.json 加载，包含 arXiv 预印本、开放 API 题录和已发表文献。",
         materials: "材料数",
         families: "家族",
         elements: "元素",
@@ -3577,13 +3585,16 @@
         wosWorkflowStep3: "Upload the file or paste text; the site extracts title, year, DOI, materials, elements, techniques, and keywords.",
         importMetricRecords: "Current records",
         importMetricWos: "WoS/publisher records",
+        importMetricFree: "Free API metadata",
         importMetricFigures: "Verified paper figures",
+        importFreeApiBtn: "🌐 Free API import guide",
         importWosBtn: "📥 Import WoS",
         importScholarBtn: "📥 Import Google Scholar",
         resetArticlesBtn: "🔄 Restore Defaults",
         importPanelTitle: "Import Articles",
-        importHelpText: "Recommended: click Export on the WoS results page, choose CSV/TSV/TXT, then upload or paste it. A screenshot alone does not contain complete metadata.",
+        importHelpText: "For free API import, run scripts/import_free_arpes.py locally. For WoS/Scholar, upload or paste exported files. A screenshot alone does not contain complete metadata.",
         importTextareaPlaceholder: "Paste Web of Science CSV/TSV export text, or Google Scholar BibTeX text...",
+        freeApiImportHelp: "Free import workflow: run python3 scripts/import_free_arpes.py locally. The script queries OpenAlex, arXiv, and Crossref for ARPES metadata and writes data/free_arpes_articles.json. The website loads it automatically; these records are official metadata and still need full-text verification before becoming experimental data.",
         parseImportBtn: "🔍 Parse & Import",
         noArticles: "No article data.",
         ourDataTitle: "📝 Our Data",
@@ -3622,7 +3633,7 @@
         noPersonalRecords: "No personal records yet. Add one above; data persists in browser.",
         noMatchSource: "No matching light source or archive. Try Shanghai, Beijing, NSRRC, ALS, arXiv.",
         seedMaterials: "seed materials",
-        seedDataNote: "This page is an interactive superconductivity exploration template. Tc values and historical notes are representative seed data, not final curated entries. Personal data is stored in browser localStorage. Click SUPERCONDUCTOR to make the periodic table dance! Search by region for light source facilities (SSRF, BSRF, NSRL, NSRRC, and global). Article data loaded from articles.json, including arXiv preprints and published literature.",
+        seedDataNote: "This page is an interactive superconductivity exploration template. Tc values and historical notes are representative seed data, not final curated entries. Personal data is stored in browser localStorage. Click SUPERCONDUCTOR to make the periodic table dance! Search by region for light source facilities (SSRF, BSRF, NSRL, NSRRC, and global). Article data loads from articles.json and free_arpes_articles.json, including arXiv preprints, open API metadata, and published literature.",
         materials: "Materials",
         families: "Families",
         elements: "Elements",
@@ -3900,8 +3911,10 @@
     const articleImportFileStatus = $("#articleImportFileStatus");
     const importMetricRecords = $("#importMetricRecords");
     const importMetricWos = $("#importMetricWos");
+    const importMetricFree = $("#importMetricFree");
     const importMetricFigures = $("#importMetricFigures");
     const closeImportBtn = $("#closeImportBtn");
+    const importFreeApiBtn = $("#importFreeApiBtn");
     const comparePanel = $("#comparePanel");
     const compareGrid = $("#compareGrid");
     const clearCompareBtn = $("#clearCompareBtn");
@@ -3920,6 +3933,44 @@
       figure: $("#ourFigure"), originalData: $("#ourOriginalData"),
       special: $("#ourSpecial"), q: $("#ourQ"), photon: $("#ourPhoton"), notes: $("#ourNotes")
     };
+
+    function articleIdentity(article) {
+      const doi = String(article.doi || "").trim().toLowerCase();
+      if (doi) return `doi:${doi.replace(/^https?:\/\/doi\.org\//, "")}`;
+      return `title:${String(article.title || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()}:${article.year || ""}`;
+    }
+
+    function mergeArticleRecords(...groups) {
+      const byId = new Map();
+      for (const group of groups) {
+        for (const article of group || []) {
+          const key = articleIdentity(article);
+          if (!key || key === "title::") continue;
+          if (byId.has(key)) {
+            const target = byId.get(key);
+            target.free_sources = uniq([...(target.free_sources || []), ...(article.free_sources || [])]);
+            target.keywords = uniq([...(target.keywords || []), ...(article.keywords || [])]);
+            target.materials = uniq([...(target.materials || []), ...(article.materials || [])]);
+            target.elements = uniq([...(target.elements || []), ...(article.elements || [])]);
+            target.open_access_url = target.open_access_url || article.open_access_url || "";
+            target.citation_count = Math.max(target.citation_count || 0, article.citation_count || 0) || target.citation_count || article.citation_count || null;
+          } else {
+            byId.set(key, { ...article });
+          }
+        }
+      }
+      return [...byId.values()];
+    }
+
+    async function loadDefaultArticles() {
+      let curated = [];
+      let free = [];
+      try { curated = await loadJson("data/articles.json"); }
+      catch { curated = []; }
+      try { free = await loadJson("data/free_arpes_articles.json"); }
+      catch { free = []; }
+      return mergeArticleRecords(curated, free);
+    }
 
     // ===== 周期表布局 =====
     const periodicLayout = [
@@ -4393,6 +4444,19 @@
       importTextarea.focus();
       importTextarea.dataset.mode = "scholar";
     });
+    importFreeApiBtn.addEventListener("click", () => {
+      importPanel.style.display = "block";
+      importPanelTitle.textContent = currentLang === "zh" ? "🌐 免费 ARPES API 导入" : "🌐 Free ARPES API Import";
+      importTextarea.value = currentLang === "zh"
+        ? "命令：python3 scripts/import_free_arpes.py\n\n可选：OPENALEX_EMAIL=you@example.com python3 scripts/import_free_arpes.py --per-query 12 --max-records 160\n\n输出：github-pages/data/free_arpes_articles.json\n\n说明：OpenAlex/arXiv/Crossref 返回的是官方题录/摘要/DOI/开放链接；这些记录会自动显示在文章列表中，但图和实验数值仍需全文核验。"
+        : "Command: python3 scripts/import_free_arpes.py\n\nOptional: OPENALEX_EMAIL=you@example.com python3 scripts/import_free_arpes.py --per-query 12 --max-records 160\n\nOutput: github-pages/data/free_arpes_articles.json\n\nNote: OpenAlex/arXiv/Crossref return official metadata, abstracts, DOI, and open links. These records show in the article list automatically, while figures and experimental values still require full-text verification.";
+      importTextarea.placeholder = t("freeApiImportHelp");
+      importParseStatus.textContent = t("freeApiImportHelp");
+      articleImportFileStatus.textContent = "";
+      articleImportFile.value = "";
+      importTextarea.dataset.mode = "free-api-guide";
+      importTextarea.focus();
+    });
     closeImportBtn.addEventListener("click", () => { importPanel.style.display = "none"; });
     articleImportFile.addEventListener("change", async () => {
       const file = articleImportFile.files && articleImportFile.files[0];
@@ -4407,6 +4471,10 @@
       const text = importTextarea.value.trim();
       if (!text) { importParseStatus.textContent = "请先粘贴文本"; return; }
       const mode = importTextarea.dataset.mode;
+      if (mode === "free-api-guide") {
+        importParseStatus.textContent = t("freeApiImportHelp");
+        return;
+      }
       let parsed = [];
       try {
         if (mode === "wos") parsed = parseWoSExport(text);
@@ -4431,8 +4499,7 @@
       showToast(`导入了 ${newArticles.length} 篇文章 · ARPES ${arpesCount} · 材料 ${materialCount}`);
     });
     resetArticlesBtn.addEventListener("click", async () => {
-      try { state.articles = await loadJson("data/articles.json"); }
-      catch { state.articles = []; }
+      state.articles = await loadDefaultArticles();
       renderArticles();
       renderKeywordChips();
       updateImportMetrics();
@@ -4612,9 +4679,8 @@
     async function init() {
       try {
         state.db = await loadJson("data/superconductivity.json");
-        // 尝试加载文章数据
-        try { state.articles = await loadJson("data/articles.json"); }
-        catch { state.articles = []; }
+        // 尝试加载文章数据：精选记录 + 免费官方 API 元数据
+        state.articles = await loadDefaultArticles();
         state.ourData = loadOurData();
         // 应用语言
         switchLang(currentLang);
@@ -6237,9 +6303,14 @@ ${personalLines || "- No personal records."}
         const text = [article.source, article.verification_status, article.wos_uid].join(" ").toLowerCase();
         return text.includes("wos") || text.includes("web of science") || text.includes("publisher");
       }).length;
+      const freeApiCount = articles.filter(article => {
+        const text = [article.source, article.verification_status, article.data_quality, ...(article.free_sources || [])].join(" ").toLowerCase();
+        return text.includes("free_api_metadata") || text.includes("openalex") || text.includes("crossref");
+      }).length;
       const figureCount = articles.reduce((sum, article) => sum + (article.figures || []).length, 0);
       if (importMetricRecords) importMetricRecords.textContent = articles.length;
       if (importMetricWos) importMetricWos.textContent = wosCount;
+      if (importMetricFree) importMetricFree.textContent = freeApiCount;
       if (importMetricFigures) importMetricFigures.textContent = figureCount;
     }
 
