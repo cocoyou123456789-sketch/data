@@ -166,6 +166,39 @@
       line-height: 1.5;
     }
 
+    .flow-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.018);
+    }
+
+    .flow-tab {
+      min-height: 42px;
+      padding: 8px 10px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+      text-align: center;
+      background: rgba(13,21,32,0.72);
+    }
+
+    .flow-tab:last-child {
+      border-right: 0;
+    }
+
+    .flow-tab.active {
+      color: #061111;
+      background: linear-gradient(135deg, var(--accent-glow), #78d8ff);
+      box-shadow: inset 0 -2px 0 rgba(255,255,255,0.45);
+    }
+
     .advanced-library {
       border: 1px solid var(--line);
       border-radius: 12px;
@@ -896,6 +929,52 @@
       align-items: start;
     }
 
+    .periodic-workbench {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .periodic-index-panel {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 72% 14%, rgba(96,208,255,0.12), transparent 28%),
+        rgba(13,21,32,0.74);
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      min-height: 540px;
+    }
+
+    .periodic-module-stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .periodic-module-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.026);
+      display: grid;
+      gap: 5px;
+      min-height: 76px;
+    }
+
+    .periodic-module-card strong {
+      color: var(--accent-glow);
+      font-size: 13px;
+    }
+
+    .periodic-module-card span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     /* === Overview 区域 === */
     .milestone-stage {
       display: grid;
@@ -1152,7 +1231,9 @@
 
     .history-side-panel {
       display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
       gap: 12px;
+      align-items: stretch;
     }
 
     .history-cube-panel {
@@ -1168,9 +1249,13 @@
       overflow: hidden;
     }
 
+    .history-cube-panel > div:first-child {
+      text-align: center;
+    }
+
     .cube-viewport {
-      min-height: 390px;
-      width: min(940px, 100%);
+      min-height: 430px;
+      width: min(760px, 100%);
       margin: 0 auto;
       display: grid;
       place-items: center;
@@ -1180,8 +1265,8 @@
     }
 
     .history-cube {
-      width: 260px;
-      height: 260px;
+      width: 330px;
+      height: 330px;
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(var(--cube-x, -22deg)) rotateY(var(--cube-y, 38deg)) scale(var(--cube-scale, 1));
@@ -1190,30 +1275,30 @@
 
     .axis-plane {
       position: absolute;
-      left: 28px;
-      bottom: 28px;
-      width: 190px;
-      height: 190px;
+      left: 36px;
+      bottom: 36px;
+      width: 250px;
+      height: 250px;
       border: 1px solid rgba(96,208,255,0.22);
       background:
         linear-gradient(rgba(96,208,255,0.08) 1px, transparent 1px),
         linear-gradient(90deg, rgba(96,208,255,0.08) 1px, transparent 1px);
-      background-size: 38px 38px;
+      background-size: 50px 50px;
       opacity: 0.72;
       transform-origin: left bottom;
       pointer-events: none;
     }
 
     .axis-plane.xy { transform: rotateX(90deg); }
-    .axis-plane.xz { transform: translateZ(190px); }
+    .axis-plane.xz { transform: translateZ(250px); }
     .axis-plane.yz { transform: rotateY(-90deg); }
 
     .axis-line {
       position: absolute;
-      left: 28px;
-      bottom: 28px;
+      left: 36px;
+      bottom: 36px;
       height: 2px;
-      width: 210px;
+      width: 274px;
       background: linear-gradient(90deg, var(--accent-glow), rgba(96,208,255,0.1));
       transform-origin: left center;
       box-shadow: 0 0 12px rgba(96,208,255,0.42);
@@ -1232,15 +1317,15 @@
     }
 
     .axis-label.x { transform: translate3d(220px, -18px, 0); }
-    .axis-label.y { transform: translate3d(22px, -22px, -214px); }
-    .axis-label.z { transform: translate3d(-14px, -232px, 0); color: #ffb4b4; }
+    .axis-label.y { transform: translate3d(22px, -22px, -274px); }
+    .axis-label.z { transform: translate3d(-14px, -292px, 0); color: #ffb4b4; }
 
     .axis-point {
       position: absolute;
-      left: 28px;
-      bottom: 28px;
-      width: 3px;
-      height: 3px;
+      left: 36px;
+      bottom: 36px;
+      width: 5px;
+      height: 5px;
       min-width: 0;
       min-height: 0;
       padding: 0;
@@ -1253,11 +1338,12 @@
       cursor: pointer;
       opacity: 0.78;
       pointer-events: auto;
+      z-index: 8;
     }
 
     .axis-point.is-core {
-      width: 5px;
-      height: 5px;
+      width: 7px;
+      height: 7px;
       opacity: 0.92;
     }
 
@@ -1274,6 +1360,7 @@
       inset: 0;
       transform-style: preserve-3d;
       pointer-events: auto;
+      z-index: 9;
     }
 
     .axis-legend {
@@ -1294,10 +1381,10 @@
 
     .cube-face {
       position: absolute;
-      left: 53px;
-      bottom: 53px;
-      width: 154px;
-      height: 154px;
+      left: 40px;
+      bottom: 40px;
+      width: 250px;
+      height: 250px;
       border: 1px solid rgba(255,255,255,0.22);
       border-radius: 10px;
       background:
@@ -1311,6 +1398,7 @@
       text-align: center;
       backface-visibility: visible;
       cursor: pointer;
+      pointer-events: none;
     }
 
     .cube-face strong {
@@ -1324,18 +1412,22 @@
       line-height: 1.3;
     }
 
-    .cube-face.front { transform: translateZ(77px); }
-    .cube-face.back { transform: rotateY(180deg) translateZ(77px); }
-    .cube-face.right { transform: rotateY(90deg) translateZ(77px); }
-    .cube-face.left { transform: rotateY(-90deg) translateZ(77px); }
-    .cube-face.top { transform: rotateX(90deg) translateZ(77px); }
-    .cube-face.bottom { transform: rotateX(-90deg) translateZ(77px); }
+    .cube-face.front { transform: translateZ(125px); }
+    .cube-face.back { transform: rotateY(180deg) translateZ(125px); }
+    .cube-face.right { transform: rotateY(90deg) translateZ(125px); }
+    .cube-face.left { transform: rotateY(-90deg) translateZ(125px); }
+    .cube-face.top { transform: rotateX(90deg) translateZ(125px); }
+    .cube-face.bottom { transform: rotateX(-90deg) translateZ(125px); }
 
     .cube-view-cube .axis-plane,
     .cube-view-cube .axis-line,
     .cube-view-cube .axis-label,
     .cube-view-cube #axisPointLayer {
       display: none;
+    }
+
+    .cube-view-cube .cube-face {
+      pointer-events: auto;
     }
 
     .cube-view-axis .cube-face {
@@ -1368,6 +1460,28 @@
       color: var(--muted);
       font-size: 12px;
       line-height: 1.5;
+    }
+
+    .model-interface {
+      min-height: 620px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background:
+        radial-gradient(circle at 80% 18%, rgba(20,184,166,0.14), transparent 28%),
+        rgba(13,21,32,0.78);
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .chat-platform-note {
+      border: 1px dashed rgba(96,208,255,0.35);
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(96,208,255,0.05);
+      color: var(--muted);
+      line-height: 1.6;
     }
 
     .figure-strip {
@@ -1845,7 +1959,7 @@
         max-height: none;
       }
       .toc-list { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .focus-switchboard, .login-card .form-grid { grid-template-columns: 1fr; }
+      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .focus-switchboard, .history-side-panel, .periodic-workbench, .flow-tabs, .login-card .form-grid { grid-template-columns: 1fr; }
       .login-layout {
         grid-template-columns: 1fr;
         min-height: 0;
@@ -2283,6 +2397,14 @@
         <span class="status" data-i18n="milestonesHint">从1911年至今的重大发现 — 点击节点查看详情</span>
       </div>
       <div class="content">
+        <div class="flow-tabs" aria-label="Superconductivity workflow">
+          <span class="flow-tab active" data-i18n="flowCube">流</span>
+          <span class="flow-tab" data-i18n="flowMaterialIndex">材料索引</span>
+          <span class="flow-tab" data-i18n="flowDeepExplore">确定探索</span>
+          <span class="flow-tab">WoS</span>
+          <span class="flow-tab">Model</span>
+          <span class="flow-tab">Report</span>
+        </div>
         <div class="milestone-stage">
           <div class="history-image" aria-label="超导历史与Tc对比">
             <div>
@@ -2340,8 +2462,13 @@
               <div class="cube-readout" id="cubeReadout" data-i18n="cubeReadoutDefault">点击魔方的一个面查看对应材料家族。</div>
             </div>
             <div class="model-interface">
-              <strong data-i18n="modelInterfaceTitle">计算模型接口</strong>
-              <span class="muted" data-i18n="modelInterfaceHint">预留 API：window.ARPESModelHub.registerModel(name, predictFn)</span>
+              <div>
+                <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
+                <p class="muted" data-i18n="chatPlatformHint">点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释；也可以在下面输入想查询的资料。</p>
+              </div>
+              <div class="chat-platform-note" id="cubeChatGuide" data-i18n="chatPlatformGuide">
+                选择一个材料点或魔方面：这里会把 Tc、年份、压力、材料家族、相关 ARPES 线索和可继续查的文献来源串起来。
+              </div>
               <div class="model-status-grid">
                 <div class="model-status-card">
                   <span data-i18n="modelStatusApi">接口状态</span>
@@ -2393,18 +2520,42 @@
         <span class="status" data-i18n="periodicStatus">🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!</span>
       </div>
       <div class="content">
-        <div class="periodic-wrap">
-          <div class="periodic" id="periodicTable"></div>
+        <div class="flow-tabs" aria-label="Material index workflow">
+          <span class="flow-tab" data-i18n="flowCube">流</span>
+          <span class="flow-tab active" data-i18n="flowMaterialIndex">材料索引</span>
+          <span class="flow-tab" data-i18n="flowDeepExplore">确定探索</span>
+          <span class="flow-tab">Module 1</span>
+          <span class="flow-tab">Module 2</span>
+          <span class="flow-tab">Report</span>
         </div>
-        <div class="layout-two">
-          <div class="card" id="elementPanel">
-            <h3 data-i18n="selectElement">👆 选择一个元素</h3>
-            <p class="muted" data-i18n="selectElementHint">点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。</p>
+        <div class="periodic-workbench">
+          <div class="periodic-wrap">
+            <div class="periodic" id="periodicTable"></div>
           </div>
-          <div class="card" id="familyPanel">
-            <h3 data-i18n="familyTitle">🧬 材料家族</h3>
-            <p class="muted" data-i18n="familyHint">点击标签快速筛选。当前以超导为主题。</p>
-            <div class="chips" id="familyChips"></div>
+          <div class="periodic-index-panel">
+            <div class="periodic-module-stack">
+              <div class="periodic-module-card">
+                <strong data-i18n="moduleMaterialIndex">Material index</strong>
+                <span data-i18n="moduleMaterialIndexHint">点击左侧元素后，这里显示元素简介、材料家族和文献入口。</span>
+              </div>
+              <div class="periodic-module-card">
+                <strong data-i18n="moduleLiterature">Literature module</strong>
+                <span data-i18n="moduleLiteratureHint">优先使用 DOI、arXiv、出版商和 WoS 导出的官方文献来源。</span>
+              </div>
+              <div class="periodic-module-card">
+                <strong data-i18n="moduleModel">Model module</strong>
+                <span data-i18n="moduleModelHint">后续计算模型可接入这里，对材料性质进行预测或归类。</span>
+              </div>
+            </div>
+            <div class="card" id="elementPanel">
+              <h3 data-i18n="selectElement">👆 选择一个元素</h3>
+              <p class="muted" data-i18n="selectElementHint">点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。</p>
+            </div>
+            <div class="card" id="familyPanel">
+              <h3 data-i18n="familyTitle">🧬 材料家族</h3>
+              <p class="muted" data-i18n="familyHint">点击标签快速筛选。当前以超导为主题。</p>
+              <div class="chips" id="familyChips"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -2795,6 +2946,18 @@
         focusHistoryHint: "用 3D Tc-年份-压力魔方查看超导材料发展脉络和里程碑。",
         focusExploreTitle: "选择感兴趣的体系进行深入探索",
         focusExploreHint: "从元素周期表选择元素或家族，再展开资料库查看文献、数据和图表。",
+        flowCube: "流",
+        flowMaterialIndex: "材料索引",
+        flowDeepExplore: "确定探索",
+        chatPlatformTitle: "Chat platform",
+        chatPlatformHint: "点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释；也可以在下面输入想查询的资料。",
+        chatPlatformGuide: "选择一个材料点或魔方面：这里会把 Tc、年份、压力、材料家族、相关 ARPES 线索和可继续查的文献来源串起来。",
+        moduleMaterialIndex: "Material index",
+        moduleMaterialIndexHint: "点击左侧元素后，这里显示元素简介、材料家族和文献入口。",
+        moduleLiterature: "Literature module",
+        moduleLiteratureHint: "优先使用 DOI、arXiv、出版商和 WoS 导出的官方文献来源。",
+        moduleModel: "Model module",
+        moduleModelHint: "后续计算模型可接入这里，对材料性质进行预测或归类。",
         advancedLibraryTitle: "高级资料库：文献图、数据、模板和导入工具",
         advancedLibraryHint: "默认折叠，保持主界面简洁",
         tocTitle: "电子书目录",
@@ -3075,6 +3238,18 @@
         focusHistoryHint: "Use the 3D Tc-year-pressure cube to see superconductivity milestones and material families.",
         focusExploreTitle: "Choose a System to Explore",
         focusExploreHint: "Select elements or families from the periodic table, then expand the library for papers, data, and figures.",
+        flowCube: "Flow",
+        flowMaterialIndex: "Material Index",
+        flowDeepExplore: "Deep Explore",
+        chatPlatformTitle: "Chat platform",
+        chatPlatformHint: "Click a material point in the cube; the right side shows literature data, material notes, and comparison guidance. You can also ask a question below.",
+        chatPlatformGuide: "Choose a material point or cube face: this panel connects Tc, year, pressure, family, ARPES clues, and literature sources to inspect next.",
+        moduleMaterialIndex: "Material index",
+        moduleMaterialIndexHint: "After clicking an element on the left, this panel shows the element summary, material families, and literature entries.",
+        moduleLiterature: "Literature module",
+        moduleLiteratureHint: "Prefer official literature sources such as DOI, arXiv, publisher pages, and WoS exports.",
+        moduleModel: "Model module",
+        moduleModelHint: "Future computation models can plug in here to classify or predict material properties.",
         advancedLibraryTitle: "Advanced Library: paper figures, data, templates, and import tools",
         advancedLibraryHint: "Collapsed by default to keep the main interface simple",
         tocTitle: "E-book Contents",
@@ -3455,6 +3630,7 @@
     const modelApiStatus = $("#modelApiStatus");
     const modelRegistryCount = $("#modelRegistryCount");
     const modelRegistryOutput = $("#modelRegistryOutput");
+    const cubeChatGuide = $("#cubeChatGuide");
     const historyCube = $("#historyCube");
     const cubeViewport = $("#cubeViewport");
     const cubeZoom = $("#cubeZoom");
@@ -5056,19 +5232,22 @@
       const sourcePoints = axisMode === "core"
         ? historyChartPoints.filter(point => coreAxisPointIds.has(point.id))
         : historyChartPoints;
+      const axisSize = 250;
       axisPointLayer.innerHTML = sourcePoints.map((point, index) => {
         const year = Number(point.year);
         const tc = parseFloat(point.tc) || 0;
         const pressure = estimatePressureGPa(point);
         const jitter = axisMode === "core" ? 0 : ((index % 5) - 2) * 2.8;
         const pressureLane = pressure ? pressure : familyLane(point.family || "");
-        const px = Math.max(0, Math.min(190, ((year - yearMin) / (yearMax - yearMin)) * 190 + jitter));
-        const py = Math.max(0, Math.min(190, (pressureLane / pressureMax) * 190));
-        const pz = Math.max(0, Math.min(190, (tc / tcMax) * 190 + (axisMode === "core" ? 0 : ((index % 3) - 1) * 2)));
+        const px = Math.max(0, Math.min(axisSize, ((year - yearMin) / (yearMax - yearMin)) * axisSize + jitter));
+        const py = Math.max(0, Math.min(axisSize, (pressureLane / pressureMax) * axisSize));
+        const pz = Math.max(0, Math.min(axisSize, (tc / tcMax) * axisSize + (axisMode === "core" ? 0 : ((index % 3) - 1) * 2)));
         const color = colors[point.family] || "#14b8a6";
         const coreClass = coreAxisPointIds.has(point.id) ? " is-core" : "";
         return `<button class="axis-point${coreClass}" type="button" data-history-point="${esc(point.id)}"
           style="--px:${px.toFixed(1)}px;--py:${py.toFixed(1)}px;--pz:${pz.toFixed(1)}px;--point-color:${esc(color)}"
+          onclick="window.__selectAxisPoint && window.__selectAxisPoint(this)"
+          onpointerdown="window.__selectAxisPoint && window.__selectAxisPoint(this)"
           aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
           title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa"></button>`;
       }).join("");
@@ -5079,6 +5258,7 @@
         pointEl.classList.add("active");
         renderCubeReadout(point);
       };
+      window.__selectAxisPoint = activatePoint;
       axisPointLayer.querySelectorAll(".axis-point").forEach(pointEl => {
         pointEl.addEventListener("click", () => activatePoint(pointEl));
         pointEl.addEventListener("pointerdown", () => activatePoint(pointEl));
@@ -5100,6 +5280,7 @@
       if (!cubeReadout) return;
       if (!point || typeof point === "string") {
         cubeReadout.textContent = t("cubeReadoutDefault");
+        if (cubeChatGuide) cubeChatGuide.textContent = t("chatPlatformGuide");
         return;
       }
       const pressure = estimatePressureGPa(point);
@@ -5110,6 +5291,14 @@
         X: ${esc(point.year)} · Y: ${esc(pressureNote)} · Z: Tc ${esc(point.tc)}<br>
         ${esc(note)}
       `;
+      if (cubeChatGuide) {
+        cubeChatGuide.innerHTML = `
+          <strong style="color:var(--accent-glow);">${esc(point.label)}</strong><br>
+          ${currentLang === "zh"
+            ? `材料点已选中：年份 ${esc(point.year)}，压力 ${esc(pressureNote)}，Tc ${esc(point.tc)}。可以继续在下方输入“这类材料的 ARPES 特征”或“相关文献来源”。`
+            : `Selected material point: year ${esc(point.year)}, pressure ${esc(pressureNote)}, Tc ${esc(point.tc)}. Ask below for ARPES features or literature sources.`}
+        `;
+      }
     }
 
     function renderCubeFaceReadout(faceKey) {
@@ -5117,6 +5306,9 @@
       const face = cubeFaces[faceKey] || cubeFaces.cuprate;
       const [title, body] = face[currentLang] || face.zh;
       cubeReadout.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}`;
+      if (cubeChatGuide) {
+        cubeChatGuide.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}<br>${esc(currentLang === "zh" ? "点击左侧材料点可进一步定位具体文献和参数。" : "Click a material point on the left to locate concrete papers and parameters.")}`;
+      }
     }
 
     function setupHistoryCube() {
