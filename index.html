@@ -2124,6 +2124,16 @@
       cursor: pointer;
     }
     .drop-zone.drag-over { border-color: var(--accent-glow); background: rgba(15,118,110,0.1); }
+    .drop-zone .upload-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .drop-zone .upload-actions button {
+      min-height: 38px;
+    }
     .hdf5-tree { max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; }
     .hdf5-tree .group { color: #f59e0b; cursor: pointer; }
     .hdf5-tree .dataset { color: var(--accent-glow); cursor: pointer; padding-left: 16px; }
@@ -2859,13 +2869,9 @@
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
             <h3 style="margin:0;" data-i18n="figureGalleryTitle">📊 论文图表对比</h3>
             <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-              <span class="muted" data-i18n="figureFilterLabel">筛选图表类型:</span>
-              <button class="fig-filter-chip active" data-figtype="all" data-i18n="figTypeAll" style="font-size:11px;padding:3px 10px;border-radius:14px;">全部</button>
-              <button class="fig-filter-chip" data-figtype="Fermi surface" data-i18n="figTypeFermi" style="font-size:11px;padding:3px 10px;border-radius:14px;">费米面</button>
-              <button class="fig-filter-chip" data-figtype="Band structure" data-i18n="figTypeBand" style="font-size:11px;padding:3px 10px;border-radius:14px;">能带结构</button>
-              <button class="fig-filter-chip" data-figtype="Gap" data-i18n="figTypeGap" style="font-size:11px;padding:3px 10px;border-radius:14px;">能隙</button>
-              <button class="fig-filter-chip" data-figtype="ARPES spectrum" data-i18n="figTypeSpectrum" style="font-size:11px;padding:3px 10px;border-radius:14px;">ARPES 谱</button>
-              <button class="fig-filter-chip" data-figtype="Charge order" data-i18n="figTypeCharge" style="font-size:11px;padding:3px 10px;border-radius:14px;">电荷序</button>
+              <span class="muted" data-i18n="figureFilterLabel">按元素筛选:</span>
+              <span class="status" id="figureElementStatus" data-i18n="figureElementAll">未选择元素，显示全部文章图表</span>
+              <button id="clearFigureElementBtn" type="button" style="font-size:11px;padding:3px 10px;border-radius:14px;" data-i18n="figureClearElement">清除元素筛选</button>
               <span id="figCount" class="status"></span>
             </div>
           </div>
@@ -3019,7 +3025,10 @@
         <div class="drop-zone" id="hdf5DropZone">
           <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 文件</strong>
           <p class="muted" data-i18n="hdf5DropHint">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据</p>
-          <input type="file" id="hdf5FileInput" accept=".h5,.hdf5" multiple style="display:none;">
+          <div class="upload-actions">
+            <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 文件</button>
+          </div>
+          <input type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,application/x-hdf5,application/octet-stream" multiple style="display:none;">
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div class="card">
@@ -3345,8 +3354,11 @@
         overviewTitle: "📸 直观对比：文章图表",
         overviewStatus: "从论文提取图表 — 不同材料/技术并排对比",
         figureGalleryTitle: "📊 论文图表对比",
-        figureGalleryHint: "以下图表来自真实超导 ARPES 论文，按类型并排对比：费米面、能带色散、能隙分布、电荷序。点击跳转原文。",
-        figureFilterLabel: "筛选图表类型:",
+        figureGalleryHint: "以下图表来自真实超导 ARPES 论文。先在元素周期表中选择元素，再在这里查看对应文章图表。",
+        figureFilterLabel: "按元素筛选:",
+        figureElementAll: "未选择元素，显示全部文章图表",
+        figureElementSelected: "当前元素：{element}，仅显示含该元素的文章图表",
+        figureClearElement: "清除元素筛选",
         figTypeAll: "全部",
         figTypeFermi: "费米面",
         figTypeBand: "能带结构",
@@ -3418,6 +3430,13 @@
         hdf5StatusInitial: "上传 .h5 文件，解析能带、能量、温度数据，直观对比",
         hdf5DropTitle: "📁 拖放或点击上传 HDF5 文件",
         hdf5DropHint: "支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据",
+        hdf5ChooseBtn: "选择 HDF5 文件",
+        hdf5LibraryLoading: "正在加载 HDF5 解析库...",
+        hdf5LibraryReady: "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件",
+        hdf5LibraryMissing: "HDF5 解析库未加载。请检查网络/CDN，或刷新后重试。",
+        hdf5NoFileSelected: "未选择文件",
+        hdf5SelectedFiles: "已选择 {count} 个文件，开始解析...",
+        hdf5UnsupportedFile: "请选择 .h5、.hdf5 或 .hd5 文件",
         hdf5StructureTitle: "📂 文件结构",
         hdf5TreeEmpty: "上传文件后显示结构",
         hdf5MetaTitle: "🏷️ 元数据",
@@ -3674,8 +3693,11 @@
         overviewTitle: "📸 Overview: Article Figure Comparison",
         overviewStatus: "Figures from papers — side-by-side comparison across materials/techniques",
         figureGalleryTitle: "📊 Figure Comparison Gallery",
-        figureGalleryHint: "These figures come from real ARPES papers, grouped by type: Fermi surface, band dispersion, gap distribution, charge order. Click to view original paper.",
-        figureFilterLabel: "Figure type:",
+        figureGalleryHint: "These figures come from real ARPES papers. Select an element in the periodic table to view matching article figures.",
+        figureFilterLabel: "Element filter:",
+        figureElementAll: "No element selected; showing all article figures",
+        figureElementSelected: "Current element: {element}; showing article figures containing it",
+        figureClearElement: "Clear element filter",
         figTypeAll: "All",
         figTypeFermi: "Fermi surface",
         figTypeBand: "Band structure",
@@ -3747,6 +3769,13 @@
         hdf5StatusInitial: "Upload .h5 files to parse band, energy, and temperature data for comparison",
         hdf5DropTitle: "📁 Drop or click to upload HDF5 files",
         hdf5DropHint: "Supports ARPES-style files with energy/k axes, temperature, photon energy, and metadata",
+        hdf5ChooseBtn: "Choose HDF5 Files",
+        hdf5LibraryLoading: "Loading HDF5 parser...",
+        hdf5LibraryReady: "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files",
+        hdf5LibraryMissing: "HDF5 parser did not load. Check network/CDN access, or refresh and retry.",
+        hdf5NoFileSelected: "No file selected",
+        hdf5SelectedFiles: "{count} file(s) selected. Parsing...",
+        hdf5UnsupportedFile: "Choose a .h5, .hdf5, or .hd5 file",
         hdf5StructureTitle: "📂 HDF5 Structure",
         hdf5TreeEmpty: "Structure appears after upload",
         hdf5MetaTitle: "🏷️ Metadata",
@@ -4047,6 +4076,8 @@
     const figureGallery = $("#figureGallery");
     const figCount = $("#figCount");
     const figShowMoreBtn = $("#figShowMoreBtn");
+    const figureElementStatus = $("#figureElementStatus");
+    const clearFigureElementBtn = $("#clearFigureElementBtn");
     const sourceCards = $("#sourceCards");
     let figFilterType = "all";
     let figShowLimit = 12;
@@ -4937,6 +4968,7 @@
         cell.addEventListener("click", () => {
           state.selectedElement = cell.dataset.symbol;
           applyFilters();
+          showAppPage("literature");
         });
       });
     }
@@ -6223,17 +6255,31 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       figShowLimit += 24;
       renderFigureGallery();
     });
+    clearFigureElementBtn?.addEventListener("click", () => {
+      state.selectedElement = "";
+      figShowLimit = 12;
+      applyFilters();
+      renderToc();
+    });
 
     // ===== 图表画廊：从 articles.json 提取真实论文图表（带搜索筛选） =====
     function renderFigureGallery() {
       const allFigures = [];
       const term = (searchInput.value || "").trim().toLowerCase();
       const family = familyFilter.value;
+      const selectedElement = state.selectedElement || "";
       const legendEl = $("#figureColorLegend");
       if (legendEl) legendEl.innerHTML = typeColorLegendHtml();
+      if (figureElementStatus) {
+        figureElementStatus.textContent = selectedElement
+          ? tf("figureElementSelected", { element: selectedElement })
+          : t("figureElementAll");
+      }
+      if (clearFigureElementBtn) clearFigureElementBtn.style.display = selectedElement ? "" : "none";
 
       for (const article of curatedArticles()) {
         if (!article.figures || !article.figures.length) continue;
+        if (selectedElement && !(article.elements || []).includes(selectedElement)) continue;
         const articleText = [
           article.title, ...(article.materials || []), ...(article.elements || []),
           ...(article.keywords || []), ...(article.techniques || [])
@@ -6279,7 +6325,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const shownFigs = allFigures.slice(0, figShowLimit);
       const hiddenFigs = totalFigs - shownFigs.length;
 
-      figCount.textContent = term || family || figFilterType !== "all"
+      figCount.textContent = term || family || selectedElement || figFilterType !== "all"
         ? tf("filteredFigures", { count: totalFigs })
         : tf("totalFigures", { count: totalFigs });
 
@@ -6947,6 +6993,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     // DOM refs for HDF5 section
     const hdf5DropZone = document.querySelector("#hdf5DropZone");
+    const hdf5ChooseBtn = document.querySelector("#hdf5ChooseBtn");
     const hdf5FileInput = document.querySelector("#hdf5FileInput");
     const hdf5Tree = document.querySelector("#hdf5Tree");
     const hdf5Meta = document.querySelector("#hdf5Meta");
@@ -6960,33 +7007,82 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let currentH5Path = "";
     let librarySelection = new Set();
 
+    function setHDF5Status(message) {
+      if (hdf5Status) hdf5Status.textContent = message;
+    }
+
+    function isHDF5File(file) {
+      return /\.(h5|hdf5|hd5)$/i.test(file.name || "");
+    }
+
+    function chooseHDF5Files() {
+      if (!hdf5FileInput) return;
+      hdf5FileInput.value = "";
+      hdf5FileInput.click();
+    }
+
+    function updateHDF5ParserStatus() {
+      if (!hdf5Status) return;
+      if (window.jsfive) {
+        setHDF5Status(t("hdf5LibraryReady"));
+      } else {
+        setHDF5Status(t("hdf5LibraryLoading"));
+        window.setTimeout(() => {
+          if (!window.jsfive) setHDF5Status(t("hdf5LibraryMissing"));
+        }, 1600);
+      }
+    }
+
     // 拖放/点击上传
-    hdf5DropZone.addEventListener("click", () => hdf5FileInput.click());
+    hdf5ChooseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      chooseHDF5Files();
+    });
+    hdf5DropZone.addEventListener("click", (e) => {
+      if (e.target.closest("button")) return;
+      chooseHDF5Files();
+    });
     hdf5DropZone.addEventListener("dragover", (e) => { e.preventDefault(); hdf5DropZone.classList.add("drag-over"); });
     hdf5DropZone.addEventListener("dragleave", () => hdf5DropZone.classList.remove("drag-over"));
     hdf5DropZone.addEventListener("drop", (e) => {
       e.preventDefault();
       hdf5DropZone.classList.remove("drag-over");
-      for (const file of e.dataTransfer.files) handleHDF5File(file);
+      handleHDF5Files(Array.from(e.dataTransfer.files || []));
     });
     hdf5FileInput.addEventListener("change", () => {
-      for (const file of hdf5FileInput.files) handleHDF5File(file);
+      handleHDF5Files(Array.from(hdf5FileInput.files || []));
     });
+    updateHDF5ParserStatus();
+
+    async function handleHDF5Files(files) {
+      const validFiles = files.filter(isHDF5File);
+      if (!files.length) {
+        setHDF5Status(t("hdf5NoFileSelected"));
+        return;
+      }
+      if (!validFiles.length) {
+        setHDF5Status(t("hdf5UnsupportedFile"));
+        return;
+      }
+      setHDF5Status(tf("hdf5SelectedFiles", { count: validFiles.length }));
+      for (const file of validFiles) await handleHDF5File(file);
+    }
 
     async function handleHDF5File(file) {
-      if (!window.jsfive) { hdf5Status.textContent = currentLang === "zh" ? "❌ HDF5 库未加载，请刷新重试" : "❌ HDF5 library not loaded. Refresh and try again."; return; }
-      hdf5Status.textContent = currentLang === "zh" ? `⏳ 解析 ${file.name}...` : `⏳ Parsing ${file.name}...`;
+      if (!window.jsfive) { setHDF5Status(t("hdf5LibraryMissing")); return; }
+      setHDF5Status(currentLang === "zh" ? `⏳ 解析 ${file.name}...` : `⏳ Parsing ${file.name}...`);
       try {
         const buffer = await file.arrayBuffer();
         const data = new Uint8Array(buffer);
         const h5 = new jsfive.File(data);
+        h5.filename = file.name;
         currentH5 = h5;
         renderHDF5Tree(h5);
-        hdf5Status.textContent = currentLang === "zh" ? `✅ 已加载: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)` : `✅ Loaded: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)`;
+        setHDF5Status(currentLang === "zh" ? `✅ 已加载: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)` : `✅ Loaded: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)`);
         // 自动扫描 ARPES 相关数据集
         autoScanARPES(h5, file.name);
       } catch (e) {
-        hdf5Status.textContent = currentLang === "zh" ? `❌ 无法解析 ${file.name}: ${e.message}` : `❌ Cannot parse ${file.name}: ${e.message}`;
+        setHDF5Status(currentLang === "zh" ? `❌ 无法解析 ${file.name}: ${e.message}` : `❌ Cannot parse ${file.name}: ${e.message}`);
       }
     }
 
