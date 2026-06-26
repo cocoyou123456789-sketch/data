@@ -2571,7 +2571,17 @@
       }
     }
   </style>
-<script src="https://cdn.jsdelivr.net/npm/jsfive@0.5.2/dist/browser/jsfive.min.js"></script>
+<script src="vendor/jsfive.js"></script>
+<script>
+  window.jsfive = window.jsfive || window.hdf5;
+  window.addEventListener("error", event => {
+    const status = document.querySelector("#hdf5Status");
+    if (status && !window.__arpesInitErrorShown) {
+      window.__arpesInitErrorShown = true;
+      status.textContent = "页面初始化错误: " + (event.message || "unknown error");
+    }
+  });
+</script>
 </head>
 <body class="locked">
   <div class="login-screen" id="loginScreen">
@@ -3064,7 +3074,7 @@
       </div>
       <div class="content">
         <div class="card">
-          <h3 data-i18n="addRecordTitle">✏️ 添加个人超导记录</h3>
+          <h3 data-i18n="addRecordTitle">✏️ 添加我的记录</h3>
           <div class="form-grid" style="margin-top:10px;">
             <label data-label-i18n="materialField">材料
               <input id="ourMaterial" data-i18n-placeholder="materialPlaceholder" placeholder="例: Nd1-xSrxNiO2">
@@ -3420,7 +3430,7 @@
         noArticles: "暂无文章数据。",
         ourDataTitle: "📝 我的数据",
         ourDataStatus: "保存在浏览器本地",
-        addRecordTitle: "✏️ 添加个人超导记录",
+        addRecordTitle: "✏️ 添加我的记录",
         saveBtn: "💾 保存",
         exportBtn: "📥 导出 JSON",
         importBtn: "📤 导入",
@@ -3759,7 +3769,7 @@
         noArticles: "No article data.",
         ourDataTitle: "📝 Our Data",
         ourDataStatus: "Stored in this browser",
-        addRecordTitle: "✏️ Add Personal Record",
+        addRecordTitle: "✏️ Add My Record",
         saveBtn: "💾 Save",
         exportBtn: "📥 Export JSON",
         importBtn: "📤 Import",
@@ -7020,6 +7030,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let currentH5 = null;
     let currentH5Path = "";
     let librarySelection = new Set();
+    window.__hdf5UploadBound = true;
 
     function setHDF5Status(message) {
       if (hdf5Status) hdf5Status.textContent = message;
@@ -7539,6 +7550,128 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     setupRoundtableModules();
     setupTocScrollSpy();
     init();
+    window.setTimeout(updateHDF5ParserStatus, 0);
+  </script>
+  <script>
+    (() => {
+      if (window.__hdf5UploadBound) {
+        window.setTimeout(() => {
+          const status = document.querySelector("#hdf5Status");
+          const parserReady = !!((window.jsfive || window.hdf5)?.File);
+          if (status) {
+            status.textContent = parserReady
+              ? ((document.documentElement.lang || "zh").startsWith("zh")
+                ? "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件"
+                : "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files")
+              : ((document.documentElement.lang || "zh").startsWith("zh")
+                ? "HDF5 解析库未加载。请刷新页面后重试。"
+                : "HDF5 parser did not load. Refresh and retry.");
+          }
+        }, 0);
+        return;
+      }
+      const $ = selector => document.querySelector(selector);
+      const dropZone = $("#hdf5DropZone");
+      const chooseBtn = $("#hdf5ChooseBtn");
+      const fileInput = $("#hdf5FileInput");
+      const tree = $("#hdf5Tree");
+      const meta = $("#hdf5Meta");
+      const status = $("#hdf5Status");
+      if (!dropZone || !fileInput || !status) return;
+      window.__hdf5UploadBound = true;
+
+      const zh = () => (document.documentElement.lang || "zh").startsWith("zh");
+      const escHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+      const parser = () => window.jsfive || window.hdf5;
+      const setStatus = message => { status.textContent = message; };
+      const isHDF5File = file => /\.(h5|hdf5|hd5)$/i.test(file.name || "");
+      const chooseFiles = () => {
+        fileInput.value = "";
+        fileInput.click();
+      };
+      const parserMissing = () => zh()
+        ? "HDF5 解析库未加载。请刷新页面后重试。"
+        : "HDF5 parser did not load. Refresh and retry.";
+
+      function updateStatus() {
+        setStatus(parser()
+          ? (zh() ? "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件" : "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files")
+          : parserMissing());
+      }
+
+      function renderTree(h5) {
+        let html = "";
+        function walk(node, path, depth) {
+          const indent = "&nbsp;".repeat(depth * 4);
+          if (node.attrs && Object.keys(node.attrs).length) {
+            Object.entries(node.attrs).forEach(([key, value]) => {
+              html += `<div class="attr">${indent}📌 ${escHtml(key)}: ${escHtml(value)}</div>`;
+            });
+          }
+          if (!node.keys) return;
+          node.keys.forEach(key => {
+            const item = node.get(key);
+            const fullPath = `${path}/${key}`;
+            if (item.isGroup) {
+              html += `<div class="group">${indent}📁 ${escHtml(key)}</div>`;
+              walk(item, fullPath, depth + 1);
+            } else {
+              const shape = item.shape ? item.shape.join("×") : "scalar";
+              const dtype = item.dtype || "?";
+              html += `<div class="dataset" data-h5-path="${escHtml(fullPath)}">${indent}📊 ${escHtml(key)} <span class="muted">[${escHtml(shape)}] ${escHtml(dtype)}</span></div>`;
+            }
+          });
+        }
+        walk(h5, "", 0);
+        if (tree) tree.innerHTML = html || `<span class="muted">${zh() ? "空文件" : "Empty file"}</span>`;
+      }
+
+      async function handleFile(file) {
+        if (!isHDF5File(file)) {
+          setStatus(zh() ? "请选择 .h5、.hdf5 或 .hd5 文件" : "Choose a .h5, .hdf5, or .hd5 file");
+          return;
+        }
+        const HDF5 = parser();
+        if (!HDF5 || !HDF5.File) {
+          setStatus(parserMissing());
+          return;
+        }
+        setStatus(zh() ? `正在解析 ${file.name}...` : `Parsing ${file.name}...`);
+        try {
+          const buffer = await file.arrayBuffer();
+          const h5 = new HDF5.File(new Uint8Array(buffer));
+          renderTree(h5);
+          if (meta) meta.innerHTML = `<strong>${escHtml(file.name)}</strong><br>${zh() ? "文件结构已读取。" : "File structure loaded."}`;
+          setStatus(zh()
+            ? `已加载: ${file.name} (${(buffer.byteLength / 1024).toFixed(1)} KB)`
+            : `Loaded: ${file.name} (${(buffer.byteLength / 1024).toFixed(1)} KB)`);
+        } catch (error) {
+          setStatus(zh() ? `无法解析 ${file.name}: ${error.message}` : `Cannot parse ${file.name}: ${error.message}`);
+        }
+      }
+
+      chooseBtn?.addEventListener("click", event => {
+        event.stopPropagation();
+        chooseFiles();
+      });
+      dropZone.addEventListener("click", event => {
+        if (!event.target.closest("button")) chooseFiles();
+      });
+      dropZone.addEventListener("dragover", event => {
+        event.preventDefault();
+        dropZone.classList.add("drag-over");
+      });
+      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
+      dropZone.addEventListener("drop", event => {
+        event.preventDefault();
+        dropZone.classList.remove("drag-over");
+        Array.from(event.dataTransfer.files || []).forEach(handleFile);
+      });
+      fileInput.addEventListener("change", () => {
+        Array.from(fileInput.files || []).forEach(handleFile);
+      });
+      window.setTimeout(updateStatus, 0);
+    })();
   </script>
 </body>
 </html>
