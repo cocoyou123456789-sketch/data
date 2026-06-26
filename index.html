@@ -106,16 +106,16 @@
       margin: 0 auto;
       padding: 22px clamp(14px, 3vw, 36px) 42px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: 220px minmax(0, 1fr);
       gap: 16px;
       position: relative;
       z-index: 1;
     }
 
-    main > section { grid-column: 1; }
+    main > section { grid-column: 2; }
 
     main > details {
-      grid-column: 1;
+      grid-column: 2;
     }
 
     section {
@@ -408,9 +408,8 @@
     }
 
     .toc-panel {
-      display: none;
       grid-column: 1;
-      grid-row: auto;
+      grid-row: 1 / span 20;
       position: sticky;
       top: 16px;
       align-self: start;
@@ -422,7 +421,8 @@
       display: grid;
       gap: 10px;
       z-index: 24;
-      overflow: hidden;
+      overflow: auto;
+      max-height: calc(100vh - 32px);
     }
 
     .toc-panel h2 {
@@ -432,15 +432,11 @@
     }
 
     .toc-list {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scroll-snap-type: x proximity;
+      display: grid;
+      gap: 6px;
     }
 
     .toc-link {
-      flex: 0 0 auto;
       min-height: 34px;
       border: 1px solid transparent;
       border-radius: 8px;
@@ -450,8 +446,6 @@
       font-size: 12px;
       font-weight: 700;
       background: rgba(255,255,255,0.018);
-      scroll-snap-align: start;
-      white-space: nowrap;
     }
 
     .toc-link.active,
@@ -3978,7 +3972,6 @@
     const axisModeBtn = $("#axisModeBtn");
     const cubeViewModeBtn = $("#cubeViewModeBtn");
     const axisViewButtons = $$("[data-axis-view]");
-    const appPageTabs = $$("[data-page-tab]");
     const appPages = $$(".app-page");
     const appPageSections = $$("[data-app-page-section]");
     const chatThread = $("#chatThread");
@@ -4446,9 +4439,14 @@
       showToast(`${t("modelReadyToast")} · v${hub?.version || "0.1.0"}`);
     });
     modelRunBtn?.addEventListener("click", runModelPreview);
-    appPageTabs.forEach(tab => {
-      tab.addEventListener("mousedown", event => event.preventDefault());
-      tab.addEventListener("click", () => showAppPage(tab.dataset.pageTab || "history"));
+    document.addEventListener("mousedown", event => {
+      if (event.target.closest("[data-page-tab]")) event.preventDefault();
+    });
+    document.addEventListener("click", event => {
+      const tab = event.target.closest("[data-page-tab]");
+      if (!tab) return;
+      event.preventDefault();
+      showAppPage(tab.dataset.pageTab || "history");
     });
     chatSendBtn?.addEventListener("click", sendChatMessage);
     chatInput?.addEventListener("keydown", event => {
@@ -5055,7 +5053,7 @@
       appPageSections.forEach(section => {
         section.hidden = !pageListMatches(section.dataset.appPageSection, page);
       });
-      appPageTabs.forEach(tab => {
+      document.querySelectorAll("[data-page-tab]").forEach(tab => {
         tab.classList.toggle("active", tab.dataset.pageTab === page);
       });
       if (advancedLibrary) {
@@ -5093,18 +5091,20 @@
       if (!tocList) return;
       const element = state.selectedElement ? ` · ${state.selectedElement}` : "";
       const items = [
-        ["section-milestones", t("focusHistoryTitle")],
-        ["section-periodic", `${t("focusExploreTitle")}${element}`],
-        ["advancedLibrary", t("advancedLibraryTitle")]
+        ["history", t("topMenuHome")],
+        ["materials", `${t("topMenuMaterials")}${element}`],
+        ["literature", t("topMenuLiterature")],
+        ["data", t("topMenuData")],
+        ["model", t("topMenuModel")],
+        ["report", t("topMenuReport")]
       ];
-      tocList.innerHTML = items.map(([id, label], index) =>
-        `<a class="toc-link ${index === 0 ? "active" : ""}" data-section-id="${id}" href="#${id}">${esc(label)}</a>`
+      tocList.innerHTML = items.map(([page, label]) =>
+        `<a class="toc-link ${page === activeAppPage ? "active" : ""}" data-page-tab="${esc(page)}" href="#${esc(page)}">${esc(label)}</a>`
       ).join("");
       tocList.querySelectorAll(".toc-link").forEach(link => {
-        link.addEventListener("click", () => {
-          if (link.dataset.sectionId === "advancedLibrary") {
-            document.querySelector("#advancedLibrary")?.setAttribute("open", "");
-          }
+        link.addEventListener("click", event => {
+          event.preventDefault();
+          showAppPage(link.dataset.pageTab || "history");
         });
       });
       if (tocNote) tocNote.textContent = t("tocNote");
@@ -5113,17 +5113,8 @@
 
     function updateTocActiveSection() {
       if (!tocList) return;
-      const sections = [
-        document.querySelector("#section-milestones"),
-        document.querySelector("#section-periodic"),
-        document.querySelector("#advancedLibrary")
-      ].filter(Boolean);
-      const current = sections
-        .map(section => ({ section, distance: Math.abs(section.getBoundingClientRect().top - 92) }))
-        .sort((a, b) => a.distance - b.distance)[0]?.section;
-      if (!current) return;
       tocList.querySelectorAll(".toc-link").forEach(link => {
-        const isActive = link.dataset.sectionId === current.id;
+        const isActive = link.dataset.pageTab === activeAppPage;
         link.classList.toggle("active", isActive);
         if (isActive) link.scrollIntoView({ block: "nearest", inline: "nearest" });
       });
