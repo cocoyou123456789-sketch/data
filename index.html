@@ -3228,16 +3228,23 @@
         chatPromptCompare: "比较材料",
         chatPromptTable: "生成表格",
         chatPromptReport: "报告要点",
-        chatInputPlaceholder: "问一个 ARPES/超导材料问题，或让 Chat platform 生成表格...",
+        chatInputPlaceholder: "问一个 ARPES/超导材料问题，或让材料说明栏生成表格...",
         chatSendBtn: "发送",
         chatMakeTableBtn: "生成表格",
         chatClearBtn: "清空",
         chatUserLabel: "用户",
-        chatAssistantLabel: "Chat platform",
+        chatAssistantLabel: "材料说明栏",
         chatWelcome: "可以点击魔方材料点，也可以直接提问。我会基于当前材料库、免费 ARPES 题录、个人数据和页面筛选生成回答。",
-        chatTableTitle: "Chat platform 生成表格",
-        chatEmptyExport: "暂无 Chat platform 问答；报告将只包含当前页面数据。",
-        moduleMaterialIndex: "Material index",
+        chatTableTitle: "材料说明栏生成表格",
+        chatEmptyExport: "暂无材料说明栏问答；报告将只包含当前页面数据。",
+        chatTableMaterial: "材料",
+        chatTableFamily: "家族",
+        chatTableTc: "Tc (K)",
+        chatTableElements: "元素",
+        chatTableArpes: "ARPES",
+        chatTablePapers: "文献",
+        chatNoGeneratedTable: "暂无生成表格。",
+        moduleMaterialIndex: "材料索引",
         moduleMaterialIndexHint: "点击左侧元素后，这里显示元素简介、材料家族和文献入口。",
         moduleLiterature: "Literature module",
         moduleLiteratureHint: "优先使用 DOI、arXiv、出版商和 WoS 导出的官方文献来源。",
@@ -3558,6 +3565,13 @@
         chatWelcome: "Click a cube material point or ask directly. I will answer from the current materials, free ARPES metadata, personal data, and page filters.",
         chatTableTitle: "Chat platform generated table",
         chatEmptyExport: "No Chat platform Q&A yet; the report will include current page data only.",
+        chatTableMaterial: "Material",
+        chatTableFamily: "Family",
+        chatTableTc: "Tc (K)",
+        chatTableElements: "Elements",
+        chatTableArpes: "ARPES",
+        chatTablePapers: "Papers",
+        chatNoGeneratedTable: "No chat-generated table.",
         moduleMaterialIndex: "Material index",
         moduleMaterialIndexHint: "After clicking an element on the left, this panel shows the element summary, material families, and literature entries.",
         moduleLiterature: "Literature module",
@@ -3835,6 +3849,7 @@
       renderArticles();
       renderKeywordChips();
       renderChatThread();
+      if (state.chatTableRows.length) makeChatTable();
       renderChatTable();
       updateImportMetrics();
       renderLibrary().catch(() => {});
@@ -5202,7 +5217,7 @@
       const selected = (state.filtered || []).slice(0, 6);
       const articles = (filteredArticles ? filteredArticles() : state.articles || []).slice(0, 6);
       const materialText = selected.length
-        ? selected.map(row => `${row.display_name || row.material} (Tc ${row.transition_temperature_K ?? row.tc_K ?? "n/a"} K)`).join("; ")
+        ? selected.map(row => `${displayMaterialName(row)} (Tc ${row.transition_temperature_K ?? row.tc_K ?? "n/a"} K)`).join("; ")
         : (currentLang === "zh" ? "当前没有材料筛选结果" : "No current material filter results");
       const articleText = articles.length
         ? articles.map(article => `${article.year || ""} ${article.title || ""}`.trim()).join("; ")
@@ -5220,11 +5235,11 @@
         const aliases = materialAliases(row);
         const matched = articles.filter(article => (article.materials || []).some(material => aliases.has(normalizeMaterialName(material)))).slice(0, 3);
         return {
-          material: row.display_name || row.material || "",
-          family: familyName(row.family) || row.family || "",
+          material: displayMaterialName(row),
+          family: displayFamilyName(row.family),
           tc: row.transition_temperature_K ?? row.tc_K ?? "",
           elements: (row.elements || []).join(", "),
-          arpes: row.arpes || row.arpes_features || "",
+          arpes: localizeArpesText(row.arpes || row.arpes_features || (row.arpes_special_properties || []).join("；")),
           papers: matched.map(article => `${article.year || ""} ${article.title || ""}`.trim()).join(" | ")
         };
       });
@@ -5241,7 +5256,7 @@
       chatTableWrap.style.display = "";
       chatTableWrap.innerHTML = `
         <table>
-          <thead><tr><th>Material</th><th>Family</th><th>Tc (K)</th><th>Elements</th><th>ARPES</th><th>Papers</th></tr></thead>
+          <thead><tr><th>${t("chatTableMaterial")}</th><th>${t("chatTableFamily")}</th><th>${t("chatTableTc")}</th><th>${t("chatTableElements")}</th><th>${t("chatTableArpes")}</th><th>${t("chatTablePapers")}</th></tr></thead>
           <tbody>${state.chatTableRows.map(row => `
             <tr>
               <td>${esc(row.material)}</td><td>${esc(row.family)}</td><td>${esc(row.tc)}</td>
@@ -5286,13 +5301,14 @@
     }
 
     function buildReportHtml(data, mode = "doc") {
+      const zh = currentLang === "zh";
       const materialRows = data.selected.slice(0, 20).map(row => `
         <tr>
-          <td>${esc(row.display_name || row.material || "")}</td>
-          <td>${esc(row.family || "")}</td>
-          <td>${esc(String(row.tc_K ?? "n/a"))}</td>
+          <td>${esc(displayMaterialName(row))}</td>
+          <td>${esc(displayFamilyName(row.family))}</td>
+          <td>${esc(String(row.transition_temperature_K ?? row.tc_K ?? "n/a"))}</td>
           <td>${esc((row.elements || []).join(", "))}</td>
-          <td>${esc(row.arpes || row.arpes_features || "")}</td>
+          <td>${esc(localizeArpesText(row.arpes || row.arpes_features || (row.arpes_special_properties || []).join("；")))}</td>
         </tr>`).join("");
       const articleList = data.articleRows.slice(0, 25).map(article => `
         <li>${esc(article.year || "")} ${esc(article.title || "")}${article.doi ? ` DOI: ${esc(article.doi)}` : ""}</li>`).join("");
@@ -5309,7 +5325,7 @@
         <html>
         <head>
           <meta charset="utf-8">
-          <title>ARPES Superconductivity Research Report</title>
+          <title>${zh ? "ARPES 超导材料调研报告" : "ARPES Superconductivity Research Report"}</title>
           <style>
             body { font-family: Arial, "Microsoft YaHei", sans-serif; color: #1f2937; line-height: 1.45; }
             ${mode === "pdf" ? "body { max-width: 960px; margin: 28px auto; padding: 0 22px; } @page { margin: 14mm; }" : ""}
@@ -5322,38 +5338,38 @@
           </style>
         </head>
         <body>
-          <h1>ARPES Superconductivity Research Report</h1>
-          <p class="meta">Generated: ${esc(data.generatedAt)}<br>
-          User: ${esc(data.user.name || "ARPES user")}<br>
-          Group: ${esc(data.user.group || "")}<br>
-          Topic: ${esc(data.topic)}<br>
-          Selected element: ${esc(data.selectedElement)}<br>
-          Search term: ${esc(data.searchTerm)}</p>
-          <h2>Summary</h2>
+          <h1>${zh ? "ARPES 超导材料调研报告" : "ARPES Superconductivity Research Report"}</h1>
+          <p class="meta">${zh ? "生成时间" : "Generated"}: ${esc(data.generatedAt)}<br>
+          ${zh ? "用户" : "User"}: ${esc(data.user.name || "ARPES user")}<br>
+          ${zh ? "课题组" : "Group"}: ${esc(data.user.group || "")}<br>
+          ${zh ? "主题" : "Topic"}: ${esc(data.topic)}<br>
+          ${zh ? "选中元素" : "Selected element"}: ${esc(data.selectedElement)}<br>
+          ${zh ? "搜索词" : "Search term"}: ${esc(data.searchTerm)}</p>
+          <h2>${zh ? "摘要" : "Summary"}</h2>
           <ul>
-            <li>Materials in current view: ${data.selected.length}</li>
-            <li>Article records: ${(state.articles || []).length}</li>
-            <li>Articles after keyword filter: ${data.articleRows.length}</li>
-            <li>Verified paper figures: ${data.figureCount}</li>
-            <li>Personal records: ${data.personalRows.length}</li>
+            <li>${zh ? "当前视图材料数" : "Materials in current view"}: ${data.selected.length}</li>
+            <li>${zh ? "文献记录数" : "Article records"}: ${(state.articles || []).length}</li>
+            <li>${zh ? "关键词筛选后文献数" : "Articles after keyword filter"}: ${data.articleRows.length}</li>
+            <li>${zh ? "已核验论文图数" : "Verified paper figures"}: ${data.figureCount}</li>
+            <li>${zh ? "个人记录数" : "Personal records"}: ${data.personalRows.length}</li>
           </ul>
-          <h2>Representative Materials</h2>
+          <h2>${zh ? "代表材料" : "Representative Materials"}</h2>
           <table>
-            <thead><tr><th>Material</th><th>Family</th><th>Tc (K)</th><th>Elements</th><th>ARPES notes</th></tr></thead>
-            <tbody>${materialRows || "<tr><td colspan='5'>No current material selection.</td></tr>"}</tbody>
+            <thead><tr><th>${t("chatTableMaterial")}</th><th>${t("chatTableFamily")}</th><th>${t("chatTableTc")}</th><th>${t("chatTableElements")}</th><th>ARPES ${zh ? "备注" : "notes"}</th></tr></thead>
+            <tbody>${materialRows || `<tr><td colspan='5'>${zh ? "当前没有选中材料。" : "No current material selection."}</td></tr>`}</tbody>
           </table>
-          <h2>Literature Records</h2>
-          <ol>${articleList || "<li>No literature records loaded.</li>"}</ol>
-          <h2>Personal Data</h2>
-          <ul>${personalList || "<li>No personal records.</li>"}</ul>
-          <h2>Chat Platform Q&A</h2>
+          <h2>${zh ? "文献记录" : "Literature Records"}</h2>
+          <ol>${articleList || `<li>${zh ? "暂无文献记录。" : "No literature records loaded."}</li>`}</ol>
+          <h2>${zh ? "个人数据" : "Personal Data"}</h2>
+          <ul>${personalList || `<li>${zh ? "暂无个人记录。" : "No personal records."}</li>`}</ul>
+          <h2>${zh ? "材料说明栏问答" : "Chat Platform Q&A"}</h2>
           <ol>${chatList || `<li>${esc(t("chatEmptyExport"))}</li>`}</ol>
-          <h2>Chat Platform Table</h2>
+          <h2>${zh ? "材料说明栏表格" : "Chat Platform Table"}</h2>
           <table>
-            <thead><tr><th>Material</th><th>Family</th><th>Tc (K)</th><th>Elements</th><th>ARPES</th><th>Papers</th></tr></thead>
-            <tbody>${chatTable || "<tr><td colspan='6'>No chat-generated table.</td></tr>"}</tbody>
+            <thead><tr><th>${t("chatTableMaterial")}</th><th>${t("chatTableFamily")}</th><th>${t("chatTableTc")}</th><th>${t("chatTableElements")}</th><th>${t("chatTableArpes")}</th><th>${t("chatTablePapers")}</th></tr></thead>
+            <tbody>${chatTable || `<tr><td colspan='6'>${t("chatNoGeneratedTable")}</td></tr>`}</tbody>
           </table>
-          <h2>Model Interface</h2>
+          <h2>${zh ? "模型接口" : "Model Interface"}</h2>
           <ul>
             <li>Reserved browser API: window.ARPESModelHub.registerModel(name, predictFn)</li>
             <li>Reserved prediction call: window.ARPESModelHub.predict(modelName, datasetId)</li>
@@ -5364,8 +5380,9 @@
     }
 
     function buildReportMarkdown(data) {
+      const zh = currentLang === "zh";
       const materialLines = data.selected.slice(0, 20).map(row =>
-        `| ${row.display_name || row.material || ""} | ${row.family || ""} | ${row.tc_K ?? "n/a"} | ${(row.elements || []).join(", ")} | ${row.arpes || row.arpes_features || ""} |`
+        `| ${displayMaterialName(row)} | ${displayFamilyName(row.family)} | ${row.transition_temperature_K ?? row.tc_K ?? "n/a"} | ${(row.elements || []).join(", ")} | ${localizeArpesText(row.arpes || row.arpes_features || (row.arpes_special_properties || []).join("；"))} |`
       ).join("\n");
       const articleLines = data.articleRows.slice(0, 25).map((article, index) =>
         `${index + 1}. ${article.year || ""} ${article.title || ""}${article.doi ? ` DOI: ${article.doi}` : ""}`
@@ -5377,48 +5394,48 @@
       const chatTableLines = data.chatTableRows.map(row =>
         `| ${row.material} | ${row.family} | ${row.tc} | ${row.elements} | ${row.arpes} | ${row.papers} |`
       ).join("\n");
-      return `# ARPES Superconductivity Research Report
+      return `# ${zh ? "ARPES 超导材料调研报告" : "ARPES Superconductivity Research Report"}
 
-Generated: ${data.generatedAt}
-User: ${data.user.name || "ARPES user"}
-Group: ${data.user.group || ""}
-Topic: ${data.topic}
-Selected element: ${data.selectedElement}
-Search term: ${data.searchTerm}
+${zh ? "生成时间" : "Generated"}: ${data.generatedAt}
+${zh ? "用户" : "User"}: ${data.user.name || "ARPES user"}
+${zh ? "课题组" : "Group"}: ${data.user.group || ""}
+${zh ? "主题" : "Topic"}: ${data.topic}
+${zh ? "选中元素" : "Selected element"}: ${data.selectedElement}
+${zh ? "搜索词" : "Search term"}: ${data.searchTerm}
 
-## Summary
+## ${zh ? "摘要" : "Summary"}
 
-- Materials in current view: ${data.selected.length}
-- Article records: ${(state.articles || []).length}
-- Articles after keyword filter: ${data.articleRows.length}
-- Verified paper figures: ${data.figureCount}
-- Personal records: ${data.personalRows.length}
+- ${zh ? "当前视图材料数" : "Materials in current view"}: ${data.selected.length}
+- ${zh ? "文献记录数" : "Article records"}: ${(state.articles || []).length}
+- ${zh ? "关键词筛选后文献数" : "Articles after keyword filter"}: ${data.articleRows.length}
+- ${zh ? "已核验论文图数" : "Verified paper figures"}: ${data.figureCount}
+- ${zh ? "个人记录数" : "Personal records"}: ${data.personalRows.length}
 
-## Representative Materials
+## ${zh ? "代表材料" : "Representative Materials"}
 
-| Material | Family | Tc (K) | Elements | ARPES notes |
+| ${t("chatTableMaterial")} | ${t("chatTableFamily")} | ${t("chatTableTc")} | ${t("chatTableElements")} | ARPES ${zh ? "备注" : "notes"} |
 | --- | --- | --- | --- | --- |
-${materialLines || "| No current material selection. | | | | |"}
+${materialLines || `| ${zh ? "当前没有选中材料。" : "No current material selection."} | | | | |`}
 
-## Literature Records
+## ${zh ? "文献记录" : "Literature Records"}
 
-${articleLines || "No literature records loaded."}
+${articleLines || (zh ? "暂无文献记录。" : "No literature records loaded.")}
 
-## Personal Data
+## ${zh ? "个人数据" : "Personal Data"}
 
-${personalLines || "- No personal records."}
+${personalLines || (zh ? "- 暂无个人记录。" : "- No personal records.")}
 
-## Chat Platform Q&A
+## ${zh ? "材料说明栏问答" : "Chat Platform Q&A"}
 
 ${chatLines || t("chatEmptyExport")}
 
-## Chat Platform Table
+## ${zh ? "材料说明栏表格" : "Chat Platform Table"}
 
-| Material | Family | Tc (K) | Elements | ARPES | Papers |
+| ${t("chatTableMaterial")} | ${t("chatTableFamily")} | ${t("chatTableTc")} | ${t("chatTableElements")} | ${t("chatTableArpes")} | ${t("chatTablePapers")} |
 | --- | --- | --- | --- | --- | --- |
-${chatTableLines || "| No chat-generated table. | | | | | |"}
+${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
-## Model Interface
+## ${zh ? "模型接口" : "Model Interface"}
 
 - Reserved browser API: window.ARPESModelHub.registerModel(name, predictFn)
 - Reserved prediction call: window.ARPESModelHub.predict(modelName, datasetId)
@@ -6764,8 +6781,77 @@ ${chatTableLines || "| No chat-generated table. | | | | | |"}
     }
 
     // ===== 工具函数 =====
+    const ZH_MATERIAL_NAMES = {
+      Mercury: "汞",
+      Niobium: "铌",
+      Lead: "铅",
+      "Niobium nitride": "氮化铌",
+      "Nb3Sn": "Nb3Sn",
+      "MgB2": "MgB2",
+      "YBCO": "YBCO",
+      "Bi2212": "Bi2212",
+      FeSe: "FeSe",
+      "LaH10": "LaH10"
+    };
+
+    const ZH_FAMILY_NAMES = {
+      conventional: "常规 / BCS",
+      cuprate: "铜氧化物",
+      "iron-based": "铁基",
+      nickelate: "镍基",
+      tmd: "过渡金属硫族化物",
+      "heavy-fermion": "重费米子",
+      hydride: "高压氢化物",
+      "Conventional / BCS": "常规 / BCS",
+      Cuprates: "铜氧化物",
+      "Iron-based": "铁基",
+      Nickelates: "镍基",
+      "Transition-metal dichalcogenides": "过渡金属硫族化物",
+      "Heavy fermion": "重费米子",
+      "Hydrides / high pressure": "高压氢化物"
+    };
+
+    const ZH_ARPES_TERMS = {
+      "BCS reference": "BCS 参考",
+      "elemental metal": "元素金属",
+      "BCS gap": "BCS 能隙",
+      "calibration material": "校准材料",
+      "strong electron-phonon coupling": "强电子-声子耦合",
+      "strong coupling": "强耦合",
+      "Fermi surface": "费米面",
+      "gap": "能隙",
+      "pseudogap": "赝能隙",
+      "d-wave": "d 波",
+      "multiband": "多带",
+      "heavy bands": "重电子能带",
+      "hybridization": "杂化"
+    };
+
     function familyName(id) {
       return state.db.families.find(f => f.id === id)?.name || id;
+    }
+
+    function displayFamilyName(id) {
+      const name = familyName(id);
+      if (currentLang !== "zh") return name;
+      return ZH_FAMILY_NAMES[id] || ZH_FAMILY_NAMES[name] || name;
+    }
+
+    function displayMaterialName(rowOrName) {
+      const raw = typeof rowOrName === "string"
+        ? rowOrName
+        : (rowOrName?.display_name || rowOrName?.material || "");
+      if (currentLang !== "zh") return raw;
+      return ZH_MATERIAL_NAMES[raw] || raw;
+    }
+
+    function localizeArpesText(value) {
+      let text = Array.isArray(value) ? value.join("；") : String(value || "");
+      if (currentLang !== "zh" || !text) return text;
+      Object.entries(ZH_ARPES_TERMS).forEach(([en, zh]) => {
+        text = text.replaceAll(en, zh);
+      });
+      return text;
     }
 
     function met(label, value) {
