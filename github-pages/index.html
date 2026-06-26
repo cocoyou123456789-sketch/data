@@ -2784,7 +2784,6 @@
           <div class="super-button-wrap">
             <button class="super-button" id="superconductorBtn">⚡ SUPERCONDUCTOR ⚡</button>
           </div>
-          <button class="topic-tab" data-topic="sc" data-i18n="superconductorTab">⚡ 超导</button>
           <button class="topic-tab" data-topic="topo" data-i18n="topologicalTab">🔷 拓扑材料</button>
           <button class="topic-tab" data-topic="photo" data-i18n="photonicTab">💎 光子晶体</button>
         </div>
@@ -3292,7 +3291,6 @@
         keywordSearchTitle: "🏷️ 搜索关键词",
         keywordSearchHint: "点击关键词快速筛选文章、图表和材料",
         superconductorBtn: "⚡ 超导 SUPERCONDUCTOR ⚡",
-        superconductorTab: "⚡ 超导",
         topologicalTab: "🔷 拓扑材料",
         photonicTab: "💎 光子晶体",
         searchFilterTitle: "🔍 搜索与筛选",
@@ -3614,7 +3612,6 @@
         keywordSearchTitle: "🏷️ Search Keywords",
         keywordSearchHint: "Click a keyword to filter articles, figures, and materials",
         superconductorBtn: "⚡ SUPERCONDUCTOR ⚡",
-        superconductorTab: "⚡ Superconductor",
         topologicalTab: "🔷 Topological",
         photonicTab: "💎 Photonic",
         searchFilterTitle: "🔍 Search & Filter",
@@ -4477,7 +4474,7 @@
       });
     });
     // 默认激活超导tab
-    document.querySelector('.topic-tab[data-topic="sc"]').classList.add("active");
+    document.querySelector('.topic-tab[data-topic="sc"]')?.classList.add("active");
 
     superconductorBtn.addEventListener("mousedown", event => event.preventDefault());
     superconductorBtn.addEventListener("click", event => {
