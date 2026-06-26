@@ -106,16 +106,16 @@
       margin: 0 auto;
       padding: 22px clamp(14px, 3vw, 36px) 42px;
       display: grid;
-      grid-template-columns: 220px minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 16px;
       position: relative;
       z-index: 1;
     }
 
-    main > section { grid-column: 2; }
+    main > section { grid-column: 1; }
 
     main > details {
-      grid-column: 2;
+      grid-column: 1;
     }
 
     section {
@@ -382,32 +382,33 @@
       z-index: 28;
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
-      border-bottom: 1px solid var(--line);
-      background: #0f1722;
-      box-shadow: none;
+      border-bottom: 3px solid rgba(20,184,166,0.25);
+      background: #315184;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.28);
     }
 
     .top-menu-btn {
-      min-height: 46px;
+      min-height: 56px;
       border: 0;
-      border-right: 1px solid var(--line);
+      border-right: 1px solid rgba(255,255,255,0.16);
       border-radius: 0;
       background: transparent;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 740;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 820;
       letter-spacing: 0;
     }
 
     .top-menu-btn:hover,
     .top-menu-btn.active {
-      background: var(--accent-soft);
-      color: var(--accent-glow);
+      background: #a99a2a;
+      color: #ffffff;
       transform: none;
       box-shadow: none;
     }
 
     .toc-panel {
+      display: none;
       grid-column: 1;
       grid-row: 1 / span 20;
       position: sticky;
@@ -418,7 +419,6 @@
       background: var(--panel);
       box-shadow: none;
       padding: 12px;
-      display: grid;
       gap: 10px;
       z-index: 24;
       overflow: auto;
