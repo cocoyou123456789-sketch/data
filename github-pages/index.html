@@ -3195,7 +3195,7 @@
           </div>
           <div class="model-control-grid">
             <label data-label-i18n="aiEndpointLabel">AI 接口地址
-              <input id="aiEndpointInput" placeholder="http://127.0.0.1:8788/chat">
+              <input id="aiEndpointInput" placeholder="http://127.0.0.1:8788/v1/chat/completions">
             </label>
             <label data-label-i18n="aiModelLabel">AI 模型名
               <input id="aiModelInput" placeholder="gpt-4.1-mini / local-llm">
@@ -3355,9 +3355,10 @@
         aiConfigSaved: "AI 配置已保存",
         aiConfigCleared: "AI 配置已清除",
         aiConfiguredStatus: "AI 已配置",
-        aiLocalStatus: "本地回答",
+        aiLocalStatus: "等待接入 AI",
         chatThinking: "正在根据当前数据生成回答...",
-        chatAiFallback: "AI 接口暂时不可用，已使用页面数据生成本地回答。",
+        chatAiFallback: "AI 接口暂时不可用。这个聊天框现在作为 ChatGPT 风格 AI 模板使用，请在“模型”页接入 OpenAI-compatible 接口后再提问。",
+        chatNeedsAi: "这个聊天框现在是 ChatGPT 风格模板，不再用固定规则假装回答。请先到顶部“模型”页填写 AI 接口地址、模型名和 API Key；接口支持 OpenAI-compatible 的 /v1/chat/completions，也支持你自己的本地代理。接好以后，任何问题都会交给模型回答，材料相关问题会同时带上当前页面的材料、文献和数据上下文。",
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
@@ -3706,9 +3707,10 @@
         aiConfigSaved: "AI config saved",
         aiConfigCleared: "AI config cleared",
         aiConfiguredStatus: "AI configured",
-        aiLocalStatus: "Local answer",
+        aiLocalStatus: "Waiting for AI",
         chatThinking: "Generating an answer from the current data...",
-        chatAiFallback: "The AI endpoint is unavailable, so I used the page data for a local answer.",
+        chatAiFallback: "The AI endpoint is unavailable. This chatbox now works as a ChatGPT-style AI template; connect an OpenAI-compatible endpoint on the Model page before asking.",
+        chatNeedsAi: "This chatbox is now a ChatGPT-style template, not a fixed-rule answer box. Open the Model page and fill in an AI endpoint, model name, and API key. It supports OpenAI-compatible /v1/chat/completions endpoints or your own local proxy. Once connected, any question is sent to the model, with the current materials, papers, and data context attached when relevant.",
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
@@ -5341,6 +5343,7 @@
       if (!question) return;
       addChatMessage("user", question);
       if (chatInput) chatInput.value = "";
+      const context = buildChatContext(question);
       const lower = question.toLowerCase();
       if (lower.includes("表") || lower.includes("table")) {
         makeChatTable();
@@ -5350,9 +5353,9 @@
       renderChatThread();
       try {
         const hub = window.ARPESModelHub || window.ARPES_ML;
-        pending.text = await (hub?.chat ? hub.chat(question, buildChatContext(question)) : buildLocalChatAnswer(question, buildChatContext(question)));
+        pending.text = await (hub?.chat ? hub.chat(question, context) : t("chatNeedsAi"));
       } catch (error) {
-        pending.text = `${t("chatAiFallback")}\n\n${buildLocalChatAnswer(question, buildChatContext(question))}`;
+        pending.text = t("chatAiFallback");
       }
       renderChatThread();
     }
@@ -5367,6 +5370,10 @@
         question,
         selectedElement,
         activePage: activeAppPage,
+        chatHistory: (state.chatMessages || [])
+          .filter(message => message.role === "user" || message.role === "assistant")
+          .slice(-8)
+          .map(message => ({ role: message.role, content: message.text })),
         materials: selected.map(row => ({
           material: displayMaterialName(row),
           raw_material: row.material || row.display_name || "",
@@ -6464,17 +6471,36 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!cfg.endpoint) return "";
       const headers = { "Content-Type": "application/json" };
       if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`;
+      const history = (context.chatHistory || [])
+        .filter(message => message.content && message.content !== t("chatThinking"))
+        .slice(-8);
+      const messages = [
+        {
+          role: "system",
+          content: [
+            currentLang === "zh"
+              ? "你是一个像 ChatGPT 一样的通用 AI 助手。用户可以问任何问题，你都要直接回答。"
+              : "You are a general AI assistant like ChatGPT. The user may ask anything; answer directly.",
+            currentLang === "zh"
+              ? "如果问题和 ARPES、超导材料、论文、图表、数据或本页面模板相关，请优先使用随请求附带的 page_context。"
+              : "If the question relates to ARPES, superconducting materials, papers, figures, data, or this page template, prioritize the attached page_context.",
+            currentLang === "zh"
+              ? "如果问题和页面无关，也正常回答，不要强行套材料库模板。"
+              : "If the question is unrelated to the page, answer normally and do not force a materials-database template."
+          ].join("\n")
+        },
+        ...history,
+        { role: "user", content: question }
+      ];
       const response = await fetch(cfg.endpoint, {
         method: "POST",
         headers,
         body: JSON.stringify({
-          model: cfg.model || undefined,
+          model: cfg.model || "gpt-4.1-mini",
           question,
-          messages: [
-            { role: "system", content: "You are an ARPES and superconductivity materials assistant. Answer from the provided page context when possible." },
-            { role: "user", content: question }
-          ],
-          context
+          messages,
+          context,
+          page_context: context
         })
       });
       if (!response.ok) throw new Error(`AI endpoint HTTP ${response.status}`);
@@ -7807,7 +7833,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           }
           const endpointAnswer = await callConfiguredAiEndpoint(question, context);
           if (endpointAnswer) return endpointAnswer;
-          return buildLocalChatAnswer(question, context);
+          return t("chatNeedsAi");
         },
         _models: {},
         _chatModels: {}
