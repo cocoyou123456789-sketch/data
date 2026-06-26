@@ -42,10 +42,8 @@
       overflow-x: hidden;
     }
 
-    /* === 粒子背景 === */
     .particles-container {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 0;
+      display: none;
     }
     .sparkle {
       position: absolute;
@@ -60,9 +58,8 @@
       100% { opacity: 0; transform: translateY(-120px) scale(0); }
     }
 
-    /* === 音效可视化条 === */
     .sound-bars {
-      display: flex; gap: 3px; align-items: flex-end; height: 28px;
+      display: none;
     }
     .sound-bar {
       width: 4px; border-radius: 2px;
@@ -78,8 +75,8 @@
     }
 
     header {
-      min-height: 96px;
-      padding: 20px clamp(16px, 4vw, 56px);
+      min-height: 76px;
+      padding: 16px clamp(16px, 4vw, 44px);
       background: var(--panel);
       border-bottom: 1px solid var(--line);
       display: flex;
@@ -92,13 +89,10 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(22px, 3vw, 34px);
+      font-size: clamp(20px, 2.4vw, 28px);
       letter-spacing: 0;
       line-height: 1.1;
-      background: linear-gradient(135deg, var(--accent-glow), #60d0ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--ink);
     }
 
     .subtitle {
@@ -112,62 +106,28 @@
       margin: 0 auto;
       padding: 22px clamp(14px, 3vw, 36px) 42px;
       display: grid;
-      grid-template-columns: 220px minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 16px;
       position: relative;
       z-index: 1;
     }
 
-    main > section { grid-column: 2; }
+    main > section { grid-column: 1; }
 
     main > details {
-      grid-column: 2;
+      grid-column: 1;
     }
 
     section {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
+      border-radius: 8px;
+      box-shadow: none;
       overflow: hidden;
     }
 
-    .focus-switchboard {
-      grid-column: 2;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .focus-action {
-      min-height: 110px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 16px;
-      background:
-        radial-gradient(circle at 18% 18%, rgba(20,184,166,0.18), transparent 30%),
-        linear-gradient(135deg, rgba(20,184,166,0.10), rgba(96,208,255,0.04)),
-        var(--panel);
-      color: var(--text);
-      text-decoration: none;
-      display: grid;
-      gap: 8px;
-      align-content: center;
-      box-shadow: var(--shadow);
-    }
-
-    .focus-action strong {
-      color: var(--accent-glow);
-      font-size: 18px;
-    }
-
-    .focus-action span {
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
     .flow-tabs {
-      display: grid;
+      display: none;
       grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 0;
       border: 1px solid var(--line);
@@ -256,27 +216,25 @@
       display: grid;
       place-items: center;
       padding: 20px;
-      background:
-        radial-gradient(circle at 50% 20%, rgba(96,208,255,0.18), transparent 36%),
-        linear-gradient(135deg, rgba(4,9,16,0.96), rgba(13,24,32,0.94));
+      background: rgba(4,9,16,0.96);
     }
 
     .login-card {
-      width: min(1220px, 100%);
+      width: min(960px, 100%);
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 0;
       background: #0b1119;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.38);
       overflow: hidden;
     }
 
     .login-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.44fr);
       gap: 0;
       align-items: stretch;
-      min-height: 620px;
+      min-height: 520px;
     }
 
     .login-column {
@@ -285,20 +243,16 @@
       gap: 14px;
       align-content: space-between;
       padding: 24px;
-      min-height: 620px;
+      min-height: 520px;
       overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(5,10,17,0), rgba(5,10,17,0.24)),
-        url("assets/ustc-login-ring.png") center 46% / cover no-repeat;
+      background: #0b1119;
     }
 
     .login-column::before {
       content: "";
       position: absolute;
       inset: 0;
-      background:
-        radial-gradient(circle at 52% 50%, rgba(96,208,255,0.05), transparent 28%),
-        linear-gradient(90deg, rgba(5,10,17,0.15), rgba(5,10,17,0) 48%, rgba(5,10,17,0.18));
+      background: transparent;
       pointer-events: none;
     }
 
@@ -328,79 +282,24 @@
 
     .login-form-panel {
       border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 16px;
-      background: rgba(9,15,24,0.48);
-      backdrop-filter: blur(9px);
+      background: rgba(255,255,255,0.024);
       display: grid;
       gap: 12px;
       max-width: 470px;
-      box-shadow: 0 16px 44px rgba(0,0,0,0.30);
+      box-shadow: none;
     }
 
     .login-feature {
       position: relative;
       border-left: 1px solid var(--line);
       padding: 24px;
-      background:
-        radial-gradient(circle at 50% 24%, rgba(96,208,255,0.30), transparent 38%),
-        radial-gradient(circle at 50% 54%, rgba(20,184,166,0.20), transparent 34%),
-        linear-gradient(180deg, rgba(20,184,166,0.12), rgba(96,208,255,0.055)),
-        #0e1721;
+      background: #0e1721;
       display: grid;
-      gap: 16px;
+      gap: 12px;
       align-content: center;
       overflow: hidden;
-    }
-
-    .virtual-eye {
-      width: min(340px, 84vw);
-      aspect-ratio: 2.18;
-      margin: 0 auto 12px;
-      border: 2px solid rgba(210,244,255,0.78);
-      border-radius: 999px 999px 86px 86px;
-      background:
-        radial-gradient(circle at 58% 36%, rgba(255,255,255,0.96) 0 4%, transparent 5%),
-        radial-gradient(circle at 50% 50%, #05080d 0 10%, #06242d 11% 16%, #13d8c8 17% 26%, #8eeaff 27% 32%, rgba(142,234,255,0.22) 33% 36%, transparent 37%),
-        radial-gradient(ellipse at 50% 50%, rgba(96,208,255,0.42), rgba(20,184,166,0.20) 45%, transparent 66%),
-        linear-gradient(135deg, rgba(20,184,166,0.26), rgba(96,208,255,0.12));
-      position: relative;
-      box-shadow:
-        0 0 36px rgba(96,208,255,0.56),
-        0 0 92px rgba(20,184,166,0.30),
-        inset 0 0 46px rgba(96,208,255,0.24);
-    }
-
-    .virtual-eye::before,
-    .virtual-eye::after {
-      content: "";
-      position: absolute;
-      left: 12%;
-      right: 12%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(210,244,255,0.95), rgba(20,184,166,0.88), transparent);
-      box-shadow: 0 0 12px rgba(96,208,255,0.55);
-    }
-
-    .virtual-eye::before {
-      top: 31%;
-    }
-
-    .virtual-eye::after {
-      bottom: 27%;
-    }
-
-    .virtual-eye span {
-      position: absolute;
-      inset: 13% 29%;
-      border: 2px solid rgba(255,255,255,0.46);
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 60% 34%, #ffffff 0 8%, transparent 9%),
-        radial-gradient(circle at 50% 50%, #02050a 0 23%, rgba(20,184,166,0.92) 24% 46%, rgba(96,208,255,0.50) 47% 62%, transparent 63%);
-      box-shadow:
-        0 0 26px rgba(142,234,255,0.68),
-        inset 0 0 22px rgba(96,208,255,0.28);
     }
 
     .login-feature .super-button {
@@ -408,7 +307,7 @@
     }
 
     .login-feature-grid {
-      display: grid;
+      display: none;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
     }
@@ -440,7 +339,7 @@
 
     .login-column h2,
     .login-column .muted {
-      text-shadow: 0 2px 12px rgba(0,0,0,0.78);
+      text-shadow: none;
     }
 
     .auth-tabs {
@@ -470,40 +369,78 @@
     }
 
     body.locked header,
+    body.locked .top-menu-bar,
     body.locked main {
       filter: blur(4px);
       pointer-events: none;
       user-select: none;
     }
 
+    .top-menu-bar {
+      position: sticky;
+      top: 0;
+      z-index: 28;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      border-bottom: 1px solid var(--line);
+      background: #0f1722;
+      box-shadow: none;
+    }
+
+    .top-menu-btn {
+      min-height: 46px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 740;
+      letter-spacing: 0;
+    }
+
+    .top-menu-btn:hover,
+    .top-menu-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent-glow);
+      transform: none;
+      box-shadow: none;
+    }
+
     .toc-panel {
+      display: none;
       grid-column: 1;
-      grid-row: 1 / span 20;
+      grid-row: auto;
       position: sticky;
       top: 16px;
       align-self: start;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 8px;
       background: var(--panel);
-      box-shadow: var(--shadow);
+      box-shadow: none;
       padding: 12px;
       display: grid;
       gap: 10px;
-      max-height: calc(100vh - 32px);
-      overflow: auto;
+      z-index: 24;
+      overflow: hidden;
     }
 
     .toc-panel h2 {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--accent-glow);
+      letter-spacing: 0;
     }
 
     .toc-list {
-      display: grid;
-      gap: 6px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scroll-snap-type: x proximity;
     }
 
     .toc-link {
+      flex: 0 0 auto;
       min-height: 34px;
       border: 1px solid transparent;
       border-radius: 8px;
@@ -513,6 +450,8 @@
       font-size: 12px;
       font-weight: 700;
       background: rgba(255,255,255,0.018);
+      scroll-snap-align: start;
+      white-space: nowrap;
     }
 
     .toc-link.active,
@@ -538,7 +477,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      background: linear-gradient(180deg, rgba(15,118,110,0.06), transparent);
+      background: transparent;
     }
 
     h2, h3 {
@@ -850,28 +789,36 @@
       color: var(--accent-glow);
     }
 
+    .app-page[hidden] {
+      display: none !important;
+    }
+
+    [data-app-page-section][hidden] {
+      display: none !important;
+    }
+
     /* === 周期表 === */
     .periodic-wrap {
-      overflow-x: auto;
+      overflow-x: hidden;
       padding-bottom: 4px;
       display: flex;
       justify-content: center;
     }
 
     .periodic {
-      min-width: 920px;
-      width: 920px;
+      min-width: 0;
+      width: min(100%, 806px);
       display: grid;
-      grid-template-columns: repeat(18, 46px);
-      grid-auto-rows: 46px;
-      gap: 5px;
+      grid-template-columns: repeat(18, minmax(0, 1fr));
+      grid-auto-rows: 39px;
+      gap: 4px;
     }
 
     .element-cell {
       border: 1px solid var(--line);
-      border-radius: 7px;
+      border-radius: 6px;
       background: #181f2a;
-      padding: 5px;
+      padding: 3px;
       display: grid;
       align-content: start;
       gap: 1px;
@@ -953,16 +900,16 @@
     }
 
     .element-number {
-      font-size: 9px;
+      font-size: 8px;
       line-height: 1;
     }
     .element-symbol {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 780;
       line-height: 1.05;
     }
     .element-name {
-      font-size: 8px;
+      font-size: 7px;
       line-height: 1.1;
       white-space: nowrap;
       overflow: hidden;
@@ -978,7 +925,7 @@
 
     .periodic-workbench {
       display: grid;
-      grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+      grid-template-columns: minmax(720px, 1.35fr) minmax(300px, 0.65fr);
       gap: 14px;
       align-items: stretch;
     }
@@ -1359,10 +1306,8 @@
 
     .history-cube-panel {
       border: 1px solid var(--line);
-      border-radius: 10px;
-      background:
-        radial-gradient(circle at 50% 34%, rgba(20,184,166,0.18), transparent 34%),
-        linear-gradient(135deg, #101923, #0b1119);
+      border-radius: 8px;
+      background: #0b1119;
       padding: 14px;
       display: grid;
       gap: 12px;
@@ -1434,46 +1379,71 @@
     }
 
     .axis-label {
-      display: none;
+      position: absolute;
+      min-width: 0;
+      min-height: 0;
+      border-color: rgba(96,208,255,0.38);
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(8,15,24,0.78);
+      color: var(--accent-glow);
+      font-size: 10px;
+      font-weight: 760;
+      line-height: 1;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      pointer-events: auto;
+      z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(220px, -18px, 0); }
-    .axis-label.y { transform: translate3d(22px, -22px, -274px); }
+    .axis-label.x { transform: translate3d(226px, -18px, 0); }
+    .axis-label.y { transform: translate3d(26px, -22px, -248px); }
     .axis-label.z { transform: translate3d(-14px, -292px, 0); color: #ffb4b4; }
+
+    .axis-label.active,
+    .axis-view-controls button.active {
+      border-color: var(--accent-glow);
+      background: var(--accent-soft);
+      color: var(--accent-glow);
+      box-shadow: 0 0 12px rgba(20,184,166,0.22);
+    }
 
     .axis-point {
       position: absolute;
       left: 36px;
       bottom: 36px;
-      width: 5px;
-      height: 5px;
+      width: 12px;
+      height: 12px;
       min-width: 0;
       min-height: 0;
       padding: 0;
       appearance: none;
-      border: 0.5px solid rgba(255,255,255,0.66);
+      border: 1px solid rgba(255,255,255,0.72);
       border-radius: 50%;
       background: var(--point-color, var(--accent-glow));
-      transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(-1 * var(--py)));
-      box-shadow: 0 0 6px var(--point-color, var(--accent-glow));
+      transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(-1 * var(--py))) translate(-50%, 50%);
+      transform-style: preserve-3d;
+      box-shadow: 0 0 8px color-mix(in srgb, var(--point-color, var(--accent-glow)) 60%, transparent);
       cursor: pointer;
-      opacity: 0.78;
+      opacity: 0.9;
       pointer-events: auto;
       z-index: 8;
     }
 
+    .axis-point::after {
+      display: none;
+    }
+
     .axis-point.is-core {
-      width: 7px;
-      height: 7px;
+      width: 16px;
+      height: 16px;
       opacity: 0.92;
     }
 
     .axis-point:hover,
     .axis-point.active {
-      width: 8px;
-      height: 8px;
       opacity: 1;
-      box-shadow: 0 0 12px var(--point-color, var(--accent-glow));
+      box-shadow: 0 0 14px var(--point-color, var(--accent-glow));
     }
 
     #axisPointLayer {
@@ -1493,8 +1463,8 @@
 
     .axis-hit {
       position: absolute;
-      width: 22px;
-      height: 22px;
+      width: 34px;
+      height: 34px;
       padding: 0;
       border: 0;
       border-radius: 50%;
@@ -1525,6 +1495,19 @@
       background: rgba(255,255,255,0.026);
     }
 
+    .axis-view-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .axis-view-controls button {
+      min-height: 30px;
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+
     .cube-face {
       position: absolute;
       left: 40px;
@@ -1532,11 +1515,9 @@
       width: 250px;
       height: 250px;
       border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 10px;
-      background:
-        linear-gradient(135deg, rgba(20,184,166,0.2), rgba(96,208,255,0.1)),
-        rgba(13,21,32,0.72);
-      box-shadow: inset 0 0 18px rgba(20,184,166,0.1), 0 10px 26px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      background: rgba(13,21,32,0.72);
+      box-shadow: none;
       display: grid;
       align-content: center;
       gap: 6px;
@@ -1612,11 +1593,9 @@
     .model-interface {
       min-height: 620px;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 14px;
-      background:
-        radial-gradient(circle at 80% 18%, rgba(20,184,166,0.14), transparent 28%),
-        rgba(13,21,32,0.78);
+      background: rgba(13,21,32,0.78);
       display: grid;
       gap: 12px;
       align-content: start;
@@ -1624,11 +1603,91 @@
 
     .chat-platform-note {
       border: 1px dashed rgba(96,208,255,0.35);
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 12px;
-      background: rgba(96,208,255,0.05);
+      background: rgba(255,255,255,0.024);
       color: var(--muted);
       line-height: 1.6;
+      min-height: 210px;
+    }
+
+    .chat-thread {
+      display: grid;
+      gap: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .chat-message {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.025);
+      display: grid;
+      gap: 5px;
+    }
+
+    .chat-message.user {
+      border-color: rgba(20,184,166,0.35);
+      background: rgba(15,118,110,0.08);
+    }
+
+    .chat-message strong {
+      color: var(--accent-glow);
+      font-size: 12px;
+    }
+
+    .chat-composer {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px;
+      background: rgba(255,255,255,0.04);
+      display: grid;
+      gap: 8px;
+    }
+
+    .chat-composer textarea {
+      min-height: 78px;
+      resize: vertical;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      outline: none;
+      font: inherit;
+    }
+
+    .chat-prompt-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chat-prompt-row button {
+      min-height: 30px;
+      padding: 5px 9px;
+      font-size: 11px;
+      border-radius: 999px;
+    }
+
+    .chat-table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 210px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .chat-table-wrap table {
+      min-width: 620px;
+      margin: 0;
+    }
+
+    .chat-platform-note.is-empty {
+      display: grid;
+      place-items: center;
+      color: rgba(148,163,184,0.72);
+      text-align: center;
     }
 
     .figure-strip {
@@ -2101,7 +2160,7 @@
     @media (max-width: 980px) {
       header { align-items: flex-start; flex-direction: column; }
       main { grid-template-columns: 1fr; }
-      main > section, main > details, .focus-switchboard, .toc-panel { grid-column: 1; }
+      main > section, main > details, .toc-panel { grid-column: 1; }
       .toc-panel {
         position: relative;
         top: 0;
@@ -2109,7 +2168,7 @@
         max-height: none;
       }
       .toc-list { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .focus-switchboard, .history-side-panel, .periodic-workbench, .flow-tabs, .login-card .form-grid { grid-template-columns: 1fr; }
+      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .history-side-panel, .periodic-workbench, .flow-tabs, .login-card .form-grid { grid-template-columns: 1fr; }
       .login-layout {
         grid-template-columns: 1fr;
         min-height: 0;
@@ -2269,10 +2328,6 @@
 
       .login-column {
         background-position: center top;
-      }
-
-      .virtual-eye {
-        width: min(300px, 78vw);
       }
 
       .topic-tabs,
@@ -2525,31 +2580,11 @@
           </div>
         </div>
         <div class="login-feature">
-          <div class="virtual-eye" aria-hidden="true"><span></span></div>
           <div>
-            <h2 data-i18n="loginGuestTitle">External Preview</h2>
-            <p class="muted" data-i18n="loginGuestHint">其他访问者进入虚拟眼睛入口，只打开演示工作台；正式实验室数据仍建议使用左侧 USTC 账户入口。</p>
+            <h2 data-i18n="loginGuestTitle">访客预览</h2>
+            <p class="muted" data-i18n="loginGuestHint">无需账号，直接查看演示工作台。</p>
           </div>
-          <button class="super-button" id="loginSuperBtn" type="button">⚡ SUPERCONDUCTOR ⚡</button>
           <button id="guestLoginBtn" type="button" data-i18n="guestLoginBtn" title="Open the demo workbench without an account">以访客身份进入</button>
-          <div class="login-feature-grid">
-            <div class="login-feature-item">
-              <strong data-i18n="loginFeatureHistory">历史图</strong>
-              <span class="muted" data-i18n="loginFeatureHistoryHint">大事件已合并到 Tc 历史图。</span>
-            </div>
-            <div class="login-feature-item">
-              <strong data-i18n="loginFeatureCube">3D 魔方</strong>
-              <span class="muted" data-i18n="loginFeatureCubeHint">旋转、缩放查看超导家族。</span>
-            </div>
-            <div class="login-feature-item">
-              <strong data-i18n="loginFeatureData">个人数据</strong>
-              <span class="muted" data-i18n="loginFeatureDataHint">保存本机浏览器数据。</span>
-            </div>
-            <div class="login-feature-item">
-              <strong data-i18n="loginFeatureModel">模型接口</strong>
-              <span class="muted" data-i18n="loginFeatureModelHint">预留计算模型输入输出。</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -2559,8 +2594,8 @@
 
   <header>
     <div>
-      <h1 data-i18n="title">⚡ ARPES 超导材料探索器</h1>
-      <p class="subtitle" data-i18n="subtitle">了解超导历史 · 选择体系深入探索</p>
+      <h1 data-i18n="title">ARPES 超导材料探索器</h1>
+      <p class="subtitle" data-i18n="subtitle">历史、材料、文献和数据</p>
     </div>
     <div class="header-actions">
       <div class="sound-bars" id="soundBars">
@@ -2592,57 +2627,37 @@
     </div>
   </header>
 
+  <nav class="top-menu-bar" aria-label="Main navigation">
+    <button class="top-menu-btn active" type="button" data-page-tab="history" data-i18n="topMenuHome">历史</button>
+    <button class="top-menu-btn" type="button" data-page-tab="materials" data-i18n="topMenuMaterials">材料</button>
+    <button class="top-menu-btn" type="button" data-page-tab="literature" data-i18n="topMenuLiterature">文献</button>
+    <button class="top-menu-btn" type="button" data-page-tab="data" data-i18n="topMenuData">数据</button>
+    <button class="top-menu-btn" type="button" data-page-tab="model" data-i18n="topMenuModel">模型</button>
+    <button class="top-menu-btn" type="button" data-page-tab="report" data-i18n="topMenuReport">报告</button>
+  </nav>
+
   <main>
-    <aside class="toc-panel">
-      <h2 data-i18n="tocTitle">电子书目录</h2>
-      <div class="toc-list" id="tocList"></div>
-      <div class="toc-note" id="tocNote" data-i18n="tocNote">目录会随主题、元素和材料筛选自动变化。</div>
-    </aside>
-    <nav class="focus-switchboard" aria-label="Main workbench actions">
-      <a class="focus-action" href="#section-milestones">
-        <strong data-i18n="focusHistoryTitle">了解历史</strong>
-        <span data-i18n="focusHistoryHint">用 3D Tc-年份-压力魔方查看超导材料发展脉络和里程碑。</span>
-      </a>
-      <a class="focus-action" href="#section-periodic">
-        <strong data-i18n="focusExploreTitle">选择感兴趣的体系进行深入探索</strong>
-        <span data-i18n="focusExploreHint">从元素周期表选择元素或家族，再展开资料库查看文献、数据和图表。</span>
-      </a>
-    </nav>
     <!-- ===== Milestones ===== -->
-    <section id="section-milestones">
+    <section id="section-milestones" class="app-page" data-app-page="history">
       <div class="section-head">
-        <h2 data-i18n="milestonesTitle">📜 超导历史里程碑</h2>
-        <span class="status" data-i18n="milestonesHint">从1911年至今的重大发现 — 点击节点查看详情</span>
+        <h2 data-i18n="milestonesTitle">超导历史</h2>
+        <span class="status" data-i18n="milestonesHint">点击节点查看详情</span>
       </div>
       <div class="content">
         <div class="flow-tabs" aria-label="Superconductivity workflow">
-          <span class="flow-tab active" data-i18n="flowCube">流</span>
-          <span class="flow-tab" data-i18n="flowMaterialIndex">材料索引</span>
-          <span class="flow-tab" data-i18n="flowDeepExplore">确定探索</span>
-          <span class="flow-tab">WoS</span>
-          <span class="flow-tab">Model</span>
-          <span class="flow-tab">Report</span>
+          <button class="flow-tab active" type="button" data-page-tab="history" data-i18n="flowHistory">历史</button>
+          <button class="flow-tab" type="button" data-page-tab="materials" data-i18n="flowMaterialIndex">材料索引</button>
+          <button class="flow-tab" type="button" data-page-tab="literature" data-i18n="flowLiterature">文献</button>
+          <button class="flow-tab" type="button" data-page-tab="data" data-i18n="flowData">数据</button>
+          <button class="flow-tab" type="button" data-page-tab="model" data-i18n="flowModel">模型接口</button>
+          <button class="flow-tab" type="button" data-page-tab="report" data-i18n="flowReport">报告</button>
         </div>
         <div class="milestone-stage">
-          <div class="history-image" aria-label="超导历史与Tc对比">
-            <div>
-              <h3 data-i18n="milestonesTitle">📜 超导历史里程碑</h3>
-              <p class="muted" data-i18n="milestonesHint">从1911年至今的重大发现</p>
-            </div>
-            <figure class="history-figure">
-              <div class="history-chart-wrap" id="historyInteractiveChart"></div>
-              <div class="history-point-card" id="historyPointCard">
-                <strong data-i18n="historyPointTitle">点击图上的点</strong>
-                <span data-i18n="historyPointHint">选择一个材料点，查看它在超导历史中的简单介绍。</span>
-              </div>
-              <figcaption data-i18n="historyFigureCaption">历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。</figcaption>
-            </figure>
-          </div>
           <div class="history-side-panel">
             <div class="history-cube-panel">
               <div>
-                <h3 data-i18n="historyCubeTitle">🧊 3D 超导历史魔方</h3>
-                <p class="muted" data-i18n="historyCubeHint">拖动旋转，缩放查看不同超导家族和数据面。</p>
+                <h3 data-i18n="historyCubeTitle">3D 历史图</h3>
+                <p class="muted" data-i18n="historyCubeHint">拖动旋转，点击材料点查看信息。</p>
               </div>
               <div class="cube-viewport" id="cubeViewport">
                 <div class="history-cube cube-view-axis" id="historyCube" aria-label="3D Tc year pressure chart">
@@ -2652,9 +2667,9 @@
                   <div class="axis-line x"></div>
                   <div class="axis-line y"></div>
                   <div class="axis-line z"></div>
-                  <span class="axis-label x">X · Year</span>
-                  <span class="axis-label y">Y · Pressure</span>
-                  <span class="axis-label z">Z · Tc</span>
+                  <button class="axis-label x" type="button" data-axis-view="x">X · Year</button>
+                  <button class="axis-label y" type="button" data-axis-view="y">Y · Pressure</button>
+                  <button class="axis-label z" type="button" data-axis-view="z">Z · Tc</button>
                   <div id="axisPointLayer"></div>
                   <div id="axisHitLayer" aria-label="Clickable material points"></div>
                   <button class="cube-face front" type="button" data-cube-face="cuprate"><strong>Cuprate</strong><span>1986 · high Tc</span></button>
@@ -2670,9 +2685,14 @@
                 <span>Y = Pressure (GPa)</span>
                 <span>Z = Tc (K)</span>
               </div>
+              <div class="axis-view-controls" aria-label="Axis front view controls">
+                <button type="button" data-axis-view="x" data-i18n="axisViewX">正视 X 年份轴</button>
+                <button type="button" data-axis-view="y" data-i18n="axisViewY">正视 Y 压力轴</button>
+                <button type="button" data-axis-view="z" data-i18n="axisViewZ">正视 Z Tc 轴</button>
+              </div>
               <div class="cube-controls">
                 <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
-                <button id="cubeViewModeBtn" type="button" data-i18n="cubeViewModeCube">六面魔方</button>
+                <button id="cubeViewModeBtn" type="button" data-i18n="cubeViewModeCube" hidden>六面魔方</button>
                 <button id="axisModeBtn" type="button" data-i18n="axisModeShowAll">显示全部点</button>
                 <label data-label-i18n="cubeZoomLabel">缩放
                   <input id="cubeZoom" type="range" min="70" max="140" value="100">
@@ -2683,49 +2703,26 @@
             <div class="model-interface">
               <div>
                 <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
-                <p class="muted" data-i18n="chatPlatformHint">点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释；也可以在下面输入想查询的资料。</p>
+                <p class="muted" data-i18n="chatPlatformHint">点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释。</p>
               </div>
-              <div class="chat-platform-note" id="cubeChatGuide" data-i18n="chatPlatformGuide">
-                选择一个材料点或魔方面：这里会把 Tc、年份、压力、材料家族、相关 ARPES 线索和可继续查的文献来源串起来。
+              <div class="chat-platform-note is-empty" id="cubeChatGuide" data-i18n="chatPlatformEmpty">
+                点击左侧材料点后显示相关资料
               </div>
-              <div class="model-status-grid">
-                <div class="model-status-card">
-                  <span data-i18n="modelStatusApi">接口状态</span>
-                  <strong id="modelApiStatus">Ready</strong>
+              <div class="chat-thread" id="chatThread" aria-live="polite"></div>
+              <div class="chat-table-wrap" id="chatTableWrap" style="display:none;"></div>
+              <div class="chat-composer">
+                <div class="chat-prompt-row">
+                  <button type="button" data-chat-prompt="请比较 FeSe、Bi2212 和 MgB2 的 ARPES 关注点" data-i18n="chatPromptCompare">比较材料</button>
+                  <button type="button" data-chat-prompt="请生成当前检索结果的表格" data-i18n="chatPromptTable">生成表格</button>
+                  <button type="button" data-chat-prompt="请总结适合写进调研报告的要点" data-i18n="chatPromptReport">报告要点</button>
                 </div>
-                <div class="model-status-card">
-                  <span data-i18n="modelStatusRegistry">已注册模型</span>
-                  <strong id="modelRegistryCount">0</strong>
-                </div>
-                <div class="model-status-card">
-                  <span data-i18n="modelStatusSource">输入来源</span>
-                  <strong data-i18n="modelStatusSourceValue">页面表单</strong>
+                <textarea id="chatInput" data-i18n-placeholder="chatInputPlaceholder" placeholder="问一个 ARPES/超导材料问题，或让 Chat platform 生成表格..."></textarea>
+                <div class="toolbar">
+                  <button class="primary" id="chatSendBtn" type="button" data-i18n="chatSendBtn">发送</button>
+                  <button id="chatMakeTableBtn" type="button" data-i18n="chatMakeTableBtn">生成表格</button>
+                  <button id="chatClearBtn" type="button" data-i18n="chatClearBtn">清空</button>
                 </div>
               </div>
-              <div class="model-control-grid">
-                <label data-label-i18n="modelMaterialLabel">材料 / 元素
-                  <input id="modelMaterialInput" placeholder="FeSe, Cu, Ni, hydride">
-                </label>
-                <label data-label-i18n="modelTaskLabel">任务
-                  <select id="modelTaskSelect">
-                    <option value="identify">Identify material</option>
-                    <option value="tc">Estimate Tc trend</option>
-                    <option value="arpes">ARPES features</option>
-                  </select>
-                </label>
-                <label data-label-i18n="modelTemperatureLabel">温度 (K)
-                  <input id="modelTemperatureInput" type="number" step="0.1" placeholder="20">
-                </label>
-                <label data-label-i18n="modelFeatureLabel">特征关键词
-                  <input id="modelFeatureInput" placeholder="gap, Fermi surface, q-dependent">
-                </label>
-              </div>
-              <div class="toolbar">
-                <button class="primary" id="modelRunBtn" type="button" data-i18n="modelRunBtn">运行模型</button>
-                <button id="modelProbeBtn" type="button" data-i18n="modelProbeBtn">检查接口</button>
-              </div>
-              <div class="model-output" id="modelRegistryOutput" data-i18n="modelRegistryDefault">暂无外部模型注册；当前使用规则化预览。</div>
-              <div class="model-output" id="modelOutput" data-i18n="modelOutputDefault">等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。</div>
             </div>
           </div>
         </div>
@@ -2733,19 +2730,19 @@
     </section>
 
     <!-- ===== 周期表 ===== -->
-    <section id="section-periodic">
+    <section id="section-periodic" class="app-page" data-app-page="materials" hidden>
       <div class="section-head">
-        <h2 data-i18n="periodicTitle">🗂️ 元素周期表</h2>
-        <span class="status" data-i18n="periodicStatus">🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!</span>
+        <h2 data-i18n="periodicTitle">元素周期表</h2>
+        <span class="status" data-i18n="periodicStatus">点击元素筛选材料</span>
       </div>
       <div class="content">
         <div class="flow-tabs" aria-label="Material index workflow">
-          <span class="flow-tab" data-i18n="flowCube">流</span>
-          <span class="flow-tab active" data-i18n="flowMaterialIndex">材料索引</span>
-          <span class="flow-tab" data-i18n="flowDeepExplore">确定探索</span>
-          <span class="flow-tab">Module 1</span>
-          <span class="flow-tab">Module 2</span>
-          <span class="flow-tab">Report</span>
+          <button class="flow-tab" type="button" data-page-tab="history" data-i18n="flowHistory">历史</button>
+          <button class="flow-tab active" type="button" data-page-tab="materials" data-i18n="flowMaterialIndex">材料索引</button>
+          <button class="flow-tab" type="button" data-page-tab="literature" data-i18n="flowLiterature">文献</button>
+          <button class="flow-tab" type="button" data-page-tab="data" data-i18n="flowData">数据</button>
+          <button class="flow-tab" type="button" data-page-tab="model" data-i18n="flowModel">模型接口</button>
+          <button class="flow-tab" type="button" data-page-tab="report" data-i18n="flowReport">报告</button>
         </div>
         <div class="periodic-workbench">
           <div class="periodic-wrap">
@@ -2779,11 +2776,11 @@
       </div>
     </section>
 
-    <details class="advanced-library" id="advancedLibrary">
+    <details class="advanced-library app-page" id="advancedLibrary" data-app-page="materials literature data" hidden open>
       <summary><span data-i18n="advancedLibraryTitle">高级资料库：文献图、数据、模板和导入工具</span><span class="status" data-i18n="advancedLibraryHint">默认折叠，保持主界面简洁</span></summary>
       <div class="advanced-section-stack">
     <!-- ===== 搜索 & 筛选 ===== -->
-    <section id="section-search">
+    <section id="section-search" data-app-page-section="materials">
       <div class="section-head">
         <h2 data-i18n="searchFilterTitle">🔍 搜索与筛选</h2>
         <span class="status" id="loadStatus">Loading...</span>
@@ -2824,7 +2821,7 @@
     </section>
 
     <!-- ===== Overview 图片对比 ===== -->
-    <section id="section-overview">
+    <section id="section-overview" data-app-page-section="literature">
       <div class="section-head">
         <h2 data-i18n="overviewTitle">📸 直观对比：文章图表</h2>
         <span class="status" id="sourceStatus">从论文提取图表 — 不同材料/技术并排对比</span>
@@ -2855,7 +2852,7 @@
     </section>
 
     <!-- ===== 光源词条目录 ===== -->
-    <section id="section-sources">
+    <section id="section-sources" data-app-page-section="literature">
       <div class="section-head">
         <h2 data-i18n="sourceTitle">💡 光源 / 档案目录</h2>
         <span class="status" data-i18n="sourceStatus">按地区、设施、文章图表、原始数据搜索</span>
@@ -2881,7 +2878,7 @@
     </section>
 
     <!-- ===== 超导材料表 ===== -->
-    <section id="section-materials">
+    <section id="section-materials" data-app-page-section="materials">
       <div class="section-head">
         <h2 data-i18n="materialsTitle">🧪 超导材料表</h2>
         <span class="status" id="tableStatus">Waiting</span>
@@ -2915,7 +2912,7 @@
     </section>
 
     <!-- ===== 材料详情 ===== -->
-    <section id="section-detail">
+    <section id="section-detail" data-app-page-section="materials">
       <div class="section-head">
         <h2 data-i18n="detailTitle">📋 材料详情</h2>
       </div>
@@ -2925,7 +2922,7 @@
     </section>
 
     <!-- ===== 文章数据 ===== -->
-    <section id="section-articles">
+    <section id="section-articles" data-app-page-section="literature">
       <div class="section-head">
         <h2 data-i18n="articleTitle">📄 文章数据</h2>
         <span class="status" id="articleStatus">Loading...</span>
@@ -2986,7 +2983,7 @@
     </section>
 
     <!-- ===== HDF5 数据管理 ===== -->
-    <section id="section-hdf5">
+    <section id="section-hdf5" data-app-page-section="data">
       <div class="section-head">
         <h2 data-i18n="hdf5Title">📊 HDF5 数据管理</h2>
         <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">上传 .h5 文件，解析能带/能量/温度数据，直观对比</span>
@@ -3024,7 +3021,7 @@
     </section>
 
     <!-- ===== Our Data ===== -->
-    <section id="section-our-data">
+    <section id="section-our-data" data-app-page-section="data">
       <div class="section-head">
         <h2 data-i18n="ourDataTitle">📝 我的数据</h2>
         <span class="status" id="ourDataStatus">保存在浏览器本地</span>
@@ -3101,8 +3098,58 @@
       </div>
     </section>
 
+    <!-- ===== 模型接口 ===== -->
+    <section id="section-model" class="app-page" data-app-page="model" hidden>
+      <div class="section-head">
+        <h2 data-i18n="modelInterfaceTitle">计算模型接口</h2>
+        <span class="status" data-i18n="modelInterfaceHint">预留 API：window.ARPESModelHub.registerModel(name, predictFn)</span>
+      </div>
+      <div class="content">
+        <div class="model-interface">
+          <div class="model-status-grid">
+            <div class="model-status-card">
+              <span data-i18n="modelStatusApi">接口状态</span>
+              <strong id="modelApiStatus">Ready</strong>
+            </div>
+            <div class="model-status-card">
+              <span data-i18n="modelStatusRegistry">已注册模型</span>
+              <strong id="modelRegistryCount">0</strong>
+            </div>
+            <div class="model-status-card">
+              <span data-i18n="modelStatusSource">输入来源</span>
+              <strong data-i18n="modelStatusSourceValue">页面表单</strong>
+            </div>
+          </div>
+          <div class="model-control-grid">
+            <label data-label-i18n="modelMaterialLabel">材料 / 元素
+              <input id="modelMaterialInput" placeholder="FeSe, Cu, Ni, hydride">
+            </label>
+            <label data-label-i18n="modelTaskLabel">任务
+              <select id="modelTaskSelect">
+                <option value="identify">Identify material</option>
+                <option value="tc">Estimate Tc trend</option>
+                <option value="arpes">ARPES features</option>
+              </select>
+            </label>
+            <label data-label-i18n="modelTemperatureLabel">温度 (K)
+              <input id="modelTemperatureInput" type="number" step="0.1" placeholder="20">
+            </label>
+            <label data-label-i18n="modelFeatureLabel">特征关键词
+              <input id="modelFeatureInput" placeholder="gap, Fermi surface, q-dependent">
+            </label>
+          </div>
+          <div class="toolbar">
+            <button class="primary" id="modelRunBtn" type="button" data-i18n="modelRunBtn">运行模型</button>
+            <button id="modelProbeBtn" type="button" data-i18n="modelProbeBtn">检查接口</button>
+          </div>
+          <div class="model-output" id="modelRegistryOutput" data-i18n="modelRegistryDefault">暂无外部模型注册；当前使用规则化预览。</div>
+          <div class="model-output" id="modelOutput" data-i18n="modelOutputDefault">等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。</div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== 模板说明 ===== -->
-    <section id="section-notes">
+    <section id="section-notes" class="app-page" data-app-page="report" hidden>
       <div class="section-head">
         <h2 data-i18n="notesTitle">📌 模板说明</h2>
       </div>
@@ -3130,8 +3177,8 @@
     const USER_STORAGE_KEY = "arpes-explorer-user-v1";
     const I18N = {
       zh: {
-        title: "⚡ ARPES 超导材料探索器",
-        subtitle: "了解超导历史 · 选择体系深入探索",
+        title: "ARPES 超导材料探索器",
+        subtitle: "历史、材料、文献和数据",
         loginTitle: "中科大 ARPES 工作台",
         loginHint: "面向 USTC / NSRL / ARPES 站的正式入口，用于检索材料、导入文献、保存实验数据并生成调研报告。",
         signInTab: "登录",
@@ -3147,10 +3194,8 @@
         loginPrivacy: "本登录只保存在当前浏览器，用于个性化目录和报告署名。",
         loginUstcBadge: "USTC · ARPES Lab Access",
         loginOfficialBadge: "真实账户入口",
-        loginGuestTitle: "External Preview",
-        loginGuestHint: "其他访问者进入虚拟眼睛入口，只打开演示工作台；正式实验室数据仍建议使用左侧 USTC 账户入口。",
-        loginSuperTitle: "Superconductor",
-        loginSuperHint: "从超导主题进入：历史、周期表、ARPES 图表、个人数据和模型接口会作为一个工作台加载。",
+        loginGuestTitle: "访客预览",
+        loginGuestHint: "无需账号，直接查看演示工作台。",
         loginFeatureHistory: "历史图",
         loginFeatureHistoryHint: "大事件已合并到 Tc 历史图。",
         loginFeatureCube: "3D 魔方",
@@ -3165,16 +3210,40 @@
         accountCreatedToast: "账号已创建",
         logoutBtn: "注销",
         logoutToast: "已退出，回到登录界面",
-        focusHistoryTitle: "了解历史",
-        focusHistoryHint: "用 3D Tc-年份-压力魔方查看超导材料发展脉络和里程碑。",
-        focusExploreTitle: "选择感兴趣的体系进行深入探索",
-        focusExploreHint: "从元素周期表选择元素或家族，再展开资料库查看文献、数据和图表。",
+        focusHistoryTitle: "历史",
+        focusHistoryHint: "3D Tc-年份-压力图。",
+        focusExploreTitle: "材料",
+        focusExploreHint: "元素、文献和数据。",
+        topMenuHome: "历史",
+        topMenuMaterials: "材料",
+        topMenuLiterature: "文献",
+        topMenuData: "数据",
+        topMenuModel: "模型",
+        topMenuReport: "报告",
         flowCube: "流",
+        flowHistory: "历史",
         flowMaterialIndex: "材料索引",
+        flowLiterature: "文献",
+        flowData: "数据",
+        flowModel: "模型接口",
+        flowReport: "报告",
         flowDeepExplore: "确定探索",
-        chatPlatformTitle: "Chat platform",
-        chatPlatformHint: "点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释；也可以在下面输入想查询的资料。",
+        chatPlatformTitle: "材料说明",
+        chatPlatformHint: "点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释。",
+        chatPlatformEmpty: "点击左侧材料点后显示相关资料",
         chatPlatformGuide: "选择一个材料点或魔方面：这里会把 Tc、年份、压力、材料家族、相关 ARPES 线索和可继续查的文献来源串起来。",
+        chatPromptCompare: "比较材料",
+        chatPromptTable: "生成表格",
+        chatPromptReport: "报告要点",
+        chatInputPlaceholder: "问一个 ARPES/超导材料问题，或让 Chat platform 生成表格...",
+        chatSendBtn: "发送",
+        chatMakeTableBtn: "生成表格",
+        chatClearBtn: "清空",
+        chatUserLabel: "用户",
+        chatAssistantLabel: "Chat platform",
+        chatWelcome: "可以点击魔方材料点，也可以直接提问。我会基于当前材料库、免费 ARPES 题录、个人数据和页面筛选生成回答。",
+        chatTableTitle: "Chat platform 生成表格",
+        chatEmptyExport: "暂无 Chat platform 问答；报告将只包含当前页面数据。",
         moduleMaterialIndex: "Material index",
         moduleMaterialIndexHint: "点击左侧元素后，这里显示元素简介、材料家族和文献入口。",
         moduleLiterature: "Literature module",
@@ -3183,8 +3252,8 @@
         moduleModelHint: "后续计算模型可接入这里，对材料性质进行预测或归类。",
         advancedLibraryTitle: "高级资料库：文献图、数据、模板和导入工具",
         advancedLibraryHint: "默认折叠，保持主界面简洁",
-        tocTitle: "电子书目录",
-        tocNote: "主界面只保留历史魔方和元素周期表；资料库可按需展开。",
+        tocTitle: "模块",
+        tocNote: "选择一个模块开始。",
         reportFormatLabel: "报告格式",
         generateReportBtn: "生成调研报告",
         modelInterfaceTitle: "计算模型接口",
@@ -3233,8 +3302,8 @@
         topologicalTab: "🔷 拓扑材料",
         photonicTab: "💎 光子晶体",
         searchFilterTitle: "🔍 搜索与筛选",
-        periodicTitle: "🗂️ 元素周期表",
-        periodicStatus: "🟢 = 超导相关元素 | 点击可筛选 | 点击 SUPERCONDUCTOR 按钮让元素跳舞!",
+        periodicTitle: "元素周期表",
+        periodicStatus: "点击元素筛选材料",
         selectElement: "👆 选择一个元素",
         selectElementHint: "点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。",
         familyTitle: "🧬 材料家族",
@@ -3258,13 +3327,16 @@
         figureFallback: "图像预览无法直连显示，请打开官方文献入口",
         viewFigureSource: "打开官方文献",
         rowsLabel: "行",
-        milestonesTitle: "📜 超导历史里程碑",
-        milestonesHint: "从1911年至今的重大发现 — 点击节点查看详情",
+        milestonesTitle: "超导历史",
+        milestonesHint: "点击节点查看详情",
         historyPointTitle: "点击图上的点",
         historyPointHint: "选择一个材料点，查看它在超导历史中的简单介绍。",
         historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
-        historyCubeTitle: "🧊 3D Tc-年份-压力坐标",
-        historyCubeHint: "透明三轴图：X 轴为年份，Y 轴为压力，Z 轴为 Tc 温度；拖动旋转，缩放查看材料点。",
+        historyCubeTitle: "3D 历史图",
+        historyCubeHint: "拖动旋转，点击材料点查看信息。",
+        axisViewX: "正视 X 年份轴",
+        axisViewY: "正视 Y 压力轴",
+        axisViewZ: "正视 Z Tc 轴",
         cubeResetBtn: "重置视角",
         cubeZoomLabel: "缩放",
         cubeViewModeCube: "六面魔方",
@@ -3427,8 +3499,8 @@
         elementInSC: "相关超导材料",
       },
       en: {
-        title: "⚡ ARPES Superconductivity Explorer",
-        subtitle: "Learn the history · Choose a system to explore",
+        title: "ARPES Superconductivity Explorer",
+        subtitle: "History, materials, papers, and data",
         loginTitle: "USTC ARPES Workbench",
         loginHint: "Official access for USTC / NSRL / ARPES users to search materials, import literature, save experiment data, and generate reports.",
         signInTab: "Sign In",
@@ -3444,10 +3516,8 @@
         loginPrivacy: "This login is stored only in this browser for personalized contents and report authorship.",
         loginUstcBadge: "USTC · ARPES Lab Access",
         loginOfficialBadge: "Official Account",
-        loginGuestTitle: "External Preview",
-        loginGuestHint: "External visitors enter through the virtual-eye preview. Formal lab data should use the USTC account panel on the left.",
-        loginSuperTitle: "Superconductor",
-        loginSuperHint: "Enter through the superconductivity topic: history, periodic table, ARPES figures, personal data and model interface load as one workbench.",
+        loginGuestTitle: "Guest Preview",
+        loginGuestHint: "Open the demo workbench without an account.",
         loginFeatureHistory: "History Chart",
         loginFeatureHistoryHint: "Milestones are merged into the Tc chart.",
         loginFeatureCube: "3D Cube",
@@ -3462,16 +3532,40 @@
         accountCreatedToast: "Account created",
         logoutBtn: "Log out",
         logoutToast: "Logged out and returned to the login screen",
-        focusHistoryTitle: "Learn the History",
-        focusHistoryHint: "Use the 3D Tc-year-pressure cube to see superconductivity milestones and material families.",
-        focusExploreTitle: "Choose a System to Explore",
-        focusExploreHint: "Select elements or families from the periodic table, then expand the library for papers, data, and figures.",
+        focusHistoryTitle: "History",
+        focusHistoryHint: "3D Tc-year-pressure view.",
+        focusExploreTitle: "Materials",
+        focusExploreHint: "Elements, papers, and data.",
+        topMenuHome: "History",
+        topMenuMaterials: "Materials",
+        topMenuLiterature: "Papers",
+        topMenuData: "Data",
+        topMenuModel: "Model",
+        topMenuReport: "Report",
         flowCube: "Flow",
+        flowHistory: "History",
         flowMaterialIndex: "Material Index",
+        flowLiterature: "Literature",
+        flowData: "Data",
+        flowModel: "Model API",
+        flowReport: "Report",
         flowDeepExplore: "Deep Explore",
-        chatPlatformTitle: "Chat platform",
-        chatPlatformHint: "Click a material point in the cube; the right side shows literature data, material notes, and comparison guidance. You can also ask a question below.",
+        chatPlatformTitle: "Material Notes",
+        chatPlatformHint: "Click a material point in the cube; the right side shows literature data, material notes, and comparison guidance.",
+        chatPlatformEmpty: "Click a material point on the left to show related context.",
         chatPlatformGuide: "Choose a material point or cube face: this panel connects Tc, year, pressure, family, ARPES clues, and literature sources to inspect next.",
+        chatPromptCompare: "Compare materials",
+        chatPromptTable: "Make table",
+        chatPromptReport: "Report bullets",
+        chatInputPlaceholder: "Ask an ARPES/superconductivity question, or ask the Chat platform to make a table...",
+        chatSendBtn: "Send",
+        chatMakeTableBtn: "Make table",
+        chatClearBtn: "Clear",
+        chatUserLabel: "User",
+        chatAssistantLabel: "Chat platform",
+        chatWelcome: "Click a cube material point or ask directly. I will answer from the current materials, free ARPES metadata, personal data, and page filters.",
+        chatTableTitle: "Chat platform generated table",
+        chatEmptyExport: "No Chat platform Q&A yet; the report will include current page data only.",
         moduleMaterialIndex: "Material index",
         moduleMaterialIndexHint: "After clicking an element on the left, this panel shows the element summary, material families, and literature entries.",
         moduleLiterature: "Literature module",
@@ -3480,8 +3574,8 @@
         moduleModelHint: "Future computation models can plug in here to classify or predict material properties.",
         advancedLibraryTitle: "Advanced Library: paper figures, data, templates, and import tools",
         advancedLibraryHint: "Collapsed by default to keep the main interface simple",
-        tocTitle: "E-book Contents",
-        tocNote: "The main interface keeps only the history cube and periodic table; expand the library when needed.",
+        tocTitle: "Modules",
+        tocNote: "Choose one module to start.",
         reportFormatLabel: "Report format",
         generateReportBtn: "Generate Report",
         modelInterfaceTitle: "Computation Model Interface",
@@ -3530,8 +3624,8 @@
         topologicalTab: "🔷 Topological",
         photonicTab: "💎 Photonic",
         searchFilterTitle: "🔍 Search & Filter",
-        periodicTitle: "🗂️ Periodic Table",
-        periodicStatus: "🟢 = Superconductor-relevant elements | Click to filter | Click SUPERCONDUCTOR to dance!",
+        periodicTitle: "Periodic Table",
+        periodicStatus: "Click an element to filter materials",
         selectElement: "👆 Select an Element",
         selectElementHint: "Click a green element to see material families and ARPES properties. Grey = no data yet.",
         familyTitle: "🧬 Material Families",
@@ -3555,13 +3649,16 @@
         figureFallback: "Figure preview cannot be loaded directly; open the official literature entry",
         viewFigureSource: "Open official paper",
         rowsLabel: "Rows",
-        milestonesTitle: "📜 Superconductivity Milestones",
-        milestonesHint: "Major discoveries from 1911 to present — click a node for details",
+        milestonesTitle: "Superconductivity History",
+        milestonesHint: "Click a point for details",
         historyPointTitle: "Click a point on the chart",
         historyPointHint: "Select a material point to see a short historical note.",
         historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
-        historyCubeTitle: "🧊 3D Tc-Year-Pressure Axes",
-        historyCubeHint: "Transparent 3-axis view: X is year, Y is pressure, and Z is Tc; drag to rotate and zoom material points.",
+        historyCubeTitle: "3D History View",
+        historyCubeHint: "Drag to rotate; click a material point for details.",
+        axisViewX: "Front view: X year",
+        axisViewY: "Front view: Y pressure",
+        axisViewZ: "Front view: Z Tc",
         cubeResetBtn: "Reset View",
         cubeZoomLabel: "Zoom",
         cubeViewModeCube: "Six-Face Cube",
@@ -3778,6 +3875,7 @@
       applyCubeViewMode();
       renderModelRegistry();
       renderToc();
+      showAppPage(activeAppPage, { preserveScroll: true });
       if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
       // Update section headings, buttons, etc.
       document.querySelector("#superconductorBtn").innerHTML = t("superconductorBtn");
@@ -3818,6 +3916,8 @@
       filtered: [],
       ourData: [],
       compareSet: new Set(),
+      chatMessages: [],
+      chatTableRows: [],
       topic: "sc"
     };
 
@@ -3848,11 +3948,11 @@
     const loginBtn = $("#loginBtn");
     const quickGuestLoginBtn = $("#quickGuestLoginBtn");
     const guestLoginBtn = $("#guestLoginBtn");
-    const loginSuperBtn = $("#loginSuperBtn");
     const loginStatus = $("#loginStatus");
     const logoutBtn = $("#logoutBtn");
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
+    const advancedLibrary = $("#advancedLibrary");
     const generateReportBtn = $("#generateReportBtn");
     const reportFormatSelect = $("#reportFormatSelect");
     const modelProbeBtn = $("#modelProbeBtn");
@@ -3875,6 +3975,17 @@
     const axisHitLayer = $("#axisHitLayer");
     const axisModeBtn = $("#axisModeBtn");
     const cubeViewModeBtn = $("#cubeViewModeBtn");
+    const axisViewButtons = $$("[data-axis-view]");
+    const appPageTabs = $$("[data-page-tab]");
+    const appPages = $$(".app-page");
+    const appPageSections = $$("[data-app-page-section]");
+    const chatThread = $("#chatThread");
+    const chatInput = $("#chatInput");
+    const chatSendBtn = $("#chatSendBtn");
+    const chatMakeTableBtn = $("#chatMakeTableBtn");
+    const chatClearBtn = $("#chatClearBtn");
+    const chatTableWrap = $("#chatTableWrap");
+    let activeAppPage = "history";
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -4333,20 +4444,29 @@
       showToast(`${t("modelReadyToast")} · v${hub?.version || "0.1.0"}`);
     });
     modelRunBtn?.addEventListener("click", runModelPreview);
-    loginSuperBtn?.addEventListener("click", () => {
-      const user = loadUser();
-      if (!user.name && !user.email) {
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify({
-          email: "",
-          password_set: false,
-          name: "Superconductor user",
-          group: "",
-          account_mode: "superconductor_guest",
-          login_at: new Date().toISOString()
-        }));
-      }
-      unlockWorkbench(loadUser());
-      setTopic("sc", { dance: true, preserveScroll: true });
+    appPageTabs.forEach(tab => {
+      tab.addEventListener("mousedown", event => event.preventDefault());
+      tab.addEventListener("click", () => showAppPage(tab.dataset.pageTab || "history"));
+    });
+    chatSendBtn?.addEventListener("click", sendChatMessage);
+    chatInput?.addEventListener("keydown", event => {
+      if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) sendChatMessage();
+    });
+    chatMakeTableBtn?.addEventListener("click", () => {
+      makeChatTable();
+      addChatMessage("assistant", currentLang === "zh" ? "已根据当前筛选生成材料-文献对照表，并会写入调研报告。" : "Generated a material-literature table from the current filters; it will be included in the report.");
+    });
+    chatClearBtn?.addEventListener("click", () => {
+      state.chatMessages = [];
+      state.chatTableRows = [];
+      renderChatThread();
+      renderChatTable();
+    });
+    document.querySelectorAll("[data-chat-prompt]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (chatInput) chatInput.value = btn.dataset.chatPrompt || "";
+        sendChatMessage();
+      });
     });
     // ===== 主题切换 =====
     document.querySelectorAll(".topic-tab").forEach(tab => {
@@ -4696,6 +4816,7 @@
       initLogin();
       renderModelRegistry();
       renderToc();
+      showAppPage(activeAppPage, { preserveScroll: true });
         loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       } catch (error) {
         loadStatus.textContent = `${t("loadingFailed")}: ${error.message}`;
@@ -4920,6 +5041,34 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function pageListMatches(value, page) {
+      return String(value || "").split(/\s+/).includes(page);
+    }
+
+    function showAppPage(page = "history", options = {}) {
+      activeAppPage = page;
+      appPages.forEach(section => {
+        section.hidden = !pageListMatches(section.dataset.appPage, page);
+      });
+      appPageSections.forEach(section => {
+        section.hidden = !pageListMatches(section.dataset.appPageSection, page);
+      });
+      appPageTabs.forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.pageTab === page);
+      });
+      if (advancedLibrary) {
+        if (["materials", "literature", "data"].includes(page)) advancedLibrary.setAttribute("open", "");
+        else advancedLibrary.removeAttribute("open");
+      }
+      if (!options.preserveScroll) {
+        const target = page === "history"
+          ? document.querySelector("#section-milestones")
+          : document.querySelector(`.app-page[data-app-page~="${CSS.escape(page)}"]`);
+        target?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      updateTocActiveSection();
+    }
+
     function unlockWorkbench(user) {
       document.body.classList.remove("locked");
       if (loginScreen) loginScreen.style.display = "none";
@@ -4932,6 +5081,7 @@
       renderOurData();
       renderArticles();
       renderToc();
+      showAppPage(activeAppPage, { preserveScroll: true });
     }
 
     function renderToc() {
@@ -5009,9 +5159,99 @@
           const [titleKey, hintKey] = moduleHints[targetId] || ["moduleMaterialIndex", "moduleMaterialIndexHint"];
           center.innerHTML = `<strong>${esc(t(titleKey))}</strong><span>${esc(t(hintKey))}</span>`;
           const target = document.getElementById(targetId);
-          if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (targetId === "advancedLibrary" || targetId === "section-search") showAppPage("literature");
+          else if (targetId === "section-hdf5") showAppPage("data");
+          else if (targetId === "modelOutput") showAppPage("model");
+          else if (targetId === "generateReportBtn") showAppPage("report");
+          else if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
         });
       });
+    }
+
+    function addChatMessage(role, text) {
+      const clean = String(text || "").trim();
+      if (!clean) return;
+      state.chatMessages.push({ role, text: clean, time: new Date().toISOString() });
+      renderChatThread();
+    }
+
+    function renderChatThread() {
+      if (!chatThread) return;
+      const rows = state.chatMessages.length
+        ? state.chatMessages
+        : [{ role: "assistant", text: t("chatWelcome"), time: "" }];
+      chatThread.innerHTML = rows.map(message => `
+        <div class="chat-message ${message.role === "user" ? "user" : "assistant"}">
+          <strong>${esc(message.role === "user" ? t("chatUserLabel") : t("chatAssistantLabel"))}</strong>
+          <span>${esc(message.text)}</span>
+        </div>
+      `).join("");
+      chatThread.scrollTop = chatThread.scrollHeight;
+    }
+
+    function sendChatMessage() {
+      const question = (chatInput?.value || "").trim();
+      if (!question) return;
+      addChatMessage("user", question);
+      if (chatInput) chatInput.value = "";
+      const lower = question.toLowerCase();
+      if (lower.includes("表") || lower.includes("table")) {
+        makeChatTable();
+      }
+      addChatMessage("assistant", buildChatAnswer(question));
+    }
+
+    function buildChatAnswer(question) {
+      const selected = (state.filtered || []).slice(0, 6);
+      const articles = (filteredArticles ? filteredArticles() : state.articles || []).slice(0, 6);
+      const materialText = selected.length
+        ? selected.map(row => `${row.display_name || row.material} (Tc ${row.transition_temperature_K ?? row.tc_K ?? "n/a"} K)`).join("; ")
+        : (currentLang === "zh" ? "当前没有材料筛选结果" : "No current material filter results");
+      const articleText = articles.length
+        ? articles.map(article => `${article.year || ""} ${article.title || ""}`.trim()).join("; ")
+        : (currentLang === "zh" ? "暂无匹配文献" : "No matching papers");
+      if (currentLang === "zh") {
+        return `基于当前页面数据，我会优先看：${materialText}。相关 ARPES 文献线索包括：${articleText}。如果要形成正式调研报告，建议把这些条目按“材料体系、Tc/压力、ARPES 观测、文献 DOI/来源、是否全文核验”整理成表格。`;
+      }
+      return `From the current page data, I would start with: ${materialText}. Relevant ARPES literature leads include: ${articleText}. For a formal report, organize them by material family, Tc/pressure, ARPES observation, DOI/source, and full-text verification status.`;
+    }
+
+    function makeChatTable() {
+      const materials = (state.filtered || []).slice(0, 8);
+      const articles = filteredArticles ? filteredArticles() : (state.articles || []);
+      state.chatTableRows = materials.map(row => {
+        const aliases = materialAliases(row);
+        const matched = articles.filter(article => (article.materials || []).some(material => aliases.has(normalizeMaterialName(material)))).slice(0, 3);
+        return {
+          material: row.display_name || row.material || "",
+          family: familyName(row.family) || row.family || "",
+          tc: row.transition_temperature_K ?? row.tc_K ?? "",
+          elements: (row.elements || []).join(", "),
+          arpes: row.arpes || row.arpes_features || "",
+          papers: matched.map(article => `${article.year || ""} ${article.title || ""}`.trim()).join(" | ")
+        };
+      });
+      renderChatTable();
+    }
+
+    function renderChatTable() {
+      if (!chatTableWrap) return;
+      if (!state.chatTableRows.length) {
+        chatTableWrap.style.display = "none";
+        chatTableWrap.innerHTML = "";
+        return;
+      }
+      chatTableWrap.style.display = "";
+      chatTableWrap.innerHTML = `
+        <table>
+          <thead><tr><th>Material</th><th>Family</th><th>Tc (K)</th><th>Elements</th><th>ARPES</th><th>Papers</th></tr></thead>
+          <tbody>${state.chatTableRows.map(row => `
+            <tr>
+              <td>${esc(row.material)}</td><td>${esc(row.family)}</td><td>${esc(row.tc)}</td>
+              <td>${esc(row.elements)}</td><td>${esc(row.arpes)}</td><td>${esc(row.papers)}</td>
+            </tr>
+          `).join("")}</tbody>
+        </table>`;
     }
 
     function reportFilename(ext) {
@@ -5603,6 +5843,22 @@ ${personalLines || "- No personal records."}
       else renderCubeFaceReadout("cuprate");
     }
 
+    function setAxisFrontView(axis) {
+      cubeViewMode = "axis";
+      const views = {
+        x: { x: 0, y: 0 },
+        y: { x: 0, y: 90 },
+        z: { x: -90, y: 0 }
+      };
+      cubeRotation = views[axis] || { x: -18, y: 32 };
+      if (cubeZoom) cubeZoom.value = "110";
+      applyCubeTransform();
+      applyCubeViewMode();
+      axisViewButtons.forEach(button => {
+        button.classList.toggle("active", button.dataset.axisView === axis);
+      });
+    }
+
     function estimatePressureGPa(point) {
       const label = `${point.label || ""} ${point.family || ""}`;
       const explicit = label.match(/(\d+(?:\.\d+)?)\s*GPa/i);
@@ -5725,7 +5981,10 @@ ${personalLines || "- No personal records."}
       if (!cubeReadout) return;
       if (!point || typeof point === "string") {
         cubeReadout.textContent = t("cubeReadoutDefault");
-        if (cubeChatGuide) cubeChatGuide.textContent = t("chatPlatformGuide");
+        if (cubeChatGuide) {
+          cubeChatGuide.classList.add("is-empty");
+          cubeChatGuide.textContent = t("chatPlatformEmpty");
+        }
         return;
       }
       const pressure = estimatePressureGPa(point);
@@ -5737,6 +5996,7 @@ ${personalLines || "- No personal records."}
         ${esc(note)}
       `;
       if (cubeChatGuide) {
+        cubeChatGuide.classList.remove("is-empty");
         cubeChatGuide.innerHTML = `
           <strong style="color:var(--accent-glow);">${esc(point.label)}</strong><br>
           ${currentLang === "zh"
@@ -5752,6 +6012,7 @@ ${personalLines || "- No personal records."}
       const [title, body] = face[currentLang] || face.zh;
       cubeReadout.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}`;
       if (cubeChatGuide) {
+        cubeChatGuide.classList.remove("is-empty");
         cubeChatGuide.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}<br>${esc(currentLang === "zh" ? "点击左侧材料点可进一步定位具体文献和参数。" : "Click a material point on the left to locate concrete papers and parameters.")}`;
       }
     }
@@ -5777,6 +6038,14 @@ ${personalLines || "- No personal records."}
         cubeRotation = { x: -18, y: 32 };
         if (cubeZoom) cubeZoom.value = "100";
         applyCubeTransform();
+        axisViewButtons.forEach(button => button.classList.remove("active"));
+      });
+      axisViewButtons.forEach(button => {
+        button.addEventListener("pointerdown", event => event.stopPropagation());
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          setAxisFrontView(button.dataset.axisView);
+        });
       });
       let dragging = false;
       let last = { x: 0, y: 0 };
