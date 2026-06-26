@@ -2134,6 +2134,11 @@
     .drop-zone .upload-actions button {
       min-height: 38px;
     }
+    .hdf5-native-input {
+      max-width: 100%;
+      margin-top: 12px;
+      color: var(--muted);
+    }
     .hdf5-tree { max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; }
     .hdf5-tree .group { color: #f59e0b; cursor: pointer; }
     .hdf5-tree .dataset { color: var(--accent-glow); cursor: pointer; padding-left: 16px; }
@@ -3029,7 +3034,7 @@
     <section id="section-hdf5" data-app-page-section="data">
       <div class="section-head">
         <h2 data-i18n="hdf5Title">📊 HDF5 数据管理</h2>
-        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">上传 .h5 文件，解析能带/能量/温度数据，直观对比</span>
+        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件</span>
       </div>
       <div class="content">
         <div class="drop-zone" id="hdf5DropZone">
@@ -3038,7 +3043,7 @@
           <div class="upload-actions">
             <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 文件</button>
           </div>
-          <input type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,application/x-hdf5,application/octet-stream" multiple style="display:none;">
+          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,application/x-hdf5,application/octet-stream" multiple>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div class="card">
@@ -3188,6 +3193,22 @@
             <button class="primary" id="modelRunBtn" type="button" data-i18n="modelRunBtn">运行模型</button>
             <button id="modelProbeBtn" type="button" data-i18n="modelProbeBtn">检查接口</button>
           </div>
+          <div class="model-control-grid">
+            <label data-label-i18n="aiEndpointLabel">AI 接口地址
+              <input id="aiEndpointInput" placeholder="http://127.0.0.1:8788/chat">
+            </label>
+            <label data-label-i18n="aiModelLabel">AI 模型名
+              <input id="aiModelInput" placeholder="gpt-4.1-mini / local-llm">
+            </label>
+            <label data-label-i18n="aiKeyLabel">API Key（只存在本机）
+              <input id="aiKeyInput" type="password" autocomplete="off" placeholder="sk-...">
+            </label>
+          </div>
+          <p class="muted" data-i18n="aiConfigHint">可连接本地代理或服务器模型；静态网页不会把密钥写入 GitHub，只保存在当前浏览器。</p>
+          <div class="toolbar">
+            <button id="aiSaveConfigBtn" type="button" data-i18n="aiSaveConfigBtn">保存 AI 配置</button>
+            <button id="aiClearConfigBtn" type="button" data-i18n="aiClearConfigBtn">清除 AI 配置</button>
+          </div>
           <div class="model-output" id="modelRegistryOutput" data-i18n="modelRegistryDefault">暂无外部模型注册；当前使用规则化预览。</div>
           <div class="model-output" id="modelOutput" data-i18n="modelOutputDefault">等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。</div>
         </div>
@@ -3325,6 +3346,18 @@
         modelStatusSourceValue: "页面表单",
         modelRegistryDefault: "暂无外部模型注册；当前使用规则化预览。",
         modelRegistryTemplate: "已注册模型：",
+        aiEndpointLabel: "AI 接口地址",
+        aiModelLabel: "AI 模型名",
+        aiKeyLabel: "API Key（只存在本机）",
+        aiConfigHint: "可连接本地代理或服务器模型；静态网页不会把密钥写入 GitHub，只保存在当前浏览器。",
+        aiSaveConfigBtn: "保存 AI 配置",
+        aiClearConfigBtn: "清除 AI 配置",
+        aiConfigSaved: "AI 配置已保存",
+        aiConfigCleared: "AI 配置已清除",
+        aiConfiguredStatus: "AI 已配置",
+        aiLocalStatus: "本地回答",
+        chatThinking: "正在根据当前数据生成回答...",
+        chatAiFallback: "AI 接口暂时不可用，已使用页面数据生成本地回答。",
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
@@ -3437,7 +3470,7 @@
         clearBtn: "🗑️ 清空",
         notesTitle: "📌 模板说明",
         hdf5Title: "📊 HDF5 数据管理",
-        hdf5StatusInitial: "上传 .h5 文件，解析能带、能量、温度数据，直观对比",
+        hdf5StatusInitial: "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件",
         hdf5DropTitle: "📁 拖放或点击上传 HDF5 文件",
         hdf5DropHint: "支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据",
         hdf5ChooseBtn: "选择 HDF5 文件",
@@ -3664,6 +3697,18 @@
         modelStatusSourceValue: "Page Form",
         modelRegistryDefault: "No external models registered; using the rule-based preview.",
         modelRegistryTemplate: "Registered models:",
+        aiEndpointLabel: "AI Endpoint",
+        aiModelLabel: "AI Model",
+        aiKeyLabel: "API Key (local only)",
+        aiConfigHint: "Connect a local proxy or server model. The static page does not write secrets to GitHub; they stay in this browser.",
+        aiSaveConfigBtn: "Save AI Config",
+        aiClearConfigBtn: "Clear AI Config",
+        aiConfigSaved: "AI config saved",
+        aiConfigCleared: "AI config cleared",
+        aiConfiguredStatus: "AI configured",
+        aiLocalStatus: "Local answer",
+        chatThinking: "Generating an answer from the current data...",
+        chatAiFallback: "The AI endpoint is unavailable, so I used the page data for a local answer.",
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
@@ -3776,7 +3821,7 @@
         clearBtn: "🗑️ Clear",
         notesTitle: "📌 Template Notes",
         hdf5Title: "📊 HDF5 Data Library",
-        hdf5StatusInitial: "Upload .h5 files to parse band, energy, and temperature data for comparison",
+        hdf5StatusInitial: "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files",
         hdf5DropTitle: "📁 Drop or click to upload HDF5 files",
         hdf5DropHint: "Supports ARPES-style files with energy/k axes, temperature, photon energy, and metadata",
         hdf5ChooseBtn: "Choose HDF5 Files",
@@ -4005,6 +4050,7 @@
     };
 
     const STORAGE_KEY = "arpes-superconductivity-our-data-v1";
+    const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
     // ===== DOM 引用 =====
@@ -4048,6 +4094,11 @@
     const modelApiStatus = $("#modelApiStatus");
     const modelRegistryCount = $("#modelRegistryCount");
     const modelRegistryOutput = $("#modelRegistryOutput");
+    const aiEndpointInput = $("#aiEndpointInput");
+    const aiModelInput = $("#aiModelInput");
+    const aiKeyInput = $("#aiKeyInput");
+    const aiSaveConfigBtn = $("#aiSaveConfigBtn");
+    const aiClearConfigBtn = $("#aiClearConfigBtn");
     const cubeChatGuide = $("#cubeChatGuide");
     const historyCube = $("#historyCube");
     const cubeViewport = $("#cubeViewport");
@@ -4525,9 +4576,13 @@
     modelProbeBtn?.addEventListener("click", () => {
       const hub = window.ARPESModelHub || window.ARPES_ML;
       renderModelRegistry();
-      showToast(`${t("modelReadyToast")} · v${hub?.version || "0.1.0"}`);
+      const cfg = loadAiConfig();
+      const chatCount = Object.keys(hub?._chatModels || {}).length;
+      showToast(`${t("modelReadyToast")} · v${hub?.version || "0.1.0"} · ${cfg.endpoint ? t("aiConfiguredStatus") : t("aiLocalStatus")} · Chat models ${chatCount}`);
     });
     modelRunBtn?.addEventListener("click", runModelPreview);
+    aiSaveConfigBtn?.addEventListener("click", saveAiConfigFromForm);
+    aiClearConfigBtn?.addEventListener("click", clearAiConfig);
     document.addEventListener("mousedown", event => {
       if (event.target.closest("[data-page-tab]")) event.preventDefault();
     });
@@ -4537,7 +4592,7 @@
       event.preventDefault();
       showAppPage(tab.dataset.pageTab || "history");
     });
-    chatSendBtn?.addEventListener("click", sendChatMessage);
+    chatSendBtn?.addEventListener("click", () => sendChatMessage());
     chatInput?.addEventListener("keydown", event => {
       if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) sendChatMessage();
     });
@@ -5281,7 +5336,7 @@
       chatThread.scrollTop = chatThread.scrollHeight;
     }
 
-    function sendChatMessage() {
+    async function sendChatMessage() {
       const question = (chatInput?.value || "").trim();
       if (!question) return;
       addChatMessage("user", question);
@@ -5290,22 +5345,154 @@
       if (lower.includes("表") || lower.includes("table")) {
         makeChatTable();
       }
-      addChatMessage("assistant", buildChatAnswer(question));
+      const pending = { role: "assistant", text: t("chatThinking"), time: new Date().toISOString() };
+      state.chatMessages.push(pending);
+      renderChatThread();
+      try {
+        const hub = window.ARPESModelHub || window.ARPES_ML;
+        pending.text = await (hub?.chat ? hub.chat(question, buildChatContext(question)) : buildLocalChatAnswer(question, buildChatContext(question)));
+      } catch (error) {
+        pending.text = `${t("chatAiFallback")}\n\n${buildLocalChatAnswer(question, buildChatContext(question))}`;
+      }
+      renderChatThread();
     }
 
-    function buildChatAnswer(question) {
-      const selected = (state.filtered || []).slice(0, 6);
-      const articles = (filteredArticles ? filteredArticles() : state.articles || []).slice(0, 6);
-      const materialText = selected.length
-        ? selected.map(row => `${displayMaterialName(row)} (Tc ${row.transition_temperature_K ?? row.tc_K ?? "n/a"} K)`).join("; ")
-        : (currentLang === "zh" ? "当前没有材料筛选结果" : "No current material filter results");
-      const articleText = articles.length
-        ? articles.map(article => `${article.year || ""} ${article.title || ""}`.trim()).join("; ")
-        : (currentLang === "zh" ? "暂无匹配文献" : "No matching papers");
-      if (currentLang === "zh") {
-        return `基于当前页面数据，我会优先看：${materialText}。相关 ARPES 文献线索包括：${articleText}。如果要形成正式调研报告，建议把这些条目按“材料体系、Tc/压力、ARPES 观测、文献 DOI/来源、是否全文核验”整理成表格。`;
+    function buildChatContext(question = "") {
+      const selected = (state.filtered || []).slice(0, 8);
+      const articles = (filteredArticles ? filteredArticles() : state.articles || []).slice(0, 8);
+      const personalRows = (state.ourData || []).slice(0, 6);
+      const selectedElement = state.selectedElement || extractElementFromQuestion(question) || "";
+      return {
+        lang: currentLang,
+        question,
+        selectedElement,
+        activePage: activeAppPage,
+        materials: selected.map(row => ({
+          material: displayMaterialName(row),
+          raw_material: row.material || row.display_name || "",
+          family: displayFamilyName(row.family),
+          tc_K: row.transition_temperature_K ?? row.tc_K ?? null,
+          pressure_GPa: row.pressure_GPa ?? row.pressure ?? null,
+          elements: row.elements || [],
+          arpes: localizeArpesText(row.arpes || row.arpes_features || (row.arpes_special_properties || []).join("; "))
+        })),
+        articles: articles.map(article => ({
+          title: article.title || "",
+          year: article.year || "",
+          source: article.source || article.source_title || "",
+          doi: article.doi || "",
+          url: article.url || article.open_access_url || "",
+          materials: article.materials || [],
+          elements: article.elements || [],
+          keywords: article.keywords || [],
+          figure_count: (article.figures || []).length
+        })),
+        personalData: personalRows.map(row => ({
+          material: row.material,
+          family: row.family,
+          elements: row.elements,
+          tc_K: row.tc,
+          notes: row.notes
+        })),
+        chatTableRows: state.chatTableRows || []
+      };
+    }
+
+    function extractElementFromQuestion(question) {
+      const text = String(question || "");
+      const lower = text.toLowerCase();
+      const candidates = Object.keys(elementMeta || {}).sort((a, b) => b.length - a.length);
+      return candidates.find(symbol => {
+        const meta = elementMeta[symbol]?.[0] || "";
+        const en = meta.split("/")[0].toLowerCase();
+        const zh = meta.split("/")[1] || "";
+        return new RegExp(`(^|[^A-Za-z])${symbol}([^A-Za-z]|$)`).test(text) || lower.includes(en) || (!!zh && text.includes(zh));
+      }) || "";
+    }
+
+    function detectChatIntent(question) {
+      const q = String(question || "").toLowerCase();
+      if (/[表格清单列表]/.test(question) || q.includes("table")) return "table";
+      if (/[比较对比差异区别]/.test(question) || q.includes("compare")) return "compare";
+      if (/[文献论文doi引用文章]/.test(question) || q.includes("paper") || q.includes("literature") || q.includes("doi")) return "literature";
+      if (/[图表图片figure谱图]/.test(question) || q.includes("figure") || q.includes("chart")) return "figure";
+      if (/[tc临界温度最高温度]/i.test(question) || q.includes("critical")) return "tc";
+      if (/arpes|能带|费米|能隙|谱/i.test(question)) return "arpes";
+      if (/[模型接口ai预测导入]/i.test(question) || q.includes("model") || q.includes("api")) return "model";
+      if (/[报告总结要点]/.test(question) || q.includes("report") || q.includes("summary")) return "report";
+      if (/hdf5|数据|dataset|data/.test(q)) return "data";
+      return "default";
+    }
+
+    function buildLocalChatAnswer(question, context = buildChatContext(question)) {
+      const zh = currentLang === "zh";
+      const intent = detectChatIntent(question);
+      const materials = context.materials || [];
+      const articles = context.articles || [];
+      const topMaterials = materials.slice(0, 4);
+      const materialLine = topMaterials.length
+        ? topMaterials.map(row => `${row.material}${row.tc_K ? ` Tc ${row.tc_K} K` : ""}`).join("；")
+        : (zh ? "当前筛选没有材料结果" : "No material results in the current filter");
+      const articleLine = articles.length
+        ? articles.slice(0, 4).map(a => `${a.year || ""} ${a.title || ""}`.trim()).join("；")
+        : (zh ? "当前没有匹配文献" : "No matching papers in the current filter");
+      const highest = [...materials].filter(row => Number.isFinite(Number(row.tc_K))).sort((a, b) => Number(b.tc_K) - Number(a.tc_K))[0];
+
+      if (intent === "table") {
+        makeChatTable();
+        return zh
+          ? `已按当前筛选生成材料-文献表。表格优先列出 ${materialLine}，并把匹配论文放到“文献”列，适合直接放进调研报告。`
+          : `I generated a material-paper table from the current filters. It prioritizes ${materialLine} and places matched papers in the Papers column.`;
       }
-      return `From the current page data, I would start with: ${materialText}. Relevant ARPES literature leads include: ${articleText}. For a formal report, organize them by material family, Tc/pressure, ARPES observation, DOI/source, and full-text verification status.`;
+      if (intent === "compare") {
+        return zh
+          ? `可以从三条线比较：1. Tc/压力：${highest ? `${highest.material} 目前最高，Tc 约 ${highest.tc_K} K` : "当前没有可比较的 Tc 数值"}。2. 材料家族：${topMaterials.map(row => `${row.material} 属于 ${row.family}`).join("；") || "暂无"}。3. ARPES 关注点：${topMaterials.map(row => `${row.material}: ${row.arpes || "待补充"}`).join("；")}。`
+          : `Compare along three axes: Tc/pressure (${highest ? `${highest.material} is highest at about ${highest.tc_K} K` : "no Tc values available"}), family (${topMaterials.map(row => `${row.material}: ${row.family}`).join("; ")}), and ARPES clues (${topMaterials.map(row => `${row.material}: ${row.arpes || "to be added"}`).join("; ")}).`;
+      }
+      if (intent === "literature") {
+        return zh
+          ? `文献页当前应优先看：${articleLine}。如果你选了元素 ${context.selectedElement || "无"}，论文列表会按该元素/对应材料过滤；建议继续核验 DOI、开放全文链接和图号。`
+          : `For literature, start with: ${articleLine}. If element ${context.selectedElement || "none"} is selected, the paper list is filtered by that element/material match.`;
+      }
+      if (intent === "figure") {
+        const figureCount = articles.reduce((sum, article) => sum + Number(article.figure_count || 0), 0);
+        return zh
+          ? `当前筛选下可用论文图约 ${figureCount} 张。图表对比现在按元素选择来收敛文献，比如点 Cu、Fe、Ni 后再看对应材料的 ARPES 能带、费米面、能隙图。`
+          : `There are about ${figureCount} paper figures in the current filter. The figure comparison now narrows papers by selected element.`;
+      }
+      if (intent === "tc") {
+        return zh
+          ? highest
+            ? `当前结果里最高 Tc 是 ${highest.material}，约 ${highest.tc_K} K，家族为 ${highest.family}${highest.pressure_GPa ? `，压力约 ${highest.pressure_GPa} GPa` : ""}。`
+            : "当前筛选结果里没有可计算的 Tc 数值。"
+          : highest
+            ? `The highest Tc in the current results is ${highest.material}, about ${highest.tc_K} K, family ${highest.family}${highest.pressure_GPa ? ` at about ${highest.pressure_GPa} GPa` : ""}.`
+            : "No numeric Tc values are available in the current filter.";
+      }
+      if (intent === "arpes") {
+        return zh
+          ? `ARPES 线索我会先看这些材料：${topMaterials.map(row => `${row.material}: ${row.arpes || "待补充 ARPES 描述"}`).join("；") || "暂无材料"}。下一步适合把能带、费米面、能隙、温度依赖分开整理。`
+          : `For ARPES, start with: ${topMaterials.map(row => `${row.material}: ${row.arpes || "ARPES notes pending"}`).join("; ") || "no materials"}.`;
+      }
+      if (intent === "model") {
+        const cfg = loadAiConfig();
+        return zh
+          ? `模型入口已经预留两种方式：页面模型用 window.ARPESModelHub.registerModel(name, predictFn) 注册；聊天 AI 可在“模型”页填写接口地址${cfg.endpoint ? `，当前已配置 ${cfg.endpoint}` : "，当前还没有配置 endpoint"}。如果接口不可用，我会退回本地材料库回答。`
+          : `There are two model hooks: register page models with window.ARPESModelHub.registerModel(name, predictFn), and configure a chat AI endpoint on the Model page${cfg.endpoint ? ` (currently ${cfg.endpoint})` : ""}.`;
+      }
+      if (intent === "report") {
+        return zh
+          ? `报告建议结构：研究问题、材料筛选条件、核心材料表、ARPES 图/论文证据、Tc/压力对比、待核验 DOI 与原始数据链接。当前可写入的材料线索是：${materialLine}。`
+          : `Suggested report structure: question, material filters, core material table, ARPES figure/paper evidence, Tc/pressure comparison, DOI and raw-data checks. Current leads: ${materialLine}.`;
+      }
+      if (intent === "data") {
+        return zh
+          ? `数据页重点是个人导入数据和 HDF5/ARPES 数据集。当前个人数据有 ${(context.personalData || []).length} 条；如果你上传 HDF5，可以先让页面扫描 energy、angle、kx/ky、intensity、gap 等字段。`
+          : `The Data page focuses on personal imports and HDF5/ARPES datasets. You currently have ${(context.personalData || []).length} personal rows.`;
+      }
+      return zh
+        ? `我会基于当前筛选回答，而不是固定模板。现在可用材料是：${materialLine}。可用文献线索是：${articleLine}。你可以问“比较这些材料”“最高 Tc 是谁”“按 Cu 找论文”“生成表格”等，我会走不同逻辑。`
+        : `I will answer from the current filter instead of a fixed template. Materials: ${materialLine}. Literature leads: ${articleLine}.`;
     }
 
     function makeChatTable() {
@@ -6239,15 +6426,82 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       `;
     }
 
+    function loadAiConfig() {
+      try { return JSON.parse(localStorage.getItem(AI_CONFIG_STORAGE_KEY) || "{}"); }
+      catch { return {}; }
+    }
+
+    function initAiConfigForm() {
+      const cfg = loadAiConfig();
+      if (aiEndpointInput) aiEndpointInput.value = cfg.endpoint || "";
+      if (aiModelInput) aiModelInput.value = cfg.model || "";
+      if (aiKeyInput) aiKeyInput.value = cfg.apiKey || "";
+      renderModelRegistry();
+    }
+
+    function saveAiConfigFromForm() {
+      const cfg = {
+        endpoint: (aiEndpointInput?.value || "").trim(),
+        model: (aiModelInput?.value || "").trim(),
+        apiKey: (aiKeyInput?.value || "").trim()
+      };
+      localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(cfg));
+      renderModelRegistry();
+      showToast(t("aiConfigSaved"));
+    }
+
+    function clearAiConfig() {
+      localStorage.removeItem(AI_CONFIG_STORAGE_KEY);
+      if (aiEndpointInput) aiEndpointInput.value = "";
+      if (aiModelInput) aiModelInput.value = "";
+      if (aiKeyInput) aiKeyInput.value = "";
+      renderModelRegistry();
+      showToast(t("aiConfigCleared"));
+    }
+
+    async function callConfiguredAiEndpoint(question, context) {
+      const cfg = loadAiConfig();
+      if (!cfg.endpoint) return "";
+      const headers = { "Content-Type": "application/json" };
+      if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`;
+      const response = await fetch(cfg.endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model: cfg.model || undefined,
+          question,
+          messages: [
+            { role: "system", content: "You are an ARPES and superconductivity materials assistant. Answer from the provided page context when possible." },
+            { role: "user", content: question }
+          ],
+          context
+        })
+      });
+      if (!response.ok) throw new Error(`AI endpoint HTTP ${response.status}`);
+      const data = await response.json();
+      return String(
+        data.answer ||
+        data.output_text ||
+        data.response ||
+        data.choices?.[0]?.message?.content ||
+        data.choices?.[0]?.text ||
+        ""
+      ).trim();
+    }
+
     function renderModelRegistry() {
       const hub = window.ARPESModelHub || window.ARPES_ML;
       const names = Object.keys(hub?._models || {});
-      if (modelApiStatus) modelApiStatus.textContent = hub ? `Ready v${hub.version || "0.1.0"}` : "Offline";
+      const chatNames = Object.keys(hub?._chatModels || {});
+      const cfg = loadAiConfig();
+      if (modelApiStatus) modelApiStatus.textContent = hub ? `Ready v${hub.version || "0.1.0"} · ${cfg.endpoint ? t("aiConfiguredStatus") : t("aiLocalStatus")}` : "Offline";
       if (modelRegistryCount) modelRegistryCount.textContent = String(names.length);
       if (modelRegistryOutput) {
-        modelRegistryOutput.textContent = names.length
-          ? `${t("modelRegistryTemplate")} ${names.join(", ")}`
-          : t("modelRegistryDefault");
+        const parts = [];
+        if (names.length) parts.push(`${t("modelRegistryTemplate")} ${names.join(", ")}`);
+        if (chatNames.length) parts.push(`Chat: ${chatNames.join(", ")}`);
+        if (cfg.endpoint) parts.push(`AI endpoint: ${cfg.endpoint}${cfg.model ? ` · ${cfg.model}` : ""}`);
+        modelRegistryOutput.textContent = parts.length ? parts.join("\n") : t("modelRegistryDefault");
       }
     }
 
@@ -7064,7 +7318,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       chooseHDF5Files();
     });
     hdf5DropZone.addEventListener("click", (e) => {
-      if (e.target.closest("button")) return;
+      if (e.target.closest("button, input[type='file']")) return;
       chooseHDF5Files();
     });
     hdf5DropZone.addEventListener("dragover", (e) => { e.preventDefault(); hdf5DropZone.classList.add("drag-over"); });
@@ -7538,7 +7792,25 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           if (!this._models || !this._models[modelName]) throw new Error("Model not registered");
           return this._models[modelName](data);
         },
-        _models: {}
+        registerChatModel(name, chatFn) {
+          if (!this._chatModels) this._chatModels = {};
+          this._chatModels[name] = chatFn;
+          console.log(`Chat model "${name}" registered`);
+          renderModelRegistry();
+        },
+        async chat(question, context) {
+          const chatNames = Object.keys(this._chatModels || {});
+          if (chatNames.length) {
+            const fn = this._chatModels[chatNames[0]];
+            const answer = await fn({ question, context, lang: currentLang });
+            if (answer) return String(answer);
+          }
+          const endpointAnswer = await callConfiguredAiEndpoint(question, context);
+          if (endpointAnswer) return endpointAnswer;
+          return buildLocalChatAnswer(question, context);
+        },
+        _models: {},
+        _chatModels: {}
       };
       window.ARPESModelHub = window.ARPES_ML;
       renderModelRegistry();
@@ -7546,6 +7818,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     // ===== 启动页面 =====
     installModelHub();
+    initAiConfigForm();
     setupHistoryCube();
     setupRoundtableModules();
     setupTocScrollSpy();
@@ -7655,7 +7928,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         chooseFiles();
       });
       dropZone.addEventListener("click", event => {
-        if (!event.target.closest("button")) chooseFiles();
+        if (!event.target.closest("button, input[type='file']")) chooseFiles();
       });
       dropZone.addEventListener("dragover", event => {
         event.preventDefault();
