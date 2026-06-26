@@ -3843,6 +3843,8 @@
       renderOurData();
       renderArticles();
       renderKeywordChips();
+      renderChatThread();
+      renderChatTable();
       updateImportMetrics();
       renderLibrary().catch(() => {});
       // Update static i18n elements
@@ -5282,6 +5284,8 @@
         articleRows,
         figureCount,
         personalRows: state.ourData || [],
+        chatMessages: state.chatMessages || [],
+        chatTableRows: state.chatTableRows || [],
         generatedAt,
         topic: state.topic || "sc",
         selectedElement: state.selectedElement || "none",
@@ -5302,6 +5306,13 @@
         <li>${esc(article.year || "")} ${esc(article.title || "")}${article.doi ? ` DOI: ${esc(article.doi)}` : ""}</li>`).join("");
       const personalList = data.personalRows.slice(0, 20).map(row => `
         <li>${esc(row.material || "")}: ${esc(row.notes || row.archive || "no notes")}</li>`).join("");
+      const chatList = data.chatMessages.map(message => `
+        <li><strong>${esc(message.role === "user" ? t("chatUserLabel") : t("chatAssistantLabel"))}:</strong> ${esc(message.text)}</li>`).join("");
+      const chatTable = data.chatTableRows.map(row => `
+        <tr>
+          <td>${esc(row.material)}</td><td>${esc(row.family)}</td><td>${esc(row.tc)}</td>
+          <td>${esc(row.elements)}</td><td>${esc(row.arpes)}</td><td>${esc(row.papers)}</td>
+        </tr>`).join("");
       const html = `<!doctype html>
         <html>
         <head>
@@ -5343,6 +5354,13 @@
           <ol>${articleList || "<li>No literature records loaded.</li>"}</ol>
           <h2>Personal Data</h2>
           <ul>${personalList || "<li>No personal records.</li>"}</ul>
+          <h2>Chat Platform Q&A</h2>
+          <ol>${chatList || `<li>${esc(t("chatEmptyExport"))}</li>`}</ol>
+          <h2>Chat Platform Table</h2>
+          <table>
+            <thead><tr><th>Material</th><th>Family</th><th>Tc (K)</th><th>Elements</th><th>ARPES</th><th>Papers</th></tr></thead>
+            <tbody>${chatTable || "<tr><td colspan='6'>No chat-generated table.</td></tr>"}</tbody>
+          </table>
           <h2>Model Interface</h2>
           <ul>
             <li>Reserved browser API: window.ARPESModelHub.registerModel(name, predictFn)</li>
@@ -5361,6 +5379,12 @@
         `${index + 1}. ${article.year || ""} ${article.title || ""}${article.doi ? ` DOI: ${article.doi}` : ""}`
       ).join("\n");
       const personalLines = data.personalRows.slice(0, 20).map(row => `- ${row.material || ""}: ${row.notes || row.archive || "no notes"}`).join("\n");
+      const chatLines = data.chatMessages.map((message, index) =>
+        `${index + 1}. **${message.role === "user" ? t("chatUserLabel") : t("chatAssistantLabel")}**: ${message.text}`
+      ).join("\n");
+      const chatTableLines = data.chatTableRows.map(row =>
+        `| ${row.material} | ${row.family} | ${row.tc} | ${row.elements} | ${row.arpes} | ${row.papers} |`
+      ).join("\n");
       return `# ARPES Superconductivity Research Report
 
 Generated: ${data.generatedAt}
@@ -5391,6 +5415,16 @@ ${articleLines || "No literature records loaded."}
 ## Personal Data
 
 ${personalLines || "- No personal records."}
+
+## Chat Platform Q&A
+
+${chatLines || t("chatEmptyExport")}
+
+## Chat Platform Table
+
+| Material | Family | Tc (K) | Elements | ARPES | Papers |
+| --- | --- | --- | --- | --- | --- |
+${chatTableLines || "| No chat-generated table. | | | | | |"}
 
 ## Model Interface
 
