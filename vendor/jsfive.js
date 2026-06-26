@@ -6340,10 +6340,10 @@ var hdf5 = (() => {
     // _attrs;
     // _keys;
     /**
-     * 
-     * @param {string} name 
-     * @param {DataObjects} dataobjects 
-     * @param {Group} [parent] 
+     *
+     * @param {string} name
+     * @param {DataObjects} dataobjects
+     * @param {Group} [parent]
      * @param {boolean} [getterProxy=false]
      * @returns {Group}
      */
