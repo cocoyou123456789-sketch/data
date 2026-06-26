@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { SpreadsheetFile, Workbook } from "@oai/artifact-tool";
+import { SpreadsheetFile, Workbook } from "@oai/artifact-tool/dist/artifact_tool.mjs";
 
 const outputDir = "outputs/arpes_action_checklist";
 const workbook = Workbook.create();
@@ -33,7 +33,8 @@ const items = [
   ["A025", "2026-06-25", "周期表界面按草图改为左侧 periodic table，右侧圆桌上围绕 Module，而不是元素", "周期表/模块导航", "High", "Done", "v1.3", "继续根据实际讨论调整圆桌模块名称和跳转目标", "用户 2026-06-25 圆桌草图澄清"],
   ["A026", "2026-06-25", "元素周期表需要完整显示全部 118 个元素，有数据的高亮、暂无文献数据的置灰", "周期表", "High", "Done", "v1.4", "后续导入新文献后自动把对应元素从灰色变为可探索", "用户要求元素周期表都显示出来"],
   ["A027", "2026-06-25", "先导入免费的 ARPES 官方/开放 API 文献数据", "文献导入", "High", "Done", "v1.5", "继续扩充关键词和材料别名；Semantic Scholar API key 接入后补引用图谱", "OpenAlex + arXiv + Crossref"],
-  ["A028", "2026-06-26", "周期表做成单独界面，删除左侧电子书目录占位；Chat platform 负责问答、表格和报告导出；顶部菜单参考基金委风格", "主界面/Chat/report", "High", "Done", "v1.6", "外部 AI 如豆包需后端代理和密钥，不能直接放 GitHub Pages 前端", "用户 2026-06-26 参考图"]
+  ["A028", "2026-06-26", "周期表做成单独界面，删除左侧电子书目录占位；Chat platform 负责问答、表格和报告导出；顶部菜单参考基金委风格", "主界面/Chat/report", "High", "Done", "v1.6", "外部 AI 如豆包需后端代理和密钥，不能直接放 GitHub Pages 前端", "用户 2026-06-26 参考图"],
+  ["A029", "2026-06-26", "核对 8 条需求后继续修复：登录后明确选择知识模块、3D 数据点更像球、Chat platform 初始空白并在点击材料后显示上下文", "主界面/3D/Chat", "High", "Done", "v1.7", "后续可用 Three.js 真 3D mesh 替换 CSS 球体", "用户 2026-06-26 逐项核对后继续修复"]
 ];
 
 const versions = [
@@ -51,7 +52,8 @@ const versions = [
   ["v1.3", "0a9f372", "2026-06-25", "周期表右侧 Module 圆桌导航"],
   ["v1.4", "91d132f", "2026-06-25", "完整 118 元素周期表显示"],
   ["v1.5", "babb467", "2026-06-25", "免费 ARPES API 元数据导入器"],
-  ["v1.6", "current", "2026-06-26", "顶部菜单、独立周期表界面和 Chat platform 报告导出"]
+  ["v1.6", "b78e2a5", "2026-06-26", "顶部菜单、独立周期表界面和 Chat platform 报告导出"],
+  ["v1.7", "current", "2026-06-26", "登录后模块选择提示、3D 球体数据点和空白 Chat 初始态"]
 ];
 
 function styleHeader(range) {
@@ -88,11 +90,11 @@ checklist.getRange("I:I").format.columnWidth = 28;
 const summary = workbook.worksheets.add("Summary");
 summary.getRange("A1:D1").values = [["指标", "数量", "说明", "更新时间"]];
 summary.getRange("A2:D6").values = [
-  ["总建议数", items.length - 1, "从本轮和前序讨论整理", "2026-06-25"],
-  ["已完成", items.slice(1).filter(r => r[5] === "Done").length, "状态为 Done", "2026-06-25"],
-  ["进行中", items.slice(1).filter(r => r[5] === "In Progress").length, "状态为 In Progress", "2026-06-25"],
-  ["计划中", items.slice(1).filter(r => r[5] === "Planned").length, "状态为 Planned", "2026-06-25"],
-  ["当前目标", "简洁主界面", "只保留了解历史和选择体系深入探索", "2026-06-25"]
+  ["总建议数", items.length - 1, "从本轮和前序讨论整理", "2026-06-26"],
+  ["已完成", items.slice(1).filter(r => r[5] === "Done").length, "状态为 Done", "2026-06-26"],
+  ["进行中", items.slice(1).filter(r => r[5] === "In Progress").length, "状态为 In Progress", "2026-06-26"],
+  ["计划中", items.slice(1).filter(r => r[5] === "Planned").length, "状态为 Planned", "2026-06-26"],
+  ["当前目标", "简洁主界面", "历史 + 材料体系探索 + Chat platform 报告输出", "2026-06-26"]
 ];
 styleTable(summary, "A1:D6", "A1:D1");
 summary.getRange("A:A").format.columnWidth = 18;

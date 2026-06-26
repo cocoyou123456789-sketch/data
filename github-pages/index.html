@@ -381,10 +381,23 @@
       top: 0;
       z-index: 28;
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: minmax(176px, 0.9fr) repeat(6, minmax(0, 1fr));
       border-bottom: 3px solid rgba(20,184,166,0.25);
       background: #315184;
       box-shadow: 0 8px 22px rgba(0,0,0,0.28);
+    }
+
+    .module-menu-title {
+      min-height: 56px;
+      display: grid;
+      align-content: center;
+      padding: 8px 18px;
+      border-right: 1px solid rgba(255,255,255,0.18);
+      background: rgba(6,17,27,0.2);
+      color: rgba(255,255,255,0.88);
+      font-size: 13px;
+      font-weight: 760;
+      letter-spacing: 0;
     }
 
     .top-menu-btn {
@@ -1406,38 +1419,50 @@
       position: absolute;
       left: 36px;
       bottom: 36px;
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       min-width: 0;
       min-height: 0;
       padding: 0;
       appearance: none;
       border: 1px solid rgba(255,255,255,0.72);
       border-radius: 50%;
-      background: var(--point-color, var(--accent-glow));
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255,255,255,0.96) 0 10%, rgba(255,255,255,0.42) 11% 22%, transparent 23%),
+        radial-gradient(circle at 58% 66%, color-mix(in srgb, var(--point-color, var(--accent-glow)) 92%, white 8%) 0 48%, color-mix(in srgb, var(--point-color, var(--accent-glow)) 64%, black 36%) 72%, rgba(0,0,0,0.72) 100%);
       transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(-1 * var(--py))) translate(-50%, 50%);
       transform-style: preserve-3d;
-      box-shadow: 0 0 8px color-mix(in srgb, var(--point-color, var(--accent-glow)) 60%, transparent);
+      box-shadow:
+        inset -3px -4px 6px rgba(0,0,0,0.38),
+        inset 2px 2px 5px rgba(255,255,255,0.22),
+        0 0 10px color-mix(in srgb, var(--point-color, var(--accent-glow)) 62%, transparent);
       cursor: pointer;
-      opacity: 0.9;
+      opacity: 0.95;
       pointer-events: auto;
       z-index: 8;
     }
 
     .axis-point::after {
-      display: none;
+      content: "";
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      background: transparent;
     }
 
     .axis-point.is-core {
-      width: 16px;
-      height: 16px;
-      opacity: 0.92;
+      width: 18px;
+      height: 18px;
+      opacity: 0.96;
     }
 
     .axis-point:hover,
     .axis-point.active {
       opacity: 1;
-      box-shadow: 0 0 14px var(--point-color, var(--accent-glow));
+      box-shadow:
+        inset -3px -4px 6px rgba(0,0,0,0.34),
+        inset 2px 2px 5px rgba(255,255,255,0.26),
+        0 0 16px var(--point-color, var(--accent-glow));
     }
 
     #axisPointLayer {
@@ -2154,6 +2179,14 @@
     @media (max-width: 980px) {
       header { align-items: flex-start; flex-direction: column; }
       main { grid-template-columns: 1fr; }
+      .top-menu-bar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .module-menu-title {
+        grid-column: 1 / -1;
+        min-height: 42px;
+        text-align: center;
+      }
       main > section, main > details, .toc-panel { grid-column: 1; }
       .toc-panel {
         position: relative;
@@ -2622,6 +2655,7 @@
   </header>
 
   <nav class="top-menu-bar" aria-label="Main navigation">
+    <span class="module-menu-title" data-i18n="moduleSelectTitle">选择知识模块</span>
     <button class="top-menu-btn active" type="button" data-page-tab="history" data-i18n="topMenuHome">历史</button>
     <button class="top-menu-btn" type="button" data-page-tab="materials" data-i18n="topMenuMaterials">材料</button>
     <button class="top-menu-btn" type="button" data-page-tab="literature" data-i18n="topMenuLiterature">文献</button>
@@ -3207,6 +3241,7 @@
         focusHistoryHint: "3D Tc-年份-压力图。",
         focusExploreTitle: "材料",
         focusExploreHint: "元素、文献和数据。",
+        moduleSelectTitle: "选择知识模块",
         topMenuHome: "历史",
         topMenuMaterials: "材料",
         topMenuLiterature: "文献",
@@ -3535,6 +3570,7 @@
         focusHistoryHint: "3D Tc-year-pressure view.",
         focusExploreTitle: "Materials",
         focusExploreHint: "Elements, papers, and data.",
+        moduleSelectTitle: "Choose module",
         topMenuHome: "History",
         topMenuMaterials: "Materials",
         topMenuLiterature: "Papers",
@@ -5189,9 +5225,11 @@
 
     function renderChatThread() {
       if (!chatThread) return;
-      const rows = state.chatMessages.length
-        ? state.chatMessages
-        : [{ role: "assistant", text: t("chatWelcome"), time: "" }];
+      const rows = state.chatMessages || [];
+      if (!rows.length) {
+        chatThread.innerHTML = "";
+        return;
+      }
       chatThread.innerHTML = rows.map(message => `
         <div class="chat-message ${message.role === "user" ? "user" : "assistant"}">
           <strong>${esc(message.role === "user" ? t("chatUserLabel") : t("chatAssistantLabel"))}</strong>
@@ -6049,6 +6087,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             ? `材料点已选中：年份 ${esc(point.year)}，压力 ${esc(pressureNote)}，Tc ${esc(point.tc)}。可以继续在下方输入“这类材料的 ARPES 特征”或“相关文献来源”。`
             : `Selected material point: year ${esc(point.year)}, pressure ${esc(pressureNote)}, Tc ${esc(point.tc)}. Ask below for ARPES features or literature sources.`}
         `;
+      }
+      if (!state.chatMessages.length) {
+        addChatMessage("assistant", currentLang === "zh"
+          ? `${point.label} 已选中：${point.year} 年，${pressureNote}，Tc ${point.tc}。${note}`
+          : `${point.label} selected: ${point.year}, ${pressureNote}, Tc ${point.tc}. ${note}`);
       }
     }
 
