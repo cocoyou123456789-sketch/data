@@ -2895,6 +2895,7 @@
             </div>
           </div>
           <div id="figureColorLegend"></div>
+          <div class="filter-row" id="figureElementChips" style="margin:8px 0 12px;"></div>
           <div class="filter-row" id="figureTypeFilters" style="margin:8px 0 12px;">
             <span class="muted" data-i18n="figureTypeFilterLabel">图表类型:</span>
             <button class="chip fig-filter-chip active" type="button" data-figtype="all" data-i18n="figTypeAll">全部</button>
@@ -3210,7 +3211,7 @@
           </div>
           <div class="model-control-grid">
             <label data-label-i18n="aiEndpointLabel">AI 接口地址
-              <input id="aiEndpointInput" placeholder="http://127.0.0.1:8788/v1/chat/completions">
+              <input id="aiEndpointInput" placeholder="/api/chat 或 https://your-site.vercel.app/api/chat">
             </label>
             <label data-label-i18n="aiModelLabel">AI 模型名
               <input id="aiModelInput" placeholder="gpt-4.1-mini / local-llm">
@@ -3219,7 +3220,7 @@
               <input id="aiKeyInput" type="password" autocomplete="off" placeholder="sk-...">
             </label>
           </div>
-          <p class="muted" data-i18n="aiConfigHint">可连接本地代理或服务器模型；静态网页不会把密钥写入 GitHub，只保存在当前浏览器。</p>
+          <p class="muted" data-i18n="aiConfigHint">部署到 Vercel 后可直接使用 /api/chat；如果仍用 GitHub Pages，请填写 Vercel 代理的完整 URL。API Key 只放在 Vercel 环境变量 OPENAI_API_KEY。</p>
           <div class="toolbar">
             <button id="aiSaveConfigBtn" type="button" data-i18n="aiSaveConfigBtn">保存 AI 配置</button>
             <button id="aiClearConfigBtn" type="button" data-i18n="aiClearConfigBtn">清除 AI 配置</button>
@@ -3364,7 +3365,7 @@
         aiEndpointLabel: "AI 接口地址",
         aiModelLabel: "AI 模型名",
         aiKeyLabel: "API Key（只存在本机）",
-        aiConfigHint: "可连接本地代理或服务器模型；静态网页不会把密钥写入 GitHub，只保存在当前浏览器。",
+        aiConfigHint: "部署到 Vercel 后可直接使用 /api/chat；如果仍用 GitHub Pages，请填写 Vercel 代理的完整 URL。API Key 只放在 Vercel 环境变量 OPENAI_API_KEY。",
         aiSaveConfigBtn: "保存 AI 配置",
         aiClearConfigBtn: "清除 AI 配置",
         aiConfigSaved: "AI 配置已保存",
@@ -3373,7 +3374,7 @@
         aiLocalStatus: "等待接入 AI",
         chatThinking: "正在根据当前数据生成回答...",
         chatAiFallback: "AI 接口暂时不可用。这个聊天框现在作为 ChatGPT 风格 AI 模板使用，请在“模型”页接入 OpenAI-compatible 接口后再提问。",
-        chatNeedsAi: "这个聊天框现在是 ChatGPT 风格模板，不再用固定规则假装回答。请先到顶部“模型”页填写 AI 接口地址、模型名和 API Key；接口支持 OpenAI-compatible 的 /v1/chat/completions，也支持你自己的本地代理。接好以后，任何问题都会交给模型回答，材料相关问题会同时带上当前页面的材料、文献和数据上下文。",
+        chatNeedsAi: "这个聊天框现在是 ChatGPT 风格模板，不再用固定规则假装回答。请把项目部署到 Vercel，并在 Vercel 环境变量里设置 OPENAI_API_KEY；然后在“模型”页使用 /api/chat，或在 GitHub Pages 版本里填写 https://你的项目.vercel.app/api/chat。接好以后，任何问题都会交给 ChatGPT 回答。",
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
@@ -3415,6 +3416,7 @@
         figureGalleryTitle: "📊 论文图表对比",
         figureGalleryHint: "以下图表来自真实超导 ARPES 论文。先在元素周期表中选择元素，再在这里查看对应文章图表。",
         figureFilterLabel: "按元素筛选:",
+        figureElementChipLabel: "元素分类:",
         figureTypeFilterLabel: "图表类型:",
         figureElementAll: "未选择元素，显示全部文章图表",
         figureElementSelected: "当前元素：{element}，仅显示含该元素的文章图表",
@@ -3721,7 +3723,7 @@
         aiEndpointLabel: "AI Endpoint",
         aiModelLabel: "AI Model",
         aiKeyLabel: "API Key (local only)",
-        aiConfigHint: "Connect a local proxy or server model. The static page does not write secrets to GitHub; they stay in this browser.",
+        aiConfigHint: "After deploying to Vercel, use /api/chat directly. If you keep using GitHub Pages, enter the full Vercel proxy URL. Put the API key only in the Vercel OPENAI_API_KEY environment variable.",
         aiSaveConfigBtn: "Save AI Config",
         aiClearConfigBtn: "Clear AI Config",
         aiConfigSaved: "AI config saved",
@@ -3730,7 +3732,7 @@
         aiLocalStatus: "Waiting for AI",
         chatThinking: "Generating an answer from the current data...",
         chatAiFallback: "The AI endpoint is unavailable. This chatbox now works as a ChatGPT-style AI template; connect an OpenAI-compatible endpoint on the Model page before asking.",
-        chatNeedsAi: "This chatbox is now a ChatGPT-style template, not a fixed-rule answer box. Open the Model page and fill in an AI endpoint, model name, and API key. It supports OpenAI-compatible /v1/chat/completions endpoints or your own local proxy. Once connected, any question is sent to the model, with the current materials, papers, and data context attached when relevant.",
+        chatNeedsAi: "This chatbox is now a ChatGPT-style template, not a fixed-rule answer box. Deploy the project to Vercel and set OPENAI_API_KEY in Vercel environment variables; then use /api/chat on the Model page, or enter https://your-project.vercel.app/api/chat from the GitHub Pages version. Once connected, any question is sent to ChatGPT.",
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
@@ -3772,6 +3774,7 @@
         figureGalleryTitle: "📊 Figure Comparison Gallery",
         figureGalleryHint: "These figures come from real ARPES papers. Select an element in the periodic table to view matching article figures.",
         figureFilterLabel: "Element filter:",
+        figureElementChipLabel: "Element categories:",
         figureTypeFilterLabel: "Figure type:",
         figureElementAll: "No element selected; showing all article figures",
         figureElementSelected: "Current element: {element}; showing article figures containing it",
@@ -4165,6 +4168,7 @@
     const figCount = $("#figCount");
     const figShowMoreBtn = $("#figShowMoreBtn");
     const figureElementStatus = $("#figureElementStatus");
+    const figureElementChips = $("#figureElementChips");
     const clearFigureElementBtn = $("#clearFigureElementBtn");
     const sourceCards = $("#sourceCards");
     let figFilterType = "all";
@@ -6467,9 +6471,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       catch { return {}; }
     }
 
+    function defaultAiEndpoint() {
+      const host = window.location.hostname || "";
+      if (!host || host.includes("github.io")) return "";
+      return "/api/chat";
+    }
+
     function initAiConfigForm() {
       const cfg = loadAiConfig();
-      if (aiEndpointInput) aiEndpointInput.value = cfg.endpoint || "";
+      if (aiEndpointInput) aiEndpointInput.value = cfg.endpoint || defaultAiEndpoint();
       if (aiModelInput) aiModelInput.value = cfg.model || "";
       if (aiKeyInput) aiKeyInput.value = cfg.apiKey || "";
       renderModelRegistry();
@@ -6497,7 +6507,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     async function callConfiguredAiEndpoint(question, context) {
       const cfg = loadAiConfig();
-      if (!cfg.endpoint) return "";
+      const endpoint = cfg.endpoint || defaultAiEndpoint();
+      if (!endpoint) return "";
       const headers = { "Content-Type": "application/json" };
       if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`;
       const history = (context.chatHistory || [])
@@ -6521,7 +6532,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         ...history,
         { role: "user", content: question }
       ];
-      const response = await fetch(cfg.endpoint, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -6549,13 +6560,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const names = Object.keys(hub?._models || {});
       const chatNames = Object.keys(hub?._chatModels || {});
       const cfg = loadAiConfig();
-      if (modelApiStatus) modelApiStatus.textContent = hub ? `Ready v${hub.version || "0.1.0"} · ${cfg.endpoint ? t("aiConfiguredStatus") : t("aiLocalStatus")}` : "Offline";
+      const endpoint = cfg.endpoint || defaultAiEndpoint();
+      if (modelApiStatus) modelApiStatus.textContent = hub ? `Ready v${hub.version || "0.1.0"} · ${endpoint ? t("aiConfiguredStatus") : t("aiLocalStatus")}` : "Offline";
       if (modelRegistryCount) modelRegistryCount.textContent = String(names.length);
       if (modelRegistryOutput) {
         const parts = [];
         if (names.length) parts.push(`${t("modelRegistryTemplate")} ${names.join(", ")}`);
         if (chatNames.length) parts.push(`Chat: ${chatNames.join(", ")}`);
-        if (cfg.endpoint) parts.push(`AI endpoint: ${cfg.endpoint}${cfg.model ? ` · ${cfg.model}` : ""}`);
+        if (endpoint) parts.push(`AI endpoint: ${endpoint}${cfg.model ? ` · ${cfg.model}` : ""}`);
         modelRegistryOutput.textContent = parts.length ? parts.join("\n") : t("modelRegistryDefault");
       }
     }
@@ -6596,6 +6608,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           : t("figureElementAll");
       }
       if (clearFigureElementBtn) clearFigureElementBtn.style.display = selectedElement ? "" : "none";
+      renderFigureElementChips();
 
       for (const article of curatedArticles()) {
         if (!article.figures || !article.figures.length) continue;
@@ -6698,6 +6711,41 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       } else {
         figShowMoreBtn.style.display = "none";
       }
+    }
+
+    function renderFigureElementChips() {
+      if (!figureElementChips) return;
+      const counts = new Map();
+      for (const article of curatedArticles()) {
+        const visibleFigureCount = (article.figures || []).filter(fig => resolveFigureImage(fig, article)).length;
+        if (!visibleFigureCount) continue;
+        for (const element of article.elements || []) {
+          counts.set(element, (counts.get(element) || 0) + visibleFigureCount);
+        }
+      }
+      const items = [...counts.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 18);
+      if (!items.length) {
+        figureElementChips.innerHTML = "";
+        return;
+      }
+      figureElementChips.innerHTML = `
+        <span class="muted">${esc(t("figureElementChipLabel"))}</span>
+        ${items.map(([element, count]) => `
+          <button class="chip ${state.selectedElement === element ? "active" : ""}" type="button" data-figure-element="${esc(element)}">
+            ${esc(element)} <span class="muted">${count}</span>
+          </button>
+        `).join("")}
+      `;
+      figureElementChips.querySelectorAll("[data-figure-element]").forEach(chip => {
+        chip.addEventListener("click", () => {
+          state.selectedElement = chip.dataset.figureElement || "";
+          figShowLimit = 12;
+          applyFilters();
+          renderToc();
+        });
+      });
     }
 
     function resolveFigureImage(fig, article) {

@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/assets/(.*)", "destination": "/github-pages/assets/$1" },
+    { "source": "/data/(.*)", "destination": "/github-pages/data/$1" },
+    { "source": "/vendor/(.*)", "destination": "/github-pages/vendor/$1" },
+    { "source": "/(.*)", "destination": "/github-pages/$1" }
+  ]
+}
