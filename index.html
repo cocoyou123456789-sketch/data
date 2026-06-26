@@ -5586,6 +5586,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       updateSelectedElement();
       renderMetrics();
       renderMaterialsTable();
+      renderArticles();
       highlightPeriodicTable();
       renderOverview();
       renderSourceDirectory();
@@ -5601,7 +5602,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const rows = state.db.materials.filter(r => r.elements.includes(state.selectedElement));
       const families = uniq(rows.map(r => familyName(r.family)));
       const mats = rows.map(r => r.display_name || r.material);
-      const articleRows = curatedArticles().filter(article => (article.elements || []).includes(state.selectedElement));
+      const articleRows = curatedArticles().filter(article => articleMatchesElement(article, state.selectedElement));
       const meta = elementMeta[state.selectedElement] || [state.selectedElement, ""];
       const intro = elementIntro(state.selectedElement, rows, articleRows);
       elementPanel.innerHTML = `
@@ -6279,7 +6280,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
       for (const article of curatedArticles()) {
         if (!article.figures || !article.figures.length) continue;
-        if (selectedElement && !(article.elements || []).includes(selectedElement)) continue;
+        if (selectedElement && !articleMatchesElement(article, selectedElement)) continue;
         const articleText = [
           article.title, ...(article.materials || []), ...(article.elements || []),
           ...(article.keywords || []), ...(article.techniques || [])
@@ -6665,6 +6666,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return new Set(values.filter(Boolean).map(normalizeMaterialName));
     }
 
+    function articleMatchesElement(article, element) {
+      if ((article.elements || []).includes(element)) return true;
+      const articleMaterials = new Set((article.materials || []).map(normalizeMaterialName));
+      return (state.db?.materials || []).some(row => {
+        if (!(row.elements || []).includes(element)) return false;
+        return [...materialAliases(row)].some(alias => articleMaterials.has(alias));
+      });
+    }
+
     // ===== 文章数据渲染 =====
     function renderArticles() {
       const rows = filteredArticles();
@@ -6688,8 +6698,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function filteredArticles() {
       const term = (searchInput.value || "").trim().toLowerCase();
-      if (!term) return state.articles;
-      return state.articles.filter(article => articleSearchText(article).includes(term));
+      const selectedElement = state.selectedElement || "";
+      return state.articles.filter(article => {
+        const termOk = !term || articleSearchText(article).includes(term);
+        const elementOk = !selectedElement || articleMatchesElement(article, selectedElement);
+        return termOk && elementOk;
+      });
     }
 
     function articleSearchText(article) {
