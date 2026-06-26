@@ -5060,6 +5060,7 @@
         if (["materials", "literature", "data"].includes(page)) advancedLibrary.setAttribute("open", "");
         else advancedLibrary.removeAttribute("open");
       }
+      if (page === "report") makeChatTable();
       if (!options.preserveScroll) {
         const target = page === "history"
           ? document.querySelector("#section-milestones")
@@ -5082,6 +5083,8 @@
       renderArticles();
       renderToc();
       showAppPage(activeAppPage, { preserveScroll: true });
+      renderChatThread();
+      renderChatTable();
     }
 
     function renderToc() {
