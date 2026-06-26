@@ -1,5 +1,8 @@
 import fs from "node:fs/promises";
-import { SpreadsheetFile, Workbook } from "@oai/artifact-tool/dist/artifact_tool.mjs";
+
+const artifactToolPath = process.env.ARTIFACT_TOOL_PATH
+  || "/Users/cocoyou/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/@oai/artifact-tool/dist/artifact_tool.mjs";
+const { SpreadsheetFile, Workbook } = await import(artifactToolPath);
 
 const outputDir = "outputs/arpes_action_checklist";
 const workbook = Workbook.create();
