@@ -4957,7 +4957,11 @@
 
     function initLogin() {
       const user = loadUser();
-      if (user.email || user.name || user.group) unlockWorkbench(user);
+      document.body.classList.add("locked");
+      if (loginScreen) loginScreen.style.display = "grid";
+      if (loginEmail && user.email) loginEmail.value = user.email;
+      if (loginName && user.account_mode !== "guest" && user.name) loginName.value = user.name;
+      if (loginGroup && user.group) loginGroup.value = user.group;
       let authMode = "signin";
       const setAuthMode = (mode) => {
         authMode = mode;
