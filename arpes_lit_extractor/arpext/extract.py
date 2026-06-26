@@ -38,6 +38,10 @@ BAND_GAP_RE = re.compile(
     r"(?:band gap|gap)\s*(?:of|=|:|is|was)?\s*(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>meV|eV)",
     re.IGNORECASE,
 )
+BAND_GAP_VALUE_FIRST_RE = re.compile(
+    r"(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>meV|eV)\s*(?:band gap|gap)",
+    re.IGNORECASE,
+)
 FERMI_RE = re.compile(
     r"(?:Fermi velocity|vF|v_F)\s*(?:of|=|:)?\s*(?P<value>\d+(?:\.\d+)?)\s*"
     r"(?P<unit>eV\s*[ÅA]|\d*\s*m/s|m\s*s-1)?",
@@ -100,7 +104,11 @@ def extract_from_text(text: str, source_file: str, materials: list[MaterialQuery
     paper.beamline_snippets = _unique(m.group("snippet").strip() for m in BEAMLINE_RE.finditer(text))
     paper.analyzer_snippets = _unique(m.group("snippet").strip() for m in ANALYZER_RE.finditer(text))
     paper.preparation_snippets = _unique(m.group("snippet").strip() for m in GROWTH_RE.finditer(text))
-    paper.band_gaps = _unique(f"{m.group('value')} {m.group('unit')}" for m in BAND_GAP_RE.finditer(normalized))
+    paper.band_gaps = _unique(
+        f"{m.group('value')} {m.group('unit')}"
+        for regex in (BAND_GAP_RE, BAND_GAP_VALUE_FIRST_RE)
+        for m in regex.finditer(normalized)
+    )
     paper.fermi_velocities = _unique(
         f"{m.group('value')} {m.group('unit') or ''}".strip() for m in FERMI_RE.finditer(normalized)
     )

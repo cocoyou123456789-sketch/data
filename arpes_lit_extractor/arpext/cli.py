@@ -9,11 +9,14 @@ from .config import load_materials
 from .extract import extract_from_file
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Extract ARPES facts from article text/PDF files.")
     parser.add_argument("inputs", nargs="+", type=Path, help="Article files or directories.")
-    parser.add_argument("--materials", type=Path, default=Path("config/materials.json"))
-    parser.add_argument("--out", type=Path, default=Path("output/arpes_extractions.jsonl"))
+    parser.add_argument("--materials", type=Path, default=ROOT / "config" / "materials.json")
+    parser.add_argument("--out", type=Path, default=ROOT / "output" / "arpes_extractions.jsonl")
     parser.add_argument("--csv", type=Path, help="Optional CSV summary output.")
     args = parser.parse_args()
 
