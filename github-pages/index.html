@@ -1811,6 +1811,8 @@
     .fig-type-gap { --figure-color: var(--fig-gap); border-left: 2px solid var(--figure-color); }   /* Gap map */
     .fig-type-cdw { --figure-color: var(--fig-charge); border-left: 2px solid var(--figure-color); }   /* Charge order */
     .fig-type-edc { --figure-color: var(--fig-edc); border-left: 2px solid var(--figure-color); }   /* EDC */
+    .fig-type-dependence { --figure-color: #8fbc8f; border-left: 2px solid var(--figure-color); }
+    .fig-type-theory { --figure-color: #b08bd8; border-left: 2px solid var(--figure-color); }
     .fig-type-comparison { --figure-color: var(--fig-comparison); border-left: 2px solid var(--figure-color); }
     .fig-type-other { --figure-color: var(--fig-other); border-left: 2px solid var(--figure-color); }
     .fig-type-fs .figure-card-header,
@@ -1818,6 +1820,8 @@
     .fig-type-gap .figure-card-header,
     .fig-type-cdw .figure-card-header,
     .fig-type-edc .figure-card-header,
+    .fig-type-dependence .figure-card-header,
+    .fig-type-theory .figure-card-header,
     .fig-type-comparison .figure-card-header,
     .fig-type-other .figure-card-header {
       color: var(--figure-color);
@@ -2891,6 +2895,17 @@
             </div>
           </div>
           <div id="figureColorLegend"></div>
+          <div class="filter-row" id="figureTypeFilters" style="margin:8px 0 12px;">
+            <span class="muted" data-i18n="figureTypeFilterLabel">图表类型:</span>
+            <button class="chip fig-filter-chip active" type="button" data-figtype="all" data-i18n="figTypeAll">全部</button>
+            <button class="chip fig-filter-chip" type="button" data-figtype="Fermi surface" data-i18n="figTypeFermi">费米面</button>
+            <button class="chip fig-filter-chip" type="button" data-figtype="Band structure" data-i18n="figTypeBand">能带/色散</button>
+            <button class="chip fig-filter-chip" type="button" data-figtype="Gap map" data-i18n="figTypeGap">能隙/超导</button>
+            <button class="chip fig-filter-chip" type="button" data-figtype="Temperature / doping dependence" data-i18n="figTypeDependence">温度/掺杂依赖</button>
+            <button class="chip fig-filter-chip" type="button" data-figtype="Charge order" data-i18n="figTypeCharge">序/重构</button>
+            <button class="chip fig-filter-chip" type="button" data-figtype="EDC/MDC analysis" data-i18n="figTypeEdc">谱线分析</button>
+            <button class="chip fig-filter-chip" type="button" data-figtype="Theory comparison" data-i18n="figTypeTheory">理论/对比</button>
+          </div>
           <div class="figure-gallery" id="figureGallery"></div>
           <div style="text-align:center; margin-top:8px;" id="figShowMoreWrap">
             <button id="figShowMoreBtn" style="display:none;" data-i18n="showMoreBtn">显示更多</button>
@@ -3400,16 +3415,21 @@
         figureGalleryTitle: "📊 论文图表对比",
         figureGalleryHint: "以下图表来自真实超导 ARPES 论文。先在元素周期表中选择元素，再在这里查看对应文章图表。",
         figureFilterLabel: "按元素筛选:",
+        figureTypeFilterLabel: "图表类型:",
         figureElementAll: "未选择元素，显示全部文章图表",
         figureElementSelected: "当前元素：{element}，仅显示含该元素的文章图表",
         figureClearElement: "清除元素筛选",
         figTypeAll: "全部",
         figTypeFermi: "费米面",
-        figTypeBand: "能带结构",
-        figTypeGap: "能隙",
-        figTypeSpectrum: "ARPES 谱",
-        figTypeCharge: "电荷序",
-        figTypeComparison: "对比图",
+        figTypeBand: "能带/色散",
+        figTypeGap: "能隙/超导",
+        figTypeDependence: "温度/掺杂依赖",
+        figTypeSpectrum: "谱线分析",
+        figTypeEdc: "谱线分析",
+        figTypeCharge: "序/重构",
+        figTypeTheory: "理论/对比",
+        figTypeComparison: "理论/对比",
+        figTypeOther: "其他",
         showMoreBtn: "显示更多",
         filteredFigures: "筛选出 {count} 张已核验真实论文图",
         totalFigures: "共 {count} 张已核验真实论文图",
@@ -3752,16 +3772,21 @@
         figureGalleryTitle: "📊 Figure Comparison Gallery",
         figureGalleryHint: "These figures come from real ARPES papers. Select an element in the periodic table to view matching article figures.",
         figureFilterLabel: "Element filter:",
+        figureTypeFilterLabel: "Figure type:",
         figureElementAll: "No element selected; showing all article figures",
         figureElementSelected: "Current element: {element}; showing article figures containing it",
         figureClearElement: "Clear element filter",
         figTypeAll: "All",
         figTypeFermi: "Fermi surface",
-        figTypeBand: "Band structure",
-        figTypeGap: "Gap",
-        figTypeSpectrum: "ARPES spectrum",
-        figTypeCharge: "Charge order",
-        figTypeComparison: "Comparison",
+        figTypeBand: "Band / dispersion",
+        figTypeGap: "Gap / superconductivity",
+        figTypeDependence: "Temperature / doping",
+        figTypeSpectrum: "EDC/MDC analysis",
+        figTypeEdc: "EDC/MDC analysis",
+        figTypeCharge: "Order / reconstruction",
+        figTypeTheory: "Theory / comparison",
+        figTypeComparison: "Theory / comparison",
+        figTypeOther: "Other",
         showMoreBtn: "Show more",
         filteredFigures: "{count} verified real paper figures found",
         totalFigures: "{count} verified real paper figures",
@@ -4290,32 +4315,36 @@
     ];
 
     // ===== 图表类型 → 颜色标记 =====
+    const figureTypeDefinitions = [
+      { id: "Fermi surface", className: "fig-type-fs", color: "#7aa9d8", labelKey: "figTypeFermi" },
+      { id: "Band structure", className: "fig-type-band", color: "#d7a86b", labelKey: "figTypeBand" },
+      { id: "Gap map", className: "fig-type-gap", color: "#d87979", labelKey: "figTypeGap" },
+      { id: "Temperature / doping dependence", className: "fig-type-dependence", color: "#8fbc8f", labelKey: "figTypeDependence" },
+      { id: "Charge order", className: "fig-type-cdw", color: "#a58bd8", labelKey: "figTypeCharge" },
+      { id: "EDC/MDC analysis", className: "fig-type-edc", color: "#78bfa7", labelKey: "figTypeEdc" },
+      { id: "Theory comparison", className: "fig-type-theory", color: "#b08bd8", labelKey: "figTypeTheory" },
+      { id: "Other", className: "fig-type-other", color: "#8c98a5", labelKey: "" }
+    ];
     const figureTypeClass = {
-      "Fermi surface": "fig-type-fs",
-      "Band structure": "fig-type-band",
+      ...Object.fromEntries(figureTypeDefinitions.map(item => [item.id, item.className])),
       "Band dispersion": "fig-type-band",
       "ARPES spectrum": "fig-type-band",
-      "Gap map": "fig-type-gap",
       "Gap anisotropy": "fig-type-gap",
       "Gap distribution": "fig-type-gap",
       "Band-resolved gap": "fig-type-gap",
-      "Temperature dependence": "fig-type-gap",
-      "Charge order": "fig-type-cdw",
+      "Temperature dependence": "fig-type-dependence",
+      "Doping dependence": "fig-type-dependence",
       "Charge order map": "fig-type-cdw",
       "EDC analysis": "fig-type-edc",
+      "MDC analysis": "fig-type-edc",
       "Comparison": "fig-type-comparison",
-      "Other": "fig-type-other",
-      "DFT comparison": "fig-type-other"
+      "DFT comparison": "fig-type-theory"
     };
     const figureTypeColors = {
-      "Fermi surface": "#7aa9d8",
-      "Band structure": "#d7a86b",
+      ...Object.fromEntries(figureTypeDefinitions.map(item => [item.id, item.color])),
       "ARPES spectrum": "#d7a86b",
-      "Gap map": "#d87979",
-      "Charge order": "#a58bd8",
-      "EDC analysis": "#78bfa7",
-      "Comparison": "#cf83b5",
-      "Other": "#8c98a5"
+      "Comparison": "#b08bd8",
+      "DFT comparison": "#b08bd8"
     };
     const datasetCompareColors = ["#7aa9d8", "#d7a86b", "#d87979", "#a58bd8", "#78bfa7", "#cf83b5", "#83b7c9", "#b7aa82"];
 
@@ -6592,12 +6621,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           if (!imageUrl) continue;
           // 图表类型筛选
           if (figFilterType !== "all") {
-            if (figFilterType === "Gap" && !(fig.type || "").toLowerCase().includes("gap")) continue;
-            if (figFilterType === "Charge order" && !(fig.type || "").toLowerCase().includes("charge")) continue;
-            if (figFilterType !== "Gap" && figFilterType !== "Charge order" && !(fig.type || "").includes(figFilterType)) continue;
+            if (classifyFigureType(fig) !== figFilterType) continue;
           }
+          const normalizedType = classifyFigureType(fig);
           allFigures.push({
             ...fig,
+            normalized_type: normalizedType,
             article_title: article.title,
             article_url: article.url || article.ar5iv_url,
             article_source: article.source,
@@ -6627,7 +6656,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
 
       figureGallery.innerHTML = shownFigs.map(fig => {
-        const typeClass = figureTypeClass[fig.type] || "fig-type-other";
+        const normalizedType = classifyFigureType(fig);
+        const typeClass = figureTypeClass[normalizedType] || "fig-type-other";
         const metaParts = [];
         if (fig.energy_eV) metaParts.push(`hν=${fig.energy_eV}eV`);
         if (fig.temp_K) metaParts.push(`T=${fig.temp_K}K`);
@@ -6649,7 +6679,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
         return `
           <div class="figure-card ${typeClass}">
-            <div class="figure-card-header">${esc(fig.type)} · ${esc(fig.year || "")} · ${esc(fig.article_source)}</div>
+            <div class="figure-card-header">${esc(figureTypeLabel(normalizedType))} · ${esc(fig.year || "")} · ${esc(fig.article_source)}</div>
             ${figContent}
             <div class="figure-card-footer">
               <strong>${esc(fig.caption)}</strong>
@@ -6836,18 +6866,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         figures: collectFiguresForMaterial(row)
       }));
       const wantedType = figFilterType !== "all" ? normalizeFigureType(figFilterType) : "";
-      const allTypes = uniq(figuresByMaterial.flatMap(item => item.figures.map(fig => normalizeFigureType(fig.type))));
+      const allTypes = uniq(figuresByMaterial.flatMap(item => item.figures.map(fig => classifyFigureType(fig))));
       const typeScores = allTypes.map(type => ({
         type,
-        coverage: figuresByMaterial.filter(item => item.figures.some(fig => normalizeFigureType(fig.type) === type)).length,
-        count: figuresByMaterial.reduce((sum, item) => sum + item.figures.filter(fig => normalizeFigureType(fig.type) === type).length, 0)
+        coverage: figuresByMaterial.filter(item => item.figures.some(fig => classifyFigureType(fig) === type)).length,
+        count: figuresByMaterial.reduce((sum, item) => sum + item.figures.filter(fig => classifyFigureType(fig) === type).length, 0)
       })).sort((a, b) => b.coverage - a.coverage || b.count - a.count || a.type.localeCompare(b.type));
       const selectedType = wantedType || typeScores[0]?.type || "No matched figure type";
       return {
-        typeLabel: selectedType,
+        typeLabel: selectedType === "No matched figure type" ? selectedType : figureTypeLabel(selectedType),
         items: figuresByMaterial.map(item => ({
           row: item.row,
-          figure: item.figures.find(fig => normalizeFigureType(fig.type) === selectedType) || null
+          figure: item.figures.find(fig => classifyFigureType(fig) === selectedType) || null
         }))
       };
     }
@@ -6891,10 +6921,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         `;
       }
       const fig = item.figure;
-      const typeClass = figureTypeClass[normalizeFigureType(fig.type)] || figureTypeClass[fig.type] || "fig-type-other";
+      const typeClass = figureTypeClass[classifyFigureType(fig)] || figureTypeClass[fig.type] || "fig-type-other";
       return `
         <div class="figure-compare-card ${typeClass}">
-          <div class="figure-card-header">${esc(material)} · ${esc(normalizeFigureType(fig.type))} · ${esc(fig.year || "")}</div>
+          <div class="figure-card-header">${esc(material)} · ${esc(figureTypeLabel(classifyFigureType(fig)))} · ${esc(fig.year || "")}</div>
           <div class="figure-compare-image">
             <img src="${esc(fig.image_url)}" alt="${esc(fig.caption)}" referrerpolicy="no-referrer" loading="eager">
           </div>
@@ -6910,13 +6940,28 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function normalizeFigureType(type) {
       const value = String(type || "").toLowerCase();
-      if (value.includes("fermi")) return "Fermi surface";
-      if (value.includes("band")) return "Band structure";
-      if (value.includes("gap")) return "Gap map";
-      if (value.includes("charge") || value.includes("cdw")) return "Charge order";
-      if (value.includes("spectrum") || value.includes("arpes")) return "ARPES spectrum";
-      if (value.includes("comparison")) return "Comparison";
-      return type || "Other";
+      if (value.includes("fermi") || value.includes("fs map") || value.includes("constant energy")) return "Fermi surface";
+      if (value.includes("gap") || value.includes("superconduct")) return "Gap map";
+      if (value.includes("temperature") || value.includes("doping") || value.includes("phase diagram") || value.includes("dependence")) return "Temperature / doping dependence";
+      if (value.includes("charge") || value.includes("cdw") || value.includes("order") || value.includes("reconstruction") || value.includes("folding")) return "Charge order";
+      if (value.includes("edc") || value.includes("mdc") || value.includes("lineshape") || value.includes("line shape") || value.includes("self-energy") || value.includes("spectrum")) return "EDC/MDC analysis";
+      if (value.includes("band") || value.includes("dispersion") || value.includes("arpes")) return "Band structure";
+      if (value.includes("dft") || value.includes("calculation") || value.includes("theory") || value.includes("comparison") || value.includes("model")) return "Theory comparison";
+      return "Other";
+    }
+
+    function classifyFigureType(fig) {
+      if (!fig || typeof fig !== "object") return normalizeFigureType(fig);
+      const explicitType = String(fig.type || "").toLowerCase();
+      if (explicitType && !["arpes spectrum", "comparison", "other"].includes(explicitType)) return normalizeFigureType(explicitType);
+      const text = [fig.type, fig.caption].join(" ");
+      return normalizeFigureType(text);
+    }
+
+    function figureTypeLabel(type) {
+      const normalized = normalizeFigureType(type);
+      const definition = figureTypeDefinitions.find(item => item.id === normalized);
+      return definition?.labelKey ? t(definition.labelKey) : t("figTypeOther");
     }
 
     function figureTypeColor(type) {
@@ -6924,16 +6969,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function typeColorLegendHtml() {
-      const items = [
-        ["Fermi surface", t("figTypeFermi")],
-        ["Band structure", t("figTypeBand")],
-        ["Gap map", t("figTypeGap")],
-        ["Charge order", t("figTypeCharge")],
-        ["EDC analysis", "EDC"],
-        ["Comparison", t("figTypeComparison")]
-      ];
+      const items = figureTypeDefinitions.filter(item => item.id !== "Other");
       return `<div class="figure-color-legend">
-        ${items.map(([type, label]) => `<span><i style="--legend-color:${figureTypeColor(type)}"></i>${esc(label)}</span>`).join("")}
+        ${items.map(item => `<span><i style="--legend-color:${figureTypeColor(item.id)}"></i>${esc(figureTypeLabel(item.id))}</span>`).join("")}
       </div>`;
     }
 
