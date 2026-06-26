@@ -1344,6 +1344,11 @@
       transform-style: preserve-3d;
       transform: rotateX(var(--cube-x, -22deg)) rotateY(var(--cube-y, 38deg)) scale(var(--cube-scale, 1));
       transition: transform 0.25s ease;
+      will-change: transform;
+    }
+
+    .history-cube.is-dragging {
+      transition: none;
     }
 
     .axis-plane {
@@ -1494,10 +1499,7 @@
     }
 
     #axisHitLayer {
-      position: absolute;
-      inset: 0;
-      z-index: 18;
-      pointer-events: none;
+      display: none;
     }
 
     .axis-hit {
@@ -1606,6 +1608,43 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
+    }
+
+    .cube-face-picker {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .cube-face-choice {
+      min-height: 54px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.035);
+      color: var(--ink);
+      padding: 8px;
+      display: grid;
+      gap: 3px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .cube-face-choice strong {
+      color: var(--accent-glow);
+      font-size: 12px;
+      line-height: 1.1;
+    }
+
+    .cube-face-choice span {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.25;
+    }
+
+    .cube-face-choice.active {
+      border-color: var(--accent-glow);
+      background: rgba(20,184,166,0.14);
+      box-shadow: 0 0 16px rgba(20,184,166,0.12);
     }
 
     .cube-controls label,
@@ -2775,6 +2814,7 @@
                   <input id="cubeZoom" type="range" min="70" max="140" value="100">
                 </label>
               </div>
+              <div class="cube-face-picker" id="cubeFacePicker" aria-label="Cube face selector"></div>
               <div class="cube-readout" id="cubeReadout" data-i18n="cubeReadoutDefault">点击魔方的一个面查看对应材料家族。</div>
             </div>
             <div class="model-interface">
@@ -4048,6 +4088,7 @@
         historyInteractiveChart.dataset.rendered = "false";
         renderHistoryChartPoints();
       }
+      renderCubeFacePicker();
       renderCubeReadout("cuprate");
       renderAxisPoints();
       applyCubeViewMode();
@@ -4155,6 +4196,7 @@
     const cubeZoom = $("#cubeZoom");
     const cubeResetBtn = $("#cubeResetBtn");
     const cubeReadout = $("#cubeReadout");
+    const cubeFacePicker = $("#cubeFacePicker");
     const axisPointLayer = $("#axisPointLayer");
     const axisHitLayer = $("#axisHitLayer");
     const axisModeBtn = $("#axisModeBtn");
@@ -6167,6 +6209,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let cubeRotation = { x: -18, y: 32 };
     let axisMode = "core";
     let cubeViewMode = "axis";
+    let activeCubeFace = "";
     const coreAxisPointIds = new Set([
       "hg-1911", "nb3ge-1973", "ybco", "bisrcacuo", "hgbacacuo-30gpa",
       "mgb2-2001", "cecoin5", "laofep", "srfefas", "feas-2008",
@@ -6198,6 +6241,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         en: ["Our Data", "Personal HDF5, article and experiment records stay in the browser and can feed future models."]
       }
     };
+    const cubeFaceViews = {
+      cuprate: { x: 0, y: 0 },
+      hydride: { x: 0, y: 180 },
+      iron: { x: 0, y: -90 },
+      conventional: { x: 0, y: 90 },
+      arpes: { x: -90, y: 0 },
+      personal: { x: 90, y: 0 }
+    };
+    const cubeFaceOrder = ["cuprate", "hydride", "iron", "conventional", "arpes", "personal"];
 
     function applyCubeTransform() {
       if (!historyCube) return;
@@ -6214,7 +6266,40 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (axisModeBtn) axisModeBtn.style.display = cubeViewMode === "axis" ? "" : "none";
       if (cubeViewModeBtn) cubeViewModeBtn.textContent = cubeViewMode === "axis" ? t("cubeViewModeCube") : t("cubeViewModeAxis");
       if (cubeViewMode === "axis") renderCubeReadout();
-      else renderCubeFaceReadout("cuprate");
+      else renderCubeFaceReadout(activeCubeFace || "cuprate");
+      updateCubeFacePicker();
+    }
+
+    function selectCubeFace(faceKey) {
+      activeCubeFace = faceKey || "cuprate";
+      cubeViewMode = "cube";
+      cubeRotation = cubeFaceViews[activeCubeFace] || { x: -18, y: 32 };
+      if (cubeZoom) cubeZoom.value = "105";
+      applyCubeTransform();
+      applyCubeViewMode();
+      renderCubeFaceReadout(activeCubeFace);
+    }
+
+    function renderCubeFacePicker() {
+      if (!cubeFacePicker) return;
+      cubeFacePicker.innerHTML = cubeFaceOrder.map(key => {
+        const face = cubeFaces[key] || cubeFaces.cuprate;
+        const [title, body] = face[currentLang] || face.zh;
+        return `<button class="cube-face-choice" type="button" data-cube-face-choice="${esc(key)}">
+          <strong>${esc(title)}</strong>
+          <span>${esc(body)}</span>
+        </button>`;
+      }).join("");
+      cubeFacePicker.querySelectorAll("[data-cube-face-choice]").forEach(button => {
+        button.addEventListener("click", () => selectCubeFace(button.dataset.cubeFaceChoice));
+      });
+      updateCubeFacePicker();
+    }
+
+    function updateCubeFacePicker() {
+      cubeFacePicker?.querySelectorAll("[data-cube-face-choice]").forEach(button => {
+        button.classList.toggle("active", button.dataset.cubeFaceChoice === activeCubeFace);
+      });
     }
 
     function setAxisFrontView(axis) {
@@ -6225,6 +6310,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         z: { x: -90, y: 0 }
       };
       cubeRotation = views[axis] || { x: -18, y: 32 };
+      activeCubeFace = "";
       if (cubeZoom) cubeZoom.value = "110";
       applyCubeTransform();
       applyCubeViewMode();
@@ -6305,22 +6391,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
           title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa"></button>`;
       }).join("");
-      if (axisHitLayer) {
-        axisHitLayer.innerHTML = plottedPoints.map(({ point, pressure, px, pz }) => {
-          return `<button class="axis-hit" type="button" data-history-point="${esc(point.id)}"
-            style="left:${(36 + px).toFixed(1)}px;bottom:${(36 + pz).toFixed(1)}px"
-            aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
-            title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa"></button>`;
-        }).join("");
-      }
+      if (axisHitLayer) axisHitLayer.innerHTML = "";
       const activatePoint = pointEl => {
         const point = historyChartPoints.find(entry => entry.id === pointEl?.dataset.historyPoint);
         if (!point) return;
         axisPointLayer.querySelectorAll(".axis-point").forEach(node => node.classList.remove("active"));
-        axisHitLayer?.querySelectorAll(".axis-hit").forEach(node => node.classList.remove("active"));
         const pointId = pointEl.dataset.historyPoint;
         axisPointLayer.querySelector(`.axis-point[data-history-point="${CSS.escape(pointId)}"]`)?.classList.add("active");
-        axisHitLayer?.querySelector(`.axis-hit[data-history-point="${CSS.escape(pointId)}"]`)?.classList.add("active");
         renderCubeReadout(point);
       };
       window.__selectAxisPoint = activatePoint;
@@ -6337,16 +6414,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       axisPointLayer.addEventListener("click", event => {
         const pointEl = event.target.closest?.(".axis-point");
         if (pointEl) activatePoint(pointEl);
-      });
-      axisHitLayer?.querySelectorAll(".axis-hit").forEach(pointEl => {
-        pointEl.addEventListener("click", () => activatePoint(pointEl));
-        pointEl.addEventListener("pointerdown", () => activatePoint(pointEl));
-        pointEl.addEventListener("keydown", event => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            activatePoint(pointEl);
-          }
-        });
       });
       if (axisModeBtn) axisModeBtn.textContent = axisMode === "core" ? t("axisModeShowAll") : t("axisModeShowCore");
     }
@@ -6400,12 +6467,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!historyCube || !cubeViewport) return;
       applyCubeTransform();
       renderAxisPoints();
+      renderCubeFacePicker();
       cubeZoom?.addEventListener("input", applyCubeTransform);
       historyCube.querySelectorAll(".cube-face").forEach(face => {
-        face.addEventListener("click", () => renderCubeFaceReadout(face.dataset.cubeFace));
+        face.addEventListener("click", () => selectCubeFace(face.dataset.cubeFace));
       });
       cubeViewModeBtn?.addEventListener("click", () => {
         cubeViewMode = cubeViewMode === "axis" ? "cube" : "axis";
+        if (cubeViewMode === "cube" && !activeCubeFace) activeCubeFace = "cuprate";
         applyCubeViewMode();
       });
       axisModeBtn?.addEventListener("click", () => {
@@ -6415,8 +6484,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
       cubeResetBtn?.addEventListener("click", () => {
         cubeRotation = { x: -18, y: 32 };
+        activeCubeFace = "";
+        cubeViewMode = "axis";
         if (cubeZoom) cubeZoom.value = "100";
         applyCubeTransform();
+        applyCubeViewMode();
         axisViewButtons.forEach(button => button.classList.remove("active"));
       });
       axisViewButtons.forEach(button => {
@@ -6428,8 +6500,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
       let dragging = false;
       let last = { x: 0, y: 0 };
+      let raf = 0;
+      const requestCubeFrame = () => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          applyCubeTransform();
+        });
+      };
       cubeViewport.addEventListener("pointerdown", event => {
         dragging = true;
+        activeCubeFace = "";
+        historyCube.classList.add("is-dragging");
         last = { x: event.clientX, y: event.clientY };
         cubeViewport.setPointerCapture?.(event.pointerId);
       });
@@ -6440,9 +6522,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         cubeRotation.y += dx * 0.45;
         cubeRotation.x -= dy * 0.35;
         last = { x: event.clientX, y: event.clientY };
-        applyCubeTransform();
+        requestCubeFrame();
       });
-      const stopDrag = () => { dragging = false; };
+      const stopDrag = () => {
+        dragging = false;
+        historyCube.classList.remove("is-dragging");
+        updateCubeFacePicker();
+      };
       cubeViewport.addEventListener("pointerup", stopDrag);
       cubeViewport.addEventListener("pointercancel", stopDrag);
       applyCubeViewMode();
