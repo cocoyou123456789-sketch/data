@@ -434,6 +434,33 @@ h3 {
   color: var(--muted);
 }
 
+.site-link {
+  display: inline-grid;
+  gap: 4px;
+  max-width: 100%;
+  margin-top: 8px;
+  border-left: 3px solid var(--copper);
+  padding: 10px 0 10px 14px;
+  color: var(--moss-deep);
+}
+
+.site-link span {
+  color: var(--copper);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.site-link strong {
+  overflow-wrap: anywhere;
+  font-size: 15px;
+}
+
+.site-link:hover strong {
+  text-decoration: underline;
+}
+
 .credential-list {
   display: flex;
   flex-wrap: wrap;
