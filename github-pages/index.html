@@ -1335,11 +1335,20 @@
       perspective: 1600px;
       overflow: hidden;
       touch-action: none;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(96,208,255,0.12), transparent 48%),
+        linear-gradient(180deg, rgba(255,255,255,0.026), rgba(255,255,255,0.008));
     }
 
     .history-cube {
-      width: 330px;
-      height: 330px;
+      --cube-edge: 250px;
+      --cube-depth: 125px;
+      --cube-origin: 40px;
+      --axis-size: 250px;
+      --axis-origin: 36px;
+      width: 340px;
+      height: 340px;
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(var(--cube-x, -22deg)) rotateY(var(--cube-y, 38deg)) scale(var(--cube-scale, 1));
@@ -1353,30 +1362,39 @@
 
     .axis-plane {
       position: absolute;
-      left: 36px;
-      bottom: 36px;
-      width: 250px;
-      height: 250px;
+      left: var(--axis-origin);
+      bottom: var(--axis-origin);
+      width: var(--axis-size);
+      height: var(--axis-size);
       border: 1px solid rgba(96,208,255,0.22);
       background:
         linear-gradient(rgba(96,208,255,0.08) 1px, transparent 1px),
         linear-gradient(90deg, rgba(96,208,255,0.08) 1px, transparent 1px);
       background-size: 50px 50px;
-      opacity: 0.72;
+      opacity: 0.62;
       transform-origin: left bottom;
       pointer-events: none;
     }
 
-    .axis-plane.xy { transform: rotateX(90deg); }
-    .axis-plane.xz { transform: translateZ(250px); }
-    .axis-plane.yz { transform: rotateY(-90deg); }
+    .axis-plane.xy {
+      background-color: rgba(20,184,166,0.035);
+      transform: rotateX(90deg);
+    }
+    .axis-plane.xz {
+      background-color: rgba(96,208,255,0.026);
+      transform: translateZ(var(--axis-size));
+    }
+    .axis-plane.yz {
+      background-color: rgba(216,121,121,0.026);
+      transform: rotateY(-90deg);
+    }
 
     .axis-line {
       position: absolute;
-      left: 36px;
-      bottom: 36px;
+      left: var(--axis-origin);
+      bottom: var(--axis-origin);
       height: 2px;
-      width: 274px;
+      width: calc(var(--axis-size) + 24px);
       background: linear-gradient(90deg, var(--accent-glow), rgba(96,208,255,0.1));
       transform-origin: left center;
       box-shadow: 0 0 12px rgba(96,208,255,0.42);
@@ -1422,8 +1440,8 @@
 
     .axis-point {
       position: absolute;
-      left: 36px;
-      bottom: 36px;
+      left: var(--axis-origin);
+      bottom: var(--axis-origin);
       width: 34px;
       height: 34px;
       min-width: 0;
@@ -1551,20 +1569,24 @@
 
     .cube-face {
       position: absolute;
-      left: 40px;
-      bottom: 40px;
-      width: 250px;
-      height: 250px;
+      left: var(--cube-origin);
+      bottom: var(--cube-origin);
+      width: var(--cube-edge);
+      height: var(--cube-edge);
       border: 1px solid rgba(255,255,255,0.22);
       border-radius: 8px;
-      background: rgba(13,21,32,0.72);
-      box-shadow: none;
+      background:
+        linear-gradient(145deg, rgba(23,36,51,0.94), rgba(10,16,24,0.88)),
+        rgba(13,21,32,0.88);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 12px 36px rgba(0,0,0,0.18);
       display: grid;
       align-content: center;
       gap: 6px;
       padding: 12px;
       text-align: center;
-      backface-visibility: visible;
+      backface-visibility: hidden;
       cursor: pointer;
       pointer-events: none;
     }
@@ -1580,12 +1602,19 @@
       line-height: 1.3;
     }
 
-    .cube-face.front { transform: translateZ(125px); }
-    .cube-face.back { transform: rotateY(180deg) translateZ(125px); }
-    .cube-face.right { transform: rotateY(90deg) translateZ(125px); }
-    .cube-face.left { transform: rotateY(-90deg) translateZ(125px); }
-    .cube-face.top { transform: rotateX(90deg) translateZ(125px); }
-    .cube-face.bottom { transform: rotateX(-90deg) translateZ(125px); }
+    .cube-face.front { transform: translateZ(var(--cube-depth)); }
+    .cube-face.back { transform: rotateY(180deg) translateZ(var(--cube-depth)); }
+    .cube-face.right { transform: rotateY(90deg) translateZ(var(--cube-depth)); }
+    .cube-face.left { transform: rotateY(-90deg) translateZ(var(--cube-depth)); }
+    .cube-face.top { transform: rotateX(90deg) translateZ(var(--cube-depth)); }
+    .cube-face.bottom { transform: rotateX(-90deg) translateZ(var(--cube-depth)); }
+
+    .cube-face.front { border-color: rgba(76,154,176,0.62); }
+    .cube-face.back { border-color: rgba(118,169,106,0.62); }
+    .cube-face.right { border-color: rgba(233,154,49,0.62); }
+    .cube-face.left { border-color: rgba(106,163,111,0.62); }
+    .cube-face.top { border-color: rgba(96,208,255,0.62); }
+    .cube-face.bottom { border-color: rgba(176,103,189,0.62); }
 
     .cube-view-cube .axis-plane,
     .cube-view-cube .axis-line,
@@ -1597,6 +1626,7 @@
 
     .cube-view-cube .cube-face {
       pointer-events: auto;
+      opacity: 0.96;
     }
 
     .cube-view-axis .cube-face {
@@ -2482,13 +2512,22 @@
       }
 
       .cube-viewport {
-        min-height: 220px;
+        min-height: 300px;
       }
 
       .history-cube {
-        width: 238px;
-        height: 238px;
+        --cube-edge: 210px;
+        --cube-depth: 105px;
+        --cube-origin: 30px;
+        --axis-size: 210px;
+        --axis-origin: 30px;
+        width: 270px;
+        height: 270px;
       }
+
+      .axis-label.x { transform: translate3d(184px, -16px, 0); }
+      .axis-label.y { transform: translate3d(20px, -20px, -208px); }
+      .axis-label.z { transform: translate3d(-12px, -248px, 0); }
 
       .milestone-stage,
       .layout-two,
@@ -6278,6 +6317,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       historyCube.style.setProperty("--cube-scale", String(scale));
     }
 
+    function getCubeMetric(name, fallback) {
+      if (!historyCube) return fallback;
+      const raw = getComputedStyle(historyCube).getPropertyValue(name).trim();
+      const parsed = parseFloat(raw);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
     function applyCubeViewMode() {
       if (!historyCube) return;
       historyCube.classList.toggle("cube-view-axis", cubeViewMode === "axis");
@@ -6388,7 +6434,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const sourcePoints = axisMode === "core"
         ? historyChartPoints.filter(point => coreAxisPointIds.has(point.id))
         : historyChartPoints;
-      const axisSize = 250;
+      const axisSize = getCubeMetric("--axis-size", 250);
       const plottedPoints = sourcePoints.map((point, index) => {
         const year = Number(point.year);
         const tc = parseFloat(point.tc) || 0;
@@ -6493,7 +6539,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
       cubeViewModeBtn?.addEventListener("click", () => {
         cubeViewMode = cubeViewMode === "axis" ? "cube" : "axis";
-        if (cubeViewMode === "cube" && !activeCubeFace) activeCubeFace = "cuprate";
+        if (cubeViewMode === "cube") {
+          activeCubeFace = "";
+          cubeRotation = { x: -18, y: 32 };
+          if (cubeZoom) cubeZoom.value = "95";
+          applyCubeTransform();
+        }
         applyCubeViewMode();
       });
       axisModeBtn?.addEventListener("click", () => {
