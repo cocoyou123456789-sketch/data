@@ -1679,6 +1679,19 @@
       align-content: start;
     }
 
+    .history-chat-panel {
+      min-height: 620px;
+      border: 1px solid rgba(96,208,255,0.22);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(10,18,28,0.78);
+      display: grid;
+      grid-template-rows: auto auto minmax(120px, 1fr) auto auto;
+      gap: 12px;
+      align-content: start;
+      overflow: hidden;
+    }
+
     .chat-platform-note {
       border: 1px dashed rgba(96,208,255,0.35);
       border-radius: 8px;
@@ -2808,7 +2821,7 @@
               </div>
               <div class="cube-controls">
                 <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
-                <button id="cubeViewModeBtn" type="button" data-i18n="cubeViewModeCube" hidden>六面魔方</button>
+                <button id="cubeViewModeBtn" type="button" data-i18n="cubeViewModeCube">六面魔方</button>
                 <button id="axisModeBtn" type="button" data-i18n="axisModeShowAll">显示全部点</button>
                 <label data-label-i18n="cubeZoomLabel">缩放
                   <input id="cubeZoom" type="range" min="70" max="140" value="100">
@@ -2817,7 +2830,7 @@
               <div class="cube-face-picker" id="cubeFacePicker" aria-label="Cube face selector"></div>
               <div class="cube-readout" id="cubeReadout" data-i18n="cubeReadoutDefault">点击魔方的一个面查看对应材料家族。</div>
             </div>
-            <div class="model-interface">
+            <div class="history-chat-panel">
               <div>
                 <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
                 <p class="muted" data-i18n="chatPlatformHint">点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释。</p>
@@ -6509,6 +6522,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         });
       };
       cubeViewport.addEventListener("pointerdown", event => {
+        if (event.target.closest?.("button,input,textarea,select,label")) return;
         dragging = true;
         activeCubeFace = "";
         historyCube.classList.add("is-dragging");
