@@ -1591,6 +1591,15 @@
       pointer-events: none;
     }
 
+    .cube-face::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
     .cube-face strong {
       color: #ffffff;
       font-size: 12px;
@@ -1627,6 +1636,16 @@
     .cube-view-cube .cube-face {
       pointer-events: auto;
       opacity: 0.96;
+    }
+
+    .cube-view-cube .cube-face:hover,
+    .cube-view-cube .cube-face:focus-visible {
+      border-color: var(--accent-glow);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        0 0 24px rgba(20,184,166,0.18),
+        0 14px 38px rgba(0,0,0,0.22);
+      outline: none;
     }
 
     .cube-view-axis .cube-face {
@@ -2824,11 +2843,11 @@
           <div class="history-side-panel">
             <div class="history-cube-panel">
               <div>
-                <h3 data-i18n="historyCubeTitle">3D 历史图</h3>
-                <p class="muted" data-i18n="historyCubeHint">拖动旋转，点击材料点查看信息。</p>
+                <h3 data-i18n="historyCubeTitle">六面知识魔方</h3>
+                <p class="muted" data-i18n="historyCubeHint">拖动旋转，点击六个面查看对应模块。</p>
               </div>
               <div class="cube-viewport" id="cubeViewport">
-                <div class="history-cube cube-view-axis" id="historyCube" aria-label="3D Tc year pressure chart">
+                <div class="history-cube cube-view-cube" id="historyCube" aria-label="Six-face superconductivity knowledge cube">
                   <div class="axis-plane xy"></div>
                   <div class="axis-plane xz"></div>
                   <div class="axis-plane yz"></div>
@@ -2848,20 +2867,20 @@
                   <button class="cube-face bottom" type="button" data-cube-face="personal"><strong>Our Data</strong><span>local records</span></button>
                 </div>
               </div>
-              <div class="axis-legend">
+              <div class="axis-legend" hidden>
                 <span>X = Year</span>
                 <span>Y = Pressure (GPa)</span>
                 <span>Z = Tc (K)</span>
               </div>
-              <div class="axis-view-controls" aria-label="Axis front view controls">
+              <div class="axis-view-controls" aria-label="Axis front view controls" hidden>
                 <button type="button" data-axis-view="x" data-i18n="axisViewX">正视 X 年份轴</button>
                 <button type="button" data-axis-view="y" data-i18n="axisViewY">正视 Y 压力轴</button>
                 <button type="button" data-axis-view="z" data-i18n="axisViewZ">正视 Z Tc 轴</button>
               </div>
               <div class="cube-controls">
                 <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
-                <button id="cubeViewModeBtn" type="button" data-i18n="cubeViewModeCube">六面魔方</button>
-                <button id="axisModeBtn" type="button" data-i18n="axisModeShowAll">显示全部点</button>
+                <button id="cubeViewModeBtn" type="button" data-i18n="cubeViewModeCube" hidden>六面魔方</button>
+                <button id="axisModeBtn" type="button" data-i18n="axisModeShowAll" hidden>显示全部点</button>
                 <label data-label-i18n="cubeZoomLabel">缩放
                   <input id="cubeZoom" type="range" min="70" max="140" value="100">
                 </label>
@@ -3560,8 +3579,8 @@
         historyPointTitle: "点击图上的点",
         historyPointHint: "选择一个材料点，查看它在超导历史中的简单介绍。",
         historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
-        historyCubeTitle: "3D 历史图",
-        historyCubeHint: "拖动旋转，点击材料点查看信息。",
+        historyCubeTitle: "六面知识魔方",
+        historyCubeHint: "拖动旋转，点击六个面查看对应模块。",
         axisViewX: "正视 X 年份轴",
         axisViewY: "正视 Y 压力轴",
         axisViewZ: "正视 Z Tc 轴",
@@ -3571,7 +3590,7 @@
         cubeViewModeAxis: "三轴坐标",
         axisModeShowAll: "显示全部点",
         axisModeShowCore: "显示核心点",
-        cubeReadoutDefault: "默认显示核心代表点以减少重叠；点击材料点查看年份、压力和 Tc，或切换为全部点。",
+        cubeReadoutDefault: "点击魔方六个面，查看铜氧化物、高压氢化物、铁基、常规超导、ARPES 数据和个人数据模块。",
         tcChartTitle: "📊 Tc 对比 (K)",
         noMaterials: "筛选后无材料数据",
         sourceTitle: "💡 光源 / 档案目录",
@@ -3919,8 +3938,8 @@
         historyPointTitle: "Click a point on the chart",
         historyPointHint: "Select a material point to see a short historical note.",
         historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
-        historyCubeTitle: "3D History View",
-        historyCubeHint: "Drag to rotate; click a material point for details.",
+        historyCubeTitle: "Six-Face Knowledge Cube",
+        historyCubeHint: "Drag to rotate; click a face to open its module.",
         axisViewX: "Front view: X year",
         axisViewY: "Front view: Y pressure",
         axisViewZ: "Front view: Z Tc",
@@ -3930,7 +3949,7 @@
         cubeViewModeAxis: "3-Axis Plot",
         axisModeShowAll: "Show All Points",
         axisModeShowCore: "Show Core Points",
-        cubeReadoutDefault: "Core representative points are shown by default to reduce overlap. Click a point for year, pressure, and Tc, or switch to all points.",
+        cubeReadoutDefault: "Click one of the six cube faces to inspect cuprates, hydrides, iron-based systems, conventional superconductors, ARPES data, or personal data.",
         tcChartTitle: "📊 Tc Comparison (K)",
         noMaterials: "No materials match current filters",
         sourceTitle: "💡 Light Source & Archive Directory",
@@ -6266,7 +6285,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     let cubeRotation = { x: -18, y: 32 };
     let axisMode = "core";
-    let cubeViewMode = "axis";
+    let cubeViewMode = "cube";
     let activeCubeFace = "";
     const coreAxisPointIds = new Set([
       "hg-1911", "nb3ge-1973", "ybco", "bisrcacuo", "hgbacacuo-30gpa",
@@ -6328,7 +6347,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!historyCube) return;
       historyCube.classList.toggle("cube-view-axis", cubeViewMode === "axis");
       historyCube.classList.toggle("cube-view-cube", cubeViewMode === "cube");
-      if (axisModeBtn) axisModeBtn.style.display = cubeViewMode === "axis" ? "" : "none";
+      if (axisModeBtn) axisModeBtn.style.display = "none";
       if (cubeViewModeBtn) cubeViewModeBtn.textContent = cubeViewMode === "axis" ? t("cubeViewModeCube") : t("cubeViewModeAxis");
       if (cubeViewMode === "axis") renderCubeReadout();
       else renderCubeFaceReadout(activeCubeFace || "cuprate");
@@ -6352,7 +6371,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const [title, body] = face[currentLang] || face.zh;
         return `<button class="cube-face-choice" type="button" data-cube-face-choice="${esc(key)}">
           <strong>${esc(title)}</strong>
-          <span>${esc(body)}</span>
+          <span>${esc(body.split(/[。.!]/)[0])}</span>
         </button>`;
       }).join("");
       cubeFacePicker.querySelectorAll("[data-cube-face-choice]").forEach(button => {
@@ -6533,6 +6552,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       applyCubeTransform();
       renderAxisPoints();
       renderCubeFacePicker();
+      renderCubeFaceReadout(activeCubeFace || "cuprate");
       cubeZoom?.addEventListener("input", applyCubeTransform);
       historyCube.querySelectorAll(".cube-face").forEach(face => {
         face.addEventListener("click", () => selectCubeFace(face.dataset.cubeFace));
@@ -6555,7 +6575,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       cubeResetBtn?.addEventListener("click", () => {
         cubeRotation = { x: -18, y: 32 };
         activeCubeFace = "";
-        cubeViewMode = "axis";
+        cubeViewMode = "cube";
         if (cubeZoom) cubeZoom.value = "100";
         applyCubeTransform();
         applyCubeViewMode();
