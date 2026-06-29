@@ -1790,7 +1790,7 @@
       left: var(--axis-origin);
       bottom: var(--axis-origin);
       height: 2px;
-      width: calc(var(--axis-size) + 24px);
+      width: var(--axis-size);
       background: repeating-linear-gradient(90deg, var(--accent-glow) 0 10px, transparent 10px 18px);
       transform-origin: left center;
       box-shadow: 0 0 12px rgba(96,208,255,0.42);
@@ -1798,30 +1798,19 @@
     }
 
     .axis-line::after {
-      content: "";
-      position: absolute;
-      right: -7px;
-      top: 50%;
-      width: 0;
-      height: 0;
-      border-top: 5px solid transparent;
-      border-bottom: 5px solid transparent;
-      border-left: 8px solid var(--accent-glow);
-      transform: translateY(-50%);
-      filter: drop-shadow(0 0 6px rgba(96,208,255,0.65));
+      content: none;
     }
 
     .axis-line.x {
-      left: 213px;
+      left: var(--axis-origin);
       bottom: var(--axis-origin);
       transform: translateZ(var(--cube-depth));
     }
 
     .axis-line.y {
-      left: 187px;
+      left: var(--axis-origin);
       bottom: calc(var(--axis-origin) + var(--cube-edge));
-      width: 196px;
-      transform: translateZ(var(--cube-depth)) rotateZ(26deg);
+      transform: translateZ(var(--cube-depth));
     }
 
     .axis-line.z {
@@ -1863,9 +1852,9 @@
       z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(300px, 8px, var(--cube-depth)); }
-    .axis-label.y { transform: translate3d(270px, -314px, var(--cube-depth)); }
-    .axis-label.z { transform: translate3d(-46px, -264px, var(--cube-depth)); color: #ffb4b4; }
+    .axis-label.x { transform: translate3d(284px, 8px, var(--cube-depth)); }
+    .axis-label.y { transform: translate3d(284px, -218px, var(--cube-depth)); }
+    .axis-label.z { transform: translate3d(-44px, -238px, var(--cube-depth)); color: #ffb4b4; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -2973,15 +2962,9 @@
         height: 270px;
       }
 
-      .axis-line.x { left: 186px; }
-      .axis-line.y {
-        left: 160px;
-        width: 164px;
-      }
-
-      .axis-label.x { transform: translate3d(252px, 8px, var(--cube-depth)); }
-      .axis-label.y { transform: translate3d(224px, -268px, var(--cube-depth)); }
-      .axis-label.z { transform: translate3d(-38px, -232px, var(--cube-depth)); }
+      .axis-label.x { transform: translate3d(234px, 8px, var(--cube-depth)); }
+      .axis-label.y { transform: translate3d(234px, -186px, var(--cube-depth)); }
+      .axis-label.z { transform: translate3d(-38px, -204px, var(--cube-depth)); }
 
       .milestone-stage,
       .layout-two,
