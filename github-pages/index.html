@@ -1395,7 +1395,7 @@
       bottom: var(--axis-origin);
       height: 2px;
       width: calc(var(--axis-size) + 24px);
-      background: linear-gradient(90deg, var(--accent-glow), rgba(96,208,255,0.1));
+      background: repeating-linear-gradient(90deg, var(--accent-glow) 0 10px, transparent 10px 18px);
       transform-origin: left center;
       box-shadow: 0 0 12px rgba(96,208,255,0.42);
       pointer-events: none;
@@ -1419,20 +1419,16 @@
     .axis-line.y { transform: rotateY(-90deg); }
     .axis-line.z {
       transform: rotateZ(-90deg);
-      background: linear-gradient(90deg, #d87979, rgba(216,121,121,0.1));
+      background: repeating-linear-gradient(90deg, #d87979 0 10px, transparent 10px 18px);
     }
 
     .cube-view-cube .axis-plane {
-      display: block;
-      background: transparent;
-      border-color: rgba(96,208,255,0.28);
-      opacity: 0.74;
-      z-index: 2;
+      display: none;
     }
 
     .cube-view-cube .axis-line {
       z-index: 6;
-      height: 3px;
+      height: 2px;
       box-shadow: 0 0 18px rgba(96,208,255,0.52);
     }
 
