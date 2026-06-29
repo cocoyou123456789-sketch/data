@@ -1741,7 +1741,7 @@
       --cube-edge: 218px;
       --cube-depth: 109px;
       --cube-origin: 52px;
-      --axis-size: calc(var(--cube-edge) + 56px);
+      --axis-size: calc(var(--cube-edge) + 72px);
       --axis-origin: calc(var(--cube-origin) - 28px);
       width: 340px;
       height: 340px;
@@ -1798,7 +1798,17 @@
     }
 
     .axis-line::after {
-      content: none;
+      content: "";
+      position: absolute;
+      right: -7px;
+      top: 50%;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid var(--accent-glow);
+      transform: translateY(-50%);
+      filter: drop-shadow(0 0 6px rgba(96,208,255,0.65));
     }
 
     .axis-line.x {
@@ -1809,14 +1819,14 @@
 
     .axis-line.y {
       left: var(--axis-origin);
-      bottom: calc(var(--axis-origin) + var(--axis-size));
-      transform: translateZ(var(--cube-depth));
+      bottom: var(--axis-origin);
+      transform: translateZ(var(--cube-depth)) rotateZ(-90deg);
     }
 
     .axis-line.z {
       left: var(--axis-origin);
       bottom: var(--axis-origin);
-      transform: translateZ(var(--cube-depth)) rotateZ(-90deg);
+      transform: translateZ(var(--cube-depth)) rotateY(-58deg);
       background: repeating-linear-gradient(90deg, #d87979 0 10px, transparent 10px 18px);
     }
 
@@ -1852,9 +1862,9 @@
       z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(314px, 36px, var(--cube-depth)); }
-    .axis-label.y { transform: translate3d(314px, -250px, var(--cube-depth)); }
-    .axis-label.z { transform: translate3d(-72px, -266px, var(--cube-depth)); color: #ffb4b4; }
+    .axis-label.x { transform: translate3d(326px, 36px, var(--cube-depth)); }
+    .axis-label.y { transform: translate3d(-72px, -274px, var(--cube-depth)); }
+    .axis-label.z { transform: translate3d(-58px, 42px, -198px); color: #ffb4b4; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -2956,15 +2966,15 @@
         --cube-edge: 210px;
         --cube-depth: 105px;
         --cube-origin: 30px;
-        --axis-size: calc(var(--cube-edge) + 44px);
+        --axis-size: calc(var(--cube-edge) + 58px);
         --axis-origin: calc(var(--cube-origin) - 22px);
         width: 270px;
         height: 270px;
       }
 
-      .axis-label.x { transform: translate3d(260px, 30px, var(--cube-depth)); }
-      .axis-label.y { transform: translate3d(260px, -232px, var(--cube-depth)); }
-      .axis-label.z { transform: translate3d(-60px, -246px, var(--cube-depth)); }
+      .axis-label.x { transform: translate3d(280px, 30px, var(--cube-depth)); }
+      .axis-label.y { transform: translate3d(-60px, -256px, var(--cube-depth)); }
+      .axis-label.z { transform: translate3d(-50px, 38px, -176px); }
 
       .milestone-stage,
       .layout-two,
@@ -3344,9 +3354,9 @@
                   <div class="axis-line x"></div>
                   <div class="axis-line y"></div>
                   <div class="axis-line z"></div>
-                  <button class="axis-label x" type="button" data-axis-view="x">Y · Year</button>
-                  <button class="axis-label y" type="button" data-axis-view="y">P · Pressure</button>
-                  <button class="axis-label z" type="button" data-axis-view="z">T · Tc</button>
+                  <button class="axis-label x" type="button" data-axis-view="x">X</button>
+                  <button class="axis-label y" type="button" data-axis-view="y">Y</button>
+                  <button class="axis-label z" type="button" data-axis-view="z">Z</button>
                   <div id="axisPointLayer"></div>
                   <div id="axisHitLayer" aria-label="Clickable material points"></div>
                   <button class="cube-face front" type="button" data-cube-face="cuprate"><strong>Cuprate</strong><span>1986 · high Tc</span></button>
@@ -3358,14 +3368,14 @@
                 </div>
               </div>
               <div class="axis-legend">
-                <span>Y = Year</span>
-                <span>P = Pressure (GPa)</span>
-                <span>T = Tc (K)</span>
+                <span>X = Year</span>
+                <span>Y = Pressure (GPa)</span>
+                <span>Z = Tc (K)</span>
               </div>
               <div class="axis-view-controls" aria-label="Axis front view controls">
-                <button type="button" data-axis-view="x" data-i18n="axisViewX">正视 Y 年份轴</button>
-                <button type="button" data-axis-view="y" data-i18n="axisViewY">正视 P 压力轴</button>
-                <button type="button" data-axis-view="z" data-i18n="axisViewZ">正视 T Tc 轴</button>
+                <button type="button" data-axis-view="x" data-i18n="axisViewX">正视 X 轴</button>
+                <button type="button" data-axis-view="y" data-i18n="axisViewY">正视 Y 轴</button>
+                <button type="button" data-axis-view="z" data-i18n="axisViewZ">正视 Z 轴</button>
               </div>
               <div class="cube-controls">
                 <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
@@ -4125,9 +4135,9 @@
         historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
         historyCubeTitle: "材料魔方",
         historyCubeHint: "拖动旋转，点击网格魔方的六个面查看对应模块。",
-        axisViewX: "正视 Y 年份轴",
-        axisViewY: "正视 P 压力轴",
-        axisViewZ: "正视 T Tc 轴",
+        axisViewX: "正视 X 轴",
+        axisViewY: "正视 Y 轴",
+        axisViewZ: "正视 Z 轴",
         cubeResetBtn: "重置视角",
         cubeZoomHint: "滚轮缩放",
         cubeViewModeCube: "六面魔方",
@@ -4494,9 +4504,9 @@
         historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
         historyCubeTitle: "Material Cube",
         historyCubeHint: "Drag to rotate; click one of the gridded cube faces to open its module.",
-        axisViewX: "Front view: Y year",
-        axisViewY: "Front view: P pressure",
-        axisViewZ: "Front view: T Tc",
+        axisViewX: "Front view: X axis",
+        axisViewY: "Front view: Y axis",
+        axisViewZ: "Front view: Z axis",
         cubeResetBtn: "Reset View",
         cubeZoomHint: "Mouse wheel zoom",
         cubeViewModeCube: "Six-Face Cube",
