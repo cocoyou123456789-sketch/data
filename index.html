@@ -1747,7 +1747,7 @@
       height: 340px;
       position: relative;
       transform-style: preserve-3d;
-      transform: rotateX(var(--cube-x, -22deg)) rotateY(var(--cube-y, 38deg)) scale(var(--cube-scale, 1));
+      transform: rotateX(var(--cube-x, 0deg)) rotateY(var(--cube-y, 0deg)) scale(var(--cube-scale, 1));
       transition: transform 0.25s ease;
       will-change: transform;
     }
@@ -7048,7 +7048,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return tags.slice(0, 4);
     }
 
-    let cubeRotation = { x: -18, y: 32 };
+    let cubeRotation = { x: 0, y: 0 };
     let cubeScale = 1;
     let cubeViewMode = "cube";
     let activeCubeFace = "";
@@ -7121,7 +7121,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function selectCubeFace(faceKey) {
       activeCubeFace = faceKey || "cuprate";
       cubeViewMode = "cube";
-      cubeRotation = cubeFaceViews[activeCubeFace] || { x: -18, y: 32 };
+      cubeRotation = cubeFaceViews[activeCubeFace] || { x: 0, y: 0 };
       cubeScale = 1.05;
       applyCubeTransform();
       applyCubeViewMode();
@@ -7159,7 +7159,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         y: { x: 0, y: 90 },
         z: { x: -90, y: 0 }
       };
-      cubeRotation = views[axis] || { x: -18, y: 32 };
+      cubeRotation = views[axis] || { x: 0, y: 0 };
       cubeScale = 1.1;
       applyCubeTransform();
       applyCubeViewMode();
@@ -7307,14 +7307,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         cubeViewMode = cubeViewMode === "axis" ? "cube" : "axis";
         if (cubeViewMode === "cube") {
           activeCubeFace = "";
-          cubeRotation = { x: -18, y: 32 };
+          cubeRotation = { x: 0, y: 0 };
           cubeScale = 0.95;
           applyCubeTransform();
         }
         applyCubeViewMode();
       });
       cubeResetBtn?.addEventListener("click", () => {
-        cubeRotation = { x: -18, y: 32 };
+        cubeRotation = { x: 0, y: 0 };
         activeCubeFace = "";
         cubeViewMode = "cube";
         cubeScale = 1;
