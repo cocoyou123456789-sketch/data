@@ -270,83 +270,121 @@
       isolation: isolate;
     }
 
-    .split-eye {
+    .ustc-orbit {
       position: relative;
-      width: min(430px, 92%);
-      aspect-ratio: 1.9;
-      filter: drop-shadow(0 28px 34px rgba(0,0,0,0.48));
-    }
-
-    .split-eye::before {
-      content: "";
-      position: absolute;
-      inset: 15% 0;
-      border-radius: 52% 48% 54% 46% / 52% 52% 48% 48%;
-      background:
-        radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.94) 0 22%, rgba(219,225,228,0.82) 32%, rgba(70,82,90,0.34) 55%, transparent 72%),
-        linear-gradient(90deg, rgba(242,225,210,0.92) 0 49%, rgba(55,185,205,0.48) 50% 100%);
-      border: 1px solid rgba(255,255,255,0.22);
-      box-shadow: inset 0 20px 34px rgba(255,255,255,0.2), inset 0 -24px 38px rgba(0,0,0,0.42);
-      z-index: 1;
-    }
-
-    .split-eye::after {
-      content: "";
-      position: absolute;
-      top: 14%;
-      bottom: 14%;
-      left: 50%;
-      width: 2px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, transparent, rgba(198,248,255,0.95), transparent);
-      box-shadow: 0 0 18px rgba(96,208,255,0.85);
-      z-index: 5;
-    }
-
-    .eye-iris {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 128px;
-      height: 128px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 50% 50%, #02050a 0 17%, transparent 18%),
-        radial-gradient(circle at 42% 38%, rgba(255,255,255,0.92) 0 5%, transparent 6%),
-        radial-gradient(circle at 50% 50%, #294a2e 0 28%, #7f9a54 39%, #5b6f47 48%, #182418 70%);
-      border: 1px solid rgba(255,255,255,0.32);
-      box-shadow: inset 0 0 18px rgba(0,0,0,0.62), 0 0 26px rgba(141,178,100,0.24);
-      z-index: 3;
+      width: min(500px, 94%);
+      aspect-ratio: 1.62;
+      border-radius: 8px;
       overflow: hidden;
+      background:
+        linear-gradient(115deg, rgba(18,22,42,0.24), transparent 34%),
+        radial-gradient(circle at 46% 48%, rgba(88,137,210,0.38), transparent 34%),
+        radial-gradient(circle at 78% 34%, rgba(255,204,154,0.12), transparent 20%),
+        #050812;
+      box-shadow: inset 0 0 54px rgba(0,0,0,0.86), 0 30px 38px rgba(0,0,0,0.48);
     }
 
-    .eye-iris::before {
+    .ustc-orbit::before {
       content: "";
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(90deg, transparent 0 49%, rgba(96,208,255,0.95) 50%, rgba(96,208,255,0.2) 100%),
-        repeating-linear-gradient(0deg, transparent 0 8px, rgba(96,208,255,0.28) 8px 9px);
-      clip-path: inset(0 0 0 50%);
-      mix-blend-mode: screen;
+        linear-gradient(105deg, transparent 0 67%, rgba(201,146,96,0.46) 68%, rgba(68,42,28,0.28) 72%, transparent 73%),
+        linear-gradient(0deg, transparent 0 73%, rgba(42,72,122,0.32) 74%, transparent 77%),
+        radial-gradient(circle at 44% 48%, transparent 0 29%, rgba(110,169,255,0.14) 30%, transparent 39%),
+        repeating-linear-gradient(90deg, transparent 0 44px, rgba(88,132,190,0.08) 44px 45px),
+        repeating-linear-gradient(0deg, transparent 0 38px, rgba(88,132,190,0.055) 38px 39px);
+      z-index: 1;
     }
 
-    .eye-scan {
+    .ustc-orbit::after {
+      content: "";
       position: absolute;
-      inset: 12% 7%;
-      border: 1px solid rgba(96,208,255,0.22);
+      left: 12%;
+      right: 12%;
+      bottom: 13%;
+      height: 14px;
       border-radius: 50%;
-      clip-path: inset(0 0 0 50%);
+      background: rgba(0,0,0,0.64);
+      filter: blur(6px);
+      z-index: 2;
+    }
+
+    .ustc-ring {
+      position: absolute;
+      left: 16%;
+      top: 19%;
+      width: 56%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      transform: rotateX(62deg) rotateZ(-8deg);
       background:
-        repeating-linear-gradient(90deg, transparent 0 15px, rgba(96,208,255,0.2) 15px 16px),
-        repeating-linear-gradient(0deg, transparent 0 13px, rgba(96,208,255,0.18) 13px 14px);
+        radial-gradient(circle, rgba(3,7,14,0.96) 0 30%, transparent 31%),
+        conic-gradient(from 18deg, rgba(255,255,255,0.9), rgba(95,151,231,0.52), rgba(255,255,255,0.76), rgba(20,39,74,0.86), rgba(255,255,255,0.88)),
+        radial-gradient(circle, transparent 0 55%, rgba(199,226,255,0.92) 56% 63%, rgba(43,72,124,0.98) 64% 72%, transparent 73%);
+      box-shadow:
+        0 0 32px rgba(78,142,255,0.48),
+        inset 0 0 24px rgba(255,255,255,0.24),
+        inset 0 -18px 26px rgba(0,0,0,0.42);
       z-index: 4;
+    }
+
+    .ustc-ring::before {
+      content: "";
+      position: absolute;
+      inset: 16%;
+      border-radius: 50%;
+      border: 12px solid rgba(34,57,94,0.92);
+      box-shadow: inset 0 0 22px rgba(0,0,0,0.82), 0 0 18px rgba(130,180,255,0.32);
+    }
+
+    .ustc-ring::after {
+      content: "";
+      position: absolute;
+      inset: -8%;
+      border-radius: 50%;
+      background:
+        conic-gradient(from 0deg, transparent 0 7%, rgba(255,255,255,0.88) 7% 8%, transparent 8% 16%, rgba(133,188,255,0.64) 16% 18%, transparent 18% 100%);
+      filter: blur(0.2px);
+      opacity: 0.82;
+    }
+
+    .ustc-core {
+      position: absolute;
+      left: 30%;
+      top: 33%;
+      width: 27%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      transform: rotateX(62deg) rotateZ(-8deg);
+      background:
+        radial-gradient(circle at 48% 42%, rgba(255,255,255,0.26), transparent 18%),
+        radial-gradient(circle, rgba(2,5,10,0.98) 0 58%, rgba(38,70,120,0.72) 62%, transparent 68%);
+      box-shadow: inset 0 0 24px rgba(0,0,0,0.92), 0 0 28px rgba(95,151,231,0.34);
+      z-index: 5;
+    }
+
+    .ustc-beam {
+      position: absolute;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(116,174,255,0.82), transparent);
+      box-shadow: 0 0 16px rgba(116,174,255,0.82);
+      z-index: 3;
+    }
+
+    .ustc-beam.one { left: 2%; right: 46%; top: 42%; }
+    .ustc-beam.two { left: 50%; right: 6%; top: 47%; }
+    .ustc-beam.three {
+      left: 54%;
+      width: 28%;
+      top: 62%;
+      transform: rotate(-22deg);
     }
 
     .eye-label {
       position: absolute;
-      bottom: -34px;
+      bottom: 10px;
       display: inline-grid;
       gap: 2px;
       color: rgba(232,246,255,0.88);
@@ -354,10 +392,21 @@
       font-weight: 760;
       text-transform: uppercase;
       letter-spacing: 0;
+      z-index: 6;
     }
 
-    .eye-label.real { left: 8%; text-align: left; }
-    .eye-label.virtual { right: 8%; text-align: right; color: var(--accent-glow); }
+    .eye-label.real { left: 18px; text-align: left; }
+    .eye-label.virtual { right: 18px; text-align: right; color: var(--accent-glow); }
+
+    .virtual-access-orbit {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 78% 24%, rgba(96,208,255,0.18), transparent 20%),
+        linear-gradient(90deg, transparent, rgba(96,208,255,0.05));
+      opacity: 0.9;
+    }
 
     .login-visual-copy {
       display: grid;
@@ -404,7 +453,10 @@
       position: relative;
       border-left: 1px solid var(--line);
       padding: 24px;
-      background: #0e1721;
+      background:
+        radial-gradient(circle at 88% 18%, rgba(96,208,255,0.18), transparent 28%),
+        repeating-linear-gradient(90deg, transparent 0 26px, rgba(96,208,255,0.045) 26px 27px),
+        #0e1721;
       display: grid;
       gap: 12px;
       align-content: center;
@@ -3303,25 +3355,29 @@
         <div class="login-column">
           <div class="login-badge-row">
             <span class="login-badge" data-i18n="loginUstcBadge">USTC · ARPES Lab Access</span>
-            <span class="login-badge" data-i18n="loginOfficialBadge">真实 / 虚拟双视野</span>
+            <span class="login-badge" data-i18n="loginOfficialBadge">USTC 真实入口</span>
           </div>
           <div class="login-eye-stage" aria-hidden="true">
-            <div class="split-eye">
-              <span class="eye-iris"></span>
-              <span class="eye-scan"></span>
-              <span class="eye-label real" data-i18n="loginRealEyeLabel">Real eye</span>
-              <span class="eye-label virtual" data-i18n="loginVirtualEyeLabel">Virtual eye</span>
+            <div class="ustc-orbit">
+              <span class="ustc-beam one"></span>
+              <span class="ustc-beam two"></span>
+              <span class="ustc-beam three"></span>
+              <span class="ustc-ring"></span>
+              <span class="ustc-core"></span>
+              <span class="eye-label real" data-i18n="loginRealEyeLabel">USTC</span>
+              <span class="eye-label virtual" data-i18n="loginVirtualEyeLabel">NSRL / ARPES</span>
             </div>
           </div>
           <div class="login-visual-copy">
-            <h2 data-i18n="loginTitle">真实视野与数字视野</h2>
-            <p class="muted" data-i18n="loginHint">一侧保留实验者的真实观察，另一侧连接材料数据库、ARPES 文献和 AI 模型。</p>
+            <h2 data-i18n="loginTitle">USTC 光源入口</h2>
+            <p class="muted" data-i18n="loginHint">左侧代表 USTC / NSRL / ARPES 的真实实验入口，连接材料、文献和本地实验数据。</p>
           </div>
         </div>
         <div class="login-feature">
+          <div class="virtual-access-orbit" aria-hidden="true"></div>
           <div>
-            <h2 data-i18n="loginGuestTitle">登录者入口</h2>
-            <p class="muted" data-i18n="loginGuestHint">给其他登录者使用：登录、创建本地账号，或以访客身份进入演示工作台。</p>
+            <h2 data-i18n="loginGuestTitle">其他访问者 · 虚拟入口</h2>
+            <p class="muted" data-i18n="loginGuestHint">右侧给非 USTC 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。</p>
           </div>
           <div class="login-form-panel">
             <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
@@ -4060,8 +4116,8 @@
       zh: {
         title: "ARPES 超导材料探索器",
         subtitle: "历史、材料、文献和数据",
-        loginTitle: "真实视野与数字视野",
-        loginHint: "一侧保留实验者的真实观察，另一侧连接材料数据库、ARPES 文献和 AI 模型。",
+        loginTitle: "USTC 光源入口",
+        loginHint: "左侧代表 USTC / NSRL / ARPES 的真实实验入口，连接材料、文献和本地实验数据。",
         signInTab: "登录",
         createAccountTab: "创建账号",
         loginEmailLabel: "Email",
@@ -4074,11 +4130,11 @@
         guestLoginBtn: "以访客身份进入",
         loginPrivacy: "本登录只保存在当前浏览器，用于个性化目录和报告署名。",
         loginUstcBadge: "USTC · ARPES Lab Access",
-        loginOfficialBadge: "真实 / 虚拟双视野",
-        loginGuestTitle: "登录者入口",
-        loginGuestHint: "给其他登录者使用：登录、创建本地账号，或以访客身份进入演示工作台。",
-        loginRealEyeLabel: "真实眼睛",
-        loginVirtualEyeLabel: "虚拟眼睛",
+        loginOfficialBadge: "USTC 真实入口",
+        loginGuestTitle: "其他访问者 · 虚拟入口",
+        loginGuestHint: "右侧给非 USTC 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。",
+        loginRealEyeLabel: "USTC",
+        loginVirtualEyeLabel: "NSRL / ARPES",
         loginFeatureHistory: "历史图",
         loginFeatureHistoryHint: "大事件已合并到 Tc 历史图。",
         loginFeatureCube: "3D 魔方",
@@ -4431,8 +4487,8 @@
       en: {
         title: "ARPES Superconductivity Explorer",
         subtitle: "History, materials, papers, and data",
-        loginTitle: "Real Vision / Digital Vision",
-        loginHint: "One side keeps the experimental eye; the other connects material data, ARPES papers, and AI models.",
+        loginTitle: "USTC Light Source Access",
+        loginHint: "The left side represents the real USTC / NSRL / ARPES experimental entrance connected to materials, papers, and local data.",
         signInTab: "Sign In",
         createAccountTab: "Create Account",
         loginEmailLabel: "Email",
@@ -4445,11 +4501,11 @@
         guestLoginBtn: "Continue as Guest",
         loginPrivacy: "This login is stored only in this browser for personalized contents and report authorship.",
         loginUstcBadge: "USTC · ARPES Lab Access",
-        loginOfficialBadge: "Real / Virtual Vision",
-        loginGuestTitle: "Login Portal",
-        loginGuestHint: "For other users: sign in, create a local account, or continue into the demo workspace as a guest.",
-        loginRealEyeLabel: "Real eye",
-        loginVirtualEyeLabel: "Virtual eye",
+        loginOfficialBadge: "USTC Real Access",
+        loginGuestTitle: "Other Visitors · Virtual Access",
+        loginGuestHint: "The right side is for non-USTC or external visitors: sign in, create a local account, or continue as a guest.",
+        loginRealEyeLabel: "USTC",
+        loginVirtualEyeLabel: "NSRL / ARPES",
         loginFeatureHistory: "History Chart",
         loginFeatureHistoryHint: "Milestones are merged into the Tc chart.",
         loginFeatureCube: "3D Cube",
