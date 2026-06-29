@@ -1741,8 +1741,8 @@
       --cube-edge: 218px;
       --cube-depth: 109px;
       --cube-origin: 52px;
-      --axis-size: 250px;
-      --axis-origin: var(--cube-origin);
+      --axis-size: calc(var(--cube-edge) + 56px);
+      --axis-origin: calc(var(--cube-origin) - 28px);
       width: 340px;
       height: 340px;
       position: relative;
@@ -1809,7 +1809,7 @@
 
     .axis-line.y {
       left: var(--axis-origin);
-      bottom: calc(var(--axis-origin) + var(--cube-edge));
+      bottom: calc(var(--axis-origin) + var(--axis-size));
       transform: translateZ(var(--cube-depth));
     }
 
@@ -1852,9 +1852,9 @@
       z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(284px, 8px, var(--cube-depth)); }
-    .axis-label.y { transform: translate3d(284px, -218px, var(--cube-depth)); }
-    .axis-label.z { transform: translate3d(-44px, -238px, var(--cube-depth)); color: #ffb4b4; }
+    .axis-label.x { transform: translate3d(314px, 36px, var(--cube-depth)); }
+    .axis-label.y { transform: translate3d(314px, -250px, var(--cube-depth)); }
+    .axis-label.z { transform: translate3d(-72px, -266px, var(--cube-depth)); color: #ffb4b4; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -1990,20 +1990,20 @@
       bottom: var(--cube-origin);
       width: var(--cube-edge);
       height: var(--cube-edge);
-      border: 1px solid rgba(210,244,255,0.34);
-      border-radius: 6px;
+      border: 1px solid rgba(210,244,255,0.5);
+      border-radius: 2px;
       background:
-        linear-gradient(90deg, rgba(210,244,255,0.28) 1px, transparent 1px),
-        linear-gradient(0deg, rgba(210,244,255,0.28) 1px, transparent 1px),
-        linear-gradient(145deg, rgba(96,208,255,0.16), rgba(255,255,255,0.035) 46%, rgba(20,184,166,0.10));
+        linear-gradient(90deg, rgba(210,244,255,0.34) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(210,244,255,0.34) 1px, transparent 1px),
+        linear-gradient(145deg, rgba(42,103,116,0.96), rgba(18,51,62,0.98) 48%, rgba(11,30,39,0.98));
       background-size:
         calc(var(--cube-edge) / 3) calc(var(--cube-edge) / 3),
         calc(var(--cube-edge) / 3) calc(var(--cube-edge) / 3),
         100% 100%;
       box-shadow:
-        inset 0 0 24px rgba(210,244,255,0.045),
-        inset 0 1px 0 rgba(255,255,255,0.22),
-        0 0 18px rgba(96,208,255,0.06);
+        inset 0 0 22px rgba(0,0,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        0 0 18px rgba(96,208,255,0.08);
       display: grid;
       align-content: center;
       gap: 6px;
@@ -2012,14 +2012,13 @@
       backface-visibility: hidden;
       cursor: pointer;
       pointer-events: none;
-      backdrop-filter: blur(1px);
     }
 
     .cube-face::after {
       content: "";
       position: absolute;
       inset: 0;
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
       border-radius: inherit;
       background:
         linear-gradient(90deg, transparent calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
@@ -2049,12 +2048,12 @@
     .cube-face.top { transform: rotateX(90deg) translateZ(var(--cube-depth)); }
     .cube-face.bottom { transform: rotateX(-90deg) translateZ(var(--cube-depth)); }
 
-    .cube-face.front { border-color: rgba(76,154,176,0.66); background-color: rgba(76,154,176,0.08); }
-    .cube-face.back { border-color: rgba(118,169,106,0.62); background-color: rgba(118,169,106,0.07); }
-    .cube-face.right { border-color: rgba(233,154,49,0.62); background-color: rgba(233,154,49,0.07); }
-    .cube-face.left { border-color: rgba(106,163,111,0.62); background-color: rgba(106,163,111,0.07); }
-    .cube-face.top { border-color: rgba(96,208,255,0.64); background-color: rgba(96,208,255,0.08); }
-    .cube-face.bottom { border-color: rgba(176,103,189,0.62); background-color: rgba(176,103,189,0.07); }
+    .cube-face.front { border-color: rgba(96,208,255,0.62); }
+    .cube-face.back { border-color: rgba(96,208,255,0.42); filter: brightness(0.82); }
+    .cube-face.right { border-color: rgba(96,208,255,0.5); filter: brightness(0.86); }
+    .cube-face.left { border-color: rgba(96,208,255,0.48); filter: brightness(0.82); }
+    .cube-face.top { border-color: rgba(210,244,255,0.6); filter: brightness(1.12); }
+    .cube-face.bottom { border-color: rgba(96,208,255,0.38); filter: brightness(0.72); }
 
     .cube-view-cube #axisPointLayer,
     .cube-view-cube #axisHitLayer {
@@ -2063,7 +2062,7 @@
 
     .cube-view-cube .cube-face {
       pointer-events: auto;
-      opacity: 0.96;
+      opacity: 1;
       z-index: 10;
     }
 
@@ -2957,14 +2956,15 @@
         --cube-edge: 210px;
         --cube-depth: 105px;
         --cube-origin: 30px;
-        --axis-size: 210px;
+        --axis-size: calc(var(--cube-edge) + 44px);
+        --axis-origin: calc(var(--cube-origin) - 22px);
         width: 270px;
         height: 270px;
       }
 
-      .axis-label.x { transform: translate3d(234px, 8px, var(--cube-depth)); }
-      .axis-label.y { transform: translate3d(234px, -186px, var(--cube-depth)); }
-      .axis-label.z { transform: translate3d(-38px, -204px, var(--cube-depth)); }
+      .axis-label.x { transform: translate3d(260px, 30px, var(--cube-depth)); }
+      .axis-label.y { transform: translate3d(260px, -232px, var(--cube-depth)); }
+      .axis-label.z { transform: translate3d(-60px, -246px, var(--cube-depth)); }
 
       .milestone-stage,
       .layout-two,
