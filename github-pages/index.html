@@ -1744,11 +1744,22 @@
       filter: drop-shadow(0 0 6px rgba(96,208,255,0.65));
     }
 
-    .axis-line.x { transform: translateZ(var(--cube-depth)); }
-    .axis-line.y { transform: translateZ(var(--cube-depth)) rotateY(-90deg); }
-    .axis-line.z {
+    .axis-line.x {
       left: calc(var(--axis-origin) + var(--cube-edge));
+      bottom: calc(var(--axis-origin) + var(--cube-depth));
+      transform: translateZ(var(--cube-depth));
+    }
+
+    .axis-line.y {
+      left: calc(var(--axis-origin) + var(--cube-depth));
+      bottom: calc(var(--axis-origin) + var(--cube-edge));
       transform: translateZ(var(--cube-depth)) rotateZ(-90deg);
+    }
+
+    .axis-line.z {
+      left: var(--axis-origin);
+      bottom: var(--axis-origin);
+      transform: translateZ(var(--cube-depth)) rotateY(-90deg);
       background: repeating-linear-gradient(90deg, #d87979 0 10px, transparent 10px 18px);
     }
 
@@ -1784,9 +1795,9 @@
       z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(242px, -18px, var(--cube-depth)); }
-    .axis-label.y { transform: translate3d(34px, -22px, -142px); }
-    .axis-label.z { transform: translate3d(208px, -292px, var(--cube-depth)); color: #ffb4b4; }
+    .axis-label.x { transform: translate3d(302px, -160px, var(--cube-depth)); }
+    .axis-label.y { transform: translate3d(142px, -312px, var(--cube-depth)); }
+    .axis-label.z { transform: translate3d(-44px, 18px, var(--cube-depth)); color: #ffb4b4; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -2894,9 +2905,9 @@
         height: 270px;
       }
 
-      .axis-label.x { transform: translate3d(202px, -16px, var(--cube-depth)); }
-      .axis-label.y { transform: translate3d(20px, -20px, -128px); }
-      .axis-label.z { transform: translate3d(198px, -248px, var(--cube-depth)); }
+      .axis-label.x { transform: translate3d(250px, -134px, var(--cube-depth)); }
+      .axis-label.y { transform: translate3d(126px, -268px, var(--cube-depth)); }
+      .axis-label.z { transform: translate3d(-38px, 16px, var(--cube-depth)); }
 
       .milestone-stage,
       .layout-two,
