@@ -106,16 +106,16 @@
       margin: 0 auto;
       padding: 22px clamp(14px, 3vw, 36px) 42px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: 210px minmax(0, 1fr);
       gap: 16px;
       position: relative;
       z-index: 1;
     }
 
-    main > section { grid-column: 1; }
+    main > section { grid-column: 2; }
 
     main > details {
-      grid-column: 1;
+      grid-column: 2;
     }
 
     section {
@@ -421,11 +421,11 @@
     }
 
     .toc-panel {
-      display: none;
+      display: grid;
       grid-column: 1;
       grid-row: 1 / span 20;
       position: sticky;
-      top: 16px;
+      top: 90px;
       align-self: start;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -2856,6 +2856,11 @@
   </nav>
 
   <main>
+    <aside class="toc-panel" aria-label="Module directory">
+      <h2 data-i18n="tocTitle">模块</h2>
+      <nav class="toc-list" id="tocList"></nav>
+      <div class="toc-note" id="tocNote" data-i18n="tocNote">选择一个模块开始。</div>
+    </aside>
     <!-- ===== Milestones ===== -->
     <section id="section-milestones" class="app-page" data-app-page="history">
       <div class="section-head">
