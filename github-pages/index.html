@@ -1401,6 +1401,20 @@
       pointer-events: none;
     }
 
+    .axis-line::after {
+      content: "";
+      position: absolute;
+      right: -7px;
+      top: 50%;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid var(--accent-glow);
+      transform: translateY(-50%);
+      filter: drop-shadow(0 0 6px rgba(96,208,255,0.65));
+    }
+
     .axis-line.x { transform: translateZ(0); }
     .axis-line.y { transform: rotateY(-90deg); }
     .axis-line.z {
@@ -1594,6 +1608,10 @@
       border: 1px solid rgba(255,255,255,0.22);
       border-radius: 8px;
       background:
+        linear-gradient(90deg, transparent 32.6%, rgba(255,255,255,0.18) 33%, rgba(255,255,255,0.18) 33.7%, transparent 34.1%),
+        linear-gradient(90deg, transparent 65.9%, rgba(255,255,255,0.18) 66.3%, rgba(255,255,255,0.18) 67%, transparent 67.4%),
+        linear-gradient(0deg, transparent 32.6%, rgba(255,255,255,0.18) 33%, rgba(255,255,255,0.18) 33.7%, transparent 34.1%),
+        linear-gradient(0deg, transparent 65.9%, rgba(255,255,255,0.18) 66.3%, rgba(255,255,255,0.18) 67%, transparent 67.4%),
         linear-gradient(145deg, rgba(23,36,51,0.94), rgba(10,16,24,0.88)),
         rgba(13,21,32,0.88);
       box-shadow:
@@ -1621,12 +1639,14 @@
     .cube-face strong {
       color: #ffffff;
       font-size: 12px;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.65);
     }
 
     .cube-face span {
       color: var(--muted);
       font-size: 10px;
       line-height: 1.3;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.65);
     }
 
     .cube-face.front { transform: translateZ(var(--cube-depth)); }
@@ -2859,7 +2879,7 @@
           <div class="history-side-panel">
             <div class="history-cube-panel">
               <div>
-                <h3 data-i18n="historyCubeTitle">六面知识魔方</h3>
+                <h3 data-i18n="historyCubeTitle">材料魔方</h3>
                 <p class="muted" data-i18n="historyCubeHint">拖动旋转，点击六个面查看对应模块。</p>
               </div>
               <div class="cube-viewport" id="cubeViewport">
@@ -2870,9 +2890,9 @@
                   <div class="axis-line x"></div>
                   <div class="axis-line y"></div>
                   <div class="axis-line z"></div>
-                  <button class="axis-label x" type="button" data-axis-view="x">X · Year</button>
-                  <button class="axis-label y" type="button" data-axis-view="y">Y · Pressure</button>
-                  <button class="axis-label z" type="button" data-axis-view="z">Z · Tc</button>
+                  <button class="axis-label x" type="button" data-axis-view="x">Y · Year</button>
+                  <button class="axis-label y" type="button" data-axis-view="y">P · Pressure</button>
+                  <button class="axis-label z" type="button" data-axis-view="z">T · Tc</button>
                   <div id="axisPointLayer"></div>
                   <div id="axisHitLayer" aria-label="Clickable material points"></div>
                   <button class="cube-face front" type="button" data-cube-face="cuprate"><strong>Cuprate</strong><span>1986 · high Tc</span></button>
@@ -2884,14 +2904,14 @@
                 </div>
               </div>
               <div class="axis-legend">
-                <span>X = Year</span>
-                <span>Y = Pressure (GPa)</span>
-                <span>Z = Tc (K)</span>
+                <span>Y = Year</span>
+                <span>P = Pressure (GPa)</span>
+                <span>T = Tc (K)</span>
               </div>
               <div class="axis-view-controls" aria-label="Axis front view controls">
-                <button type="button" data-axis-view="x" data-i18n="axisViewX">正视 X 年份轴</button>
-                <button type="button" data-axis-view="y" data-i18n="axisViewY">正视 Y 压力轴</button>
-                <button type="button" data-axis-view="z" data-i18n="axisViewZ">正视 Z Tc 轴</button>
+                <button type="button" data-axis-view="x" data-i18n="axisViewX">正视 Y 年份轴</button>
+                <button type="button" data-axis-view="y" data-i18n="axisViewY">正视 P 压力轴</button>
+                <button type="button" data-axis-view="z" data-i18n="axisViewZ">正视 T Tc 轴</button>
               </div>
               <div class="cube-controls">
                 <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
@@ -3595,11 +3615,11 @@
         historyPointTitle: "点击图上的点",
         historyPointHint: "选择一个材料点，查看它在超导历史中的简单介绍。",
         historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
-        historyCubeTitle: "六面知识魔方",
-        historyCubeHint: "拖动旋转，点击六个面查看对应模块。",
-        axisViewX: "正视 X 年份轴",
-        axisViewY: "正视 Y 压力轴",
-        axisViewZ: "正视 Z Tc 轴",
+        historyCubeTitle: "材料魔方",
+        historyCubeHint: "拖动旋转，点击网格魔方的六个面查看对应模块。",
+        axisViewX: "正视 Y 年份轴",
+        axisViewY: "正视 P 压力轴",
+        axisViewZ: "正视 T Tc 轴",
         cubeResetBtn: "重置视角",
         cubeZoomLabel: "缩放",
         cubeViewModeCube: "六面魔方",
@@ -3954,11 +3974,11 @@
         historyPointTitle: "Click a point on the chart",
         historyPointHint: "Select a material point to see a short historical note.",
         historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
-        historyCubeTitle: "Six-Face Knowledge Cube",
-        historyCubeHint: "Drag to rotate; click a face to open its module.",
-        axisViewX: "Front view: X year",
-        axisViewY: "Front view: Y pressure",
-        axisViewZ: "Front view: Z Tc",
+        historyCubeTitle: "Material Cube",
+        historyCubeHint: "Drag to rotate; click one of the gridded cube faces to open its module.",
+        axisViewX: "Front view: Y year",
+        axisViewY: "Front view: P pressure",
+        axisViewZ: "Front view: T Tc",
         cubeResetBtn: "Reset View",
         cubeZoomLabel: "Zoom",
         cubeViewModeCube: "Six-Face Cube",
