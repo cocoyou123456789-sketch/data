@@ -1742,14 +1742,15 @@
       --cube-depth: 109px;
       --cube-origin: 52px;
       --axis-size: calc(var(--cube-edge) + 72px);
-      --axis-origin: calc(var(--cube-origin) - 28px);
+      --axis-origin: var(--cube-origin);
       width: 340px;
       height: 340px;
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(var(--cube-x, -18deg)) rotateY(var(--cube-y, 32deg)) scale(var(--cube-scale, 1));
-      transition: transform 0.25s ease;
+      transition: transform 140ms cubic-bezier(0.2, 0.8, 0.2, 1);
       will-change: transform;
+      backface-visibility: hidden;
     }
 
     .history-cube.is-dragging {
@@ -1862,9 +1863,9 @@
       z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(326px, 36px, var(--cube-depth)); }
-    .axis-label.y { transform: translate3d(-72px, -274px, var(--cube-depth)); }
-    .axis-label.z { transform: translate3d(-58px, 42px, -198px); color: #ffb4b4; }
+    .axis-label.x { transform: translate3d(350px, 8px, var(--cube-depth)); }
+    .axis-label.y { transform: translate3d(-44px, -304px, var(--cube-depth)); }
+    .axis-label.z { transform: translate3d(-28px, 14px, -198px); color: #ffb4b4; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -2967,14 +2968,14 @@
         --cube-depth: 105px;
         --cube-origin: 30px;
         --axis-size: calc(var(--cube-edge) + 58px);
-        --axis-origin: calc(var(--cube-origin) - 22px);
+        --axis-origin: var(--cube-origin);
         width: 270px;
         height: 270px;
       }
 
-      .axis-label.x { transform: translate3d(280px, 30px, var(--cube-depth)); }
-      .axis-label.y { transform: translate3d(-60px, -256px, var(--cube-depth)); }
-      .axis-label.z { transform: translate3d(-50px, 38px, -176px); }
+      .axis-label.x { transform: translate3d(292px, 8px, var(--cube-depth)); }
+      .axis-label.y { transform: translate3d(-42px, -278px, var(--cube-depth)); }
+      .axis-label.z { transform: translate3d(-24px, 12px, -176px); }
 
       .milestone-stage,
       .layout-two,
@@ -7360,15 +7361,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
       cubeViewport.addEventListener("wheel", event => {
         event.preventDefault();
-        const zoomStep = event.deltaY < 0 ? 0.06 : -0.06;
+        const zoomStep = event.deltaY < 0 ? 0.04 : -0.04;
         setCubeScale(cubeScale + zoomStep);
       }, { passive: false });
       cubeViewport.addEventListener("pointermove", event => {
         if (!dragging) return;
         const dx = event.clientX - last.x;
         const dy = event.clientY - last.y;
-        cubeRotation.y += dx * 0.45;
-        cubeRotation.x -= dy * 0.35;
+        cubeRotation.y += dx * 0.32;
+        cubeRotation.x -= dy * 0.26;
         last = { x: event.clientX, y: event.clientY };
         requestCubeFrame();
       });
