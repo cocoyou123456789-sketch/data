@@ -1002,11 +1002,14 @@
       border: 1px solid rgba(96,208,255,0.22);
       border-radius: 22px;
       background:
-        radial-gradient(ellipse at 50% 36%, rgba(96,208,255,0.22), transparent 30%),
+        radial-gradient(ellipse at 50% 30%, rgba(96,208,255,0.28), transparent 32%),
+        radial-gradient(ellipse at 50% 86%, rgba(0,0,0,0.66), transparent 58%),
         linear-gradient(180deg, rgba(17,34,50,0.96), rgba(7,12,20,0.96));
-      box-shadow: inset 0 0 58px rgba(96,208,255,0.12), 0 18px 40px rgba(0,0,0,0.24);
+      box-shadow: inset 0 0 58px rgba(96,208,255,0.12), inset 0 -34px 70px rgba(0,0,0,0.42), 0 18px 40px rgba(0,0,0,0.24);
       overflow: hidden;
       isolation: isolate;
+      perspective: 780px;
+      transform-style: preserve-3d;
     }
 
     .roundtable-panel::before {
@@ -1019,7 +1022,7 @@
       background:
         linear-gradient(90deg, transparent 0 49.6%, rgba(96,208,255,0.34) 49.6% 50.4%, transparent 50.4%),
         linear-gradient(0deg, transparent 0 49.6%, rgba(96,208,255,0.22) 49.6% 50.4%, transparent 50.4%);
-      transform: perspective(500px) rotateX(58deg);
+      transform: rotateX(62deg) translateZ(-24px);
       transform-origin: center top;
       filter: drop-shadow(0 0 20px rgba(96,208,255,0.18));
       pointer-events: none;
@@ -1043,17 +1046,40 @@
     .roundtable-surface {
       position: absolute;
       inset: 76px 30px 72px;
-      border: 1px solid rgba(255,255,255,0.24);
+      border: 1px solid rgba(255,255,255,0.28);
       border-radius: 50%;
       background:
-        radial-gradient(ellipse at 50% 50%, rgba(7,16,24,0.92) 0 27%, transparent 28%),
-        radial-gradient(ellipse at 50% 50%, transparent 0 43%, rgba(238,247,255,0.72) 44%, rgba(137,170,186,0.92) 55%, rgba(24,40,52,0.86) 56%, rgba(11,23,34,0.92) 100%),
-        conic-gradient(from 8deg, rgba(255,255,255,0.24), rgba(121,154,170,0.45), rgba(255,255,255,0.18), rgba(77,108,126,0.52), rgba(255,255,255,0.26));
-      box-shadow: inset 0 0 28px rgba(255,255,255,0.2), inset 0 -18px 46px rgba(0,0,0,0.34), 0 18px 30px rgba(0,0,0,0.42);
+        radial-gradient(ellipse at 50% 50%, rgba(7,16,24,0.95) 0 24%, transparent 25%),
+        radial-gradient(ellipse at 50% 43%, transparent 0 43%, rgba(245,252,255,0.78) 44%, rgba(155,190,205,0.94) 52%, rgba(35,56,68,0.92) 57%, rgba(10,21,32,0.98) 100%),
+        conic-gradient(from 18deg, rgba(255,255,255,0.32), rgba(121,154,170,0.48), rgba(255,255,255,0.2), rgba(77,108,126,0.58), rgba(255,255,255,0.3));
+      box-shadow: inset 0 10px 24px rgba(255,255,255,0.28), inset 0 -30px 52px rgba(0,0,0,0.52), 0 34px 28px rgba(0,0,0,0.44);
       pointer-events: none;
-      transform: perspective(520px) rotateX(58deg);
+      transform: rotateX(62deg) translateZ(0);
       transform-origin: center center;
       z-index: 2;
+    }
+
+    .roundtable-surface::before {
+      content: "";
+      position: absolute;
+      inset: 47% 4% -18%;
+      border-radius: 0 0 50% 50%;
+      background:
+        linear-gradient(180deg, rgba(160,220,236,0.34), rgba(13,25,36,0.96) 66%, rgba(4,9,16,0.98));
+      box-shadow: inset 0 -16px 26px rgba(0,0,0,0.56), 0 20px 28px rgba(0,0,0,0.34);
+      transform: translateZ(-22px);
+      z-index: -1;
+    }
+
+    .roundtable-surface::after {
+      content: "";
+      position: absolute;
+      inset: 24% 19%;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 50% 42%, rgba(96,208,255,0.5), transparent 38%),
+        radial-gradient(ellipse at 50% 64%, rgba(0,0,0,0.78), transparent 64%);
+      filter: blur(1px);
     }
 
     .roundtable-center {
@@ -1062,7 +1088,7 @@
       left: 50%;
       width: min(178px, 46%);
       min-height: 108px;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateZ(92px);
       display: grid;
       place-items: center;
       text-align: center;
@@ -1094,7 +1120,7 @@
         linear-gradient(-45deg, transparent 43%, rgba(160,236,255,0.92) 44% 56%, transparent 57%),
         radial-gradient(circle at 50% 50%, rgba(20,184,166,0.3), transparent 64%);
       box-shadow: 0 0 18px rgba(96,208,255,0.75);
-      transform: rotate(45deg);
+      transform: rotate(45deg) translateZ(18px);
     }
 
     .roundtable-center::after {
@@ -1137,8 +1163,10 @@
       line-height: 1.15;
       text-align: center;
       text-transform: uppercase;
-      box-shadow: 0 0 18px rgba(96,208,255,0.2), 0 10px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 0 18px rgba(96,208,255,0.2), 0 18px 24px rgba(0,0,0,0.42);
       overflow: visible;
+      transform-style: preserve-3d;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
     }
 
     .round-module::before {
@@ -1148,7 +1176,7 @@
       top: -25px;
       width: 34px;
       height: 42px;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateZ(26px);
       border: 1px solid rgba(166,238,255,0.72);
       border-radius: 17px 17px 12px 12px;
       background:
@@ -1173,12 +1201,12 @@
       box-shadow: 0 0 14px rgba(96,208,255,0.42);
     }
 
-    .round-module.one { top: 32px; right: 28px; }
-    .round-module.two { top: 32px; left: 28px; }
-    .round-module.three { top: 146px; left: 8px; }
-    .round-module.four { top: 146px; right: 8px; }
-    .round-module.five { bottom: 24px; left: 42px; }
-    .round-module.six { bottom: 24px; right: 42px; }
+    .round-module.one { top: 32px; right: 28px; transform: translateZ(18px) scale(0.94); }
+    .round-module.two { top: 32px; left: 28px; transform: translateZ(18px) scale(0.94); }
+    .round-module.three { top: 146px; left: 8px; transform: translateZ(54px) rotateY(-6deg); }
+    .round-module.four { top: 146px; right: 8px; transform: translateZ(54px) rotateY(6deg); }
+    .round-module.five { bottom: 24px; left: 42px; transform: translateZ(92px) scale(1.05) rotateY(-8deg); }
+    .round-module.six { bottom: 24px; right: 42px; transform: translateZ(92px) scale(1.05) rotateY(8deg); }
 
     .round-module.active,
     .round-module:hover {
@@ -1188,6 +1216,33 @@
         rgba(5,16,26,0.94);
       color: #fff;
       box-shadow: 0 0 28px rgba(96,208,255,0.42), 0 10px 20px rgba(0,0,0,0.32);
+    }
+
+    .round-module.one:hover,
+    .round-module.one.active,
+    .round-module.two:hover,
+    .round-module.two.active {
+      transform: translateZ(36px) scale(1);
+    }
+
+    .round-module.three:hover,
+    .round-module.three.active {
+      transform: translateZ(76px) rotateY(-6deg) translateY(-4px);
+    }
+
+    .round-module.four:hover,
+    .round-module.four.active {
+      transform: translateZ(76px) rotateY(6deg) translateY(-4px);
+    }
+
+    .round-module.five:hover,
+    .round-module.five.active {
+      transform: translateZ(112px) scale(1.08) rotateY(-8deg) translateY(-4px);
+    }
+
+    .round-module.six:hover,
+    .round-module.six.active {
+      transform: translateZ(112px) scale(1.08) rotateY(8deg) translateY(-4px);
     }
 
     .round-module-model {
@@ -1692,6 +1747,7 @@
     .axis-line.x { transform: translateZ(var(--cube-depth)); }
     .axis-line.y { transform: translateZ(var(--cube-depth)) rotateY(-90deg); }
     .axis-line.z {
+      left: calc(var(--axis-origin) + var(--cube-edge));
       transform: translateZ(var(--cube-depth)) rotateZ(-90deg);
       background: repeating-linear-gradient(90deg, #d87979 0 10px, transparent 10px 18px);
     }
