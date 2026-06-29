@@ -1088,7 +1088,7 @@
       left: 50%;
       width: min(178px, 46%);
       min-height: 108px;
-      transform: translateX(-50%) translateZ(92px);
+      transform: translateX(-50%) translateZ(118px);
       display: grid;
       place-items: center;
       text-align: center;
@@ -1106,21 +1106,11 @@
         rgba(7,22,32,0.76);
       box-shadow: 0 0 26px rgba(96,208,255,0.34), inset 0 0 22px rgba(20,184,166,0.18);
       z-index: 5;
+      transform-style: preserve-3d;
     }
 
     .roundtable-center::before {
-      content: "";
-      width: 52px;
-      height: 52px;
-      margin-bottom: 4px;
-      border: 1px solid rgba(160,236,255,0.84);
-      border-radius: 10px;
-      background:
-        linear-gradient(45deg, transparent 43%, rgba(160,236,255,0.92) 44% 56%, transparent 57%),
-        linear-gradient(-45deg, transparent 43%, rgba(160,236,255,0.92) 44% 56%, transparent 57%),
-        radial-gradient(circle at 50% 50%, rgba(20,184,166,0.3), transparent 64%);
-      box-shadow: 0 0 18px rgba(96,208,255,0.75);
-      transform: rotate(45deg) translateZ(18px);
+      content: none;
     }
 
     .roundtable-center::after {
@@ -1147,23 +1137,59 @@
       font-size: 12px;
     }
 
+    .center-crystal {
+      position: relative;
+      width: 72px;
+      height: 58px;
+      margin-bottom: 8px;
+      transform: rotateX(-24deg) rotateY(38deg) translateZ(28px);
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 18px 18px rgba(0,0,0,0.46)) drop-shadow(0 0 18px rgba(96,208,255,0.72));
+    }
+
+    .center-crystal span {
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(196,248,255,0.9);
+      background: rgba(24,184,204,0.34);
+      box-shadow: inset 0 0 18px rgba(255,255,255,0.24);
+    }
+
+    .center-crystal .front {
+      transform: translateZ(28px);
+      background:
+        linear-gradient(135deg, rgba(230,255,255,0.9), rgba(57,205,224,0.32) 42%, rgba(7,22,32,0.78)),
+        linear-gradient(45deg, transparent 47%, rgba(255,255,255,0.88) 48% 52%, transparent 53%);
+    }
+
+    .center-crystal .top {
+      height: 56px;
+      transform-origin: top;
+      transform: rotateX(90deg) translateY(-28px);
+      background: linear-gradient(135deg, rgba(255,255,255,0.86), rgba(96,208,255,0.42));
+    }
+
+    .center-crystal .right {
+      width: 56px;
+      left: auto;
+      transform-origin: right;
+      transform: rotateY(90deg) translateX(28px);
+      background: linear-gradient(135deg, rgba(42,118,142,0.72), rgba(5,18,28,0.9));
+    }
+
     .round-module {
       position: absolute;
       z-index: 3;
-      width: 92px;
-      min-height: 62px;
-      padding: 32px 6px 7px;
-      border-color: rgba(96,208,255,0.54);
-      border-radius: 10px;
-      background:
-        linear-gradient(180deg, rgba(96,208,255,0.13), rgba(20,184,166,0.05)),
-        rgba(5,16,26,0.9);
+      width: 104px;
+      height: 76px;
+      padding: 0;
+      border: 0;
+      background: transparent;
       color: #dffaff;
       font-size: 9px;
       line-height: 1.15;
       text-align: center;
       text-transform: uppercase;
-      box-shadow: 0 0 18px rgba(96,208,255,0.2), 0 18px 24px rgba(0,0,0,0.42);
       overflow: visible;
       transform-style: preserve-3d;
       transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
@@ -1173,32 +1199,78 @@
       content: "";
       position: absolute;
       left: 50%;
-      top: -25px;
-      width: 34px;
-      height: 42px;
-      transform: translateX(-50%) translateZ(26px);
+      bottom: -18px;
+      width: 96px;
+      height: 28px;
+      transform: translateX(-50%) rotateX(72deg) translateZ(-26px);
       border: 1px solid rgba(166,238,255,0.72);
-      border-radius: 17px 17px 12px 12px;
+      border-radius: 50%;
       background:
-        radial-gradient(circle at 50% 28%, rgba(255,255,255,0.9) 0 4px, transparent 5px),
-        linear-gradient(90deg, transparent 0 46%, rgba(166,238,255,0.72) 46% 54%, transparent 54%),
-        linear-gradient(180deg, rgba(230,250,255,0.86), rgba(62,108,130,0.82));
-      box-shadow: 0 0 18px rgba(96,208,255,0.78);
+        radial-gradient(ellipse at center, rgba(96,208,255,0.38), rgba(5,12,20,0.4) 58%, transparent 72%);
+      box-shadow: 0 0 18px rgba(96,208,255,0.38);
     }
 
     .round-module::after {
-      content: "";
+      content: none;
+    }
+
+    .module-cube {
       position: absolute;
-      left: 12px;
-      right: 12px;
-      top: 12px;
-      height: 18px;
-      border: 1px solid rgba(96,208,255,0.64);
-      border-radius: 6px;
+      inset: 0;
+      transform: rotateX(-18deg) rotateY(-28deg);
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 20px 18px rgba(0,0,0,0.42));
+    }
+
+    .module-cube-face {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(96,208,255,0.7);
+      box-shadow: inset 0 0 18px rgba(96,208,255,0.18);
+      backface-visibility: hidden;
+    }
+
+    .module-cube-face.front {
+      inset: 0;
+      border-radius: 10px;
+      padding: 10px 8px;
       background:
-        linear-gradient(90deg, transparent 0 18%, rgba(96,208,255,0.74) 18% 22%, transparent 22% 40%, rgba(96,208,255,0.54) 40% 45%, transparent 45% 100%),
-        rgba(21,67,88,0.48);
-      box-shadow: 0 0 14px rgba(96,208,255,0.42);
+        linear-gradient(180deg, rgba(31,184,199,0.32), rgba(7,18,28,0.94)),
+        radial-gradient(circle at 50% 8%, rgba(255,255,255,0.34), transparent 28%);
+      transform: translateZ(28px);
+    }
+
+    .module-cube-face.top {
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 56px;
+      border-radius: 10px 10px 0 0;
+      background:
+        linear-gradient(135deg, rgba(170,244,255,0.58), rgba(34,106,128,0.55)),
+        repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,255,255,0.18) 18px 19px);
+      transform-origin: top;
+      transform: rotateX(90deg) translateY(-28px);
+    }
+
+    .module-cube-face.right {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 56px;
+      border-radius: 0 10px 10px 0;
+      background:
+        linear-gradient(135deg, rgba(25,98,122,0.76), rgba(3,12,20,0.96)),
+        repeating-linear-gradient(0deg, transparent 0 17px, rgba(96,208,255,0.18) 17px 18px);
+      transform-origin: right;
+      transform: rotateY(90deg) translateX(28px);
+    }
+
+    .round-module.active .module-cube-face,
+    .round-module:hover .module-cube-face {
+      border-color: rgba(202,255,255,0.96);
+      box-shadow: inset 0 0 20px rgba(96,208,255,0.34), 0 0 18px rgba(96,208,255,0.5);
     }
 
     .round-module.one { top: 32px; right: 28px; transform: translateZ(18px) scale(0.94); }
@@ -1210,12 +1282,7 @@
 
     .round-module.active,
     .round-module:hover {
-      border-color: var(--accent-glow);
-      background:
-        linear-gradient(180deg, rgba(96,208,255,0.28), rgba(20,184,166,0.16)),
-        rgba(5,16,26,0.94);
       color: #fff;
-      box-shadow: 0 0 28px rgba(96,208,255,0.42), 0 10px 20px rgba(0,0,0,0.32);
     }
 
     .round-module.one:hover,
@@ -2971,21 +3038,38 @@
 
       .round-module {
         font-size: 9px;
-        width: 86px;
-        min-height: 56px;
-        padding: 30px 6px 6px;
+        width: 88px;
+        height: 64px;
       }
 
       .round-module::before {
-        width: 32px;
-        height: 40px;
-        top: -24px;
+        top: auto;
+        bottom: -16px;
+        width: 78px;
+        height: 22px;
       }
 
       .round-module::after {
-        left: 12px;
-        right: 12px;
-        height: 18px;
+        content: none;
+      }
+
+      .module-cube-face.top {
+        height: 46px;
+        transform: rotateX(90deg) translateY(-23px);
+      }
+
+      .module-cube-face.right {
+        width: 46px;
+        transform: rotateY(90deg) translateX(23px);
+      }
+
+      .module-cube-face.front {
+        transform: translateZ(23px);
+      }
+
+      .center-crystal {
+        width: 58px;
+        height: 46px;
       }
 
       .round-module.one { top: 28px; right: 26px; }
@@ -3357,30 +3441,49 @@
             <div class="roundtable-panel" aria-label="Module round table">
               <div class="roundtable-surface"></div>
               <button class="round-module one active" type="button" data-ai-model="gpt-4.1-mini">
-                <span class="round-module-model">GPT</span>
-                <span class="round-module-role">general reasoning</span>
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model">GPT</span><span class="round-module-role">general reasoning</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
               </button>
               <button class="round-module two" type="button" data-ai-model="claude-3-5-sonnet">
-                <span class="round-module-model">Claude</span>
-                <span class="round-module-role">long papers</span>
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model">Claude</span><span class="round-module-role">long papers</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
               </button>
               <button class="round-module three" type="button" data-ai-model="gemini-1.5-pro">
-                <span class="round-module-model">Gemini</span>
-                <span class="round-module-role">figures + data</span>
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model">Gemini</span><span class="round-module-role">figures + data</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
               </button>
               <button class="round-module four" type="button" data-ai-model="llama-3.1-70b">
-                <span class="round-module-model">Llama</span>
-                <span class="round-module-role">local model</span>
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model">Llama</span><span class="round-module-role">local model</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
               </button>
               <button class="round-module five" type="button" data-ai-model="deepseek-r1">
-                <span class="round-module-model">DeepSeek</span>
-                <span class="round-module-role">math + code</span>
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model">DeepSeek</span><span class="round-module-role">math + code</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
               </button>
               <button class="round-module six" type="button" data-ai-model="arpes-rules-preview">
-                <span class="round-module-model">ARPES</span>
-                <span class="round-module-role">rule preview</span>
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model">ARPES</span><span class="round-module-role">rule preview</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
               </button>
               <div class="roundtable-center">
+                <span class="center-crystal" aria-hidden="true"><span class="front"></span><span class="top"></span><span class="right"></span></span>
                 <strong data-i18n="aiRoundtableTitle">AI model roundtable</strong>
                 <span data-i18n="aiRoundtableHint">选择一个席位，把模型接口切换到对应 AI model。</span>
               </div>
@@ -5993,7 +6096,7 @@
           }
           const targetId = btn.dataset.moduleTarget;
           const [titleKey, hintKey] = moduleHints[targetId] || ["moduleMaterialIndex", "moduleMaterialIndexHint"];
-          center.innerHTML = `<strong>${esc(t(titleKey))}</strong><span>${esc(t(hintKey))}</span>`;
+          center.innerHTML = `${roundtableCenterCrystalHtml()}<strong>${esc(t(titleKey))}</strong><span>${esc(t(hintKey))}</span>`;
           const target = document.getElementById(targetId);
           if (targetId === "advancedLibrary" || targetId === "section-search") showAppPage("literature");
           else if (targetId === "section-hdf5") showAppPage("data");
@@ -6028,7 +6131,11 @@
       if (!center) return;
       const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-4.1-mini"];
       const hint = currentLang === "zh" ? model.zh : model.en;
-      center.innerHTML = `<strong>${esc(model.title)}</strong><span>${esc(modelName)} · ${esc(hint)}</span>`;
+      center.innerHTML = `${roundtableCenterCrystalHtml()}<strong>${esc(model.title)}</strong><span>${esc(modelName)} · ${esc(hint)}</span>`;
+    }
+
+    function roundtableCenterCrystalHtml() {
+      return `<span class="center-crystal" aria-hidden="true"><span class="front"></span><span class="top"></span><span class="right"></span></span>`;
     }
 
     function addChatMessage(role, text) {
