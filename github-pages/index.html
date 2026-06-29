@@ -1342,9 +1342,9 @@
     }
 
     .history-cube {
-      --cube-edge: 250px;
-      --cube-depth: 125px;
-      --cube-origin: 40px;
+      --cube-edge: 218px;
+      --cube-depth: 109px;
+      --cube-origin: 52px;
       --axis-size: 250px;
       --axis-origin: 36px;
       width: 340px;
@@ -1408,8 +1408,16 @@
       background: linear-gradient(90deg, #d87979, rgba(216,121,121,0.1));
     }
 
+    .cube-view-cube .axis-plane {
+      display: block;
+      background: transparent;
+      border-color: rgba(96,208,255,0.28);
+      opacity: 0.74;
+      z-index: 2;
+    }
+
     .cube-view-cube .axis-line {
-      z-index: 18;
+      z-index: 6;
       height: 3px;
       box-shadow: 0 0 18px rgba(96,208,255,0.52);
     }
@@ -1635,7 +1643,6 @@
     .cube-face.top { border-color: rgba(96,208,255,0.62); }
     .cube-face.bottom { border-color: rgba(176,103,189,0.62); }
 
-    .cube-view-cube .axis-plane,
     .cube-view-cube #axisPointLayer,
     .cube-view-cube #axisHitLayer {
       display: none;
@@ -1644,6 +1651,7 @@
     .cube-view-cube .cube-face {
       pointer-events: auto;
       opacity: 0.96;
+      z-index: 10;
     }
 
     .cube-view-cube .cube-face:hover,
