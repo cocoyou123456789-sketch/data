@@ -377,39 +377,35 @@
     }
 
     .top-menu-bar {
+      grid-column: 1;
+      grid-row: 1 / span 20;
       position: sticky;
-      top: 0;
+      top: 90px;
+      align-self: start;
       z-index: 28;
       display: grid;
-      grid-template-columns: minmax(176px, 0.9fr) repeat(6, minmax(0, 1fr));
-      border-bottom: 3px solid rgba(20,184,166,0.25);
+      grid-template-columns: 1fr;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
       background: #315184;
       box-shadow: 0 8px 22px rgba(0,0,0,0.28);
-    }
-
-    .module-menu-title {
-      min-height: 56px;
-      display: grid;
-      align-content: center;
-      padding: 8px 18px;
-      border-right: 1px solid rgba(255,255,255,0.18);
-      background: rgba(6,17,27,0.2);
-      color: rgba(255,255,255,0.88);
-      font-size: 13px;
-      font-weight: 760;
-      letter-spacing: 0;
+      overflow: hidden;
     }
 
     .top-menu-btn {
       min-height: 56px;
       border: 0;
-      border-right: 1px solid rgba(255,255,255,0.16);
+      border-bottom: 1px solid rgba(255,255,255,0.16);
       border-radius: 0;
       background: transparent;
       color: #ffffff;
       font-size: 16px;
       font-weight: 820;
       letter-spacing: 0;
+    }
+
+    .top-menu-btn:last-child {
+      border-bottom: 0;
     }
 
     .top-menu-btn:hover,
@@ -421,7 +417,7 @@
     }
 
     .toc-panel {
-      display: grid;
+      display: none;
       grid-column: 1;
       grid-row: 1 / span 20;
       position: sticky;
@@ -1514,15 +1510,6 @@
       background: transparent;
     }
 
-    .axis-point.is-core {
-      opacity: 0.96;
-    }
-
-    .axis-point.is-core::before {
-      width: 18px;
-      height: 18px;
-    }
-
     .axis-point:hover,
     .axis-point.active {
       opacity: 1;
@@ -1601,18 +1588,20 @@
       bottom: var(--cube-origin);
       width: var(--cube-edge);
       height: var(--cube-edge);
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 8px;
+      border: 1px solid rgba(210,244,255,0.34);
+      border-radius: 6px;
       background:
-        linear-gradient(90deg, transparent 32.6%, rgba(255,255,255,0.18) 33%, rgba(255,255,255,0.18) 33.7%, transparent 34.1%),
-        linear-gradient(90deg, transparent 65.9%, rgba(255,255,255,0.18) 66.3%, rgba(255,255,255,0.18) 67%, transparent 67.4%),
-        linear-gradient(0deg, transparent 32.6%, rgba(255,255,255,0.18) 33%, rgba(255,255,255,0.18) 33.7%, transparent 34.1%),
-        linear-gradient(0deg, transparent 65.9%, rgba(255,255,255,0.18) 66.3%, rgba(255,255,255,0.18) 67%, transparent 67.4%),
-        linear-gradient(145deg, rgba(23,36,51,0.94), rgba(10,16,24,0.88)),
-        rgba(13,21,32,0.88);
+        linear-gradient(90deg, rgba(210,244,255,0.28) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(210,244,255,0.28) 1px, transparent 1px),
+        linear-gradient(145deg, rgba(96,208,255,0.16), rgba(255,255,255,0.035) 46%, rgba(20,184,166,0.10));
+      background-size:
+        calc(var(--cube-edge) / 3) calc(var(--cube-edge) / 3),
+        calc(var(--cube-edge) / 3) calc(var(--cube-edge) / 3),
+        100% 100%;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.12),
-        0 12px 36px rgba(0,0,0,0.18);
+        inset 0 0 24px rgba(210,244,255,0.045),
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        0 0 18px rgba(96,208,255,0.06);
       display: grid;
       align-content: center;
       gap: 6px;
@@ -1621,14 +1610,20 @@
       backface-visibility: hidden;
       cursor: pointer;
       pointer-events: none;
+      backdrop-filter: blur(1px);
     }
 
     .cube-face::after {
       content: "";
       position: absolute;
-      inset: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 6px;
+      inset: 0;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: inherit;
+      background:
+        linear-gradient(90deg, transparent calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
+        linear-gradient(90deg, transparent calc(66.666% - 1px), rgba(255,255,255,0.16) calc(66.666% - 1px), rgba(255,255,255,0.16) calc(66.666% + 1px), transparent calc(66.666% + 1px)),
+        linear-gradient(0deg, transparent calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
+        linear-gradient(0deg, transparent calc(66.666% - 1px), rgba(255,255,255,0.16) calc(66.666% - 1px), rgba(255,255,255,0.16) calc(66.666% + 1px), transparent calc(66.666% + 1px));
       pointer-events: none;
     }
 
@@ -1652,12 +1647,12 @@
     .cube-face.top { transform: rotateX(90deg) translateZ(var(--cube-depth)); }
     .cube-face.bottom { transform: rotateX(-90deg) translateZ(var(--cube-depth)); }
 
-    .cube-face.front { border-color: rgba(76,154,176,0.62); }
-    .cube-face.back { border-color: rgba(118,169,106,0.62); }
-    .cube-face.right { border-color: rgba(233,154,49,0.62); }
-    .cube-face.left { border-color: rgba(106,163,111,0.62); }
-    .cube-face.top { border-color: rgba(96,208,255,0.62); }
-    .cube-face.bottom { border-color: rgba(176,103,189,0.62); }
+    .cube-face.front { border-color: rgba(76,154,176,0.66); background-color: rgba(76,154,176,0.08); }
+    .cube-face.back { border-color: rgba(118,169,106,0.62); background-color: rgba(118,169,106,0.07); }
+    .cube-face.right { border-color: rgba(233,154,49,0.62); background-color: rgba(233,154,49,0.07); }
+    .cube-face.left { border-color: rgba(106,163,111,0.62); background-color: rgba(106,163,111,0.07); }
+    .cube-face.top { border-color: rgba(96,208,255,0.64); background-color: rgba(96,208,255,0.08); }
+    .cube-face.bottom { border-color: rgba(176,103,189,0.62); background-color: rgba(176,103,189,0.07); }
 
     .cube-view-cube #axisPointLayer,
     .cube-view-cube #axisHitLayer {
@@ -2352,12 +2347,11 @@
       header { align-items: flex-start; flex-direction: column; }
       main { grid-template-columns: 1fr; }
       .top-menu-bar {
+        grid-column: 1;
+        grid-row: auto;
+        position: relative;
+        top: 0;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-      .module-menu-title {
-        grid-column: 1 / -1;
-        min-height: 42px;
-        text-align: center;
       }
       main > section, main > details, .toc-panel { grid-column: 1; }
       .toc-panel {
@@ -2845,17 +2839,15 @@
     </div>
   </header>
 
-  <nav class="top-menu-bar" aria-label="Main navigation">
-    <span class="module-menu-title" data-i18n="moduleSelectTitle">选择知识模块</span>
-    <button class="top-menu-btn active" type="button" data-page-tab="history" data-i18n="topMenuHome">历史</button>
-    <button class="top-menu-btn" type="button" data-page-tab="materials" data-i18n="topMenuMaterials">材料</button>
-    <button class="top-menu-btn" type="button" data-page-tab="literature" data-i18n="topMenuLiterature">文献</button>
-    <button class="top-menu-btn" type="button" data-page-tab="data" data-i18n="topMenuData">数据</button>
-    <button class="top-menu-btn" type="button" data-page-tab="model" data-i18n="topMenuModel">模型</button>
-    <button class="top-menu-btn" type="button" data-page-tab="report" data-i18n="topMenuReport">报告</button>
-  </nav>
-
   <main>
+    <nav class="top-menu-bar" aria-label="Main navigation">
+      <button class="top-menu-btn active" type="button" data-page-tab="history" data-i18n="topMenuHome">历史</button>
+      <button class="top-menu-btn" type="button" data-page-tab="materials" data-i18n="topMenuMaterials">材料</button>
+      <button class="top-menu-btn" type="button" data-page-tab="literature" data-i18n="topMenuLiterature">文献</button>
+      <button class="top-menu-btn" type="button" data-page-tab="data" data-i18n="topMenuData">数据</button>
+      <button class="top-menu-btn" type="button" data-page-tab="model" data-i18n="topMenuModel">模型</button>
+      <button class="top-menu-btn" type="button" data-page-tab="report" data-i18n="topMenuReport">报告</button>
+    </nav>
     <aside class="toc-panel" aria-label="Module directory">
       <h2 data-i18n="tocTitle">模块</h2>
       <nav class="toc-list" id="tocList"></nav>
@@ -2918,9 +2910,7 @@
                 <button id="cubeResetBtn" type="button" data-i18n="cubeResetBtn">重置视角</button>
                 <button id="cubeViewModeBtn" type="button" data-i18n="cubeViewModeCube" hidden>六面魔方</button>
                 <button id="axisModeBtn" type="button" data-i18n="axisModeShowAll" hidden>显示全部点</button>
-                <label data-label-i18n="cubeZoomLabel">缩放
-                  <input id="cubeZoom" type="range" min="70" max="140" value="100">
-                </label>
+                <span class="cube-zoom-hint" data-i18n="cubeZoomHint">滚轮缩放</span>
               </div>
               <div class="cube-face-picker" id="cubeFacePicker" aria-label="Cube face selector"></div>
               <div class="cube-readout" id="cubeReadout" data-i18n="cubeReadoutDefault">点击魔方的一个面查看对应材料家族。</div>
@@ -3031,6 +3021,7 @@
           </select>
           <button class="primary" id="searchBtn">🔍 搜索</button>
           <button id="resetBtn">🔄 重置 Reset</button>
+          <button id="clearAllBtn" data-i18n="clearAllBtn">🧹 清除全部 Clear All</button>
           <button id="compareBtn" style="border-color:var(--accent-glow);">📊 对比 (<span id="compareCount">0</span>)</button>
         </div>
         <div class="metric-grid" id="metrics"></div>
@@ -3469,7 +3460,6 @@
         focusHistoryHint: "3D Tc-年份-压力图。",
         focusExploreTitle: "材料",
         focusExploreHint: "元素、文献和数据。",
-        moduleSelectTitle: "选择知识模块",
         topMenuHome: "历史",
         topMenuMaterials: "材料",
         topMenuLiterature: "文献",
@@ -3570,6 +3560,7 @@
         allTypes: "全部类型",
         searchBtn: "🔍 搜索",
         resetBtn: "🔄 重置",
+        clearAllBtn: "🧹 清除全部",
         compareBtn: "📊 对比",
         keywordSearchTitle: "🏷️ 搜索关键词",
         keywordSearchHint: "点击关键词快速筛选文章、图表和材料",
@@ -3622,7 +3613,7 @@
         axisViewY: "正视 P 压力轴",
         axisViewZ: "正视 T Tc 轴",
         cubeResetBtn: "重置视角",
-        cubeZoomLabel: "缩放",
+        cubeZoomHint: "滚轮缩放",
         cubeViewModeCube: "六面魔方",
         cubeViewModeAxis: "三轴坐标",
         axisModeShowAll: "显示全部点",
@@ -3828,7 +3819,6 @@
         focusHistoryHint: "3D Tc-year-pressure view.",
         focusExploreTitle: "Materials",
         focusExploreHint: "Elements, papers, and data.",
-        moduleSelectTitle: "Choose module",
         topMenuHome: "History",
         topMenuMaterials: "Materials",
         topMenuLiterature: "Papers",
@@ -3929,6 +3919,7 @@
         allTypes: "All Types",
         searchBtn: "🔍 Search",
         resetBtn: "🔄 Reset",
+        clearAllBtn: "🧹 Clear All",
         compareBtn: "📊 Compare",
         keywordSearchTitle: "🏷️ Search Keywords",
         keywordSearchHint: "Click a keyword to filter articles, figures, and materials",
@@ -3981,7 +3972,7 @@
         axisViewY: "Front view: P pressure",
         axisViewZ: "Front view: T Tc",
         cubeResetBtn: "Reset View",
-        cubeZoomLabel: "Zoom",
+        cubeZoomHint: "Mouse wheel zoom",
         cubeViewModeCube: "Six-Face Cube",
         cubeViewModeAxis: "3-Axis Plot",
         axisModeShowAll: "Show All Points",
@@ -4214,6 +4205,7 @@
       document.querySelector("#superconductorBtn").innerHTML = t("superconductorBtn");
       document.querySelector("#searchBtn").innerHTML = t("searchBtn");
       document.querySelector("#resetBtn").innerHTML = t("resetBtn");
+      document.querySelector("#clearAllBtn").innerHTML = t("clearAllBtn");
       document.querySelector("#compareBtn").innerHTML = t("compareBtn") + ` (<span id="compareCount">${state.compareSet.size}</span>)`;
       compareCount = $("#compareCount");
       document.querySelector("#saveOurDataBtn").innerHTML = t("saveBtn");
@@ -4268,6 +4260,7 @@
     const sourceTypeFilter = $("#sourceTypeFilter");
     const searchBtn = $("#searchBtn");
     const resetBtn = $("#resetBtn");
+    const clearAllBtn = $("#clearAllBtn");
     const compareBtn = $("#compareBtn");
     const keywordChips = $("#keywordChips");
     const loginScreen = $("#loginScreen");
@@ -4307,7 +4300,6 @@
     const cubeChatGuide = $("#cubeChatGuide");
     const historyCube = $("#historyCube");
     const cubeViewport = $("#cubeViewport");
-    const cubeZoom = $("#cubeZoom");
     const cubeResetBtn = $("#cubeResetBtn");
     const cubeReadout = $("#cubeReadout");
     const cubeFacePicker = $("#cubeFacePicker");
@@ -4859,16 +4851,24 @@
       }
     }
     searchBtn.addEventListener("click", applyFilters);
-    resetBtn.addEventListener("click", () => {
+    function clearAllFilters() {
       state.selectedElement = "";
       searchInput.value = "";
       familyFilter.value = "";
       regionFilter.value = "";
       sourceTypeFilter.value = "";
+      figFilterType = "all";
+      figShowLimit = 12;
+      document.querySelectorAll(".fig-filter-chip").forEach(chip => {
+        chip.classList.toggle("active", chip.dataset.figtype === "all");
+      });
       state.compareSet.clear();
       updateCompareUI();
+      comparePanel.classList.remove("active");
       applyFilters();
-    });
+    }
+    resetBtn.addEventListener("click", clearAllFilters);
+    clearAllBtn.addEventListener("click", clearAllFilters);
     compareBtn.addEventListener("click", () => {
       if (state.compareSet.size === 0) {
         showToast(t("selectCompare"));
@@ -6321,6 +6321,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     let cubeRotation = { x: -18, y: 32 };
+    let cubeScale = 1;
     let axisMode = "core";
     let cubeViewMode = "cube";
     let activeCubeFace = "";
@@ -6367,10 +6368,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function applyCubeTransform() {
       if (!historyCube) return;
-      const scale = cubeZoom ? Number(cubeZoom.value) / 100 : 1;
       historyCube.style.setProperty("--cube-x", `${cubeRotation.x}deg`);
       historyCube.style.setProperty("--cube-y", `${cubeRotation.y}deg`);
-      historyCube.style.setProperty("--cube-scale", String(scale));
+      historyCube.style.setProperty("--cube-scale", String(cubeScale));
+    }
+
+    function setCubeScale(nextScale) {
+      cubeScale = Math.max(0.7, Math.min(1.4, nextScale));
+      applyCubeTransform();
     }
 
     function getCubeMetric(name, fallback) {
@@ -6395,7 +6400,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       activeCubeFace = faceKey || "cuprate";
       cubeViewMode = "cube";
       cubeRotation = cubeFaceViews[activeCubeFace] || { x: -18, y: 32 };
-      if (cubeZoom) cubeZoom.value = "105";
+      cubeScale = 1.05;
       applyCubeTransform();
       applyCubeViewMode();
       renderCubeFaceReadout(activeCubeFace);
@@ -6431,7 +6436,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         z: { x: -90, y: 0 }
       };
       cubeRotation = views[axis] || { x: -18, y: 32 };
-      if (cubeZoom) cubeZoom.value = "110";
+      cubeScale = 1.1;
       applyCubeTransform();
       applyCubeViewMode();
       axisViewButtons.forEach(button => {
@@ -6486,25 +6491,22 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         };
         return lanes[family] ?? 8;
       };
-      const sourcePoints = axisMode === "core"
-        ? historyChartPoints.filter(point => coreAxisPointIds.has(point.id))
-        : historyChartPoints;
+      const sourcePoints = historyChartPoints;
       const axisSize = getCubeMetric("--axis-size", 250);
       const plottedPoints = sourcePoints.map((point, index) => {
         const year = Number(point.year);
         const tc = parseFloat(point.tc) || 0;
         const pressure = estimatePressureGPa(point);
-        const jitter = axisMode === "core" ? 0 : ((index % 5) - 2) * 2.8;
+        const jitter = ((index % 5) - 2) * 2.8;
         const pressureLane = pressure ? pressure : familyLane(point.family || "");
         const px = Math.max(0, Math.min(axisSize, ((year - yearMin) / (yearMax - yearMin)) * axisSize + jitter));
         const py = Math.max(0, Math.min(axisSize, (pressureLane / pressureMax) * axisSize));
-        const pz = Math.max(0, Math.min(axisSize, (tc / tcMax) * axisSize + (axisMode === "core" ? 0 : ((index % 3) - 1) * 2)));
+        const pz = Math.max(0, Math.min(axisSize, (tc / tcMax) * axisSize + ((index % 3) - 1) * 2));
         const color = colors[point.family] || "#14b8a6";
-        const coreClass = coreAxisPointIds.has(point.id) ? " is-core" : "";
-        return { point, pressure, px, py, pz, color, coreClass };
+        return { point, pressure, px, py, pz, color };
       });
-      axisPointLayer.innerHTML = plottedPoints.map(({ point, pressure, px, py, pz, color, coreClass }) => {
-        return `<button class="axis-point${coreClass}" type="button" data-history-point="${esc(point.id)}"
+      axisPointLayer.innerHTML = plottedPoints.map(({ point, pressure, px, py, pz, color }) => {
+        return `<button class="axis-point" type="button" data-history-point="${esc(point.id)}"
           style="--px:${px.toFixed(1)}px;--py:${py.toFixed(1)}px;--pz:${pz.toFixed(1)}px;--point-color:${esc(color)}"
           onclick="window.__selectAxisPoint && window.__selectAxisPoint(this)"
           onpointerdown="window.__selectAxisPoint && window.__selectAxisPoint(this)"
@@ -6589,7 +6591,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       renderAxisPoints();
       renderCubeFacePicker();
       renderCubeFaceReadout(activeCubeFace || "cuprate");
-      cubeZoom?.addEventListener("input", applyCubeTransform);
       historyCube.querySelectorAll(".cube-face").forEach(face => {
         face.addEventListener("click", () => selectCubeFace(face.dataset.cubeFace));
       });
@@ -6598,7 +6599,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (cubeViewMode === "cube") {
           activeCubeFace = "";
           cubeRotation = { x: -18, y: 32 };
-          if (cubeZoom) cubeZoom.value = "95";
+          cubeScale = 0.95;
           applyCubeTransform();
         }
         applyCubeViewMode();
@@ -6612,7 +6613,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         cubeRotation = { x: -18, y: 32 };
         activeCubeFace = "";
         cubeViewMode = "cube";
-        if (cubeZoom) cubeZoom.value = "100";
+        cubeScale = 1;
         applyCubeTransform();
         applyCubeViewMode();
         axisViewButtons.forEach(button => button.classList.remove("active"));
@@ -6642,6 +6643,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         last = { x: event.clientX, y: event.clientY };
         cubeViewport.setPointerCapture?.(event.pointerId);
       });
+      cubeViewport.addEventListener("wheel", event => {
+        event.preventDefault();
+        const zoomStep = event.deltaY < 0 ? 0.06 : -0.06;
+        setCubeScale(cubeScale + zoomStep);
+      }, { passive: false });
       cubeViewport.addEventListener("pointermove", event => {
         if (!dragging) return;
         const dx = event.clientX - last.x;
