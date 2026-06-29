@@ -106,16 +106,16 @@
       margin: 0 auto;
       padding: 22px clamp(14px, 3vw, 36px) 42px;
       display: grid;
-      grid-template-columns: 210px minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 16px;
       position: relative;
       z-index: 1;
     }
 
-    main > section { grid-column: 2; }
+    main > section { grid-column: 1; }
 
     main > details {
-      grid-column: 2;
+      grid-column: 1;
     }
 
     section {
@@ -377,25 +377,22 @@
     }
 
     .top-menu-bar {
-      grid-column: 1;
-      grid-row: 1 / span 20;
       position: sticky;
-      top: 90px;
-      align-self: start;
+      top: 0;
       z-index: 28;
       display: grid;
-      grid-template-columns: 1fr;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 8px;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      border-top: 1px solid rgba(255,255,255,0.12);
+      border-bottom: 1px solid rgba(96,208,255,0.2);
       background: #315184;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.28);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.24);
       overflow: hidden;
     }
 
     .top-menu-btn {
       min-height: 56px;
       border: 0;
-      border-bottom: 1px solid rgba(255,255,255,0.16);
+      border-right: 1px solid rgba(255,255,255,0.16);
       border-radius: 0;
       background: transparent;
       color: #ffffff;
@@ -405,7 +402,7 @@
     }
 
     .top-menu-btn:last-child {
-      border-bottom: 0;
+      border-right: 0;
     }
 
     .top-menu-btn:hover,
@@ -2839,15 +2836,16 @@
     </div>
   </header>
 
+  <nav class="top-menu-bar" aria-label="Main navigation">
+    <button class="top-menu-btn active" type="button" data-page-tab="history" data-i18n="topMenuHome">历史</button>
+    <button class="top-menu-btn" type="button" data-page-tab="materials" data-i18n="topMenuMaterials">材料</button>
+    <button class="top-menu-btn" type="button" data-page-tab="literature" data-i18n="topMenuLiterature">文献</button>
+    <button class="top-menu-btn" type="button" data-page-tab="data" data-i18n="topMenuData">数据</button>
+    <button class="top-menu-btn" type="button" data-page-tab="model" data-i18n="topMenuModel">模型</button>
+    <button class="top-menu-btn" type="button" data-page-tab="report" data-i18n="topMenuReport">报告</button>
+  </nav>
+
   <main>
-    <nav class="top-menu-bar" aria-label="Main navigation">
-      <button class="top-menu-btn active" type="button" data-page-tab="history" data-i18n="topMenuHome">历史</button>
-      <button class="top-menu-btn" type="button" data-page-tab="materials" data-i18n="topMenuMaterials">材料</button>
-      <button class="top-menu-btn" type="button" data-page-tab="literature" data-i18n="topMenuLiterature">文献</button>
-      <button class="top-menu-btn" type="button" data-page-tab="data" data-i18n="topMenuData">数据</button>
-      <button class="top-menu-btn" type="button" data-page-tab="model" data-i18n="topMenuModel">模型</button>
-      <button class="top-menu-btn" type="button" data-page-tab="report" data-i18n="topMenuReport">报告</button>
-    </nav>
     <aside class="toc-panel" aria-label="Module directory">
       <h2 data-i18n="tocTitle">模块</h2>
       <nav class="toc-list" id="tocList"></nav>
