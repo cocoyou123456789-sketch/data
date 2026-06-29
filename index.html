@@ -413,6 +413,46 @@
       box-shadow: none;
     }
 
+    .module-select-page {
+      grid-column: 1;
+    }
+
+    .module-select-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .module-select-card {
+      min-height: 154px;
+      display: grid;
+      align-content: space-between;
+      gap: 14px;
+      text-align: left;
+      border-color: rgba(96,208,255,0.24);
+      background:
+        linear-gradient(145deg, rgba(20,184,166,0.16), rgba(13,21,32,0.86)),
+        var(--panel);
+    }
+
+    .module-select-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #fff;
+      font-size: 17px;
+    }
+
+    .module-select-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .module-select-card:hover {
+      border-color: var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
     .toc-panel {
       display: none;
       grid-column: 1;
@@ -776,19 +816,6 @@
       gap: 10px;
     }
 
-    .topic-tab {
-      min-width: 184px;
-      min-height: 46px;
-      justify-content: center;
-      border-color: #2a3a48;
-      background: #1a2530;
-    }
-    .topic-tab.active {
-      border-color: var(--accent-glow);
-      background: var(--accent-soft);
-      color: var(--accent-glow);
-    }
-
     .app-page[hidden] {
       display: none !important;
     }
@@ -973,74 +1000,328 @@
       position: relative;
       min-height: 390px;
       border: 1px solid rgba(96,208,255,0.22);
-      border-radius: 48% 44% 50% 42% / 35% 42% 50% 48%;
+      border-radius: 22px;
       background:
-        radial-gradient(ellipse at 50% 50%, rgba(20,184,166,0.2) 0%, rgba(20,184,166,0.08) 37%, transparent 39%),
-        radial-gradient(ellipse at 50% 54%, rgba(96,208,255,0.16), transparent 62%),
-        rgba(8,14,24,0.62);
-      box-shadow: inset 0 0 42px rgba(96,208,255,0.08), 0 18px 40px rgba(0,0,0,0.22);
+        radial-gradient(ellipse at 50% 36%, rgba(96,208,255,0.22), transparent 30%),
+        linear-gradient(180deg, rgba(17,34,50,0.96), rgba(7,12,20,0.96));
+      box-shadow: inset 0 0 58px rgba(96,208,255,0.12), 0 18px 40px rgba(0,0,0,0.24);
       overflow: hidden;
       isolation: isolate;
     }
 
-    .roundtable-surface {
+    .roundtable-panel::before {
+      content: "";
       position: absolute;
-      inset: 64px 54px 54px;
-      border: 1px solid rgba(255,255,255,0.18);
+      inset: 18px 18px auto;
+      height: 52%;
+      border: 1px solid rgba(96,208,255,0.18);
       border-radius: 50%;
       background:
-        radial-gradient(ellipse at 50% 45%, rgba(20,184,166,0.18), rgba(14,27,39,0.74) 64%, rgba(4,9,16,0.3) 100%);
-      box-shadow: inset 0 0 26px rgba(20,184,166,0.12);
+        linear-gradient(90deg, transparent 0 49.6%, rgba(96,208,255,0.34) 49.6% 50.4%, transparent 50.4%),
+        linear-gradient(0deg, transparent 0 49.6%, rgba(96,208,255,0.22) 49.6% 50.4%, transparent 50.4%);
+      transform: perspective(500px) rotateX(58deg);
+      transform-origin: center top;
+      filter: drop-shadow(0 0 20px rgba(96,208,255,0.18));
       pointer-events: none;
+      z-index: 1;
+    }
+
+    .roundtable-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(120,216,255,0.28) 0 1px, transparent 2px),
+        radial-gradient(circle at 82% 26%, rgba(120,216,255,0.22) 0 1px, transparent 2px),
+        radial-gradient(circle at 75% 72%, rgba(120,216,255,0.2) 0 1px, transparent 2px);
+      background-size: 46px 44px, 58px 54px, 38px 42px;
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .roundtable-surface {
+      position: absolute;
+      inset: 76px 30px 72px;
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(7,16,24,0.92) 0 27%, transparent 28%),
+        radial-gradient(ellipse at 50% 50%, transparent 0 43%, rgba(238,247,255,0.72) 44%, rgba(137,170,186,0.92) 55%, rgba(24,40,52,0.86) 56%, rgba(11,23,34,0.92) 100%),
+        conic-gradient(from 8deg, rgba(255,255,255,0.24), rgba(121,154,170,0.45), rgba(255,255,255,0.18), rgba(77,108,126,0.52), rgba(255,255,255,0.26));
+      box-shadow: inset 0 0 28px rgba(255,255,255,0.2), inset 0 -18px 46px rgba(0,0,0,0.34), 0 18px 30px rgba(0,0,0,0.42);
+      pointer-events: none;
+      transform: perspective(520px) rotateX(58deg);
+      transform-origin: center center;
+      z-index: 2;
     }
 
     .roundtable-center {
       position: absolute;
-      inset: 138px 96px 118px;
+      top: 132px;
+      left: 50%;
+      width: min(178px, 46%);
+      min-height: 108px;
+      transform: translateX(-50%);
       display: grid;
       place-items: center;
       text-align: center;
-      color: var(--muted);
+      color: rgba(221,249,255,0.82);
       font-size: 12px;
       line-height: 1.45;
       pointer-events: none;
+      border: 1px solid rgba(96,208,255,0.48);
+      border-radius: 14px;
+      padding: 12px;
+      background:
+        linear-gradient(90deg, transparent 0 48%, rgba(120,216,255,0.22) 48% 52%, transparent 52%),
+        linear-gradient(0deg, transparent 0 48%, rgba(120,216,255,0.18) 48% 52%, transparent 52%),
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,0.24), transparent 28%),
+        rgba(7,22,32,0.76);
+      box-shadow: 0 0 26px rgba(96,208,255,0.34), inset 0 0 22px rgba(20,184,166,0.18);
+      z-index: 5;
+    }
+
+    .roundtable-center::before {
+      content: "";
+      width: 52px;
+      height: 52px;
+      margin-bottom: 4px;
+      border: 1px solid rgba(160,236,255,0.84);
+      border-radius: 10px;
+      background:
+        linear-gradient(45deg, transparent 43%, rgba(160,236,255,0.92) 44% 56%, transparent 57%),
+        linear-gradient(-45deg, transparent 43%, rgba(160,236,255,0.92) 44% 56%, transparent 57%),
+        radial-gradient(circle at 50% 50%, rgba(20,184,166,0.3), transparent 64%);
+      box-shadow: 0 0 18px rgba(96,208,255,0.75);
+      transform: rotate(45deg);
+    }
+
+    .roundtable-center::after {
+      content: "";
+      position: absolute;
+      inset: -58px -84px;
+      background:
+        linear-gradient(90deg, transparent 0 49%, rgba(96,208,255,0.28) 49% 51%, transparent 51%),
+        linear-gradient(30deg, transparent 0 49.4%, rgba(96,208,255,0.24) 49.4% 50.6%, transparent 50.6%),
+        linear-gradient(150deg, transparent 0 49.4%, rgba(96,208,255,0.24) 49.4% 50.6%, transparent 50.6%);
+      opacity: 0.8;
+      z-index: -1;
     }
 
     .roundtable-center strong {
-      color: var(--accent-glow);
+      color: #dffaff;
       font-size: 14px;
+      text-shadow: 0 0 12px rgba(96,208,255,0.8);
     }
 
     .roundtable-center span {
       max-width: 220px;
-      color: var(--muted);
+      color: rgba(214,240,248,0.74);
       font-size: 12px;
     }
 
     .round-module {
       position: absolute;
       z-index: 3;
-      min-height: 30px;
-      padding: 5px 10px;
-      border-color: rgba(20,184,166,0.54);
-      background: rgba(10,22,32,0.9);
-      color: var(--accent-glow);
-      font-size: 12px;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.22);
+      width: 92px;
+      min-height: 62px;
+      padding: 32px 6px 7px;
+      border-color: rgba(96,208,255,0.54);
+      border-radius: 10px;
+      background:
+        linear-gradient(180deg, rgba(96,208,255,0.13), rgba(20,184,166,0.05)),
+        rgba(5,16,26,0.9);
+      color: #dffaff;
+      font-size: 9px;
+      line-height: 1.15;
+      text-align: center;
+      text-transform: uppercase;
+      box-shadow: 0 0 18px rgba(96,208,255,0.2), 0 10px 20px rgba(0,0,0,0.3);
+      overflow: visible;
     }
 
-    .round-module.one { top: 26px; right: 66px; }
-    .round-module.two { top: 64px; left: 44px; }
-    .round-module.three { top: 44%; left: 12px; }
-    .round-module.four { top: 42%; right: 12px; }
-    .round-module.five { bottom: 36px; left: 74px; }
-    .round-module.six { bottom: 34px; right: 72px; }
+    .round-module::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -25px;
+      width: 34px;
+      height: 42px;
+      transform: translateX(-50%);
+      border: 1px solid rgba(166,238,255,0.72);
+      border-radius: 17px 17px 12px 12px;
+      background:
+        radial-gradient(circle at 50% 28%, rgba(255,255,255,0.9) 0 4px, transparent 5px),
+        linear-gradient(90deg, transparent 0 46%, rgba(166,238,255,0.72) 46% 54%, transparent 54%),
+        linear-gradient(180deg, rgba(230,250,255,0.86), rgba(62,108,130,0.82));
+      box-shadow: 0 0 18px rgba(96,208,255,0.78);
+    }
+
+    .round-module::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 12px;
+      height: 18px;
+      border: 1px solid rgba(96,208,255,0.64);
+      border-radius: 6px;
+      background:
+        linear-gradient(90deg, transparent 0 18%, rgba(96,208,255,0.74) 18% 22%, transparent 22% 40%, rgba(96,208,255,0.54) 40% 45%, transparent 45% 100%),
+        rgba(21,67,88,0.48);
+      box-shadow: 0 0 14px rgba(96,208,255,0.42);
+    }
+
+    .round-module.one { top: 32px; right: 28px; }
+    .round-module.two { top: 32px; left: 28px; }
+    .round-module.three { top: 146px; left: 8px; }
+    .round-module.four { top: 146px; right: 8px; }
+    .round-module.five { bottom: 24px; left: 42px; }
+    .round-module.six { bottom: 24px; right: 42px; }
 
     .round-module.active,
     .round-module:hover {
       border-color: var(--accent-glow);
-      background: linear-gradient(145deg, rgba(20,184,166,0.32), rgba(13,21,32,0.94));
+      background:
+        linear-gradient(180deg, rgba(96,208,255,0.28), rgba(20,184,166,0.16)),
+        rgba(5,16,26,0.94);
       color: #fff;
+      box-shadow: 0 0 28px rgba(96,208,255,0.42), 0 10px 20px rgba(0,0,0,0.32);
+    }
+
+    .round-module-model {
+      display: block;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 820;
+      line-height: 1.05;
+      text-shadow: 0 0 10px rgba(96,208,255,0.72);
+    }
+
+    .round-module-role {
+      display: block;
+      margin-top: 3px;
+      color: rgba(214,240,248,0.72);
+      font-size: 8px;
+      line-height: 1.15;
+      text-transform: none;
+    }
+
+    .element-history-workbench {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: rgba(10,18,28,0.78);
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .element-history-panel,
+    .crucible-panel {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(255,255,255,0.024);
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .history-timeline {
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-event {
+      border-left: 3px solid var(--accent-glow);
+      padding: 8px 10px;
+      background: rgba(20,184,166,0.08);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .history-event strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .history-event span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .crucible-visual {
+      min-height: 168px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+    }
+
+    .crucible-bowl {
+      width: min(220px, 82%);
+      aspect-ratio: 1.65;
+      border: 2px solid rgba(180,220,232,0.38);
+      border-top: 0;
+      border-radius: 0 0 110px 110px;
+      background:
+        radial-gradient(ellipse at 50% 8%, rgba(240,192,64,0.35), transparent 36%),
+        linear-gradient(180deg, rgba(20,184,166,0.22), rgba(11,18,28,0.95));
+      box-shadow: inset 0 -18px 32px rgba(0,0,0,0.35), 0 16px 28px rgba(0,0,0,0.3);
+    }
+
+    .crucible-bubbles {
+      position: absolute;
+      inset: 16px 20% auto;
+      min-height: 70px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .crucible-bubbles span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-glow);
+      opacity: 0.72;
+      animation: crucible-rise 2.4s ease-in-out infinite;
+    }
+
+    .crucible-bubbles span:nth-child(2) { animation-delay: 0.35s; background: #f0c040; }
+    .crucible-bubbles span:nth-child(3) { animation-delay: 0.72s; background: #78d8ff; }
+
+    @keyframes crucible-rise {
+      0%, 100% { transform: translateY(34px) scale(0.76); opacity: 0; }
+      28% { opacity: 0.82; }
+      72% { opacity: 0.65; }
+      100% { transform: translateY(-26px) scale(1.05); opacity: 0; }
+    }
+
+    .prediction-score {
+      display: grid;
+      gap: 6px;
+    }
+
+    .score-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .score-bar span {
+      display: block;
+      height: 100%;
+      width: var(--score, 0%);
+      background: linear-gradient(90deg, var(--accent-glow), #f0c040);
     }
 
     /* === Overview 区域 === */
@@ -1339,7 +1620,7 @@
       --cube-depth: 109px;
       --cube-origin: 52px;
       --axis-size: 250px;
-      --axis-origin: 36px;
+      --axis-origin: var(--cube-origin);
       width: 340px;
       height: 340px;
       position: relative;
@@ -1408,10 +1689,10 @@
       filter: drop-shadow(0 0 6px rgba(96,208,255,0.65));
     }
 
-    .axis-line.x { transform: translateZ(0); }
-    .axis-line.y { transform: rotateY(-90deg); }
+    .axis-line.x { transform: translateZ(var(--cube-depth)); }
+    .axis-line.y { transform: translateZ(var(--cube-depth)) rotateY(-90deg); }
     .axis-line.z {
-      transform: rotateZ(-90deg);
+      transform: translateZ(var(--cube-depth)) rotateZ(-90deg);
       background: repeating-linear-gradient(90deg, #d87979 0 10px, transparent 10px 18px);
     }
 
@@ -1447,9 +1728,9 @@
       z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(226px, -18px, 0); }
-    .axis-label.y { transform: translate3d(26px, -22px, -248px); }
-    .axis-label.z { transform: translate3d(-14px, -292px, 0); color: #ffb4b4; }
+    .axis-label.x { transform: translate3d(242px, -18px, var(--cube-depth)); }
+    .axis-label.y { transform: translate3d(34px, -22px, -142px); }
+    .axis-label.z { transform: translate3d(-10px, -292px, var(--cube-depth)); color: #ffb4b4; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -1472,7 +1753,7 @@
       border: 0;
       border-radius: 50%;
       background: transparent;
-      transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(-1 * var(--py))) translate(-50%, 50%);
+      transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(var(--cube-depth) - var(--py))) translate(-50%, 50%);
       transform-style: preserve-3d;
       cursor: pointer;
       opacity: 0.95;
@@ -1721,8 +2002,20 @@
     }
 
     .cube-controls label,
+    .cube-zoom-hint,
     .model-control-grid label {
       min-width: 0;
+    }
+
+    .cube-zoom-hint {
+      min-height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      background: rgba(255,255,255,0.026);
     }
 
     input[type="range"] {
@@ -1759,20 +2052,10 @@
       padding: 14px;
       background: rgba(10,18,28,0.78);
       display: grid;
-      grid-template-rows: auto auto minmax(120px, 1fr) auto auto;
+      grid-template-rows: auto minmax(260px, 1fr) auto auto;
       gap: 12px;
       align-content: start;
       overflow: hidden;
-    }
-
-    .chat-platform-note {
-      border: 1px dashed rgba(96,208,255,0.35);
-      border-radius: 8px;
-      padding: 12px;
-      background: rgba(255,255,255,0.024);
-      color: var(--muted);
-      line-height: 1.6;
-      min-height: 210px;
     }
 
     .chat-thread {
@@ -1845,13 +2128,6 @@
     .chat-table-wrap table {
       min-width: 620px;
       margin: 0;
-    }
-
-    .chat-platform-note.is-empty {
-      display: grid;
-      place-items: center;
-      color: rgba(148,163,184,0.72);
-      text-align: center;
     }
 
     .figure-strip {
@@ -2358,7 +2634,7 @@
         max-height: none;
       }
       .toc-list { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .history-side-panel, .periodic-workbench, .flow-tabs, .login-card .form-grid { grid-template-columns: 1fr; }
+      .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .history-side-panel, .periodic-workbench, .element-history-workbench, .flow-tabs, .module-select-grid, .login-card .form-grid { grid-template-columns: 1fr; }
       .login-layout {
         grid-template-columns: 1fr;
         min-height: 0;
@@ -2531,18 +2807,14 @@
 
       .super-button-wrap,
       .super-button,
-      .topic-tab,
       button,
       select,
       input[type="search"] {
         width: 100%;
       }
 
-      .topic-tab {
-        min-width: 0;
-      }
-
       .metric-grid,
+      .module-select-grid,
       .import-metrics,
       .compare-grid,
       .figure-compare-grid,
@@ -2562,14 +2834,13 @@
         --cube-depth: 105px;
         --cube-origin: 30px;
         --axis-size: 210px;
-        --axis-origin: 30px;
         width: 270px;
         height: 270px;
       }
 
-      .axis-label.x { transform: translate3d(184px, -16px, 0); }
-      .axis-label.y { transform: translate3d(20px, -20px, -208px); }
-      .axis-label.z { transform: translate3d(-12px, -248px, 0); }
+      .axis-label.x { transform: translate3d(202px, -16px, var(--cube-depth)); }
+      .axis-label.y { transform: translate3d(20px, -20px, -128px); }
+      .axis-label.z { transform: translate3d(-12px, -248px, var(--cube-depth)); }
 
       .milestone-stage,
       .layout-two,
@@ -2614,24 +2885,41 @@
       }
 
       .roundtable-surface {
-        inset: 56px 38px 48px;
+        inset: 66px 22px 62px;
       }
 
       .roundtable-center {
-        inset: 118px 72px 104px;
+        top: 120px;
+        width: min(154px, 48%);
+        min-height: 96px;
+        padding: 10px;
       }
 
       .round-module {
-        font-size: 11px;
-        padding: 5px 8px;
+        font-size: 9px;
+        width: 86px;
+        min-height: 56px;
+        padding: 30px 6px 6px;
       }
 
-      .round-module.one { top: 22px; right: 46px; }
-      .round-module.two { top: 58px; left: 28px; }
-      .round-module.three { top: 43%; left: 8px; }
-      .round-module.four { top: 42%; right: 8px; }
-      .round-module.five { bottom: 30px; left: 46px; }
-      .round-module.six { bottom: 30px; right: 46px; }
+      .round-module::before {
+        width: 32px;
+        height: 40px;
+        top: -24px;
+      }
+
+      .round-module::after {
+        left: 12px;
+        right: 12px;
+        height: 18px;
+      }
+
+      .round-module.one { top: 28px; right: 26px; }
+      .round-module.two { top: 28px; left: 26px; }
+      .round-module.three { top: 136px; left: 6px; }
+      .round-module.four { top: 136px; right: 6px; }
+      .round-module.five { bottom: 24px; left: 38px; }
+      .round-module.six { bottom: 24px; right: 38px; }
 
       .periodic {
         min-width: 740px;
@@ -2851,6 +3139,40 @@
       <nav class="toc-list" id="tocList"></nav>
       <div class="toc-note" id="tocNote" data-i18n="tocNote">选择一个模块开始。</div>
     </aside>
+    <section id="section-module-select" class="module-select-page app-page" data-app-page="module-select" hidden>
+      <div class="section-head">
+        <h2 data-i18n="moduleSelectTitle">选择知识模块</h2>
+        <span class="status" data-i18n="moduleSelectHint">登录后先选择要进入的工作区。</span>
+      </div>
+      <div class="content">
+        <div class="module-select-grid" aria-label="Module selector">
+          <button class="module-select-card" type="button" data-page-tab="history">
+            <span><strong data-i18n="topMenuHome">历史</strong><span data-i18n="moduleHistoryHint">查看超导 Tc、年份、压力与材料家族的 3D 历史图。</span></span>
+            <span class="chip good" data-i18n="moduleOpen">进入模块</span>
+          </button>
+          <button class="module-select-card" type="button" data-page-tab="materials">
+            <span><strong data-i18n="topMenuMaterials">材料</strong><span data-i18n="moduleMaterialsHint">从周期表和材料索引进入超导材料、元素和家族。</span></span>
+            <span class="chip good" data-i18n="moduleOpen">进入模块</span>
+          </button>
+          <button class="module-select-card" type="button" data-page-tab="literature">
+            <span><strong data-i18n="topMenuLiterature">文献</strong><span data-i18n="modulePapersHint">检索 ARPES 文献、图谱、关键词和可信来源。</span></span>
+            <span class="chip good" data-i18n="moduleOpen">进入模块</span>
+          </button>
+          <button class="module-select-card" type="button" data-page-tab="data">
+            <span><strong data-i18n="topMenuData">数据</strong><span data-i18n="moduleDataHint">导入 HDF5、记录个人实验数据并进行对比。</span></span>
+            <span class="chip good" data-i18n="moduleOpen">进入模块</span>
+          </button>
+          <button class="module-select-card" type="button" data-page-tab="model">
+            <span><strong data-i18n="topMenuModel">模型</strong><span data-i18n="moduleModelHint">连接或预览计算模型，生成材料性质判断。</span></span>
+            <span class="chip good" data-i18n="moduleOpen">进入模块</span>
+          </button>
+          <button class="module-select-card" type="button" data-page-tab="report">
+            <span><strong data-i18n="topMenuReport">报告</strong><span data-i18n="moduleReportHint">汇总当前筛选、文献、数据和对话内容，导出调研报告。</span></span>
+            <span class="chip good" data-i18n="moduleOpen">进入模块</span>
+          </button>
+        </div>
+      </div>
+    </section>
     <!-- ===== Milestones ===== -->
     <section id="section-milestones" class="app-page" data-app-page="history">
       <div class="section-head">
@@ -2916,10 +3238,6 @@
             <div class="history-chat-panel">
               <div>
                 <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
-                <p class="muted" data-i18n="chatPlatformHint">点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释。</p>
-              </div>
-              <div class="chat-platform-note is-empty" id="cubeChatGuide" data-i18n="chatPlatformEmpty">
-                点击左侧材料点后显示相关资料
               </div>
               <div class="chat-thread" id="chatThread" aria-live="polite"></div>
               <div class="chat-table-wrap" id="chatTableWrap" style="display:none;"></div>
@@ -2964,15 +3282,33 @@
           <div class="periodic-index-panel">
             <div class="roundtable-panel" aria-label="Module round table">
               <div class="roundtable-surface"></div>
-              <button class="round-module one active" type="button" data-module-target="elementPanel" data-i18n="moduleMaterialIndex">Material index</button>
-              <button class="round-module two" type="button" data-module-target="advancedLibrary" data-i18n="moduleLiterature">Literature module</button>
-              <button class="round-module three" type="button" data-module-target="section-search" data-i18n="tocSearch">检索与主题</button>
-              <button class="round-module four" type="button" data-module-target="section-hdf5" data-i18n="tocHdf5">HDF5 数据</button>
-              <button class="round-module five" type="button" data-module-target="modelOutput" data-i18n="moduleModel">Model module</button>
-              <button class="round-module six" type="button" data-module-target="generateReportBtn">Report</button>
+              <button class="round-module one active" type="button" data-ai-model="gpt-4.1-mini">
+                <span class="round-module-model">GPT</span>
+                <span class="round-module-role">general reasoning</span>
+              </button>
+              <button class="round-module two" type="button" data-ai-model="claude-3-5-sonnet">
+                <span class="round-module-model">Claude</span>
+                <span class="round-module-role">long papers</span>
+              </button>
+              <button class="round-module three" type="button" data-ai-model="gemini-1.5-pro">
+                <span class="round-module-model">Gemini</span>
+                <span class="round-module-role">figures + data</span>
+              </button>
+              <button class="round-module four" type="button" data-ai-model="llama-3.1-70b">
+                <span class="round-module-model">Llama</span>
+                <span class="round-module-role">local model</span>
+              </button>
+              <button class="round-module five" type="button" data-ai-model="deepseek-r1">
+                <span class="round-module-model">DeepSeek</span>
+                <span class="round-module-role">math + code</span>
+              </button>
+              <button class="round-module six" type="button" data-ai-model="arpes-rules-preview">
+                <span class="round-module-model">ARPES</span>
+                <span class="round-module-role">rule preview</span>
+              </button>
               <div class="roundtable-center">
-                <strong data-i18n="moduleMaterialIndex">Material index</strong>
-                <span data-i18n="moduleMaterialIndexHint">点击左侧元素后，这里显示元素简介、材料家族和文献入口。</span>
+                <strong data-i18n="aiRoundtableTitle">AI model roundtable</strong>
+                <span data-i18n="aiRoundtableHint">选择一个席位，把模型接口切换到对应 AI model。</span>
               </div>
             </div>
             <div class="card" id="elementPanel">
@@ -2984,6 +3320,20 @@
               <p class="muted" data-i18n="familyHint">点击标签快速筛选。当前以超导为主题。</p>
               <div class="chips" id="familyChips"></div>
             </div>
+          </div>
+        </div>
+        <div class="element-history-workbench" id="elementHistoryWorkbench">
+          <div class="element-history-panel">
+            <h3>元素相关历史</h3>
+            <p class="muted">选择周期表中的绿色元素后，这里会汇总相关材料、年份线索和 ARPES 论文记录。</p>
+          </div>
+          <div class="crucible-panel">
+            <h3>坩埚预测</h3>
+            <div class="crucible-visual" aria-hidden="true">
+              <div class="crucible-bubbles"><span></span><span></span><span></span></div>
+              <div class="crucible-bowl"></div>
+            </div>
+            <p class="muted">坩埚会基于当前元素的材料家族、最高 Tc、文献密度和 ARPES 关键词生成下一步探索建议。</p>
           </div>
         </div>
       </div>
@@ -3003,8 +3353,6 @@
           <div class="super-button-wrap">
             <button class="super-button" id="superconductorBtn">⚡ SUPERCONDUCTOR ⚡</button>
           </div>
-          <button class="topic-tab" data-topic="topo" data-i18n="topologicalTab">🔷 拓扑材料</button>
-          <button class="topic-tab" data-topic="photo" data-i18n="photonicTab">💎 光子晶体</button>
         </div>
         <div class="toolbar">
           <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder">
@@ -3472,22 +3820,22 @@
         flowModel: "模型接口",
         flowReport: "报告",
         flowDeepExplore: "确定探索",
-        chatPlatformTitle: "材料说明",
-        chatPlatformHint: "点击左边魔方中的材料点，右侧会显示文献数据、材料信息和对比解释。",
-        chatPlatformEmpty: "点击左侧材料点后显示相关资料",
+        chatPlatformTitle: "对话框",
+        chatPlatformHint: "鼠标移到左边魔方或材料点时，说明会显示在左侧说明区；右侧保留为空白对话框。",
+        chatPlatformEmpty: "",
         chatPlatformGuide: "选择一个材料点或魔方面：这里会把 Tc、年份、压力、材料家族、相关 ARPES 线索和可继续查的文献来源串起来。",
         chatPromptCompare: "比较材料",
         chatPromptTable: "生成表格",
         chatPromptReport: "报告要点",
-        chatInputPlaceholder: "问一个 ARPES/超导材料问题，或让材料说明栏生成表格...",
+        chatInputPlaceholder: "问一个 ARPES/超导材料问题，或让对话框生成表格...",
         chatSendBtn: "发送",
         chatMakeTableBtn: "生成表格",
         chatClearBtn: "清空",
         chatUserLabel: "用户",
-        chatAssistantLabel: "材料说明栏",
+        chatAssistantLabel: "对话框",
         chatWelcome: "可以点击魔方材料点，也可以直接提问。我会基于当前材料库、免费 ARPES 题录、个人数据和页面筛选生成回答。",
-        chatTableTitle: "材料说明栏生成表格",
-        chatEmptyExport: "暂无材料说明栏问答；报告将只包含当前页面数据。",
+        chatTableTitle: "对话框生成表格",
+        chatEmptyExport: "暂无对话框问答；报告将只包含当前页面数据。",
         chatTableMaterial: "材料",
         chatTableFamily: "家族",
         chatTableTc: "Tc (K)",
@@ -3501,6 +3849,18 @@
         moduleLiteratureHint: "优先使用 DOI、arXiv、出版商和 WoS 导出的官方文献来源。",
         moduleModel: "Model module",
         moduleModelHint: "后续计算模型可接入这里，对材料性质进行预测或归类。",
+        moduleSelectTitle: "选择知识模块",
+        moduleSelectHint: "登录后先选择要进入的工作区。",
+        moduleHistoryHint: "查看超导 Tc、年份、压力与材料家族的 3D 历史图。",
+        moduleMaterialsHint: "从周期表和材料索引进入超导材料、元素和家族。",
+        modulePapersHint: "检索 ARPES 文献、图谱、关键词和可信来源。",
+        moduleDataHint: "导入 HDF5、记录个人实验数据并进行对比。",
+        moduleReportHint: "汇总当前筛选、文献、数据和对话内容，导出调研报告。",
+        moduleOpen: "进入模块",
+        aiRoundtableTitle: "AI model roundtable",
+        aiRoundtableHint: "选择一个席位，把模型接口切换到对应 AI model。",
+        aiRoundtableSelected: "已连接模型席位：",
+        aiRoundtableEndpointHint: "模型名会随聊天请求发送到当前 AI endpoint；Claude/Gemini/Llama/DeepSeek 需要兼容这些模型名的代理服务。",
         advancedLibraryTitle: "高级资料库：文献图、数据、模板和导入工具",
         advancedLibraryHint: "默认折叠，保持主界面简洁",
         tocTitle: "模块",
@@ -3563,8 +3923,6 @@
         keywordSearchTitle: "🏷️ 搜索关键词",
         keywordSearchHint: "点击关键词快速筛选文章、图表和材料",
         superconductorBtn: "⚡ 超导 SUPERCONDUCTOR ⚡",
-        topologicalTab: "🔷 拓扑材料",
-        photonicTab: "💎 光子晶体",
         searchFilterTitle: "🔍 搜索与筛选",
         periodicTitle: "元素周期表",
         periodicStatus: "点击元素筛选材料",
@@ -3831,9 +4189,9 @@
         flowModel: "Model API",
         flowReport: "Report",
         flowDeepExplore: "Deep Explore",
-        chatPlatformTitle: "Material Notes",
-        chatPlatformHint: "Click a material point in the cube; the right side shows literature data, material notes, and comparison guidance.",
-        chatPlatformEmpty: "Click a material point on the left to show related context.",
+        chatPlatformTitle: "Chat platform",
+        chatPlatformHint: "Hover over the cube or material points on the left to show notes in the left readout; the right side stays as a blank chat box.",
+        chatPlatformEmpty: "",
         chatPlatformGuide: "Choose a material point or cube face: this panel connects Tc, year, pressure, family, ARPES clues, and literature sources to inspect next.",
         chatPromptCompare: "Compare materials",
         chatPromptTable: "Make table",
@@ -3860,6 +4218,18 @@
         moduleLiteratureHint: "Prefer official literature sources such as DOI, arXiv, publisher pages, and WoS exports.",
         moduleModel: "Model module",
         moduleModelHint: "Future computation models can plug in here to classify or predict material properties.",
+        moduleSelectTitle: "Choose Knowledge Module",
+        moduleSelectHint: "After login, choose the workspace you want to open first.",
+        moduleHistoryHint: "View superconducting Tc, year, pressure, and family history in 3D.",
+        moduleMaterialsHint: "Enter superconducting materials, elements, and families from the periodic table.",
+        modulePapersHint: "Search ARPES papers, figures, keywords, and trusted sources.",
+        moduleDataHint: "Import HDF5, record personal experiment data, and compare entries.",
+        moduleReportHint: "Summarize filters, papers, data, and chat notes into a report.",
+        moduleOpen: "Open Module",
+        aiRoundtableTitle: "AI model roundtable",
+        aiRoundtableHint: "Choose a seat to switch the model interface to that AI model.",
+        aiRoundtableSelected: "Connected model seat:",
+        aiRoundtableEndpointHint: "The model name is sent with chat requests to the current AI endpoint; Claude/Gemini/Llama/DeepSeek require a proxy that supports those model names.",
         advancedLibraryTitle: "Advanced Library: paper figures, data, templates, and import tools",
         advancedLibraryHint: "Collapsed by default to keep the main interface simple",
         tocTitle: "Modules",
@@ -3922,8 +4292,6 @@
         keywordSearchTitle: "🏷️ Search Keywords",
         keywordSearchHint: "Click a keyword to filter articles, figures, and materials",
         superconductorBtn: "⚡ SUPERCONDUCTOR ⚡",
-        topologicalTab: "🔷 Topological",
-        photonicTab: "💎 Photonic",
         searchFilterTitle: "🔍 Search & Filter",
         periodicTitle: "Periodic Table",
         periodicStatus: "Click an element to filter materials",
@@ -4295,7 +4663,6 @@
     const aiKeyInput = $("#aiKeyInput");
     const aiSaveConfigBtn = $("#aiSaveConfigBtn");
     const aiClearConfigBtn = $("#aiClearConfigBtn");
-    const cubeChatGuide = $("#cubeChatGuide");
     const historyCube = $("#historyCube");
     const cubeViewport = $("#cubeViewport");
     const cubeResetBtn = $("#cubeResetBtn");
@@ -4314,13 +4681,14 @@
     const chatMakeTableBtn = $("#chatMakeTableBtn");
     const chatClearBtn = $("#chatClearBtn");
     const chatTableWrap = $("#chatTableWrap");
-    let activeAppPage = "history";
+    let activeAppPage = "module-select";
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
     const metrics = $("#metrics");
     const periodicTable = $("#periodicTable");
     const elementPanel = $("#elementPanel");
+    const elementHistoryWorkbench = $("#elementHistoryWorkbench");
     const familyPanel = $("#familyPanel");
     const familyChips = $("#familyChips");
     const tableStatus = $("#tableStatus");
@@ -4813,19 +5181,8 @@
         sendChatMessage();
       });
     });
-    // ===== 主题切换 =====
-    document.querySelectorAll(".topic-tab").forEach(tab => {
-      tab.addEventListener("mousedown", event => event.preventDefault());
-      tab.addEventListener("click", event => {
-        event.preventDefault();
-        setTopic(tab.dataset.topic, { dance: tab.dataset.topic === "sc", preserveScroll: true });
-      });
-    });
-    // 默认激活超导tab
-    document.querySelector('.topic-tab[data-topic="sc"]')?.classList.add("active");
-
-    superconductorBtn.addEventListener("mousedown", event => event.preventDefault());
-    superconductorBtn.addEventListener("click", event => {
+    superconductorBtn?.addEventListener("mousedown", event => event.preventDefault());
+    superconductorBtn?.addEventListener("click", event => {
       event.preventDefault();
       setTopic("sc", { dance: true, preserveScroll: true });
     });
@@ -4833,7 +5190,6 @@
       const scrollX = window.scrollX;
       const scrollY = window.scrollY;
       state.topic = topic;
-      document.querySelectorAll(".topic-tab").forEach(t => t.classList.toggle("active", t.dataset.topic === topic));
       familyFilter.value = "";
       searchInput.value = "";
       state.selectedElement = "";
@@ -5242,7 +5598,7 @@
         cell.addEventListener("click", () => {
           state.selectedElement = cell.dataset.symbol;
           applyFilters();
-          showAppPage("literature");
+          elementHistoryWorkbench?.scrollIntoView({ behavior: "smooth", block: "nearest" });
         });
       });
     }
@@ -5420,9 +5776,11 @@
       }
       if (page === "report") makeChatTable();
       if (!options.preserveScroll) {
-        const target = page === "history"
-          ? document.querySelector("#section-milestones")
-          : document.querySelector(`.app-page[data-app-page~="${CSS.escape(page)}"]`);
+        const target = page === "module-select"
+          ? document.querySelector("#section-module-select")
+          : page === "history"
+            ? document.querySelector("#section-milestones")
+            : document.querySelector(`.app-page[data-app-page~="${CSS.escape(page)}"]`);
         target?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
       updateTocActiveSection();
@@ -5449,6 +5807,7 @@
       if (!tocList) return;
       const element = state.selectedElement ? ` · ${state.selectedElement}` : "";
       const items = [
+        ["module-select", t("moduleSelectTitle")],
         ["history", t("topMenuHome")],
         ["materials", `${t("topMenuMaterials")}${element}`],
         ["literature", t("topMenuLiterature")],
@@ -5493,6 +5852,51 @@
       updateTocActiveSection();
     }
 
+    const roundtableAiModels = {
+      "gpt-4.1-mini": {
+        title: "GPT",
+        zh: "通用推理、实验方案和跨模块问答。",
+        en: "General reasoning, experiment planning, and cross-module Q&A.",
+        task: "identify",
+        feature: "ARPES summary, superconductivity, literature"
+      },
+      "claude-3-5-sonnet": {
+        title: "Claude",
+        zh: "长文献阅读、综述段落和论文结构整理。",
+        en: "Long paper reading, review prose, and article structure.",
+        task: "identify",
+        feature: "long context, literature review, DOI"
+      },
+      "gemini-1.5-pro": {
+        title: "Gemini",
+        zh: "图表、多模态线索和数据-图谱对照。",
+        en: "Figures, multimodal clues, and data/plot alignment.",
+        task: "arpes",
+        feature: "figures, Fermi surface, band map"
+      },
+      "llama-3.1-70b": {
+        title: "Llama",
+        zh: "本地或开源模型席位，适合离线材料库问答。",
+        en: "Local or open-model seat for offline materials Q&A.",
+        task: "identify",
+        feature: "local LLM, private notes, HDF5"
+      },
+      "deepseek-r1": {
+        title: "DeepSeek",
+        zh: "数学推理、代码检查和模型/数据处理流程。",
+        en: "Mathematical reasoning, code checks, and data workflows.",
+        task: "tc",
+        feature: "reasoning, code, Tc prediction"
+      },
+      "arpes-rules-preview": {
+        title: "ARPES Rules",
+        zh: "页面内置规则化预览，不需要外部 API。",
+        en: "Built-in rule preview; no external API required.",
+        task: "identify",
+        feature: "gap, Fermi surface, q-dependent"
+      }
+    };
+
     function setupRoundtableModules() {
       const buttons = document.querySelectorAll(".round-module");
       const center = document.querySelector(".roundtable-center");
@@ -5509,6 +5913,10 @@
         btn.addEventListener("click", () => {
           buttons.forEach(node => node.classList.remove("active"));
           btn.classList.add("active");
+          if (btn.dataset.aiModel) {
+            selectRoundtableAiModel(btn.dataset.aiModel, center);
+            return;
+          }
           const targetId = btn.dataset.moduleTarget;
           const [titleKey, hintKey] = moduleHints[targetId] || ["moduleMaterialIndex", "moduleMaterialIndexHint"];
           center.innerHTML = `<strong>${esc(t(titleKey))}</strong><span>${esc(t(hintKey))}</span>`;
@@ -5520,6 +5928,33 @@
           else if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
         });
       });
+      const activeModel = [...buttons].find(btn => btn.classList.contains("active") && btn.dataset.aiModel)?.dataset.aiModel;
+      if (activeModel) renderRoundtableAiCenter(activeModel, center);
+    }
+
+    function selectRoundtableAiModel(modelName, center) {
+      const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-4.1-mini"];
+      if (aiModelInput) aiModelInput.value = modelName;
+      if (modelFeatureInput && !modelFeatureInput.value.trim()) modelFeatureInput.value = model.feature;
+      if (modelTaskSelect) modelTaskSelect.value = model.task;
+      const cfg = loadAiConfig();
+      localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+        ...cfg,
+        endpoint: cfg.endpoint || defaultAiEndpoint(),
+        model: modelName
+      }));
+      renderRoundtableAiCenter(modelName, center || document.querySelector(".roundtable-center"));
+      renderModelRegistry();
+      showAppPage("model");
+      modelOutput?.scrollIntoView({ behavior: "smooth", block: "center" });
+      showToast(`${t("aiRoundtableSelected")} ${model.title}`);
+    }
+
+    function renderRoundtableAiCenter(modelName, center) {
+      if (!center) return;
+      const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-4.1-mini"];
+      const hint = currentLang === "zh" ? model.zh : model.en;
+      center.innerHTML = `<strong>${esc(model.title)}</strong><span>${esc(modelName)} · ${esc(hint)}</span>`;
     }
 
     function addChatMessage(role, text) {
@@ -5775,7 +6210,7 @@
         chatMessages: state.chatMessages || [],
         chatTableRows: state.chatTableRows || [],
         generatedAt,
-        topic: state.topic || "sc",
+        topic: "sc",
         selectedElement: state.selectedElement || "none",
         searchTerm: searchInput.value || "none"
       };
@@ -5843,9 +6278,9 @@
           <ol>${articleList || `<li>${zh ? "暂无文献记录。" : "No literature records loaded."}</li>`}</ol>
           <h2>${zh ? "个人数据" : "Personal Data"}</h2>
           <ul>${personalList || `<li>${zh ? "暂无个人记录。" : "No personal records."}</li>`}</ul>
-          <h2>${zh ? "材料说明栏问答" : "Chat Platform Q&A"}</h2>
+          <h2>${zh ? "对话框问答" : "Chat Platform Q&A"}</h2>
           <ol>${chatList || `<li>${esc(t("chatEmptyExport"))}</li>`}</ol>
-          <h2>${zh ? "材料说明栏表格" : "Chat Platform Table"}</h2>
+          <h2>${zh ? "对话框表格" : "Chat Platform Table"}</h2>
           <table>
             <thead><tr><th>${t("chatTableMaterial")}</th><th>${t("chatTableFamily")}</th><th>${t("chatTableTc")}</th><th>${t("chatTableElements")}</th><th>${t("chatTableArpes")}</th><th>${t("chatTablePapers")}</th></tr></thead>
             <tbody>${chatTable || `<tr><td colspan='6'>${t("chatNoGeneratedTable")}</td></tr>`}</tbody>
@@ -5906,11 +6341,11 @@ ${articleLines || (zh ? "暂无文献记录。" : "No literature records loaded.
 
 ${personalLines || (zh ? "- 暂无个人记录。" : "- No personal records.")}
 
-## ${zh ? "材料说明栏问答" : "Chat Platform Q&A"}
+## ${zh ? "对话框问答" : "Chat Platform Q&A"}
 
 ${chatLines || t("chatEmptyExport")}
 
-## ${zh ? "材料说明栏表格" : "Chat Platform Table"}
+## ${zh ? "对话框表格" : "Chat Platform Table"}
 
 | ${t("chatTableMaterial")} | ${t("chatTableFamily")} | ${t("chatTableTc")} | ${t("chatTableElements")} | ${t("chatTableArpes")} | ${t("chatTablePapers")} |
 | --- | --- | --- | --- | --- | --- |
@@ -5971,7 +6406,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const family = familyFilter.value;
       const region = regionFilter.value;
       const sourceType = sourceTypeFilter.value;
-      const topic = state.topic || "sc";
+      const topic = "sc";
 
       state.filtered = state.db.materials.filter(row => {
         const elemOk = !state.selectedElement || row.elements.includes(state.selectedElement);
@@ -5982,15 +6417,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           ...(row.q_dependent_observables || []), row.photon_arpes_notes, row.source_note
         ].join(" ").toLowerCase();
         const termOk = !expandedTerm || text.includes(expandedTerm);
-        // 主题筛选
-        let topicOk = true;
-        if (topic === "topo") {
-          const topoKeywords = ["topological", "dirac", "weyl", "surface state", "topological insulator", "chern", "berry", "spin-momentum", "helical"];
-          topicOk = topoKeywords.some(kw => text.includes(kw));
-        } else if (topic === "photo") {
-          const photonicKeywords = ["photonic", "optical", "photon", "polariton", "light", "cavity", "plasmon", "laser"];
-          topicOk = photonicKeywords.some(kw => text.includes(kw));
-        }
+        const topicOk = topic === "sc";
         return elemOk && famOk && termOk && topicOk;
       });
 
@@ -5999,6 +6426,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       renderMaterialsTable();
       renderArticles();
       highlightPeriodicTable();
+      renderElementHistoryWorkbench();
       renderOverview();
       renderSourceDirectory();
       updateCompareUI();
@@ -6043,6 +6471,144 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           ? `${symbol} 暂无种子材料条目，但可以作为后续文献和实验数据导入的候选元素。`
           : `${symbol} has no seed material row yet, but can be used as a candidate element for future literature and experimental data imports.`);
       return `${role} ${articleText}`;
+    }
+
+    function renderElementHistoryWorkbench() {
+      if (!elementHistoryWorkbench) return;
+      if (!state.selectedElement) {
+        elementHistoryWorkbench.innerHTML = `
+          <div class="element-history-panel">
+            <h3>${currentLang === "zh" ? "元素相关历史" : "Element History"}</h3>
+            <p class="muted">${currentLang === "zh"
+              ? "选择周期表中的绿色元素后，这里会显示相关材料历史，而不是跳转到文献页。"
+              : "Select a green element in the periodic table to show related material history here without jumping to the literature page."}</p>
+          </div>
+          <div class="crucible-panel">
+            <h3>${currentLang === "zh" ? "坩埚预测" : "Crucible Prediction"}</h3>
+            ${crucibleVisualHtml()}
+            <p class="muted">${currentLang === "zh"
+              ? "坩埚会根据元素、材料家族、Tc 和文献密度给出下一步探索建议。"
+              : "The crucible combines element, family, Tc, and article density into a next-step exploration hint."}</p>
+          </div>
+        `;
+        return;
+      }
+
+      const symbol = state.selectedElement;
+      const meta = elementMeta[symbol] || [symbol, ""];
+      const rows = (state.db?.materials || []).filter(row => (row.elements || []).includes(symbol));
+      const articleRows = curatedArticles().filter(article => articleMatchesElement(article, symbol));
+      const events = elementHistoryEvents(symbol, rows, articleRows);
+      const prediction = predictElementPotential(symbol, rows, articleRows);
+      const familyChips = uniq(rows.map(row => familyName(row.family))).slice(0, 6)
+        .map(value => `<span class="chip good">${esc(value)}</span>`).join("");
+
+      elementHistoryWorkbench.innerHTML = `
+        <div class="element-history-panel">
+          <h3>${esc(symbol)} · ${esc(meta[0])} ${currentLang === "zh" ? "相关历史" : "History"}</h3>
+          <div class="chips">
+            <span class="chip good">${esc(rows.length)} ${currentLang === "zh" ? "材料条目" : "material rows"}</span>
+            <span class="chip trusted">${esc(articleRows.length)} ${currentLang === "zh" ? "真实论文记录" : "real article records"}</span>
+            ${familyChips}
+          </div>
+          <div class="history-timeline">
+            ${events.map(event => `
+              <div class="history-event">
+                <strong>${esc(event.year)} · ${esc(event.title)}</strong>
+                <span>${esc(event.note)}</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+        <div class="crucible-panel">
+          <h3>${currentLang === "zh" ? "坩埚预测" : "Crucible Prediction"}</h3>
+          ${crucibleVisualHtml()}
+          <div class="prediction-score">
+            <strong>${currentLang === "zh" ? "探索价值" : "Exploration value"}: ${prediction.score}/100</strong>
+            <div class="score-bar"><span style="--score:${prediction.score}%"></span></div>
+          </div>
+          <p>${esc(prediction.summary)}</p>
+          <div class="chips">
+            ${prediction.tags.map(tag => `<span class="chip">${esc(tag)}</span>`).join("")}
+          </div>
+          <button class="primary" type="button" id="runCrucibleBtn">${currentLang === "zh" ? "用坩埚生成建议" : "Run crucible"}</button>
+          <p class="muted" id="crucibleAdvice">${esc(prediction.advice)}</p>
+        </div>
+      `;
+
+      $("#runCrucibleBtn")?.addEventListener("click", () => {
+        const advice = $("#crucibleAdvice");
+        if (advice) advice.textContent = prediction.nextStep;
+      });
+    }
+
+    function crucibleVisualHtml() {
+      return `
+        <div class="crucible-visual" aria-hidden="true">
+          <div class="crucible-bubbles"><span></span><span></span><span></span></div>
+          <div class="crucible-bowl"></div>
+        </div>
+      `;
+    }
+
+    function elementHistoryEvents(symbol, rows, articleRows) {
+      const articleEvents = articleRows
+        .filter(article => article.year)
+        .sort((a, b) => Number(a.year || 9999) - Number(b.year || 9999))
+        .slice(0, 5)
+        .map(article => ({
+          year: article.year,
+          title: article.title || (currentLang === "zh" ? "ARPES 论文记录" : "ARPES article record"),
+          note: [
+            article.source || article.source_title || "",
+            (article.materials || []).slice(0, 4).join(", ")
+          ].filter(Boolean).join(" · ")
+        }));
+      const seedEvents = rows.slice(0, Math.max(0, 5 - articleEvents.length)).map(row => ({
+        year: extractFirstYear(row.synthesized_or_discovered || row.source_note) || (currentLang === "zh" ? "Seed" : "Seed"),
+        title: row.display_name || row.material,
+        note: row.synthesized_or_discovered || row.tc_note || row.source_note || (currentLang === "zh" ? "材料库种子条目" : "Seed material row")
+      }));
+      return [...articleEvents, ...seedEvents].slice(0, 6).length
+        ? [...articleEvents, ...seedEvents].slice(0, 6)
+        : [{
+          year: currentLang === "zh" ? "待补充" : "Pending",
+          title: `${symbol} ${currentLang === "zh" ? "历史线索" : "history leads"}`,
+          note: currentLang === "zh" ? "还没有相关材料或真实论文记录，可从 WoS/Scholar/API 导入。" : "No related material or real-article records yet; import from WoS, Scholar, or APIs."
+        }];
+    }
+
+    function extractFirstYear(value) {
+      const match = String(value || "").match(/\b(18|19|20)\d{2}\b/);
+      return match ? match[0] : "";
+    }
+
+    function predictElementPotential(symbol, rows, articleRows) {
+      const maxTc = Math.max(0, ...rows.map(row => Number(row.transition_temperature_K || row.tc_K || 0)).filter(Number.isFinite));
+      const familyCount = uniq(rows.map(row => row.family)).length;
+      const arpesTerms = rows.flatMap(row => [...(row.arpes_special_properties || []), ...(row.q_dependent_observables || [])]);
+      const termText = arpesTerms.join(" ").toLowerCase();
+      const keywordBoost = ["topological", "weyl", "dirac", "gap", "pseudogap", "nematic", "surface", "phonon"]
+        .filter(word => termText.includes(word)).length;
+      const score = Math.min(100, Math.round(18 + Math.min(articleRows.length, 12) * 4 + Math.min(rows.length, 8) * 4 + familyCount * 6 + Math.min(maxTc, 120) * 0.18 + keywordBoost * 5));
+      const topRows = [...rows].sort((a, b) => Number(b.transition_temperature_K || 0) - Number(a.transition_temperature_K || 0)).slice(0, 3);
+      const families = uniq(rows.map(row => familyName(row.family))).slice(0, 3);
+      const tags = [
+        `${currentLang === "zh" ? "最高 Tc" : "Max Tc"} ${maxTc ? `${maxTc} K` : "-"}`,
+        `${articleRows.length} ${currentLang === "zh" ? "论文" : "papers"}`,
+        ...(families.length ? families : [currentLang === "zh" ? "待建家族" : "family pending"])
+      ];
+      const materialLine = topRows.map(row => row.display_name || row.material).join(", ") || symbol;
+      const summary = currentLang === "zh"
+        ? `${symbol} 的当前优势在 ${materialLine}；可优先围绕 ${families.join(" / ") || "新材料家族"} 做配方和 ARPES 可观测量筛选。`
+        : `${symbol}'s current lead is ${materialLine}; prioritize family-aware composition screening and ARPES observables.`;
+      const advice = currentLang === "zh"
+        ? `建议先比较 ${materialLine} 的 gap、Fermi surface、surface state 或 q-dependent 线索，再决定是否导入更多 ${symbol} 相关论文。`
+        : `First compare gap, Fermi-surface, surface-state, or q-dependent clues for ${materialLine}, then decide whether to import more ${symbol}-related papers.`;
+      const nextStep = currentLang === "zh"
+        ? `坩埚建议：把 ${symbol} 与当前高频共现元素交叉筛选，优先找有真实图、可追 DOI、且 Tc/能隙/表面态信息完整的材料。`
+        : `Crucible says: cross-filter ${symbol} with frequent co-elements, prioritizing materials with real figures, traceable DOI links, and complete Tc/gap/surface-state context.`;
+      return { score, tags, summary, advice, nextStep };
     }
 
     function highlightPeriodicTable() {
@@ -6320,14 +6886,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     let cubeRotation = { x: -18, y: 32 };
     let cubeScale = 1;
-    let axisMode = "core";
     let cubeViewMode = "cube";
     let activeCubeFace = "";
-    const coreAxisPointIds = new Set([
-      "hg-1911", "nb3ge-1973", "ybco", "bisrcacuo", "hgbacacuo-30gpa",
-      "mgb2-2001", "cecoin5", "laofep", "srfefas", "feas-2008",
-      "h2s-2015", "lah10-2019", "csh"
-    ]);
     const cubeFaces = {
       conventional: {
         zh: ["常规超导", "Hg, Pb, Nb, Nb3Sn 等低温常规超导是历史基线。"],
@@ -6416,6 +6976,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }).join("");
       cubeFacePicker.querySelectorAll("[data-cube-face-choice]").forEach(button => {
         button.addEventListener("click", () => selectCubeFace(button.dataset.cubeFaceChoice));
+        button.addEventListener("mouseenter", () => renderCubeFaceReadout(button.dataset.cubeFaceChoice));
+        button.addEventListener("focus", () => renderCubeFaceReadout(button.dataset.cubeFaceChoice));
       });
       updateCubeFacePicker();
     }
@@ -6522,6 +7084,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       };
       window.__selectAxisPoint = activatePoint;
       axisPointLayer.querySelectorAll(".axis-point").forEach(pointEl => {
+        const previewPoint = () => {
+          const point = historyChartPoints.find(entry => entry.id === pointEl?.dataset.historyPoint);
+          if (point) renderCubeReadout(point);
+        };
+        pointEl.addEventListener("mouseenter", previewPoint);
+        pointEl.addEventListener("focus", previewPoint);
         pointEl.addEventListener("click", () => activatePoint(pointEl));
         pointEl.addEventListener("pointerdown", () => activatePoint(pointEl));
         pointEl.addEventListener("keydown", event => {
@@ -6535,17 +7103,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const pointEl = event.target.closest?.(".axis-point");
         if (pointEl) activatePoint(pointEl);
       });
-      if (axisModeBtn) axisModeBtn.textContent = axisMode === "core" ? t("axisModeShowAll") : t("axisModeShowCore");
     }
 
     function renderCubeReadout(point) {
       if (!cubeReadout) return;
       if (!point || typeof point === "string") {
         cubeReadout.textContent = t("cubeReadoutDefault");
-        if (cubeChatGuide) {
-          cubeChatGuide.classList.add("is-empty");
-          cubeChatGuide.textContent = t("chatPlatformEmpty");
-        }
         return;
       }
       const pressure = estimatePressureGPa(point);
@@ -6556,20 +7119,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         X: ${esc(point.year)} · Y: ${esc(pressureNote)} · Z: Tc ${esc(point.tc)}<br>
         ${esc(note)}
       `;
-      if (cubeChatGuide) {
-        cubeChatGuide.classList.remove("is-empty");
-        cubeChatGuide.innerHTML = `
-          <strong style="color:var(--accent-glow);">${esc(point.label)}</strong><br>
-          ${currentLang === "zh"
-            ? `材料点已选中：年份 ${esc(point.year)}，压力 ${esc(pressureNote)}，Tc ${esc(point.tc)}。可以继续在下方输入“这类材料的 ARPES 特征”或“相关文献来源”。`
-            : `Selected material point: year ${esc(point.year)}, pressure ${esc(pressureNote)}, Tc ${esc(point.tc)}. Ask below for ARPES features or literature sources.`}
-        `;
-      }
-      if (!state.chatMessages.length) {
-        addChatMessage("assistant", currentLang === "zh"
-          ? `${point.label} 已选中：${point.year} 年，${pressureNote}，Tc ${point.tc}。${note}`
-          : `${point.label} selected: ${point.year}, ${pressureNote}, Tc ${point.tc}. ${note}`);
-      }
     }
 
     function renderCubeFaceReadout(faceKey) {
@@ -6577,10 +7126,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const face = cubeFaces[faceKey] || cubeFaces.cuprate;
       const [title, body] = face[currentLang] || face.zh;
       cubeReadout.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}`;
-      if (cubeChatGuide) {
-        cubeChatGuide.classList.remove("is-empty");
-        cubeChatGuide.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}<br>${esc(currentLang === "zh" ? "点击左侧材料点可进一步定位具体文献和参数。" : "Click a material point on the left to locate concrete papers and parameters.")}`;
-      }
     }
 
     function setupHistoryCube() {
@@ -6591,6 +7136,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       renderCubeFaceReadout(activeCubeFace || "cuprate");
       historyCube.querySelectorAll(".cube-face").forEach(face => {
         face.addEventListener("click", () => selectCubeFace(face.dataset.cubeFace));
+        face.addEventListener("mouseenter", () => renderCubeFaceReadout(face.dataset.cubeFace));
+        face.addEventListener("focus", () => renderCubeFaceReadout(face.dataset.cubeFace));
       });
       cubeViewModeBtn?.addEventListener("click", () => {
         cubeViewMode = cubeViewMode === "axis" ? "cube" : "axis";
@@ -6601,11 +7148,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           applyCubeTransform();
         }
         applyCubeViewMode();
-      });
-      axisModeBtn?.addEventListener("click", () => {
-        axisMode = axisMode === "core" ? "all" : "core";
-        renderAxisPoints();
-        renderCubeReadout();
       });
       cubeResetBtn?.addEventListener("click", () => {
         cubeRotation = { x: -18, y: 32 };
@@ -6804,6 +7346,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const parts = [];
         if (names.length) parts.push(`${t("modelRegistryTemplate")} ${names.join(", ")}`);
         if (chatNames.length) parts.push(`Chat: ${chatNames.join(", ")}`);
+        if (cfg.model) parts.push(`${t("aiRoundtableSelected")} ${cfg.model}`);
         if (endpoint) parts.push(`AI endpoint: ${endpoint}${cfg.model ? ` · ${cfg.model}` : ""}`);
         modelRegistryOutput.textContent = parts.length ? parts.join("\n") : t("modelRegistryDefault");
       }
