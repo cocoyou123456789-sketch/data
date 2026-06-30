@@ -2054,9 +2054,9 @@
 
     .cube-view-cube .axis-line.z {
       left: var(--axis-origin);
-      bottom: var(--axis-origin);
-      width: 118px;
-      transform: translateZ(var(--cube-depth)) rotateZ(135deg);
+      bottom: calc(var(--axis-origin) - 7px);
+      width: var(--cube-edge);
+      transform: translateZ(var(--cube-depth));
       z-index: 43;
       height: 6px;
       opacity: 1;
@@ -2118,7 +2118,7 @@
 
     .axis-label.x { transform: translate3d(162px, 8px, var(--cube-depth)); color: #f8fafc; }
     .axis-label.y { transform: translate3d(-22px, -162px, var(--cube-depth)); color: #f8fafc; }
-    .axis-label.z { transform: translate3d(-110px, 96px, var(--cube-depth)); color: #f8fafc; }
+    .axis-label.z { transform: translate3d(92px, 28px, var(--cube-depth)); color: #f8fafc; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -3258,7 +3258,7 @@
 
       .axis-label.x { transform: translate3d(128px, 8px, var(--cube-depth)); }
       .axis-label.y { transform: translate3d(-20px, -136px, var(--cube-depth)); }
-      .axis-label.z { transform: translate3d(-92px, 82px, var(--cube-depth)); }
+      .axis-label.z { transform: translate3d(72px, 24px, var(--cube-depth)); }
 
       .milestone-stage,
       .layout-two,
