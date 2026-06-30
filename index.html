@@ -2029,16 +2029,31 @@
     }
 
     .cube-view-cube .axis-line {
-      z-index: 6;
-      height: 2px;
-      box-shadow: 0 0 18px rgba(96,208,255,0.52);
+      z-index: 38;
+      height: 3px;
+      border-radius: 999px;
+      box-shadow:
+        0 0 4px rgba(255,255,255,0.55),
+        0 0 18px rgba(96,208,255,0.78),
+        0 0 36px rgba(20,184,166,0.32);
+      opacity: 0.98;
+    }
+
+    .cube-view-cube .axis-line.x,
+    .cube-view-cube .axis-line.y {
+      background:
+        repeating-linear-gradient(90deg, rgba(103,232,249,0.98) 0 12px, transparent 12px 20px),
+        linear-gradient(90deg, rgba(255,255,255,0.3), transparent);
     }
 
     .cube-view-cube .axis-line.z {
-      z-index: 30;
+      z-index: 39;
       height: 3px;
       opacity: 0.96;
-      box-shadow: 0 0 20px rgba(239,68,68,0.72);
+      box-shadow:
+        0 0 4px rgba(255,255,255,0.45),
+        0 0 20px rgba(239,68,68,0.78),
+        0 0 34px rgba(239,68,68,0.32);
     }
 
     .cube-view-cube .axis-label {
@@ -2079,8 +2094,8 @@
       position: absolute;
       left: var(--axis-origin);
       bottom: var(--axis-origin);
-      width: 42px;
-      height: 42px;
+      width: 48px;
+      height: 48px;
       min-width: 0;
       min-height: 0;
       padding: 0;
@@ -2091,7 +2106,7 @@
       transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(var(--cube-depth) - var(--py))) translate(-50%, 50%);
       transform-style: preserve-3d;
       cursor: pointer;
-      opacity: 0.95;
+      opacity: 0.98;
       pointer-events: auto;
       z-index: 8;
     }
@@ -2101,37 +2116,39 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 24px;
-      height: 24px;
-      border: 1px solid rgba(255,255,255,0.72);
+      width: 30px;
+      height: 30px;
+      border: 1px solid rgba(255,255,255,0.82);
       border-radius: 50%;
       background-color: var(--point-color, #22d3ee);
       background:
-        radial-gradient(circle at 27% 22%, #ffffff 0 8%, rgba(255,255,255,0.74) 9% 18%, transparent 19%),
-        radial-gradient(circle at 42% 36%, rgba(255,255,255,0.38) 0 19%, transparent 20%),
-        radial-gradient(circle at 58% 64%, transparent 0 38%, rgba(0,0,0,0.16) 62%, rgba(0,0,0,0.58) 100%),
-        linear-gradient(135deg, rgba(255,255,255,0.38), transparent 36%),
+        radial-gradient(circle at 28% 20%, #ffffff 0 7%, rgba(255,255,255,0.9) 8% 15%, transparent 16%),
+        radial-gradient(circle at 38% 32%, rgba(255,255,255,0.55) 0 18%, transparent 19%),
+        radial-gradient(circle at 64% 72%, rgba(0,0,0,0.02) 0 34%, rgba(0,0,0,0.34) 62%, rgba(0,0,0,0.68) 100%),
+        linear-gradient(135deg, rgba(255,255,255,0.44), transparent 34%),
         var(--point-color, #22d3ee);
       box-shadow:
-        inset -5px -6px 8px rgba(0,0,0,0.44),
-        inset 3px 3px 7px rgba(255,255,255,0.28),
+        inset -8px -9px 11px rgba(0,0,0,0.46),
+        inset 4px 4px 8px rgba(255,255,255,0.34),
+        inset 0 0 5px rgba(255,255,255,0.18),
         0 0 24px var(--point-color, #22d3ee),
-        0 10px 14px rgba(0,0,0,0.36);
-      filter: saturate(1.65) brightness(1.18);
-      transform: translate(-50%, -50%) translateZ(18px);
+        0 12px 18px rgba(0,0,0,0.38);
+      filter: saturate(1.8) brightness(1.2);
+      transform: translate(-50%, -50%) translateZ(24px);
     }
 
     .axis-point::after {
       content: "";
       position: absolute;
       left: 50%;
-      top: 58%;
-      width: 26px;
-      height: 10px;
+      top: 63%;
+      width: 34px;
+      height: 13px;
       border-radius: 50%;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,0.34), transparent 70%);
-      transform: translate(-50%, -50%) rotateX(70deg) translateZ(-4px);
-      filter: blur(1px);
+      background:
+        radial-gradient(ellipse at center, rgba(0,0,0,0.45), rgba(0,0,0,0.18) 44%, transparent 72%);
+      transform: translate(-50%, -50%) rotateX(70deg) translateZ(2px);
+      filter: blur(1.5px);
     }
 
     .axis-point:hover,
@@ -2144,9 +2161,9 @@
       box-shadow:
         inset -5px -6px 8px rgba(0,0,0,0.38),
         inset 3px 3px 7px rgba(255,255,255,0.32),
-        0 0 28px var(--point-color, #22d3ee),
+        0 0 34px var(--point-color, #22d3ee),
         0 14px 18px rgba(0,0,0,0.4);
-      transform: translate(-50%, -50%) translateZ(18px) scale(1.16);
+      transform: translate(-50%, -50%) translateZ(30px) scale(1.12);
     }
 
     #axisPointLayer {
