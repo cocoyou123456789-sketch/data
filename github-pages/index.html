@@ -2284,7 +2284,7 @@
 
     .cube-face.front { transform: translateZ(var(--cube-depth)); }
     .cube-face.back { transform: rotateY(180deg) translateZ(var(--cube-depth)); }
-    .cube-face.right { transform: rotateY(90deg) translateZ(var(--cube-depth)); }
+    .cube-face.right { transform: rotateY(90deg) translateZ(var(--cube-depth)) rotateZ(90deg); }
     .cube-face.left { transform: rotateY(-90deg) translateZ(var(--cube-depth)); }
     .cube-face.top { transform: rotateX(90deg) translateZ(var(--cube-depth)); }
     .cube-face.bottom { transform: rotateX(-90deg) translateZ(var(--cube-depth)); }
