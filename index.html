@@ -1887,9 +1887,9 @@
 
     .history-side-panel {
       display: grid;
-      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      grid-template-columns: minmax(560px, 1.42fr) minmax(280px, 0.58fr);
       gap: 12px;
-      align-items: stretch;
+      align-items: start;
     }
 
     .history-cube-panel {
@@ -1899,7 +1899,7 @@
       padding: 14px;
       display: grid;
       gap: 12px;
-      min-height: 620px;
+      min-height: 680px;
       overflow: hidden;
     }
 
@@ -1908,8 +1908,8 @@
     }
 
     .cube-viewport {
-      min-height: 430px;
-      width: min(760px, 100%);
+      min-height: 540px;
+      width: min(880px, 100%);
       margin: 0 auto;
       display: grid;
       place-items: center;
@@ -1923,17 +1923,17 @@
     }
 
     .history-cube {
-      --cube-edge: 218px;
-      --cube-depth: 109px;
-      --cube-origin: 52px;
+      --cube-edge: 258px;
+      --cube-depth: 129px;
+      --cube-origin: 62px;
       --axis-size: calc(var(--cube-edge) + 72px);
       --axis-origin: var(--cube-origin);
-      width: 340px;
-      height: 340px;
+      width: 430px;
+      height: 430px;
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(var(--cube-x, -18deg)) rotateY(var(--cube-y, 32deg)) scale(var(--cube-scale, 1));
-      transition: transform 140ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: transform 90ms cubic-bezier(0.18, 0.82, 0.22, 1);
       will-change: transform;
       backface-visibility: hidden;
     }
@@ -2124,16 +2124,15 @@
       position: absolute;
       left: var(--axis-origin);
       bottom: var(--axis-origin);
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       min-width: 0;
       min-height: 0;
       padding: 0;
       appearance: none;
       border: 0;
       border-radius: 50%;
-      background:
-        radial-gradient(ellipse at 50% 72%, rgba(0,0,0,0.42), rgba(0,0,0,0.18) 42%, transparent 72%) center 72% / 30px 10px no-repeat;
+      background: transparent;
       transform: translate3d(var(--px), calc(-1 * var(--pz)), calc(var(--cube-depth) - var(--py))) translate(-50%, 50%);
       transform-style: preserve-3d;
       cursor: pointer;
@@ -2143,6 +2142,7 @@
     }
 
     .axis-point::before {
+      display: none;
       content: "";
       position: absolute;
       left: 50%;
@@ -2170,6 +2170,7 @@
     }
 
     .axis-point::after {
+      display: none;
       content: "";
       position: absolute;
       left: 42%;
@@ -2201,6 +2202,87 @@
     .axis-point:hover::after,
     .axis-point.active::after {
       transform: translate(-50%, -50%) translateZ(36px) scale(1.08);
+    }
+
+    .axis-point-shadow {
+      position: absolute;
+      left: 50%;
+      top: 66%;
+      width: 30px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.5), rgba(0,0,0,0.22) 42%, transparent 72%);
+      filter: blur(1.2px);
+      transform: translate(-50%, -50%) rotateX(68deg) translateZ(4px);
+      pointer-events: none;
+    }
+
+    .axis-point-orb {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.84);
+      background-color: var(--point-color, #22d3ee);
+      background:
+        radial-gradient(circle at 30% 20%, #ffffff 0 6%, rgba(255,255,255,0.9) 7% 14%, transparent 15%),
+        radial-gradient(circle at 38% 31%, rgba(255,255,255,0.48) 0 18%, transparent 19%),
+        radial-gradient(circle at 67% 76%, rgba(0,0,0,0) 0 27%, rgba(0,0,0,0.52) 59%, rgba(0,0,0,0.82) 100%),
+        radial-gradient(circle at 48% 48%, rgba(255,255,255,0.14), transparent 54%),
+        var(--point-color, #22d3ee);
+      box-shadow:
+        inset -8px -9px 10px rgba(0,0,0,0.58),
+        inset 4px 4px 7px rgba(255,255,255,0.36),
+        inset 0 0 5px rgba(255,255,255,0.22),
+        0 0 18px var(--point-color, #22d3ee),
+        0 10px 14px rgba(0,0,0,0.44);
+      filter: saturate(1.9) brightness(1.2);
+      transform: translate(-50%, -50%) translateZ(32px) rotateY(var(--orb-y, -32deg)) rotateX(var(--orb-x, 18deg));
+      transform-style: preserve-3d;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .axis-point-orb::before {
+      content: "";
+      position: absolute;
+      left: 26%;
+      top: 19%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.96), rgba(255,255,255,0.56) 45%, transparent 74%);
+      filter: blur(0.25px);
+      transform: translateZ(8px);
+    }
+
+    .axis-point-orb::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.26), transparent 34%),
+        radial-gradient(circle at 70% 78%, rgba(0,0,0,0.24), transparent 42%);
+      transform: translateZ(4px);
+      pointer-events: none;
+    }
+
+    .axis-point:hover .axis-point-orb,
+    .axis-point.active .axis-point-orb {
+      transform: translate(-50%, -50%) translateZ(40px) rotateY(var(--orb-y, -32deg)) rotateX(var(--orb-x, 18deg)) scale(1.12);
+      box-shadow:
+        inset -8px -9px 10px rgba(0,0,0,0.5),
+        inset 4px 4px 8px rgba(255,255,255,0.4),
+        0 0 24px var(--point-color, #22d3ee),
+        0 12px 16px rgba(0,0,0,0.46);
+    }
+
+    .axis-point:hover .axis-point-shadow,
+    .axis-point.active .axis-point-shadow {
+      transform: translate(-50%, -50%) rotateX(68deg) translateZ(5px) scale(1.08);
     }
 
     #axisPointLayer {
@@ -2477,14 +2559,14 @@
     }
 
     .history-chat-panel {
-      min-height: 620px;
+      min-height: 300px;
       border: 1px solid rgba(96,208,255,0.22);
       border-radius: 8px;
-      padding: 14px;
+      padding: 12px;
       background: rgba(10,18,28,0.78);
       display: grid;
-      grid-template-rows: auto minmax(260px, 1fr) auto auto;
-      gap: 12px;
+      grid-template-rows: auto auto auto auto;
+      gap: 8px;
       align-content: start;
       overflow: hidden;
     }
@@ -2492,9 +2574,15 @@
     .chat-thread {
       display: grid;
       gap: 10px;
-      max-height: 260px;
+      min-height: 48px;
+      max-height: 132px;
       overflow-y: auto;
       padding-right: 4px;
+    }
+
+    .chat-thread:empty {
+      display: none;
+      min-height: 0;
     }
 
     .chat-message {
@@ -2518,15 +2606,15 @@
 
     .chat-composer {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 10px;
+      border-radius: 14px;
+      padding: 8px;
       background: rgba(255,255,255,0.04);
       display: grid;
-      gap: 8px;
+      gap: 7px;
     }
 
     .chat-composer textarea {
-      min-height: 78px;
+      min-height: 44px;
       resize: vertical;
       border: 0;
       background: transparent;
@@ -7447,6 +7535,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     const defaultCubeRotation = { x: -18, y: 32 };
     let cubeRotation = { ...defaultCubeRotation };
+    let targetCubeRotation = { ...defaultCubeRotation };
     let cubeScale = 1;
     let cubeViewMode = "cube";
     let activeCubeFace = "";
@@ -7490,6 +7579,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!historyCube) return;
       historyCube.style.setProperty("--cube-x", `${cubeRotation.x}deg`);
       historyCube.style.setProperty("--cube-y", `${cubeRotation.y}deg`);
+      historyCube.style.setProperty("--orb-x", `${-cubeRotation.x}deg`);
+      historyCube.style.setProperty("--orb-y", `${-cubeRotation.y}deg`);
       historyCube.style.setProperty("--cube-scale", String(cubeScale));
     }
 
@@ -7520,6 +7611,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       activeCubeFace = faceKey || "cuprate";
       cubeViewMode = "cube";
       cubeRotation = cubeFaceViews[activeCubeFace] || { ...defaultCubeRotation };
+      targetCubeRotation = { ...cubeRotation };
       cubeScale = 1.05;
       applyCubeTransform();
       applyCubeViewMode();
@@ -7633,7 +7725,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           onclick="window.__selectAxisPoint && window.__selectAxisPoint(this)"
           onpointerdown="window.__selectAxisPoint && window.__selectAxisPoint(this)"
           aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
-          title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa"></button>`;
+          title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa">
+          <span class="axis-point-shadow" aria-hidden="true"></span>
+          <span class="axis-point-orb" aria-hidden="true"></span>
+        </button>`;
       }).join("");
       if (axisHitLayer) axisHitLayer.innerHTML = "";
       const activatePoint = pointEl => {
@@ -7734,7 +7829,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (raf) return;
         raf = requestAnimationFrame(() => {
           raf = 0;
+          const dx = targetCubeRotation.y - cubeRotation.y;
+          const dy = targetCubeRotation.x - cubeRotation.x;
+          cubeRotation.y += dx * 0.34;
+          cubeRotation.x += dy * 0.34;
+          if (Math.abs(dx) < 0.03) cubeRotation.y = targetCubeRotation.y;
+          if (Math.abs(dy) < 0.03) cubeRotation.x = targetCubeRotation.x;
           applyCubeTransform();
+          if (dragging || Math.abs(targetCubeRotation.y - cubeRotation.y) > 0.03 || Math.abs(targetCubeRotation.x - cubeRotation.x) > 0.03) {
+            requestCubeFrame();
+          }
         });
       };
       cubeViewport.addEventListener("pointerdown", event => {
@@ -7742,6 +7846,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         dragging = true;
         activeCubeFace = "";
         historyCube.classList.add("is-dragging");
+        targetCubeRotation = { ...cubeRotation };
         last = { x: event.clientX, y: event.clientY };
         cubeViewport.setPointerCapture?.(event.pointerId);
       });
@@ -7754,8 +7859,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (!dragging) return;
         const dx = event.clientX - last.x;
         const dy = event.clientY - last.y;
-        cubeRotation.y += dx * 0.32;
-        cubeRotation.x -= dy * 0.26;
+        targetCubeRotation.y += dx * 0.2;
+        targetCubeRotation.x -= dy * 0.16;
         last = { x: event.clientX, y: event.clientY };
         requestCubeFrame();
       });
