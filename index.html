@@ -2054,9 +2054,9 @@
 
     .cube-view-cube .axis-line.z {
       left: var(--axis-origin);
-      bottom: calc(var(--axis-origin) - 1px);
+      bottom: var(--axis-origin);
       width: var(--cube-edge);
-      transform: rotateY(-90deg) translateZ(var(--cube-depth)) rotateZ(180deg);
+      transform: translateZ(var(--cube-depth)) rotateZ(180deg);
       z-index: 45;
       height: 5px;
       opacity: 1;
