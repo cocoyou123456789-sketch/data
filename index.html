@@ -2031,6 +2031,7 @@
     .cube-view-cube .axis-line {
       z-index: 38;
       height: 3px;
+      width: calc(var(--cube-edge) * 0.46);
       border-radius: 999px;
       box-shadow:
         0 0 4px rgba(255,255,255,0.55),
@@ -2042,11 +2043,27 @@
     .cube-view-cube .axis-line.x,
     .cube-view-cube .axis-line.y {
       background:
-        repeating-linear-gradient(90deg, rgba(103,232,249,0.98) 0 12px, transparent 12px 20px),
+        repeating-linear-gradient(90deg, rgba(103,232,249,0.92) 0 9px, transparent 9px 16px),
         linear-gradient(90deg, rgba(255,255,255,0.3), transparent);
     }
 
+    .cube-view-cube .axis-line.x {
+      left: var(--axis-origin);
+      bottom: var(--axis-origin);
+      transform: translateZ(var(--cube-depth)) rotateZ(180deg);
+    }
+
+    .cube-view-cube .axis-line.y {
+      left: calc(var(--axis-origin) + var(--cube-edge));
+      bottom: var(--axis-origin);
+      transform: translateZ(var(--cube-depth)) rotateY(-90deg);
+    }
+
     .cube-view-cube .axis-line.z {
+      left: calc(var(--axis-origin) + var(--cube-edge));
+      bottom: var(--axis-origin);
+      width: calc(var(--cube-edge) * 0.52);
+      transform: translateZ(var(--cube-depth)) rotateZ(-90deg);
       z-index: 39;
       height: 3px;
       opacity: 0.96;
@@ -2078,9 +2095,9 @@
       z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(350px, 8px, var(--cube-depth)); }
-    .axis-label.y { transform: translate3d(-70px, 12px, 0); }
-    .axis-label.z { transform: translate3d(-42px, -304px, var(--cube-depth)); color: #ffb4b4; }
+    .axis-label.x { transform: translate3d(-72px, 8px, var(--cube-depth)); }
+    .axis-label.y { transform: translate3d(280px, 8px, 0); }
+    .axis-label.z { transform: translate3d(244px, -126px, var(--cube-depth)); color: #ffb4b4; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -3210,9 +3227,9 @@
         height: 270px;
       }
 
-      .axis-label.x { transform: translate3d(292px, 8px, var(--cube-depth)); }
-      .axis-label.y { transform: translate3d(-58px, 10px, 0); }
-      .axis-label.z { transform: translate3d(-38px, -258px, var(--cube-depth)); }
+      .axis-label.x { transform: translate3d(-58px, 8px, var(--cube-depth)); }
+      .axis-label.y { transform: translate3d(226px, 8px, 0); }
+      .axis-label.z { transform: translate3d(194px, -110px, var(--cube-depth)); }
 
       .milestone-stage,
       .layout-two,
