@@ -2028,93 +2028,54 @@
       display: none;
     }
 
-    .cube-view-cube .axis-line,
-    .cube-view-cube .axis-label,
-    .cube-view-cube::after {
-      display: none;
-    }
-
-    .coordinate-cube-overlay {
-      position: absolute;
-      inset: -14px -22px -18px -26px;
-      z-index: 42;
-      pointer-events: none;
-      overflow: visible;
-    }
-
-    .coordinate-cube-overlay .wire {
-      fill: none;
-      stroke: #2f65b7;
-      stroke-width: 5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      filter: drop-shadow(0 0 5px rgba(96,208,255,0.28));
-    }
-
-    .coordinate-cube-overlay .axis {
-      stroke: rgba(0,0,0,0.92);
-      stroke-width: 8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .coordinate-cube-overlay .vertex {
-      fill: #ff2b2b;
-      stroke: rgba(255,255,255,0.88);
-      stroke-width: 1.5;
-      filter: drop-shadow(0 0 5px rgba(255,43,43,0.45));
-    }
-
-    .coordinate-cube-overlay .axis-letter {
-      fill: #030712;
-      font-size: 34px;
-      font-weight: 900;
-      paint-order: stroke;
-      stroke: rgba(255,255,255,0.35);
-      stroke-width: 2;
-    }
-
     .cube-view-cube .axis-line {
-      z-index: 8;
-      height: 2px;
-      width: 82px;
+      z-index: 42;
+      height: 6px;
+      width: 150px;
       border-radius: 999px;
+      background: #05070b;
       box-shadow:
-        0 0 3px rgba(255,255,255,0.4),
-        0 0 12px rgba(96,208,255,0.58);
-      opacity: 0.9;
-    }
-
-    .cube-view-cube .axis-line.x,
-    .cube-view-cube .axis-line.y {
-      background:
-        repeating-linear-gradient(90deg, rgba(103,232,249,0.9) 0 7px, transparent 7px 13px),
-        linear-gradient(90deg, rgba(255,255,255,0.22), transparent);
+        0 0 2px rgba(255,255,255,0.45),
+        0 0 12px rgba(96,208,255,0.16);
+      opacity: 1;
     }
 
     .cube-view-cube .axis-line.x {
       left: var(--axis-origin);
       bottom: var(--axis-origin);
-      transform: rotateZ(180deg);
+      transform: translateZ(var(--cube-depth));
     }
 
     .cube-view-cube .axis-line.y {
       left: var(--axis-origin);
       bottom: var(--axis-origin);
-      transform: rotateZ(-26deg);
+      transform: translateZ(var(--cube-depth)) rotateZ(-90deg);
     }
 
     .cube-view-cube .axis-line.z {
       left: var(--axis-origin);
       bottom: var(--axis-origin);
-      width: 88px;
-      transform: rotateZ(-90deg);
-      z-index: 9;
-      height: 2px;
-      opacity: 0.92;
-      box-shadow:
-        0 0 3px rgba(255,255,255,0.35),
-        0 0 12px rgba(239,68,68,0.62);
+      width: 118px;
+      transform: translateZ(var(--cube-depth)) rotateZ(135deg);
+      z-index: 43;
+      height: 6px;
+      opacity: 1;
+      background: #05070b;
+      box-shadow: 0 0 12px rgba(96,208,255,0.16);
+    }
+
+    .cube-view-cube .axis-line::after {
+      right: -13px;
+      border-top-width: 10px;
+      border-bottom-width: 10px;
+      border-left-width: 16px;
+      border-left-color: #05070b;
+      filter: drop-shadow(0 0 3px rgba(255,255,255,0.24));
+    }
+
+    .cube-view-cube .axis-line.z::after {
+      border-left-color: #05070b;
+      filter: drop-shadow(0 0 3px rgba(255,255,255,0.24));
     }
 
     .cube-view-cube::after {
@@ -2122,14 +2083,14 @@
       position: absolute;
       left: var(--axis-origin);
       bottom: var(--axis-origin);
-      width: 8px;
-      height: 8px;
+      width: 12px;
+      height: 12px;
       border: 1px solid rgba(255,255,255,0.72);
       border-radius: 50%;
-      background: var(--accent-glow);
-      box-shadow: 0 0 12px rgba(96,208,255,0.7);
+      background: #ff2b2b;
+      box-shadow: 0 0 12px rgba(255,43,43,0.56);
       transform: translate(-50%, 50%);
-      z-index: 12;
+      z-index: 44;
       pointer-events: none;
     }
 
@@ -2155,9 +2116,9 @@
       z-index: 14;
     }
 
-    .axis-label.x { transform: translate3d(-54px, 8px, 0); }
-    .axis-label.y { transform: translate3d(126px, -34px, 0); }
-    .axis-label.z { transform: translate3d(-16px, -98px, 0); color: #ffb4b4; }
+    .axis-label.x { transform: translate3d(162px, 8px, var(--cube-depth)); color: #f8fafc; }
+    .axis-label.y { transform: translate3d(-22px, -162px, var(--cube-depth)); color: #f8fafc; }
+    .axis-label.z { transform: translate3d(-110px, 96px, var(--cube-depth)); color: #f8fafc; }
 
     .axis-label.active,
     .axis-view-controls button.active {
@@ -2385,8 +2346,16 @@
 
     .cube-view-cube .cube-face {
       pointer-events: auto;
-      opacity: 0.42;
+      opacity: 0.68;
       z-index: 10;
+      border-color: rgba(47,101,183,0.92);
+      background:
+        linear-gradient(90deg, rgba(47,101,183,0.34) 2px, transparent 2px),
+        linear-gradient(0deg, rgba(47,101,183,0.34) 2px, transparent 2px),
+        rgba(8,15,24,0.05);
+      box-shadow:
+        inset 0 0 0 1px rgba(47,101,183,0.76),
+        0 0 10px rgba(96,208,255,0.14);
     }
 
     .cube-view-cube .cube-face:hover,
@@ -3287,9 +3256,9 @@
         height: 270px;
       }
 
-      .axis-label.x { transform: translate3d(-48px, 8px, 0); }
-      .axis-label.y { transform: translate3d(104px, -28px, 0); }
-      .axis-label.z { transform: translate3d(-14px, -82px, 0); }
+      .axis-label.x { transform: translate3d(128px, 8px, var(--cube-depth)); }
+      .axis-label.y { transform: translate3d(-20px, -136px, var(--cube-depth)); }
+      .axis-label.z { transform: translate3d(-92px, 82px, var(--cube-depth)); }
 
       .milestone-stage,
       .layout-two,
@@ -3702,33 +3671,6 @@
                   <button class="axis-label x" type="button" data-axis-view="x">X</button>
                   <button class="axis-label y" type="button" data-axis-view="y">Y</button>
                   <button class="axis-label z" type="button" data-axis-view="z">Z</button>
-                  <svg class="coordinate-cube-overlay" viewBox="0 0 340 300" aria-hidden="true" focusable="false">
-                    <defs>
-                      <marker id="coordArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(0,0,0,0.92)"></path>
-                      </marker>
-                    </defs>
-                    <line class="axis" x1="148" y1="204" x2="320" y2="204" marker-end="url(#coordArrow)"></line>
-                    <line class="axis" x1="148" y1="204" x2="148" y2="36" marker-end="url(#coordArrow)"></line>
-                    <line class="axis" x1="148" y1="204" x2="42" y2="268" marker-end="url(#coordArrow)"></line>
-                    <polyline class="wire" points="86,238 236,238 286,174 138,174 86,238"></polyline>
-                    <polyline class="wire" points="86,102 236,102 286,38 138,38 86,102"></polyline>
-                    <line class="wire" x1="86" y1="238" x2="86" y2="102"></line>
-                    <line class="wire" x1="236" y1="238" x2="236" y2="102"></line>
-                    <line class="wire" x1="286" y1="174" x2="286" y2="38"></line>
-                    <line class="wire" x1="138" y1="174" x2="138" y2="38"></line>
-                    <circle class="vertex" cx="86" cy="238" r="8"></circle>
-                    <circle class="vertex" cx="236" cy="238" r="8"></circle>
-                    <circle class="vertex" cx="286" cy="174" r="8"></circle>
-                    <circle class="vertex" cx="138" cy="174" r="8"></circle>
-                    <circle class="vertex" cx="86" cy="102" r="8"></circle>
-                    <circle class="vertex" cx="236" cy="102" r="8"></circle>
-                    <circle class="vertex" cx="286" cy="38" r="8"></circle>
-                    <circle class="vertex" cx="138" cy="38" r="8"></circle>
-                    <text class="axis-letter" x="324" y="214">X</text>
-                    <text class="axis-letter" x="134" y="28">Y</text>
-                    <text class="axis-letter" x="20" y="286">Z</text>
-                  </svg>
                   <div id="axisPointLayer"></div>
                   <div id="axisHitLayer" aria-label="Clickable material points"></div>
                   <button class="cube-face front" type="button" data-cube-face="cuprate"><strong>Cuprate</strong><span>1986 · high Tc</span></button>
