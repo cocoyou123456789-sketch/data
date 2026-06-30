@@ -2101,8 +2101,8 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border: 1px solid rgba(255,255,255,0.72);
       border-radius: 50%;
       background-color: var(--point-color, #22d3ee);
@@ -2115,10 +2115,10 @@
       box-shadow:
         inset -5px -6px 8px rgba(0,0,0,0.44),
         inset 3px 3px 7px rgba(255,255,255,0.28),
-        0 0 18px var(--point-color, #22d3ee),
+        0 0 24px var(--point-color, #22d3ee),
         0 10px 14px rgba(0,0,0,0.36);
       filter: saturate(1.65) brightness(1.18);
-      transform: translate(-50%, -50%) translateZ(10px);
+      transform: translate(-50%, -50%) translateZ(18px);
     }
 
     .axis-point::after {
@@ -2214,20 +2214,20 @@
       bottom: var(--cube-origin);
       width: var(--cube-edge);
       height: var(--cube-edge);
-      border: 1px solid rgba(210,244,255,0.5);
+      border: 1px solid rgba(210,244,255,0.32);
       border-radius: 2px;
       background:
-        linear-gradient(90deg, rgba(210,244,255,0.34) 1px, transparent 1px),
-        linear-gradient(0deg, rgba(210,244,255,0.34) 1px, transparent 1px),
-        linear-gradient(145deg, rgba(42,103,116,0.96), rgba(18,51,62,0.98) 48%, rgba(11,30,39,0.98));
+        linear-gradient(90deg, rgba(210,244,255,0.2) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(210,244,255,0.2) 1px, transparent 1px),
+        linear-gradient(145deg, rgba(42,103,116,0.24), rgba(18,51,62,0.17) 48%, rgba(11,30,39,0.12));
       background-size:
         calc(var(--cube-edge) / 3) calc(var(--cube-edge) / 3),
         calc(var(--cube-edge) / 3) calc(var(--cube-edge) / 3),
         100% 100%;
       box-shadow:
-        inset 0 0 22px rgba(0,0,0,0.18),
-        inset 0 1px 0 rgba(255,255,255,0.18),
-        0 0 18px rgba(96,208,255,0.08);
+        inset 0 0 18px rgba(0,0,0,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 0 16px rgba(96,208,255,0.06);
       display: grid;
       align-content: center;
       gap: 6px;
@@ -2242,13 +2242,13 @@
       content: "";
       position: absolute;
       inset: 0;
-      border: 1px solid rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: inherit;
       background:
-        linear-gradient(90deg, transparent calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
-        linear-gradient(90deg, transparent calc(66.666% - 1px), rgba(255,255,255,0.16) calc(66.666% - 1px), rgba(255,255,255,0.16) calc(66.666% + 1px), transparent calc(66.666% + 1px)),
-        linear-gradient(0deg, transparent calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% - 1px), rgba(255,255,255,0.16) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
-        linear-gradient(0deg, transparent calc(66.666% - 1px), rgba(255,255,255,0.16) calc(66.666% - 1px), rgba(255,255,255,0.16) calc(66.666% + 1px), transparent calc(66.666% + 1px));
+        linear-gradient(90deg, transparent calc(33.333% - 1px), rgba(255,255,255,0.08) calc(33.333% - 1px), rgba(255,255,255,0.08) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
+        linear-gradient(90deg, transparent calc(66.666% - 1px), rgba(255,255,255,0.08) calc(66.666% - 1px), rgba(255,255,255,0.08) calc(66.666% + 1px), transparent calc(66.666% + 1px)),
+        linear-gradient(0deg, transparent calc(33.333% - 1px), rgba(255,255,255,0.08) calc(33.333% - 1px), rgba(255,255,255,0.08) calc(33.333% + 1px), transparent calc(33.333% + 1px)),
+        linear-gradient(0deg, transparent calc(66.666% - 1px), rgba(255,255,255,0.08) calc(66.666% - 1px), rgba(255,255,255,0.08) calc(66.666% + 1px), transparent calc(66.666% + 1px));
       pointer-events: none;
     }
 
@@ -2272,16 +2272,16 @@
     .cube-face.top { transform: rotateX(90deg) translateZ(var(--cube-depth)); }
     .cube-face.bottom { transform: rotateX(-90deg) translateZ(var(--cube-depth)); }
 
-    .cube-face.front { border-color: rgba(96,208,255,0.62); }
-    .cube-face.back { border-color: rgba(96,208,255,0.42); filter: brightness(0.82); }
-    .cube-face.right { border-color: rgba(96,208,255,0.5); filter: brightness(0.86); }
-    .cube-face.left { border-color: rgba(96,208,255,0.48); filter: brightness(0.82); }
-    .cube-face.top { border-color: rgba(210,244,255,0.6); filter: brightness(1.12); }
-    .cube-face.bottom { border-color: rgba(96,208,255,0.38); filter: brightness(0.72); }
+    .cube-face.front { border-color: rgba(96,208,255,0.48); }
+    .cube-face.back { border-color: rgba(96,208,255,0.28); filter: brightness(0.95); }
+    .cube-face.right { border-color: rgba(96,208,255,0.36); filter: brightness(0.98); }
+    .cube-face.left { border-color: rgba(96,208,255,0.34); filter: brightness(0.94); }
+    .cube-face.top { border-color: rgba(210,244,255,0.44); filter: brightness(1.03); }
+    .cube-face.bottom { border-color: rgba(96,208,255,0.26); filter: brightness(0.88); }
 
     .cube-view-cube #axisPointLayer {
       display: block;
-      z-index: 34;
+      z-index: 46;
       pointer-events: auto;
     }
 
@@ -2291,7 +2291,7 @@
 
     .cube-view-cube .cube-face {
       pointer-events: auto;
-      opacity: 1;
+      opacity: 0.42;
       z-index: 10;
     }
 
