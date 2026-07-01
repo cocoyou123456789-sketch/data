@@ -4226,6 +4226,7 @@
             <button class="chip fig-filter-chip" type="button" data-figtype="Charge order" data-i18n="figTypeCharge">序/重构</button>
             <button class="chip fig-filter-chip" type="button" data-figtype="EDC/MDC analysis" data-i18n="figTypeEdc">谱线分析</button>
             <button class="chip fig-filter-chip" type="button" data-figtype="Theory comparison" data-i18n="figTypeTheory">理论/对比</button>
+            <button class="chip" id="toggleFigureCandidatesBtn" type="button" data-i18n="showFigureCandidatesBtn">显示候选</button>
           </div>
           <div class="figure-gallery" id="figureGallery"></div>
           <div style="text-align:center; margin-top:8px;" id="figShowMoreWrap">
@@ -4803,7 +4804,7 @@
         overviewTitle: "📸 直观对比：文章图表",
         overviewStatus: "从论文提取图表 — 不同材料/技术并排对比",
         figureGalleryTitle: "📊 论文图表对比",
-        figureGalleryHint: "已核验图片会直接显示；公共 WoS 文章会作为待抓图候选进入同一筛选区，便于后续提取和核验。",
+        figureGalleryHint: "默认只显示已核验、能直接看的论文图。需要继续找图时，再打开公共 WoS 图候选。",
         figureFilterLabel: "按元素筛选:",
         figureElementChipLabel: "元素分类:",
         figureTypeFilterLabel: "图表类型:",
@@ -4821,6 +4822,8 @@
         figTypeTheory: "理论/对比",
         figTypeComparison: "理论/对比",
         figTypeOther: "其他",
+        showFigureCandidatesBtn: "显示候选",
+        hideFigureCandidatesBtn: "隐藏候选",
         showMoreBtn: "显示更多",
         filteredFigures: "筛选出 {count} 张已核验真实论文图",
         totalFigures: "共 {count} 张已核验真实论文图",
@@ -5217,7 +5220,7 @@
         overviewTitle: "📸 Overview: Article Figure Comparison",
         overviewStatus: "Figures from papers — side-by-side comparison across materials/techniques",
         figureGalleryTitle: "📊 Figure Comparison Gallery",
-        figureGalleryHint: "Verified images render directly; public WoS papers appear as figure candidates in the same filters for later extraction and verification.",
+        figureGalleryHint: "By default this shows only verified, directly viewable paper figures. Turn on public WoS candidates only when you want to find more figures.",
         figureFilterLabel: "Element filter:",
         figureElementChipLabel: "Element categories:",
         figureTypeFilterLabel: "Figure type:",
@@ -5235,6 +5238,8 @@
         figTypeTheory: "Theory / comparison",
         figTypeComparison: "Theory / comparison",
         figTypeOther: "Other",
+        showFigureCandidatesBtn: "Show candidates",
+        hideFigureCandidatesBtn: "Hide candidates",
         showMoreBtn: "Show more",
         filteredFigures: "{count} verified real paper figures found",
         totalFigures: "{count} verified real paper figures",
@@ -5668,12 +5673,14 @@
     const figureGallery = $("#figureGallery");
     const figCount = $("#figCount");
     const figShowMoreBtn = $("#figShowMoreBtn");
+    const toggleFigureCandidatesBtn = $("#toggleFigureCandidatesBtn");
     const figureElementStatus = $("#figureElementStatus");
     const figureElementChips = $("#figureElementChips");
     const clearFigureElementBtn = $("#clearFigureElementBtn");
     const sourceCards = $("#sourceCards");
     let figFilterType = "all";
     let figShowLimit = 12;
+    let showFigureCandidates = false;
     const ARTICLE_PAGE_SIZE = 60;
     const ARTICLE_LARGE_LIST_THRESHOLD = 200;
     const KEYWORD_SAMPLE_LIMIT = 300;
@@ -6297,6 +6304,7 @@
       articleShowLimit = ARTICLE_PAGE_SIZE;
       figFilterType = "all";
       figShowLimit = 12;
+      showFigureCandidates = false;
       document.querySelectorAll(".fig-filter-chip").forEach(chip => {
         chip.classList.toggle("active", chip.dataset.figtype === "all");
       });
@@ -8842,6 +8850,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       figShowLimit += 24;
       renderFigureGallery();
     });
+    toggleFigureCandidatesBtn?.addEventListener("click", () => {
+      showFigureCandidates = !showFigureCandidates;
+      figShowLimit = 12;
+      renderFigureGallery();
+    });
     clearFigureElementBtn?.addEventListener("click", () => {
       state.selectedElement = "";
       figShowLimit = 12;
@@ -8998,12 +9011,20 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
       }
 
-      const candidates = publicFigureCandidates(selectedElement, term, family);
+      const candidatePool = publicFigureCandidates(selectedElement, term, family);
+      const candidates = showFigureCandidates ? candidatePool : [];
       const galleryItems = [...allFigures.map(fig => ({ kind: "figure", ...fig })), ...candidates];
       const totalFigs = allFigures.length;
       const totalCandidates = candidates.length;
       const shownItems = galleryItems.slice(0, figShowLimit);
       const hiddenFigs = galleryItems.length - shownItems.length;
+      if (toggleFigureCandidatesBtn) {
+        toggleFigureCandidatesBtn.textContent = showFigureCandidates
+          ? t("hideFigureCandidatesBtn")
+          : `${t("showFigureCandidatesBtn")} (${candidatePool.length})`;
+        toggleFigureCandidatesBtn.classList.toggle("active", showFigureCandidates);
+        toggleFigureCandidatesBtn.disabled = candidatePool.length === 0;
+      }
 
       figCount.textContent = totalCandidates
         ? (term || family || selectedElement || figFilterType !== "all"
