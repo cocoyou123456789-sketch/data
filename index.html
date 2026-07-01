@@ -4821,7 +4821,7 @@
         materialsStatus: "等待中",
         detailTitle: "📋 材料详情",
         detailHint: "点击材料表中的一行查看详情。",
-        articleTitle: "📄 文章数据 (来自 articles.json)",
+        articleTitle: "📄 文章数据 (公共共享库)",
         articleLoading: "加载文章中...",
         wosWorkflowTitle: "🧭 WoS / Scholar 批量导入流程",
         wosWorkflowStep1: "在 Web of Science 或 Google Scholar 先按 ARPES、材料、超导关键词检索。",
@@ -4837,7 +4837,7 @@
         importScholarBtn: "📥 导入 Google Scholar",
         resetArticlesBtn: "🔄 恢复默认数据",
         importPanelTitle: "导入文章",
-        importHelpText: "免费 API 导入请运行 scripts/import_free_arpes.py；WoS/Scholar 可上传或粘贴导出文件。截图页面本身不能提供完整元数据。",
+        importHelpText: "公共数据来自 data/shared_articles.json；本地 WoS/Scholar 导入只在当前浏览器预览，发布到 Git 后大家才都能看到。截图页面本身不能提供完整元数据。",
         importTextareaPlaceholder: "在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本...",
         importDropTitle: "拖拽 WoS / Scholar 导出文件到这里",
         importDropHint: "支持 .txt/.csv/.tsv/.bib/.ris，以及 WoS 的文本型 .xls",
@@ -4918,7 +4918,7 @@
         floatingRemovedToast: "已从悬浮窗移除",
         noMatchSource: "未找到匹配的光源或档案。试试搜索\"上海\"、\"北京\"、\"NSRRC\"、\"ALS\"、\"arXiv\"。",
         seedMaterials: "种子材料",
-        seedDataNote: "本页面是超导主题的交互式探索模板。Tc 值和历史记录为代表性和种子数据，非最终精选条目。个人数据保存在浏览器 localStorage 中。点击 SUPERCONDUCTOR 按钮让周期表元素跳舞！支持按地区搜索光源设施（上海 SSRF、北京 BSRF、合肥 NSRL、台湾 NSRRC 及全球各地）。文章数据从 articles.json 和 free_arpes_articles.json 加载，包含 arXiv 预印本、开放 API 题录和已发表文献。",
+        seedDataNote: "本页面是超导主题的交互式探索模板。Tc 值和历史记录为代表性和种子数据，非最终精选条目。个人数据保存在浏览器 localStorage 中。点击 SUPERCONDUCTOR 按钮让周期表元素跳舞！支持按地区搜索光源设施（上海 SSRF、北京 BSRF、合肥 NSRL、台湾 NSRRC 及全球各地）。文章数据从 articles.json、free_arpes_articles.json 和 shared_articles.json 加载，包含公开共享的 WoS 元数据、开放 API 题录和已发表文献。",
         materials: "材料数",
         families: "家族",
         elements: "元素",
@@ -5230,7 +5230,7 @@
         materialsStatus: "Waiting",
         detailTitle: "📋 Material Details",
         detailHint: "Click a row in the materials table for details.",
-        articleTitle: "📄 Article Data (from articles.json)",
+        articleTitle: "📄 Article Data (public shared library)",
         articleLoading: "Loading articles...",
         wosWorkflowTitle: "🧭 WoS / Scholar Bulk Import Workflow",
         wosWorkflowStep1: "Search Web of Science or Google Scholar with ARPES, material, and superconductivity keywords.",
@@ -5246,7 +5246,7 @@
         importScholarBtn: "📥 Import Google Scholar",
         resetArticlesBtn: "🔄 Restore Defaults",
         importPanelTitle: "Import Articles",
-        importHelpText: "For free API import, run scripts/import_free_arpes.py locally. For WoS/Scholar, upload or paste exported files. A screenshot alone does not contain complete metadata.",
+        importHelpText: "Public records load from data/shared_articles.json. Local WoS/Scholar imports are browser previews until published to Git. A screenshot alone does not contain complete metadata.",
         importTextareaPlaceholder: "Paste Web of Science CSV/TSV export text, or Google Scholar BibTeX text...",
         importDropTitle: "Drag WoS / Scholar export files here",
         importDropHint: "Supports .txt/.csv/.tsv/.bib/.ris and text-based WoS .xls",
@@ -5327,7 +5327,7 @@
         floatingRemovedToast: "Removed from floating window",
         noMatchSource: "No matching light source or archive. Try Shanghai, Beijing, NSRRC, ALS, arXiv.",
         seedMaterials: "seed materials",
-        seedDataNote: "This page is an interactive superconductivity exploration template. Tc values and historical notes are representative seed data, not final curated entries. Personal data is stored in browser localStorage. Click SUPERCONDUCTOR to make the periodic table dance! Search by region for light source facilities (SSRF, BSRF, NSRL, NSRRC, and global). Article data loads from articles.json and free_arpes_articles.json, including arXiv preprints, open API metadata, and published literature.",
+        seedDataNote: "This page is an interactive superconductivity exploration template. Tc values and historical notes are representative seed data, not final curated entries. Personal data is stored in browser localStorage. Click SUPERCONDUCTOR to make the periodic table dance! Search by region for light source facilities (SSRF, BSRF, NSRL, NSRRC, and global). Article data loads from articles.json, free_arpes_articles.json, and shared_articles.json, including public shared WoS metadata, open API metadata, and published literature.",
         materials: "Materials",
         families: "Families",
         elements: "Elements",
@@ -5732,11 +5732,14 @@
     async function loadDefaultArticles() {
       let curated = [];
       let free = [];
+      let shared = [];
       try { curated = await loadJson("data/articles.json"); }
       catch { curated = []; }
       try { free = await loadJson("data/free_arpes_articles.json"); }
       catch { free = []; }
-      return mergeArticleRecords(curated, free);
+      try { shared = await loadJson("data/shared_articles.json"); }
+      catch { shared = []; }
+      return mergeArticleRecords(curated, free, shared);
     }
 
     function trimStorageText(value, limit = 320) {
@@ -6697,8 +6700,14 @@
       "Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe",
       "Cs","Ba","La","Ce","Pr","Nd","Sm","Eu","Gd","Dy","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi"
     ]);
+    function materialAppearsInText(material, text) {
+      if (/^[A-Z][a-z]?$/.test(material)) {
+        return new RegExp(`(^|[^A-Za-z0-9])${material.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^A-Za-z0-9])`, "i").test(text);
+      }
+      return text.toLowerCase().includes(material.toLowerCase());
+    }
     function extractMaterials(text) {
-      return KNOWN_MATERIALS.filter(m => text.toLowerCase().includes(m.toLowerCase()));
+      return KNOWN_MATERIALS.filter(material => materialAppearsInText(material, text));
     }
     function extractElements(text) {
       const found = [];
