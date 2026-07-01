@@ -1015,6 +1015,35 @@
       box-shadow: 0 0 0 1px rgba(20,184,166,0.34), 0 0 26px rgba(20,184,166,0.12);
     }
 
+    .article-list-controls {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.025);
+    }
+
+    .article-list-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .article-collapsed-card {
+      grid-column: 1 / -1;
+      border: 1px dashed rgba(20,184,166,0.45);
+      border-radius: 8px;
+      padding: 16px;
+      background: rgba(15,118,110,0.055);
+      color: var(--muted);
+    }
+
     @media (max-width: 860px) {
       .import-workflow { grid-template-columns: 1fr; }
       .import-metrics { grid-template-columns: 1fr; }
@@ -4323,6 +4352,14 @@
             <span class="status" id="importParseStatus"></span>
           </div>
         </div>
+        <div class="article-list-controls" id="articleListControls">
+          <span class="status" id="articleListStatus"></span>
+          <div class="article-list-actions">
+            <button id="toggleArticleListBtn" type="button" data-i18n="articleCollapseBtn">折叠列表</button>
+            <button id="articleShowMoreBtn" type="button" data-i18n="articleShowMoreBtn">显示更多</button>
+            <button id="articleShowAllBtn" type="button" data-i18n="articleShowAllBtn">显示全部</button>
+          </div>
+        </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:10px;" id="articleGrid"></div>
       </div>
     </section>
@@ -4806,6 +4843,13 @@
         importDropHint: "支持 .txt/.csv/.tsv/.bib/.ris，以及 WoS 的文本型 .xls",
         importDropActive: "松开鼠标即可导入文件",
         importBinaryExcelUnsupported: "这个 Excel 是二进制格式，浏览器暂不能直接解析。请在 WoS 导出 Tab-delimited / Plain text，或复制表格文本后粘贴。",
+        articleCollapseBtn: "折叠列表",
+        articleExpandBtn: "展开列表",
+        articleShowMoreBtn: "显示更多",
+        articleShowAllBtn: "显示全部",
+        articleShowingStatus: "正在显示 {shown} / {count} 篇文章",
+        articleCollapsedStatus: "文章列表已折叠，共 {count} 篇",
+        articleCollapsedHint: "列表已折叠。可以继续使用搜索、元素筛选和关键词筛选；需要查看卡片时再展开。",
         wosApiEndpointLabel: "API Endpoint",
         wosApiEndpointPlaceholder: "Vercel: /api/wos；GitHub Pages: https://你的项目.vercel.app/api/wos",
         wosApiLimitLabel: "数量",
@@ -5208,6 +5252,13 @@
         importDropHint: "Supports .txt/.csv/.tsv/.bib/.ris and text-based WoS .xls",
         importDropActive: "Release to import the file",
         importBinaryExcelUnsupported: "This Excel file is binary and cannot be parsed directly in the browser yet. Export Tab-delimited / Plain text from WoS, or paste copied table text.",
+        articleCollapseBtn: "Collapse List",
+        articleExpandBtn: "Expand List",
+        articleShowMoreBtn: "Show More",
+        articleShowAllBtn: "Show All",
+        articleShowingStatus: "Showing {shown} / {count} articles",
+        articleCollapsedStatus: "Article list collapsed, {count} articles total",
+        articleCollapsedHint: "The list is collapsed. Search, element filters, and keyword filters still work; expand when you need to inspect cards.",
         wosApiEndpointLabel: "API Endpoint",
         wosApiEndpointPlaceholder: "Vercel: /api/wos; GitHub Pages: https://your-project.vercel.app/api/wos",
         wosApiLimitLabel: "Limit",
@@ -5578,9 +5629,21 @@
     const sourceCards = $("#sourceCards");
     let figFilterType = "all";
     let figShowLimit = 12;
+    const ARTICLE_PAGE_SIZE = 60;
+    const ARTICLE_LARGE_LIST_THRESHOLD = 200;
+    const KEYWORD_SAMPLE_LIMIT = 300;
+    let articleShowLimit = ARTICLE_PAGE_SIZE;
+    let articleListCollapsed = false;
+    let articleListManuallyExpanded = false;
+    let articleMetricsDirty = true;
     const sourceBody = $("#sourceBody");
     const articleStatus = $("#articleStatus");
     const articleGrid = $("#articleGrid");
+    const articleListControls = $("#articleListControls");
+    const articleListStatus = $("#articleListStatus");
+    const toggleArticleListBtn = $("#toggleArticleListBtn");
+    const articleShowMoreBtn = $("#articleShowMoreBtn");
+    const articleShowAllBtn = $("#articleShowAllBtn");
     const importWosBtn = $("#importWosBtn");
     const importWosApiBtn = $("#importWosApiBtn");
     const importScholarBtn = $("#importScholarBtn");
@@ -6099,6 +6162,8 @@
       familyFilter.value = "";
       regionFilter.value = "";
       sourceTypeFilter.value = "";
+      articleListManuallyExpanded = false;
+      articleShowLimit = ARTICLE_PAGE_SIZE;
       figFilterType = "all";
       figShowLimit = 12;
       document.querySelectorAll(".fig-filter-chip").forEach(chip => {
@@ -6124,15 +6189,23 @@
       comparePanel.classList.remove("active");
       applyFilters();
     });
-    familyFilter.addEventListener("change", applyFilters);
-    regionFilter.addEventListener("change", applyFilters);
-    sourceTypeFilter.addEventListener("change", applyFilters);
+    function resetArticleListViewForFilter() {
+      articleListManuallyExpanded = false;
+      articleShowLimit = ARTICLE_PAGE_SIZE;
+    }
+    familyFilter.addEventListener("change", () => { resetArticleListViewForFilter(); applyFilters(); });
+    regionFilter.addEventListener("change", () => { resetArticleListViewForFilter(); applyFilters(); });
+    sourceTypeFilter.addEventListener("change", () => { resetArticleListViewForFilter(); applyFilters(); });
     searchInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") applyFilters();
+      if (e.key === "Enter") {
+        resetArticleListViewForFilter();
+        applyFilters();
+      }
     });
     searchInput.addEventListener("input", () => {
       clearTimeout(searchInput._searchTimer);
-      searchInput._searchTimer = setTimeout(applyFilters, 180);
+      resetArticleListViewForFilter();
+      searchInput._searchTimer = setTimeout(applyFilters, 360);
     });
     saveOurDataBtn.addEventListener("click", () => saveOurData());
     saveAndFloatDataBtn.addEventListener("click", () => saveOurData({ float: true }));
@@ -6140,6 +6213,24 @@
     clearOurDataBtn.addEventListener("click", clearOurData);
     importFileInput.addEventListener("change", importOurData);
     // ===== 文章导入按钮 =====
+    toggleArticleListBtn?.addEventListener("click", () => {
+      articleListCollapsed = !articleListCollapsed;
+      articleListManuallyExpanded = !articleListCollapsed;
+      renderArticles();
+    });
+    articleShowMoreBtn?.addEventListener("click", () => {
+      articleListCollapsed = false;
+      articleListManuallyExpanded = true;
+      articleShowLimit += ARTICLE_PAGE_SIZE;
+      renderArticles();
+    });
+    articleShowAllBtn?.addEventListener("click", () => {
+      articleListCollapsed = false;
+      articleListManuallyExpanded = true;
+      articleShowLimit = filteredArticles().length;
+      renderArticles();
+    });
+
     function setImportMode(mode) {
       const isApi = mode === "wos-api";
       if (wosApiPanel) wosApiPanel.style.display = isApi ? "block" : "none";
@@ -6318,6 +6409,10 @@
       const existingIds = new Set(state.articles.map(a => a.id || a.wos_uid || a.doi));
       const newArticles = normalized.filter(a => !existingIds.has(a.id) && !existingIds.has(a.wos_uid) && !existingIds.has(a.doi));
       state.articles = [...newArticles, ...state.articles];
+      articleListManuallyExpanded = false;
+      articleListCollapsed = state.articles.length > ARTICLE_LARGE_LIST_THRESHOLD;
+      articleShowLimit = ARTICLE_PAGE_SIZE;
+      articleMetricsDirty = true;
       renderArticles();
       renderKeywordChips();
       updateImportMetrics();
@@ -6393,6 +6488,10 @@
     });
     resetArticlesBtn.addEventListener("click", async () => {
       state.articles = await loadDefaultArticles();
+      articleListManuallyExpanded = false;
+      articleListCollapsed = false;
+      articleShowLimit = ARTICLE_PAGE_SIZE;
+      articleMetricsDirty = true;
       renderArticles();
       renderKeywordChips();
       updateImportMetrics();
@@ -6580,6 +6679,7 @@
         state.db = await loadJson("data/superconductivity.json");
         // 尝试加载文章数据：精选记录 + 免费官方 API 元数据
         state.articles = await loadDefaultArticles();
+        articleMetricsDirty = true;
         state.ourData = loadOurData();
         state.floatingDataIds = loadFloatingCompareIds();
         // 应用语言
@@ -8978,12 +9078,32 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function renderArticles() {
       const rows = filteredArticles();
       articleStatus.textContent = `${rows.length} / ${state.articles.length} ${t("records")}`;
-      updateImportMetrics();
+      if (articleMetricsDirty) updateImportMetrics();
+      if (rows.length > ARTICLE_LARGE_LIST_THRESHOLD && !articleListManuallyExpanded) {
+        articleListCollapsed = true;
+      }
+      if (rows.length <= ARTICLE_LARGE_LIST_THRESHOLD && !articleListManuallyExpanded) {
+        articleListCollapsed = false;
+      }
+      const visibleCount = Math.min(articleShowLimit, rows.length);
+      if (articleListControls) articleListControls.style.display = rows.length ? "flex" : "none";
+      if (articleListStatus) {
+        articleListStatus.textContent = articleListCollapsed
+          ? tf("articleCollapsedStatus", { count: rows.length })
+          : tf("articleShowingStatus", { shown: visibleCount, count: rows.length });
+      }
+      if (toggleArticleListBtn) toggleArticleListBtn.textContent = t(articleListCollapsed ? "articleExpandBtn" : "articleCollapseBtn");
+      if (articleShowMoreBtn) articleShowMoreBtn.style.display = (!articleListCollapsed && visibleCount < rows.length) ? "" : "none";
+      if (articleShowAllBtn) articleShowAllBtn.style.display = (!articleListCollapsed && visibleCount < rows.length) ? "" : "none";
       if (!rows.length) {
         articleGrid.innerHTML = `<p class="muted">${t("noArticles")}</p>`;
         return;
       }
-      articleGrid.innerHTML = rows.map(a => `
+      if (articleListCollapsed) {
+        articleGrid.innerHTML = `<div class="article-collapsed-card">${esc(t("articleCollapsedHint"))}</div>`;
+        return;
+      }
+      articleGrid.innerHTML = rows.slice(0, visibleCount).map(a => `
         <div class="article-card" onclick="window.open('${esc(a.url || "#")}', '_blank')">
           <div class="title">📄 ${esc(a.title)}</div>
           <div class="meta">📅 ${esc(a.year)} · ${esc(a.source)} · ${esc(a.verification_status)}</div>
@@ -9006,12 +9126,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function articleSearchText(article) {
-      return [
+      if (article._searchText) return article._searchText;
+      article._searchText = [
         article.title, article.source, article.source_title, article.verification_status,
         ...(article.materials || []), ...(article.elements || []), ...(article.dopants || []),
         ...(article.techniques || []), ...(article.keywords || []), ...(article.properties || []),
         article.doi, article.url
       ].join(" ").toLowerCase();
+      return article._searchText;
     }
 
     function updateImportMetrics() {
@@ -9029,6 +9151,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (importMetricWos) importMetricWos.textContent = wosCount;
       if (importMetricFree) importMetricFree.textContent = freeApiCount;
       if (importMetricFigures) importMetricFigures.textContent = figureCount;
+      articleMetricsDirty = false;
     }
 
     function renderKeywordChips() {
@@ -9040,7 +9163,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const normalized = key.replace(/\s+/g, " ");
         counts.set(normalized, (counts.get(normalized) || 0) + weight);
       };
-      for (const article of state.articles || []) {
+      for (const article of (state.articles || []).slice(0, KEYWORD_SAMPLE_LIMIT)) {
         (article.keywords || []).forEach(value => add(value, 3));
         (article.materials || []).forEach(value => add(value, 4));
         (article.elements || []).forEach(value => add(value, 1));
@@ -9058,6 +9181,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       keywordChips.querySelectorAll("button").forEach(btn => {
         btn.addEventListener("click", () => {
           searchInput.value = btn.dataset.keyword;
+          resetArticleListViewForFilter();
           applyFilters();
         });
       });
