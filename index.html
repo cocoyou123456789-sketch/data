@@ -2799,6 +2799,38 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+    .figure-card-candidate {
+      background: linear-gradient(180deg, rgba(18, 30, 39, 0.98), rgba(11, 18, 27, 0.98));
+      border-style: dashed;
+    }
+    .figure-candidate-visual {
+      min-height: 160px;
+      padding: 16px;
+      background:
+        linear-gradient(135deg, rgba(20,184,166,0.12), transparent 42%),
+        radial-gradient(circle at 78% 24%, rgba(245,158,11,0.16), transparent 28%),
+        #0f1822;
+    }
+    .figure-candidate-panel {
+      width: 100%;
+      min-height: 128px;
+      border: 1px dashed color-mix(in srgb, var(--figure-color, var(--accent-glow)) 60%, var(--line));
+      border-radius: 8px;
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      padding: 12px;
+      text-align: center;
+      background: rgba(8, 13, 20, 0.62);
+    }
+    .figure-candidate-panel strong {
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .figure-candidate-panel span {
+      color: var(--muted);
+      font-size: 11px;
+    }
     /* 图表类型颜色标记 */
     .fig-type-fs { --figure-color: var(--fig-fermi); border-left: 2px solid var(--figure-color); }   /* Fermi surface */
     .fig-type-band { --figure-color: var(--fig-band); border-left: 2px solid var(--figure-color); }  /* Band structure */
@@ -4771,7 +4803,7 @@
         overviewTitle: "📸 直观对比：文章图表",
         overviewStatus: "从论文提取图表 — 不同材料/技术并排对比",
         figureGalleryTitle: "📊 论文图表对比",
-        figureGalleryHint: "以下图表来自真实超导 ARPES 论文。先在元素周期表中选择元素，再在这里查看对应文章图表。",
+        figureGalleryHint: "已核验图片会直接显示；公共 WoS 文章会作为待抓图候选进入同一筛选区，便于后续提取和核验。",
         figureFilterLabel: "按元素筛选:",
         figureElementChipLabel: "元素分类:",
         figureTypeFilterLabel: "图表类型:",
@@ -4792,6 +4824,11 @@
         showMoreBtn: "显示更多",
         filteredFigures: "筛选出 {count} 张已核验真实论文图",
         totalFigures: "共 {count} 张已核验真实论文图",
+        filteredFiguresWithCandidates: "筛选出 {figures} 张已核验图 + {candidates} 篇公开图候选",
+        totalFiguresWithCandidates: "{figures} 张已核验图 + {candidates} 篇公开图候选",
+        figureCandidateKicker: "公开图候选",
+        figureCandidateHint: "打开官方论文后可继续提取或核验图",
+        figureCandidateStatus: "待抓图 / 待核验",
         remainingFigures: "{count} 张剩余",
         figureFallback: "图像预览无法直连显示，请打开官方文献入口",
         viewFigureSource: "打开官方文献",
@@ -5180,7 +5217,7 @@
         overviewTitle: "📸 Overview: Article Figure Comparison",
         overviewStatus: "Figures from papers — side-by-side comparison across materials/techniques",
         figureGalleryTitle: "📊 Figure Comparison Gallery",
-        figureGalleryHint: "These figures come from real ARPES papers. Select an element in the periodic table to view matching article figures.",
+        figureGalleryHint: "Verified images render directly; public WoS papers appear as figure candidates in the same filters for later extraction and verification.",
         figureFilterLabel: "Element filter:",
         figureElementChipLabel: "Element categories:",
         figureTypeFilterLabel: "Figure type:",
@@ -5201,6 +5238,11 @@
         showMoreBtn: "Show more",
         filteredFigures: "{count} verified real paper figures found",
         totalFigures: "{count} verified real paper figures",
+        filteredFiguresWithCandidates: "{figures} verified figures + {candidates} public figure candidates found",
+        totalFiguresWithCandidates: "{figures} verified figures + {candidates} public figure candidates",
+        figureCandidateKicker: "Public figure candidate",
+        figureCandidateHint: "Open the official paper to extract or verify figures",
+        figureCandidateStatus: "Pending figure extraction / verification",
         remainingFigures: "{count} remaining",
         figureFallback: "Figure preview cannot be loaded directly; open the official literature entry",
         viewFigureSource: "Open official paper",
@@ -8808,6 +8850,95 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     });
 
     // ===== 图表画廊：从 articles.json 提取真实论文图表（带搜索筛选） =====
+    function isPublicFigureCandidateArticle(article) {
+      const status = String(article.verification_status || "");
+      if (!status.includes("wos_public_shared_metadata")) return false;
+      if ((article.figures || []).some(fig => resolveFigureImage(fig, article))) return false;
+      const text = articleSearchText(article);
+      return (article.techniques || []).includes("ARPES") || text.includes("arpes") || text.includes("photoemission");
+    }
+
+    function inferFigureCandidateType(article) {
+      const text = [
+        article.title,
+        article.source_title,
+        ...(article.keywords || []),
+        ...(article.properties || [])
+      ].join(" ");
+      return normalizeFigureType(text);
+    }
+
+    function articleMatchesFigureFilters(article, selectedElement, term, family) {
+      if (selectedElement && !articleMatchesElement(article, selectedElement)) return false;
+      const articleText = [
+        article.title, article.source_title, ...(article.materials || []), ...(article.elements || []),
+        ...(article.keywords || []), ...(article.techniques || []), ...(article.properties || [])
+      ].join(" ").toLowerCase();
+      if (term && !articleText.includes(term)) return false;
+      if (family) {
+        const matchesFamily = (article.materials || []).some(m => {
+          const dbMat = state.db.materials.find(r => r.material === m || r.display_name === m);
+          return dbMat && dbMat.family === family;
+        });
+        if (!matchesFamily) return false;
+      }
+      return true;
+    }
+
+    function publicFigureCandidates(selectedElement, term, family) {
+      return (state.articles || [])
+        .filter(isPublicFigureCandidateArticle)
+        .filter(article => articleMatchesFigureFilters(article, selectedElement, term, family))
+        .map(article => {
+          const normalizedType = inferFigureCandidateType(article);
+          return {
+            kind: "candidate",
+            normalized_type: normalizedType,
+            article_title: article.title,
+            article_url: article.url || (article.doi ? `https://doi.org/${article.doi}` : ""),
+            article_source: article.source_title || article.source,
+            year: article.year,
+            materials: article.materials || [],
+            elements: article.elements || [],
+            techniques: article.techniques || [],
+            keywords: article.keywords || [],
+            data_quality: article.verification_status,
+            caption: article.title,
+            citation_count: article.citation_count || 0
+          };
+        })
+        .filter(candidate => figFilterType === "all" || candidate.normalized_type === normalizeFigureType(figFilterType))
+        .sort((a, b) =>
+          Number(b.year || 0) - Number(a.year || 0) ||
+          Number(b.citation_count || 0) - Number(a.citation_count || 0) ||
+          String(a.article_title || "").localeCompare(String(b.article_title || ""))
+        );
+    }
+
+    function renderFigureCandidateCard(candidate) {
+      const normalizedType = candidate.normalized_type || "Other";
+      const typeClass = figureTypeClass[normalizedType] || "fig-type-other";
+      const sourceUrl = candidate.article_url || "#";
+      return `
+        <div class="figure-card figure-card-candidate ${typeClass}">
+          <div class="figure-card-header">${esc(figureTypeLabel(normalizedType))} · ${esc(candidate.year || "")} · ${esc(t("figureCandidateKicker"))}</div>
+          <div class="figure-card-visual figure-candidate-visual">
+            <div class="figure-candidate-panel">
+              <strong>${esc(figureTypeLabel(normalizedType))}</strong>
+              <span>${esc(t("figureCandidateHint"))}</span>
+            </div>
+          </div>
+          <div class="figure-card-footer">
+            <strong>${esc(candidate.article_title || "")}</strong>
+            <span style="font-size:10px;">⏳ ${esc(t("figureCandidateStatus"))}</span>
+            <span style="font-size:10px;">📄 ${esc(candidate.article_source || "Web of Science")}</span>
+            <span style="font-size:10px;">🧪 ${esc((candidate.materials || []).join(", "))}</span>
+            ${sourceUrl && sourceUrl !== "#" ? `<a href="${esc(sourceUrl)}" target="_blank" rel="noreferrer" class="chip good" style="width:max-content;font-size:10px;">📖 ${esc(t("viewFigureSource"))}</a>` : ""}
+          </div>
+        </div>
+      `;
+    }
+
     function renderFigureGallery() {
       const allFigures = [];
       const term = (searchInput.value || "").trim().toLowerCase();
@@ -8867,21 +8998,29 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
       }
 
+      const candidates = publicFigureCandidates(selectedElement, term, family);
+      const galleryItems = [...allFigures.map(fig => ({ kind: "figure", ...fig })), ...candidates];
       const totalFigs = allFigures.length;
-      const shownFigs = allFigures.slice(0, figShowLimit);
-      const hiddenFigs = totalFigs - shownFigs.length;
+      const totalCandidates = candidates.length;
+      const shownItems = galleryItems.slice(0, figShowLimit);
+      const hiddenFigs = galleryItems.length - shownItems.length;
 
-      figCount.textContent = term || family || selectedElement || figFilterType !== "all"
-        ? tf("filteredFigures", { count: totalFigs })
-        : tf("totalFigures", { count: totalFigs });
+      figCount.textContent = totalCandidates
+        ? (term || family || selectedElement || figFilterType !== "all"
+          ? tf("filteredFiguresWithCandidates", { figures: totalFigs, candidates: totalCandidates })
+          : tf("totalFiguresWithCandidates", { figures: totalFigs, candidates: totalCandidates }))
+        : (term || family || selectedElement || figFilterType !== "all"
+          ? tf("filteredFigures", { count: totalFigs })
+          : tf("totalFigures", { count: totalFigs }));
 
-      if (!shownFigs.length) {
+      if (!shownItems.length) {
         figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${t("noFigureMatch")}</p></div>`;
         figShowMoreBtn.style.display = "none";
         return;
       }
 
-      figureGallery.innerHTML = shownFigs.map(fig => {
+      figureGallery.innerHTML = shownItems.map(fig => {
+        if (fig.kind === "candidate") return renderFigureCandidateCard(fig);
         const normalizedType = classifyFigureType(fig);
         const typeClass = figureTypeClass[normalizedType] || "fig-type-other";
         const metaParts = [];
@@ -8934,6 +9073,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (!visibleFigureCount) continue;
         for (const element of article.elements || []) {
           counts.set(element, (counts.get(element) || 0) + visibleFigureCount);
+        }
+      }
+      for (const article of (state.articles || []).filter(isPublicFigureCandidateArticle)) {
+        for (const element of article.elements || []) {
+          counts.set(element, (counts.get(element) || 0) + 1);
         }
       }
       const items = [...counts.entries()]
