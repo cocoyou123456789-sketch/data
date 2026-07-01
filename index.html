@@ -990,6 +990,31 @@
       color: var(--muted);
     }
 
+    .import-drop-zone {
+      border: 1px dashed rgba(20,184,166,0.58);
+      border-radius: 10px;
+      padding: 16px;
+      margin: 10px 0;
+      background: rgba(15,118,110,0.045);
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+      place-items: center;
+      text-align: center;
+      transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .import-drop-zone strong {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .import-drop-zone.drag-over {
+      border-color: var(--accent-glow);
+      background: rgba(20,184,166,0.14);
+      box-shadow: 0 0 0 1px rgba(20,184,166,0.34), 0 0 26px rgba(20,184,166,0.12);
+    }
+
     @media (max-width: 860px) {
       .import-workflow { grid-template-columns: 1fr; }
       .import-metrics { grid-template-columns: 1fr; }
@@ -4257,6 +4282,7 @@
         <div class="toolbar" style="margin-bottom:4px;">
           <button class="primary" id="importFreeApiBtn" data-i18n="importFreeApiBtn">🌐 免费 API 导入说明</button>
           <button class="primary" id="importWosBtn" data-i18n="importWosBtn">📥 导入 WoS</button>
+          <button class="primary" id="importWosApiBtn" data-i18n="importWosApiBtn">🔎 WoS API 搜索</button>
           <button class="primary" id="importScholarBtn" data-i18n="importScholarBtn">📥 导入 Google Scholar</button>
           <button id="resetArticlesBtn" data-i18n="resetArticlesBtn">🔄 恢复默认数据</button>
         </div>
@@ -4266,8 +4292,29 @@
             <button id="closeImportBtn" style="min-height:28px;padding:2px 8px;">✕</button>
           </div>
           <div class="status" id="importHelpText" data-i18n="importHelpText">推荐从 WoS 结果页点击 Export，选择 CSV/TSV/TXT 后上传或粘贴；截图页面本身不能提供完整元数据。</div>
+          <div id="wosApiPanel" style="display:none; border:1px solid var(--line); border-radius:8px; padding:10px; margin:10px 0; background:rgba(255,255,255,0.03);">
+            <div class="form-grid">
+              <label data-label-i18n="wosApiEndpointLabel">API Endpoint
+                <input id="wosApiEndpoint" data-i18n-placeholder="wosApiEndpointPlaceholder" placeholder="/api/wos">
+              </label>
+              <label data-label-i18n="wosApiLimitLabel">数量
+                <input id="wosApiLimit" type="number" min="1" max="50" value="25">
+              </label>
+              <label class="span-2" data-label-i18n="wosApiQueryLabel">WoS 检索式
+                <input id="wosApiQuery" data-i18n-placeholder="wosApiQueryPlaceholder" placeholder="ARPES AND superconduct*">
+              </label>
+            </div>
+            <div class="toolbar" style="margin-top:8px;">
+              <button class="primary" id="runWosApiBtn" type="button" data-i18n="runWosApiBtn">🔎 搜索并导入</button>
+              <span class="status" id="wosApiStatus"></span>
+            </div>
+          </div>
+          <div class="import-drop-zone" id="articleImportDropZone">
+            <strong data-i18n="importDropTitle">拖拽 WoS / Scholar 导出文件到这里</strong>
+            <span data-i18n="importDropHint">支持 .txt/.csv/.tsv/.bib/.ris，以及 WoS 的文本型 .xls</span>
+          </div>
           <div class="import-file-row">
-            <input type="file" id="articleImportFile" accept=".csv,.tsv,.txt,.bib,.ris">
+            <input type="file" id="articleImportFile" accept=".csv,.tsv,.txt,.bib,.ris,.xls,.xlsx">
             <span class="status" id="articleImportFileStatus"></span>
           </div>
           <textarea id="importTextarea" style="width:100%; min-height:200px; font-family:monospace; font-size:12px;" data-i18n-placeholder="importTextareaPlaceholder" placeholder="在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本..."></textarea>
@@ -4749,11 +4796,27 @@
         importMetricFigures: "已核验论文图",
         importFreeApiBtn: "🌐 免费 API 导入说明",
         importWosBtn: "📥 导入 WoS",
+        importWosApiBtn: "🔎 WoS API 搜索",
         importScholarBtn: "📥 导入 Google Scholar",
         resetArticlesBtn: "🔄 恢复默认数据",
         importPanelTitle: "导入文章",
         importHelpText: "免费 API 导入请运行 scripts/import_free_arpes.py；WoS/Scholar 可上传或粘贴导出文件。截图页面本身不能提供完整元数据。",
         importTextareaPlaceholder: "在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本...",
+        importDropTitle: "拖拽 WoS / Scholar 导出文件到这里",
+        importDropHint: "支持 .txt/.csv/.tsv/.bib/.ris，以及 WoS 的文本型 .xls",
+        importDropActive: "松开鼠标即可导入文件",
+        importBinaryExcelUnsupported: "这个 Excel 是二进制格式，浏览器暂不能直接解析。请在 WoS 导出 Tab-delimited / Plain text，或复制表格文本后粘贴。",
+        wosApiEndpointLabel: "API Endpoint",
+        wosApiEndpointPlaceholder: "Vercel: /api/wos；GitHub Pages: https://你的项目.vercel.app/api/wos",
+        wosApiLimitLabel: "数量",
+        wosApiQueryLabel: "WoS 检索式",
+        wosApiQueryPlaceholder: "ARPES AND superconduct*",
+        wosApiHelp: "需要先在 Vercel 设置 WOS_API_KEY。GitHub Pages 版本请填写 Vercel /api/wos 完整地址。",
+        runWosApiBtn: "🔎 搜索并导入",
+        wosApiMissingQuery: "请先输入 WoS 检索式",
+        wosApiSearching: "正在从 Web of Science API 检索...",
+        wosApiNoRecords: "没有返回文章记录",
+        wosApiEndpointMissing: "请填写 Vercel /api/wos 地址，或在 Vercel 版本中使用 /api/wos",
         freeApiImportHelp: "免费导入流程：在本地运行 python3 scripts/import_free_arpes.py，脚本会从 OpenAlex、arXiv、Crossref 拉取 ARPES 题录，生成 data/free_arpes_articles.json。网页会自动合并显示；这些记录只代表官方元数据，需要全文核验后才作为实验数据。",
         parseImportBtn: "🔍 解析并导入",
         noArticles: "暂无文章数据。",
@@ -5135,11 +5198,27 @@
         importMetricFigures: "Verified paper figures",
         importFreeApiBtn: "🌐 Free API import guide",
         importWosBtn: "📥 Import WoS",
+        importWosApiBtn: "🔎 WoS API Search",
         importScholarBtn: "📥 Import Google Scholar",
         resetArticlesBtn: "🔄 Restore Defaults",
         importPanelTitle: "Import Articles",
         importHelpText: "For free API import, run scripts/import_free_arpes.py locally. For WoS/Scholar, upload or paste exported files. A screenshot alone does not contain complete metadata.",
         importTextareaPlaceholder: "Paste Web of Science CSV/TSV export text, or Google Scholar BibTeX text...",
+        importDropTitle: "Drag WoS / Scholar export files here",
+        importDropHint: "Supports .txt/.csv/.tsv/.bib/.ris and text-based WoS .xls",
+        importDropActive: "Release to import the file",
+        importBinaryExcelUnsupported: "This Excel file is binary and cannot be parsed directly in the browser yet. Export Tab-delimited / Plain text from WoS, or paste copied table text.",
+        wosApiEndpointLabel: "API Endpoint",
+        wosApiEndpointPlaceholder: "Vercel: /api/wos; GitHub Pages: https://your-project.vercel.app/api/wos",
+        wosApiLimitLabel: "Limit",
+        wosApiQueryLabel: "WoS query",
+        wosApiQueryPlaceholder: "ARPES AND superconduct*",
+        wosApiHelp: "Requires WOS_API_KEY in Vercel. On GitHub Pages, enter the full Vercel /api/wos URL.",
+        runWosApiBtn: "🔎 Search & Import",
+        wosApiMissingQuery: "Enter a WoS query first",
+        wosApiSearching: "Searching Web of Science API...",
+        wosApiNoRecords: "No article records returned",
+        wosApiEndpointMissing: "Enter the Vercel /api/wos URL, or use /api/wos on the Vercel deployment",
         freeApiImportHelp: "Free import workflow: run python3 scripts/import_free_arpes.py locally. The script queries OpenAlex, arXiv, and Crossref for ARPES metadata and writes data/free_arpes_articles.json. The website loads it automatically; these records are official metadata and still need full-text verification before becoming experimental data.",
         parseImportBtn: "🔍 Parse & Import",
         noArticles: "No article data.",
@@ -5503,6 +5582,7 @@
     const articleStatus = $("#articleStatus");
     const articleGrid = $("#articleGrid");
     const importWosBtn = $("#importWosBtn");
+    const importWosApiBtn = $("#importWosApiBtn");
     const importScholarBtn = $("#importScholarBtn");
     const resetArticlesBtn = $("#resetArticlesBtn");
     const importPanel = $("#importPanel");
@@ -5510,8 +5590,15 @@
     const importTextarea = $("#importTextarea");
     const parseImportBtn = $("#parseImportBtn");
     const importParseStatus = $("#importParseStatus");
+    const articleImportDropZone = $("#articleImportDropZone");
     const articleImportFile = $("#articleImportFile");
     const articleImportFileStatus = $("#articleImportFileStatus");
+    const wosApiPanel = $("#wosApiPanel");
+    const wosApiEndpoint = $("#wosApiEndpoint");
+    const wosApiQuery = $("#wosApiQuery");
+    const wosApiLimit = $("#wosApiLimit");
+    const runWosApiBtn = $("#runWosApiBtn");
+    const wosApiStatus = $("#wosApiStatus");
     const importMetricRecords = $("#importMetricRecords");
     const importMetricWos = $("#importMetricWos");
     const importMetricFree = $("#importMetricFree");
@@ -6053,8 +6140,19 @@
     clearOurDataBtn.addEventListener("click", clearOurData);
     importFileInput.addEventListener("change", importOurData);
     // ===== 文章导入按钮 =====
+    function setImportMode(mode) {
+      const isApi = mode === "wos-api";
+      if (wosApiPanel) wosApiPanel.style.display = isApi ? "block" : "none";
+      if (articleImportDropZone) articleImportDropZone.style.display = isApi ? "none" : "grid";
+      const fileRow = articleImportFile?.closest(".import-file-row");
+      if (fileRow) fileRow.style.display = isApi ? "none" : "";
+      if (importTextarea) importTextarea.style.display = isApi ? "none" : "";
+      if (parseImportBtn) parseImportBtn.style.display = isApi ? "none" : "";
+    }
+
     importWosBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
+      setImportMode("wos");
       importPanelTitle.textContent = "📥 粘贴 Web of Science 导出 (CSV/TSV)";
       importTextarea.placeholder = "从 Web of Science 导出 → 全选复制粘贴到这里...";
       importParseStatus.textContent = "";
@@ -6064,8 +6162,21 @@
       importTextarea.focus();
       importTextarea.dataset.mode = "wos";
     });
+    importWosApiBtn.addEventListener("click", () => {
+      importPanel.style.display = "block";
+      setImportMode("wos-api");
+      importPanelTitle.textContent = currentLang === "zh" ? "🔎 Web of Science API 搜索" : "🔎 Web of Science API Search";
+      importParseStatus.textContent = "";
+      articleImportFileStatus.textContent = "";
+      if (wosApiStatus) wosApiStatus.textContent = t("wosApiHelp");
+      if (wosApiEndpoint && !wosApiEndpoint.value) wosApiEndpoint.value = defaultWosApiEndpoint();
+      if (wosApiQuery && !wosApiQuery.value) wosApiQuery.value = "ARPES AND superconduct*";
+      importTextarea.dataset.mode = "wos-api";
+      wosApiQuery?.focus();
+    });
     importScholarBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
+      setImportMode("scholar");
       importPanelTitle.textContent = "📥 粘贴 Google Scholar BibTeX";
       importTextarea.placeholder = "在 Google Scholar 搜索 → 点击 Cite → BibTeX → 复制粘贴到这里...";
       importParseStatus.textContent = "";
@@ -6077,6 +6188,7 @@
     });
     importFreeApiBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
+      setImportMode("free-api-guide");
       importPanelTitle.textContent = currentLang === "zh" ? "🌐 免费 ARPES API 导入" : "🌐 Free ARPES API Import";
       importTextarea.value = currentLang === "zh"
         ? "命令：python3 scripts/import_free_arpes.py\n\n可选：OPENALEX_EMAIL=you@example.com python3 scripts/import_free_arpes.py --per-query 12 --max-records 160\n\n输出：github-pages/data/free_arpes_articles.json\n\n说明：OpenAlex/arXiv/Crossref 返回的是官方题录/摘要/DOI/开放链接；这些记录会自动显示在文章列表中，但图和实验数值仍需全文核验。"
@@ -6089,15 +6201,174 @@
       importTextarea.focus();
     });
     closeImportBtn.addEventListener("click", () => { importPanel.style.display = "none"; });
-    articleImportFile.addEventListener("change", async () => {
-      const file = articleImportFile.files && articleImportFile.files[0];
+
+    function decodeTextFile(buffer) {
+      const bytes = new Uint8Array(buffer);
+      if (bytes[0] === 0xd0 && bytes[1] === 0xcf) throw new Error(t("importBinaryExcelUnsupported"));
+      if (bytes[0] === 0x50 && bytes[1] === 0x4b) throw new Error(t("importBinaryExcelUnsupported"));
+      if (bytes[0] === 0xff && bytes[1] === 0xfe) return new TextDecoder("utf-16le").decode(bytes);
+      if (bytes[0] === 0xfe && bytes[1] === 0xff) return new TextDecoder("utf-16be").decode(bytes);
+      const utf8 = new TextDecoder("utf-8").decode(bytes);
+      const replacementCount = (utf8.match(/\uFFFD/g) || []).length;
+      if (replacementCount > 3) {
+        try { return new TextDecoder("utf-16le").decode(bytes); }
+        catch { return utf8; }
+      }
+      return utf8;
+    }
+
+    function htmlTableToTsv(html) {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const rows = [...doc.querySelectorAll("tr")].map(row =>
+        [...row.querySelectorAll("th,td")].map(cell =>
+          cell.textContent.replace(/\s+/g, " ").trim()
+        )
+      ).filter(row => row.some(Boolean));
+      if (!rows.length) return html;
+      return rows.map(row => row.map(value => {
+        const clean = value.replace(/"/g, '""');
+        return /[\t\n"]/.test(clean) ? `"${clean}"` : clean;
+      }).join("\t")).join("\n");
+    }
+
+    function inferImportModeFromFile(file, text) {
+      if (/\.(bib|ris)$/i.test(file.name)) return "scholar";
+      if (/^@(?:article|inproceedings|misc|book)\s*{/i.test(text.trim())) return "scholar";
+      return "wos";
+    }
+
+    async function loadImportFile(file) {
       if (!file) return;
-      const text = await file.text();
+      let text = decodeTextFile(await file.arrayBuffer());
+      if (/<table[\s>]/i.test(text) || /<tr[\s>]/i.test(text)) text = htmlTableToTsv(text);
       importTextarea.value = text;
       articleImportFileStatus.textContent = `${file.name} · ${(file.size / 1024).toFixed(1)} KB`;
-      if (/\.(bib|ris)$/i.test(file.name)) importTextarea.dataset.mode = "scholar";
-      if (/\.(csv|tsv|txt)$/i.test(file.name)) importTextarea.dataset.mode = "wos";
+      importTextarea.dataset.mode = inferImportModeFromFile(file, text);
+      importParseStatus.textContent = currentLang === "zh"
+        ? `已读取 ${file.name}，可以点击“解析并导入”`
+        : `${file.name} loaded; click Parse & Import`;
+    }
+
+    articleImportFile.addEventListener("change", async () => {
+      const file = articleImportFile.files && articleImportFile.files[0];
+      try { await loadImportFile(file); }
+      catch (error) { importParseStatus.textContent = error.message || String(error); }
     });
+
+    ["dragenter", "dragover"].forEach(type => {
+      articleImportDropZone?.addEventListener(type, event => {
+        event.preventDefault();
+        articleImportDropZone.classList.add("drag-over");
+        const hint = articleImportDropZone.querySelector("span");
+        if (hint) hint.textContent = t("importDropActive");
+      });
+    });
+    ["dragleave", "drop"].forEach(type => {
+      articleImportDropZone?.addEventListener(type, event => {
+        event.preventDefault();
+        articleImportDropZone.classList.remove("drag-over");
+        const hint = articleImportDropZone.querySelector("span");
+        if (hint) hint.textContent = t("importDropHint");
+      });
+    });
+    articleImportDropZone?.addEventListener("drop", async event => {
+      const file = event.dataTransfer?.files?.[0];
+      try { await loadImportFile(file); }
+      catch (error) { importParseStatus.textContent = error.message || String(error); }
+    });
+
+    function enrichImportedArticle(article, index) {
+      const text = [
+        article.title, article.source_title, article.abstract,
+        ...(article.keywords || []), ...(article.evidence || [])
+      ].join(" ");
+      const elements = article.elements?.length ? article.elements : extractElements(text);
+      return {
+        id: article.id || article.wos_uid || article.doi || `imported-${Date.now()}-${index}`,
+        title: article.title || "(untitled)",
+        year: article.year || null,
+        source: article.source || "Imported metadata",
+        source_title: article.source_title || "",
+        authors: article.authors || "",
+        url: article.url || (article.doi ? `https://doi.org/${article.doi}` : ""),
+        doi: article.doi || "",
+        wos_uid: article.wos_uid || "",
+        materials: article.materials?.length ? article.materials : extractMaterials(text),
+        elements,
+        dopants: article.dopants || [],
+        techniques: article.techniques?.length ? article.techniques : extractTechniques(text),
+        keywords: article.keywords || [],
+        citation_count: article.citation_count || null,
+        temperature_K: article.temperature_K || null,
+        photon_energy_eV: article.photon_energy_eV || null,
+        beamline: article.beamline || "",
+        properties: article.properties || [],
+        evidence: article.evidence || [article.title].filter(Boolean),
+        verification_status: article.verification_status || "imported_metadata",
+        figures: article.figures || []
+      };
+    }
+
+    function importArticleRecords(parsed, options = {}) {
+      const normalized = parsed.map(enrichImportedArticle).filter(article => article.title);
+      if (!normalized.length) {
+        importParseStatus.textContent = t("wosApiNoRecords");
+        return [];
+      }
+      const existingIds = new Set(state.articles.map(a => a.id || a.wos_uid || a.doi));
+      const newArticles = normalized.filter(a => !existingIds.has(a.id) && !existingIds.has(a.wos_uid) && !existingIds.has(a.doi));
+      state.articles = [...newArticles, ...state.articles];
+      renderArticles();
+      renderKeywordChips();
+      updateImportMetrics();
+      if (options.hidePanel !== false) importPanel.style.display = "none";
+      const arpesCount = newArticles.filter(a => (a.techniques || []).includes("ARPES")).length;
+      const materialCount = new Set(newArticles.flatMap(a => a.materials || [])).size;
+      showToast(`${options.label || "导入"} ${newArticles.length} 篇文章 · ARPES ${arpesCount} · 材料 ${materialCount}`);
+      return newArticles;
+    }
+
+    runWosApiBtn?.addEventListener("click", async () => {
+      const endpoint = (wosApiEndpoint?.value || defaultWosApiEndpoint()).trim();
+      const query = (wosApiQuery?.value || "").trim();
+      const limit = Math.max(1, Math.min(Number(wosApiLimit?.value) || 25, 50));
+      if (!endpoint) {
+        wosApiStatus.textContent = t("wosApiEndpointMissing");
+        return;
+      }
+      if (!query) {
+        wosApiStatus.textContent = t("wosApiMissingQuery");
+        return;
+      }
+      wosApiStatus.textContent = t("wosApiSearching");
+      runWosApiBtn.disabled = true;
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, limit })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+        const records = data.records || data.articles || [];
+        if (!records.length) {
+          wosApiStatus.textContent = t("wosApiNoRecords");
+          return;
+        }
+        const imported = importArticleRecords(records, {
+          label: currentLang === "zh" ? "WoS API 导入" : "WoS API imported",
+          hidePanel: false
+        });
+        wosApiStatus.textContent = currentLang === "zh"
+          ? `已导入 ${imported.length} 条；当前列表已刷新`
+          : `${imported.length} records imported; article list refreshed`;
+      } catch (error) {
+        wosApiStatus.textContent = error.message || "WoS API request failed";
+      } finally {
+        runWosApiBtn.disabled = false;
+      }
+    });
+
     parseImportBtn.addEventListener("click", () => {
       const text = importTextarea.value.trim();
       if (!text) { importParseStatus.textContent = "请先粘贴文本"; return; }
@@ -6118,16 +6389,7 @@
         importParseStatus.textContent = "未识别到文章记录，请检查格式";
         return;
       }
-      const existingIds = new Set(state.articles.map(a => a.id));
-      const newArticles = parsed.filter(a => !existingIds.has(a.id));
-      state.articles = [...newArticles, ...state.articles];
-      renderArticles();
-      renderKeywordChips();
-      updateImportMetrics();
-      importPanel.style.display = "none";
-      const arpesCount = newArticles.filter(a => (a.techniques || []).includes("ARPES")).length;
-      const materialCount = new Set(newArticles.flatMap(a => a.materials || [])).size;
-      showToast(`导入了 ${newArticles.length} 篇文章 · ARPES ${arpesCount} · 材料 ${materialCount}`);
+      importArticleRecords(parsed, { label: currentLang === "zh" ? "导入了" : "Imported" });
     });
     resetArticlesBtn.addEventListener("click", async () => {
       state.articles = await loadDefaultArticles();
@@ -6191,6 +6453,12 @@
 
     // ===== WoS CSV/TSV 解析器 =====
     function parseWoSExport(text) {
+      if (/<table[\s>]/i.test(text) || /<tr[\s>]/i.test(text)) text = htmlTableToTsv(text);
+      if (/^\/Users\/.+\.(?:xls|xlsx|csv|tsv|txt)$/i.test(text.trim())) {
+        throw new Error(currentLang === "zh"
+          ? "这里粘贴的是文件路径，不是文件内容。请把文件直接拖到上方虚线框，或用 Choose File 选择。"
+          : "That is a file path, not file content. Drag the file into the drop zone above, or choose it with Choose File.");
+      }
       const lines = text.split(/\r?\n/).filter(l => l.trim());
       if (lines.length < 2) throw new Error("Need header + data rows");
       const sep = detectDelimiter(lines[0]);
@@ -8123,6 +8391,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const host = window.location.hostname || "";
       if (!host || host.includes("github.io")) return "";
       return "/api/chat";
+    }
+
+    function defaultWosApiEndpoint() {
+      const host = window.location.hostname || "";
+      if (!host || host.includes("github.io")) return "";
+      return "/api/wos";
     }
 
     function initAiConfigForm() {
