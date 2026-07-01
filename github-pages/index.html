@@ -5531,6 +5531,8 @@
     const FLOATING_COMPARE_STORAGE_KEY = "arpes-floating-compare-v1";
     const FLOATING_COMPARE_POSITION_KEY = "arpes-floating-compare-position-v1";
     const ARTICLE_IMPORT_STORAGE_KEY = "arpes-imported-articles-v1";
+    const ARTICLE_IMPORT_PREVIEW_LIMIT = 60000;
+    const ARTICLE_IMPORT_CHUNK_SIZE = 125;
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
@@ -5637,6 +5639,8 @@
     let articleListCollapsed = false;
     let articleListManuallyExpanded = false;
     let articleMetricsDirty = true;
+    let pendingImportText = "";
+    let pendingImportFileName = "";
     const sourceBody = $("#sourceBody");
     const articleStatus = $("#articleStatus");
     const articleGrid = $("#articleGrid");
@@ -5735,12 +5739,57 @@
       return mergeArticleRecords(curated, free);
     }
 
+    function trimStorageText(value, limit = 320) {
+      const text = String(value || "").replace(/\s+/g, " ").trim();
+      return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
+    }
+
+    function compactStorageArray(values, limit = 14, itemLimit = 90) {
+      return uniq((values || [])
+        .map(value => trimStorageText(value, itemLimit))
+        .filter(Boolean))
+        .slice(0, limit);
+    }
+
+    function validArticleIdentity(article) {
+      const key = articleIdentity(article);
+      return key && key !== "title::" ? key : "";
+    }
+
     function sanitizeArticleForStorage(article) {
-      const { _searchText, figures, ...rest } = article || {};
-      return {
-        ...rest,
-        figures: Array.isArray(figures) ? figures : []
+      const source = article || {};
+      const doi = trimStorageText(source.doi, 180);
+      const wosUid = trimStorageText(source.wos_uid, 180);
+      const id = trimStorageText(source.id || wosUid || doi || validArticleIdentity(source), 220);
+      const citationCount = Number(source.citation_count);
+      const stored = {
+        id,
+        title: trimStorageText(source.title || "(untitled)", 520),
+        year: source.year || null,
+        source: trimStorageText(source.source || "Imported metadata", 140),
+        source_title: trimStorageText(source.source_title, 220),
+        authors: trimStorageText(source.authors, 360),
+        url: trimStorageText(source.url || (doi ? `https://doi.org/${doi}` : ""), 520),
+        doi,
+        wos_uid: wosUid,
+        materials: compactStorageArray(source.materials, 16, 90),
+        elements: compactStorageArray(source.elements, 18, 12),
+        dopants: compactStorageArray(source.dopants, 8, 50),
+        techniques: compactStorageArray(source.techniques, 10, 60),
+        keywords: compactStorageArray(source.keywords, 18, 90),
+        citation_count: Number.isFinite(citationCount) ? citationCount : null,
+        temperature_K: source.temperature_K || null,
+        photon_energy_eV: source.photon_energy_eV || null,
+        beamline: trimStorageText(source.beamline, 120),
+        properties: compactStorageArray(source.properties, 10, 80),
+        evidence: compactStorageArray(source.evidence || [source.title, doi ? `DOI: ${doi}` : "", wosUid ? `WoS ID: ${wosUid}` : ""], 4, 160),
+        verification_status: trimStorageText(source.verification_status || "imported_metadata", 90),
+        figures: []
       };
+      if (source.open_access_url) stored.open_access_url = trimStorageText(source.open_access_url, 520);
+      if (source.data_quality) stored.data_quality = trimStorageText(source.data_quality, 120);
+      if (source.free_sources) stored.free_sources = compactStorageArray(source.free_sources, 8, 80);
+      return stored;
     }
 
     function loadStoredImportedArticles() {
@@ -5758,10 +5807,12 @@
         .map(sanitizeArticleForStorage);
       try {
         localStorage.setItem(ARTICLE_IMPORT_STORAGE_KEY, JSON.stringify(imported));
+        return true;
       } catch (error) {
         showToast(currentLang === "zh"
           ? "导入太大，浏览器本地存储空间不够；请分批导入或导出较少字段。"
           : "Import is too large for browser storage; import in smaller batches or export fewer fields.");
+        return false;
       }
     }
 
@@ -6279,6 +6330,7 @@
     importWosBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
       setImportMode("wos");
+      clearPendingImportText();
       importPanelTitle.textContent = "📥 粘贴 Web of Science 导出 (CSV/TSV)";
       importTextarea.placeholder = "从 Web of Science 导出 → 全选复制粘贴到这里...";
       importParseStatus.textContent = "";
@@ -6291,6 +6343,7 @@
     importWosApiBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
       setImportMode("wos-api");
+      clearPendingImportText();
       importPanelTitle.textContent = currentLang === "zh" ? "🔎 Web of Science API 搜索" : "🔎 Web of Science API Search";
       importParseStatus.textContent = "";
       articleImportFileStatus.textContent = "";
@@ -6303,6 +6356,7 @@
     importScholarBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
       setImportMode("scholar");
+      clearPendingImportText();
       importPanelTitle.textContent = "📥 粘贴 Google Scholar BibTeX";
       importTextarea.placeholder = "在 Google Scholar 搜索 → 点击 Cite → BibTeX → 复制粘贴到这里...";
       importParseStatus.textContent = "";
@@ -6315,6 +6369,7 @@
     importFreeApiBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
       setImportMode("free-api-guide");
+      clearPendingImportText();
       importPanelTitle.textContent = currentLang === "zh" ? "🌐 免费 ARPES API 导入" : "🌐 Free ARPES API Import";
       importTextarea.value = currentLang === "zh"
         ? "命令：python3 scripts/import_free_arpes.py\n\n可选：OPENALEX_EMAIL=you@example.com python3 scripts/import_free_arpes.py --per-query 12 --max-records 160\n\n输出：github-pages/data/free_arpes_articles.json\n\n说明：OpenAlex/arXiv/Crossref 返回的是官方题录/摘要/DOI/开放链接；这些记录会自动显示在文章列表中，但图和实验数值仍需全文核验。"
@@ -6363,16 +6418,49 @@
       return "wos";
     }
 
+    function clearPendingImportText() {
+      pendingImportText = "";
+      pendingImportFileName = "";
+      if (importTextarea) importTextarea.dataset.previewOnly = "";
+    }
+
+    function setImportTextFromFile(file, text) {
+      pendingImportText = text;
+      pendingImportFileName = file.name;
+      const isLarge = text.length > ARTICLE_IMPORT_PREVIEW_LIMIT;
+      if (isLarge) {
+        const omittedKb = Math.max(1, Math.round((text.length - ARTICLE_IMPORT_PREVIEW_LIMIT) / 1024));
+        importTextarea.value = `${text.slice(0, ARTICLE_IMPORT_PREVIEW_LIMIT)}\n\n[${currentLang === "zh" ? `大文件预览：后面约 ${omittedKb} KB 已保留在内存中，导入时会一起解析。` : `Large-file preview: about ${omittedKb} KB more is kept in memory and will be parsed on import.`}]`;
+        importTextarea.dataset.previewOnly = "true";
+      } else {
+        importTextarea.value = text;
+        importTextarea.dataset.previewOnly = "";
+      }
+    }
+
+    function currentImportText() {
+      return pendingImportText || importTextarea.value;
+    }
+
+    function yieldToBrowser() {
+      return new Promise(resolve => setTimeout(resolve, 0));
+    }
+
     async function loadImportFile(file) {
-      if (!file) return;
+      if (!file) return "";
+      importParseStatus.textContent = currentLang === "zh"
+        ? `正在读取 ${file.name}...`
+        : `Reading ${file.name}...`;
+      await yieldToBrowser();
       let text = decodeTextFile(await file.arrayBuffer());
       if (/<table[\s>]/i.test(text) || /<tr[\s>]/i.test(text)) text = htmlTableToTsv(text);
-      importTextarea.value = text;
+      setImportTextFromFile(file, text);
       articleImportFileStatus.textContent = `${file.name} · ${(file.size / 1024).toFixed(1)} KB`;
       importTextarea.dataset.mode = inferImportModeFromFile(file, text);
       importParseStatus.textContent = currentLang === "zh"
-        ? `已读取 ${file.name}，可以点击“解析并导入”`
-        : `${file.name} loaded; click Parse & Import`;
+        ? `已读取 ${file.name}${text.length > ARTICLE_IMPORT_PREVIEW_LIMIT ? "（大文件已启用预览模式）" : ""}，可以点击“解析并导入”`
+        : `${file.name} loaded${text.length > ARTICLE_IMPORT_PREVIEW_LIMIT ? " in preview mode" : ""}; click Parse & Import`;
+      return text;
     }
 
     articleImportFile.addEventListener("change", async () => {
@@ -6380,6 +6468,7 @@
       try { await loadImportFile(file); }
       catch (error) { importParseStatus.textContent = error.message || String(error); }
     });
+    importTextarea?.addEventListener("input", clearPendingImportText);
 
     ["dragenter", "dragover"].forEach(type => {
       articleImportDropZone?.addEventListener(type, event => {
@@ -6399,7 +6488,11 @@
     });
     articleImportDropZone?.addEventListener("drop", async event => {
       const file = event.dataTransfer?.files?.[0];
-      try { await loadImportFile(file); }
+      if (!file) return;
+      try {
+        await loadImportFile(file);
+        await parseAndImportCurrentText({ label: currentLang === "zh" ? "拖拽导入" : "Drag imported" });
+      }
       catch (error) { importParseStatus.textContent = error.message || String(error); }
     });
 
@@ -6435,16 +6528,44 @@
       };
     }
 
-    function importArticleRecords(parsed, options = {}) {
-      const normalized = parsed.map(enrichImportedArticle).filter(article => article.title);
+    async function importArticleRecords(parsed, options = {}) {
+      const normalized = [];
+      const seenInBatch = new Set();
+      for (let i = 0; i < parsed.length; i++) {
+        const article = enrichImportedArticle(parsed[i], i);
+        const key = validArticleIdentity(article);
+        if (article.title && key && !seenInBatch.has(key)) {
+          normalized.push(article);
+          seenInBatch.add(key);
+        }
+        if (i && i % ARTICLE_IMPORT_CHUNK_SIZE === 0) {
+          if (importParseStatus) {
+            importParseStatus.textContent = currentLang === "zh"
+              ? `正在整理 ${i} / ${parsed.length} 条记录...`
+              : `Normalizing ${i} / ${parsed.length} records...`;
+          }
+          await yieldToBrowser();
+        }
+      }
       if (!normalized.length) {
         importParseStatus.textContent = t("wosApiNoRecords");
         return [];
       }
-      const existingIds = new Set(state.articles.map(a => a.id || a.wos_uid || a.doi));
-      const newArticles = normalized.filter(a => !existingIds.has(a.id) && !existingIds.has(a.wos_uid) && !existingIds.has(a.doi));
+      const existingKeys = new Set((state.articles || []).map(validArticleIdentity).filter(Boolean));
+      const newArticles = normalized.filter(article => {
+        const key = validArticleIdentity(article);
+        if (!key || existingKeys.has(key)) return false;
+        existingKeys.add(key);
+        return true;
+      });
+      if (importParseStatus) {
+        importParseStatus.textContent = currentLang === "zh"
+          ? `新增 ${newArticles.length} 条，正在保存并刷新列表...`
+          : `${newArticles.length} new records; saving and refreshing...`;
+      }
+      await yieldToBrowser();
       state.articles = [...newArticles, ...state.articles];
-      persistImportedArticles(state.articles);
+      const persisted = persistImportedArticles(state.articles);
       articleListManuallyExpanded = false;
       articleListCollapsed = state.articles.length > ARTICLE_LARGE_LIST_THRESHOLD;
       articleShowLimit = ARTICLE_PAGE_SIZE;
@@ -6455,8 +6576,50 @@
       if (options.hidePanel !== false) importPanel.style.display = "none";
       const arpesCount = newArticles.filter(a => (a.techniques || []).includes("ARPES")).length;
       const materialCount = new Set(newArticles.flatMap(a => a.materials || [])).size;
-      showToast(`${options.label || "导入"} ${newArticles.length} 篇文章 · ARPES ${arpesCount} · 材料 ${materialCount}`);
+      const toast = `${options.label || "导入"} ${newArticles.length} 篇文章 · ARPES ${arpesCount} · 材料 ${materialCount}`;
+      showToast(persisted ? toast : `${toast} · ${currentLang === "zh" ? "本次显示成功，但浏览器存储仍可能不足" : "shown now, but browser storage may still be full"}`);
+      if (importParseStatus) {
+        importParseStatus.textContent = currentLang === "zh"
+          ? `完成：新增 ${newArticles.length} 条，当前 ${state.articles.length} 条。`
+          : `Done: ${newArticles.length} new, ${state.articles.length} total.`;
+      }
       return newArticles;
+    }
+
+    async function parseAndImportCurrentText(options = {}) {
+      const text = currentImportText().trim();
+      if (!text) { importParseStatus.textContent = "请先粘贴文本或拖入文件"; return []; }
+      const mode = importTextarea.dataset.mode;
+      if (mode === "free-api-guide") {
+        importParseStatus.textContent = t("freeApiImportHelp");
+        return [];
+      }
+      parseImportBtn.disabled = true;
+      if (articleImportFile) articleImportFile.disabled = true;
+      importParseStatus.textContent = currentLang === "zh"
+        ? `正在解析${pendingImportFileName ? ` ${pendingImportFileName}` : ""}...`
+        : `Parsing${pendingImportFileName ? ` ${pendingImportFileName}` : ""}...`;
+      await yieldToBrowser();
+      try {
+        const parsed = mode === "wos" ? parseWoSExport(text) : parseScholarBibTeX(text);
+        if (!parsed.length) {
+          importParseStatus.textContent = "未识别到文章记录，请检查格式";
+          return [];
+        }
+        importParseStatus.textContent = currentLang === "zh"
+          ? `解析到 ${parsed.length} 条记录，正在导入...`
+          : `${parsed.length} records parsed; importing...`;
+        await yieldToBrowser();
+        const imported = await importArticleRecords(parsed, options);
+        if (options.keepImportText !== true) clearPendingImportText();
+        return imported;
+      } catch (e) {
+        importParseStatus.textContent = "解析失败: " + e.message;
+        return [];
+      } finally {
+        parseImportBtn.disabled = false;
+        if (articleImportFile) articleImportFile.disabled = false;
+      }
     }
 
     runWosApiBtn?.addEventListener("click", async () => {
@@ -6486,7 +6649,7 @@
           wosApiStatus.textContent = t("wosApiNoRecords");
           return;
         }
-        const imported = importArticleRecords(records, {
+        const imported = await importArticleRecords(records, {
           label: currentLang === "zh" ? "WoS API 导入" : "WoS API imported",
           hidePanel: false
         });
@@ -6501,26 +6664,7 @@
     });
 
     parseImportBtn.addEventListener("click", () => {
-      const text = importTextarea.value.trim();
-      if (!text) { importParseStatus.textContent = "请先粘贴文本"; return; }
-      const mode = importTextarea.dataset.mode;
-      if (mode === "free-api-guide") {
-        importParseStatus.textContent = t("freeApiImportHelp");
-        return;
-      }
-      let parsed = [];
-      try {
-        if (mode === "wos") parsed = parseWoSExport(text);
-        else parsed = parseScholarBibTeX(text);
-      } catch (e) {
-        importParseStatus.textContent = "解析失败: " + e.message;
-        return;
-      }
-      if (!parsed.length) {
-        importParseStatus.textContent = "未识别到文章记录，请检查格式";
-        return;
-      }
-      importArticleRecords(parsed, { label: currentLang === "zh" ? "导入了" : "Imported" });
+      parseAndImportCurrentText({ label: currentLang === "zh" ? "导入了" : "Imported" });
     });
     resetArticlesBtn.addEventListener("click", async () => {
       localStorage.removeItem(ARTICLE_IMPORT_STORAGE_KEY);
