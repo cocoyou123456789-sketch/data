@@ -5530,6 +5530,7 @@
     const STORAGE_KEY = "arpes-superconductivity-our-data-v1";
     const FLOATING_COMPARE_STORAGE_KEY = "arpes-floating-compare-v1";
     const FLOATING_COMPARE_POSITION_KEY = "arpes-floating-compare-position-v1";
+    const ARTICLE_IMPORT_STORAGE_KEY = "arpes-imported-articles-v1";
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
@@ -5732,6 +5733,40 @@
       try { free = await loadJson("data/free_arpes_articles.json"); }
       catch { free = []; }
       return mergeArticleRecords(curated, free);
+    }
+
+    function sanitizeArticleForStorage(article) {
+      const { _searchText, figures, ...rest } = article || {};
+      return {
+        ...rest,
+        figures: Array.isArray(figures) ? figures : []
+      };
+    }
+
+    function loadStoredImportedArticles() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(ARTICLE_IMPORT_STORAGE_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function persistImportedArticles(articles) {
+      const imported = (articles || [])
+        .filter(article => /(?:imported|wos_api_metadata|wos_imported_metadata|scholar_imported)/i.test(String(article.verification_status || "")))
+        .map(sanitizeArticleForStorage);
+      try {
+        localStorage.setItem(ARTICLE_IMPORT_STORAGE_KEY, JSON.stringify(imported));
+      } catch (error) {
+        showToast(currentLang === "zh"
+          ? "导入太大，浏览器本地存储空间不够；请分批导入或导出较少字段。"
+          : "Import is too large for browser storage; import in smaller batches or export fewer fields.");
+      }
+    }
+
+    async function loadAllArticles() {
+      return mergeArticleRecords(await loadDefaultArticles(), loadStoredImportedArticles());
     }
 
     // ===== 周期表布局 =====
@@ -6409,6 +6444,7 @@
       const existingIds = new Set(state.articles.map(a => a.id || a.wos_uid || a.doi));
       const newArticles = normalized.filter(a => !existingIds.has(a.id) && !existingIds.has(a.wos_uid) && !existingIds.has(a.doi));
       state.articles = [...newArticles, ...state.articles];
+      persistImportedArticles(state.articles);
       articleListManuallyExpanded = false;
       articleListCollapsed = state.articles.length > ARTICLE_LARGE_LIST_THRESHOLD;
       articleShowLimit = ARTICLE_PAGE_SIZE;
@@ -6487,6 +6523,7 @@
       importArticleRecords(parsed, { label: currentLang === "zh" ? "导入了" : "Imported" });
     });
     resetArticlesBtn.addEventListener("click", async () => {
+      localStorage.removeItem(ARTICLE_IMPORT_STORAGE_KEY);
       state.articles = await loadDefaultArticles();
       articleListManuallyExpanded = false;
       articleListCollapsed = false;
@@ -6678,7 +6715,7 @@
       try {
         state.db = await loadJson("data/superconductivity.json");
         // 尝试加载文章数据：精选记录 + 免费官方 API 元数据
-        state.articles = await loadDefaultArticles();
+        state.articles = await loadAllArticles();
         articleMetricsDirty = true;
         state.ourData = loadOurData();
         state.floatingDataIds = loadFloatingCompareIds();
