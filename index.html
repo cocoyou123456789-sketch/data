@@ -4833,7 +4833,7 @@
         figureCandidateHint: "打开官方论文后可继续提取或核验图",
         figureCandidateStatus: "待抓图 / 待核验",
         remainingFigures: "{count} 张剩余",
-        figureFallback: "图像预览无法直连显示，请打开官方文献入口",
+        figureFallback: "图像预览加载失败，请打开官方文献入口",
         viewFigureSource: "打开官方文献",
         rowsLabel: "行",
         milestonesTitle: "超导历史",
@@ -5249,7 +5249,7 @@
         figureCandidateHint: "Open the official paper to extract or verify figures",
         figureCandidateStatus: "Pending figure extraction / verification",
         remainingFigures: "{count} remaining",
-        figureFallback: "Figure preview cannot be loaded directly; open the official literature entry",
+        figureFallback: "Figure preview failed; open the official literature entry",
         viewFigureSource: "Open official paper",
         rowsLabel: "Rows",
         milestonesTitle: "Superconductivity History",
@@ -9072,7 +9072,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           <div class="figure-matte">
             <img src="${esc(imgSrc)}" alt="${esc(fig.caption)}"
               referrerpolicy="no-referrer"
-              loading="eager"
+              loading="lazy"
+              decoding="async"
               onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">
             <div style="display:none;place-items:center;gap:6px;padding:20px;text-align:center;position:absolute;inset:0;">
               <div style="font-size:32px;">📊</div>
@@ -9372,7 +9373,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         <div class="figure-compare-card ${typeClass}">
           <div class="figure-card-header">${esc(material)} · ${esc(figureTypeLabel(classifyFigureType(fig)))} · ${esc(fig.year || "")}</div>
           <div class="figure-compare-image">
-            <img src="${esc(fig.image_url)}" alt="${esc(fig.caption)}" referrerpolicy="no-referrer" loading="eager">
+            <img src="${esc(fig.image_url)}" alt="${esc(fig.caption)}" referrerpolicy="no-referrer" loading="lazy" decoding="async">
           </div>
           <div class="figure-compare-meta">
             <strong>${esc(fig.caption)}</strong>
