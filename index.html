@@ -4950,14 +4950,21 @@
         hdf5Title: "📊 HDF5 数据管理",
         hdf5StatusInitial: "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件",
         hdf5DropTitle: "📁 拖放或点击上传 HDF5 文件",
-        hdf5DropHint: "支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据",
+        hdf5DropHint: "支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据；也可拖入包含 .h5 的 .zip",
         hdf5ChooseBtn: "选择 HDF5 文件",
         hdf5LibraryLoading: "正在加载 HDF5 解析库...",
         hdf5LibraryReady: "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件",
         hdf5LibraryMissing: "HDF5 解析库未加载。请检查网络/CDN，或刷新后重试。",
         hdf5NoFileSelected: "未选择文件",
         hdf5SelectedFiles: "已选择 {count} 个文件，开始解析...",
-        hdf5UnsupportedFile: "请选择 .h5、.hdf5 或 .hd5 文件",
+        hdf5UnsupportedFile: "请选择 .h5、.hdf5、.hd5 或包含 HDF5 的 .zip 文件",
+        hdf5LargeFileWarning: "正在解析大文件 {filename}（{size}），请稍等...",
+        hdf5ZipScanning: "正在扫描压缩包 {filename}...",
+        hdf5ZipNoH5: "{filename} 中没有找到 .h5/.hdf5/.hd5 文件",
+        hdf5ZipEntryProgress: "正在导入 {filename}：{index}/{total} · {entry}（{size}）",
+        hdf5ZipDone: "✅ {filename} 已导入 {count} 个 HDF5 文件",
+        hdf5ZipInflateMissing: "当前浏览器不能直接解压这个 zip。请先解压后上传 .h5 文件，或使用最新版 Chrome/Edge。",
+        hdf5ZipUnsupportedCompression: "暂不支持 zip 条目 {entry} 的压缩方式 method={method}",
         hdf5StructureTitle: "📂 文件结构",
         hdf5TreeEmpty: "上传文件后显示结构",
         hdf5MetaTitle: "🏷️ 元数据",
@@ -5041,6 +5048,7 @@
         addToLibraryBtn: "➕ 添加到数据仓库",
         detectedDatasets: "检测到的 ARPES 数据集",
         detectedDatasetStatus: "✅ {filename} | 检测到 {count} 个 ARPES 相关数据集",
+        detectedArpesLayout: "识别到 ARPES 数据布局",
         libraryCleared: "🗑️ 数据仓库已清空",
         selectTwoDatasets: "请至少选择2个数据集进行对比",
         bandComparisonTitle: "📊 能带图对比",
@@ -5384,14 +5392,21 @@
         hdf5Title: "📊 HDF5 Data Library",
         hdf5StatusInitial: "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files",
         hdf5DropTitle: "📁 Drop or click to upload HDF5 files",
-        hdf5DropHint: "Supports ARPES-style files with energy/k axes, temperature, photon energy, and metadata",
+        hdf5DropHint: "Supports ARPES-style files with energy/k axes, temperature, photon energy, and metadata; .zip files containing .h5 are also supported",
         hdf5ChooseBtn: "Choose HDF5 Files",
         hdf5LibraryLoading: "Loading HDF5 parser...",
         hdf5LibraryReady: "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files",
         hdf5LibraryMissing: "HDF5 parser did not load. Check network/CDN access, or refresh and retry.",
         hdf5NoFileSelected: "No file selected",
         hdf5SelectedFiles: "{count} file(s) selected. Parsing...",
-        hdf5UnsupportedFile: "Choose a .h5, .hdf5, or .hd5 file",
+        hdf5UnsupportedFile: "Choose a .h5, .hdf5, .hd5, or .zip file containing HDF5 files",
+        hdf5LargeFileWarning: "Parsing large file {filename} ({size}); please wait...",
+        hdf5ZipScanning: "Scanning archive {filename}...",
+        hdf5ZipNoH5: "No .h5/.hdf5/.hd5 files were found in {filename}",
+        hdf5ZipEntryProgress: "Importing {filename}: {index}/{total} · {entry} ({size})",
+        hdf5ZipDone: "✅ {filename} imported {count} HDF5 file(s)",
+        hdf5ZipInflateMissing: "This browser cannot decompress this zip directly. Extract it first and upload the .h5 files, or use current Chrome/Edge.",
+        hdf5ZipUnsupportedCompression: "Unsupported zip compression for {entry}: method={method}",
         hdf5StructureTitle: "📂 HDF5 Structure",
         hdf5TreeEmpty: "Structure appears after upload",
         hdf5MetaTitle: "🏷️ Metadata",
@@ -5475,6 +5490,7 @@
         addToLibraryBtn: "➕ Add to Data Library",
         detectedDatasets: "Detected ARPES datasets",
         detectedDatasetStatus: "✅ {filename} | {count} ARPES-related datasets detected",
+        detectedArpesLayout: "Detected ARPES data layout",
         libraryCleared: "🗑️ Data library cleared",
         selectTwoDatasets: "Select at least two datasets to compare",
         bandComparisonTitle: "📊 Band Structure Comparison",
@@ -10392,6 +10408,30 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return /\.(h5|hdf5|hd5)$/i.test(file.name || "");
     }
 
+    function isHDF5ZipFile(file) {
+      return /\.zip$/i.test(file.name || "");
+    }
+
+    function hdf5Parser() {
+      return window.jsfive || window.hdf5;
+    }
+
+    function formatBytes(bytes) {
+      const value = Number(bytes) || 0;
+      if (value >= 1024 * 1024 * 1024) return `${(value / 1024 / 1024 / 1024).toFixed(2)} GB`;
+      if (value >= 1024 * 1024) return `${(value / 1024 / 1024).toFixed(1)} MB`;
+      if (value >= 1024) return `${(value / 1024).toFixed(1)} KB`;
+      return `${value} B`;
+    }
+
+    function openHDF5Buffer(buffer, filename) {
+      const HDF5 = hdf5Parser();
+      if (!HDF5?.File) throw new Error(t("hdf5LibraryMissing"));
+      const h5 = new HDF5.File(buffer, filename);
+      h5.filename = filename;
+      return h5;
+    }
+
     function chooseHDF5Files() {
       if (!hdf5FileInput) return;
       hdf5FileInput.value = "";
@@ -10400,13 +10440,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function updateHDF5ParserStatus() {
       if (!hdf5Status) return;
-      if (window.jsfive) {
+      if (hdf5Parser()?.File) {
         setHDF5Status(t("hdf5LibraryReady"));
       } else {
         setHDF5Status(t("hdf5LibraryLoading"));
-        window.setTimeout(() => {
-          if (!window.jsfive) setHDF5Status(t("hdf5LibraryMissing"));
-        }, 1600);
+        window.setTimeout(() => { if (!hdf5Parser()?.File) setHDF5Status(t("hdf5LibraryMissing")); }, 1600);
       }
     }
 
@@ -10432,7 +10470,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     updateHDF5ParserStatus();
 
     async function handleHDF5Files(files) {
-      const validFiles = files.filter(isHDF5File);
+      const validFiles = files.filter(file => isHDF5File(file) || isHDF5ZipFile(file));
       if (!files.length) {
         setHDF5Status(t("hdf5NoFileSelected"));
         return;
@@ -10442,24 +10480,147 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         return;
       }
       setHDF5Status(tf("hdf5SelectedFiles", { count: validFiles.length }));
-      for (const file of validFiles) await handleHDF5File(file);
+      for (const file of validFiles) {
+        if (isHDF5ZipFile(file)) await handleHDF5ZipFile(file);
+        else await handleHDF5File(file);
+      }
     }
 
     async function handleHDF5File(file) {
-      if (!window.jsfive) { setHDF5Status(t("hdf5LibraryMissing")); return; }
-      setHDF5Status(currentLang === "zh" ? `⏳ 解析 ${file.name}...` : `⏳ Parsing ${file.name}...`);
+      if (!hdf5Parser()?.File) { setHDF5Status(t("hdf5LibraryMissing")); return; }
+      const sizeText = formatBytes(file.size || 0);
+      setHDF5Status((file.size || 0) > 80 * 1024 * 1024
+        ? tf("hdf5LargeFileWarning", { filename: file.name, size: sizeText })
+        : (currentLang === "zh" ? `⏳ 解析 ${file.name}...` : `⏳ Parsing ${file.name}...`));
       try {
         const buffer = await file.arrayBuffer();
-        const data = new Uint8Array(buffer);
-        const h5 = new jsfive.File(data);
-        h5.filename = file.name;
-        currentH5 = h5;
-        renderHDF5Tree(h5);
-        setHDF5Status(currentLang === "zh" ? `✅ 已加载: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)` : `✅ Loaded: ${file.name} (${(buffer.byteLength/1024).toFixed(1)} KB)`);
-        // 自动扫描 ARPES 相关数据集
-        autoScanARPES(h5, file.name);
+        await parseHDF5Buffer(buffer, file.name);
       } catch (e) {
         setHDF5Status(currentLang === "zh" ? `❌ 无法解析 ${file.name}: ${e.message}` : `❌ Cannot parse ${file.name}: ${e.message}`);
+      }
+    }
+
+    async function parseHDF5Buffer(buffer, filename, options = {}) {
+      const h5 = openHDF5Buffer(buffer, filename);
+      currentH5 = h5;
+      renderHDF5Tree(h5);
+      setHDF5Status(currentLang === "zh"
+        ? `✅ 已加载: ${filename} (${formatBytes(buffer.byteLength)})`
+        : `✅ Loaded: ${filename} (${formatBytes(buffer.byteLength)})`);
+      const detection = autoScanARPES(h5, filename);
+      if (options.addSummaries) {
+        try { await addDetectedHDF5SummariesToLibrary(filename, detection); }
+        catch (error) { console.warn("Could not add HDF5 summaries", error); }
+      }
+      await yieldToBrowser();
+      return h5;
+    }
+
+    function decodeZipName(bytes, flags) {
+      try { return new TextDecoder(flags & 0x0800 ? "utf-8" : "utf-8").decode(bytes); }
+      catch { return Array.from(bytes).map(byte => String.fromCharCode(byte)).join(""); }
+    }
+
+    function findZipEndOfCentralDirectory(view) {
+      for (let offset = view.byteLength - 22; offset >= 0; offset--) {
+        if (view.getUint32(offset, true) === 0x06054b50) return offset;
+      }
+      return -1;
+    }
+
+    async function readZipEntries(file) {
+      const tailLength = Math.min(file.size, 66000);
+      const tailStart = file.size - tailLength;
+      const tail = await file.slice(tailStart, file.size).arrayBuffer();
+      const tailView = new DataView(tail);
+      const eocdOffset = findZipEndOfCentralDirectory(tailView);
+      if (eocdOffset < 0) throw new Error(currentLang === "zh" ? "没有找到 zip 中央目录" : "ZIP central directory not found");
+      const entryCount = tailView.getUint16(eocdOffset + 10, true);
+      const centralSize = tailView.getUint32(eocdOffset + 12, true);
+      const centralOffset = tailView.getUint32(eocdOffset + 16, true);
+      if (centralOffset === 0xffffffff || centralSize === 0xffffffff) {
+        throw new Error(currentLang === "zh" ? "暂不支持 ZIP64 压缩包" : "ZIP64 archives are not supported yet");
+      }
+      const central = await file.slice(centralOffset, centralOffset + centralSize).arrayBuffer();
+      const view = new DataView(central);
+      const entries = [];
+      let offset = 0;
+      for (let i = 0; i < entryCount && offset + 46 <= view.byteLength; i++) {
+        if (view.getUint32(offset, true) !== 0x02014b50) break;
+        const flags = view.getUint16(offset + 8, true);
+        const method = view.getUint16(offset + 10, true);
+        const compressedSize = view.getUint32(offset + 20, true);
+        const uncompressedSize = view.getUint32(offset + 24, true);
+        const nameLength = view.getUint16(offset + 28, true);
+        const extraLength = view.getUint16(offset + 30, true);
+        const commentLength = view.getUint16(offset + 32, true);
+        const localHeaderOffset = view.getUint32(offset + 42, true);
+        const nameBytes = new Uint8Array(central, offset + 46, nameLength);
+        const name = decodeZipName(nameBytes, flags);
+        entries.push({ name, method, compressedSize, uncompressedSize, localHeaderOffset });
+        offset += 46 + nameLength + extraLength + commentLength;
+      }
+      return entries;
+    }
+
+    async function inflateRawZipData(compressedBytes, expectedSize) {
+      if (typeof DecompressionStream === "function") {
+        try {
+          const stream = new Blob([compressedBytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+          const buffer = await new Response(stream).arrayBuffer();
+          if (expectedSize && buffer.byteLength !== expectedSize) {
+            console.warn("Unexpected zip inflate size", buffer.byteLength, expectedSize);
+          }
+          return buffer;
+        } catch (error) {
+          throw new Error(`${t("hdf5ZipInflateMissing")} ${error.message || ""}`.trim());
+        }
+      }
+      throw new Error(t("hdf5ZipInflateMissing"));
+    }
+
+    async function readZipEntryArrayBuffer(zipFile, entry) {
+      const localHeader = await zipFile.slice(entry.localHeaderOffset, entry.localHeaderOffset + 30).arrayBuffer();
+      const header = new DataView(localHeader);
+      if (header.getUint32(0, true) !== 0x04034b50) {
+        throw new Error(currentLang === "zh" ? `zip 条目头损坏: ${entry.name}` : `Invalid ZIP local header: ${entry.name}`);
+      }
+      const nameLength = header.getUint16(26, true);
+      const extraLength = header.getUint16(28, true);
+      const dataOffset = entry.localHeaderOffset + 30 + nameLength + extraLength;
+      const compressed = await zipFile.slice(dataOffset, dataOffset + entry.compressedSize).arrayBuffer();
+      if (entry.method === 0) return compressed;
+      if (entry.method === 8) return inflateRawZipData(new Uint8Array(compressed), entry.uncompressedSize);
+      throw new Error(tf("hdf5ZipUnsupportedCompression", { entry: entry.name, method: entry.method }));
+    }
+
+    async function handleHDF5ZipFile(file) {
+      if (!hdf5Parser()?.File) { setHDF5Status(t("hdf5LibraryMissing")); return; }
+      setHDF5Status(tf("hdf5ZipScanning", { filename: file.name }));
+      try {
+        const entries = (await readZipEntries(file))
+          .filter(entry => /\.(h5|hdf5|hd5)$/i.test(entry.name) && !entry.name.endsWith("/"));
+        if (!entries.length) {
+          setHDF5Status(tf("hdf5ZipNoH5", { filename: file.name }));
+          return;
+        }
+        let imported = 0;
+        for (let i = 0; i < entries.length; i++) {
+          const entry = entries[i];
+          setHDF5Status(tf("hdf5ZipEntryProgress", {
+            filename: file.name,
+            index: i + 1,
+            total: entries.length,
+            entry: entry.name.split("/").pop(),
+            size: formatBytes(entry.uncompressedSize)
+          }));
+          const buffer = await readZipEntryArrayBuffer(file, entry);
+          await parseHDF5Buffer(buffer, entry.name.split("/").pop(), { addSummaries: true });
+          imported++;
+        }
+        setHDF5Status(tf("hdf5ZipDone", { filename: file.name, count: imported }));
+      } catch (error) {
+        setHDF5Status(currentLang === "zh" ? `❌ 无法导入 ${file.name}: ${error.message}` : `❌ Cannot import ${file.name}: ${error.message}`);
       }
     }
 
@@ -10545,26 +10706,128 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     // 自动扫描 ARPES 数据集
     function autoScanARPES(h5, filename) {
       const arpesDatasets = [];
-      const arpesKeywords = ["energy", "energies", "temperature", "temp", "photon", "angle", "theta", "kx", "ky", "kz", "momentum", "band", "spectrum", "intensity", "fermi", "gap", "dispersion"];
+      const allDatasets = [];
+      const arpesKeywords = [
+        "energy", "energies", "ev", "e_v", "temperature", "temp", "photon", "hv",
+        "angle", "theta", "alpha", "beta", "phi", "kx", "ky", "kz", "momentum",
+        "band", "spectrum", "intensity", "fermi", "gap", "dispersion",
+        "quick_map", "fine_map", "fine_cut", "core_level", "core", "map", "cut"
+      ];
       function scan(node, path) {
         if (node.keys) {
           node.keys.forEach(key => {
             const item = node.get(key);
             const fullPath = `${path}/${key}`;
             const nameLower = key.toLowerCase();
-            if (!item.isGroup && arpesKeywords.some(kw => nameLower.includes(kw))) {
-              arpesDatasets.push({ path: fullPath, name: key, shape: item.shape || [], dtype: item.dtype || "" });
+            if (!item.isGroup) {
+              const record = { path: fullPath, name: key, nameLower, shape: item.shape || [], dtype: item.dtype || "" };
+              allDatasets.push(record);
+              if (arpesKeywords.some(kw => nameLower.includes(kw))) arpesDatasets.push(record);
             }
             if (item.isGroup) scan(item, fullPath);
           });
         }
       }
       scan(h5, "");
+      const layouts = detectARPESLayouts(allDatasets);
       if (arpesDatasets.length) {
         hdf5Status.textContent = tf("detectedDatasetStatus", { filename, count: arpesDatasets.length });
-        hdf5Meta.innerHTML = `<strong>🔍 ${t("detectedDatasets")}:</strong><br>` +
-          arpesDatasets.map(d => `📊 ${esc(d.name)} [${(d.shape||[]).join("×")}] ${esc(d.dtype)}`).join("<br>");
+        hdf5Meta.innerHTML = [
+          layouts.length
+            ? `<strong>✅ ${t("detectedArpesLayout")}:</strong><br>${layouts.map(line => `🧭 ${esc(line)}`).join("<br>")}`
+            : "",
+          `<strong>🔍 ${t("detectedDatasets")}:</strong><br>` +
+            arpesDatasets.map(d => `📊 ${esc(d.path)} [${(d.shape||[]).join("×")}] ${esc(d.dtype)}`).join("<br>")
+        ].filter(Boolean).join("<br><br>");
       }
+      return { arpesDatasets, allDatasets, layouts };
+    }
+
+    function detectARPESLayouts(datasets) {
+      const byName = new Map();
+      for (const dataset of datasets) {
+        if (!byName.has(dataset.nameLower)) byName.set(dataset.nameLower, dataset);
+      }
+      const alpha = byName.get("alpha");
+      const beta = byName.get("beta");
+      const ev = byName.get("ev") || byName.get("energy") || byName.get("energies");
+      const quickMap = byName.get("quick_map");
+      const fineMap = byName.get("fine_map");
+      const fineCut = byName.get("fine_cut");
+      const coreLevel = byName.get("core_level");
+      const layouts = [];
+      if (quickMap) {
+        layouts.push(`Quick_Map ${quickMap.shape.join("×")} ${quickMap.dtype} · axes: ${[
+          beta ? `beta ${beta.shape.join("×")}` : "",
+          alpha ? `alpha ${alpha.shape.join("×")}` : "",
+          ev ? `eV ${ev.shape.join("×")}` : ""
+        ].filter(Boolean).join(", ")}`);
+      }
+      if (fineMap) {
+        layouts.push(`FINE_Map ${fineMap.shape.join("×")} ${fineMap.dtype} · axes: ${[
+          beta ? `beta ${beta.shape.join("×")}` : "",
+          alpha ? `alpha ${alpha.shape.join("×")}` : "",
+          ev ? `eV ${ev.shape.join("×")}` : ""
+        ].filter(Boolean).join(", ")}`);
+      }
+      if (fineCut) {
+        layouts.push(`Fine_Cut ${fineCut.shape.join("×")} ${fineCut.dtype} · axes: ${[
+          ev ? `eV ${ev.shape.join("×")}` : "",
+          alpha ? `alpha ${alpha.shape.join("×")}` : ""
+        ].filter(Boolean).join(", ")}`);
+      }
+      if (coreLevel) {
+        layouts.push(`CORE_LEVEL ${coreLevel.shape.join("×")} ${coreLevel.dtype} · axes: ${[
+          ev ? `eV ${ev.shape.join("×")}` : "",
+          alpha ? `alpha ${alpha.shape.join("×")}` : ""
+        ].filter(Boolean).join(", ")}`);
+      }
+      return layouts;
+    }
+
+    function primaryDetectedHDF5Datasets(detection) {
+      const primaryName = /^(quick_map|fine_map|fine_cut|core_level)$/i;
+      const primary = (detection?.allDatasets || []).filter(dataset => primaryName.test(dataset.name));
+      return primary.length ? primary : (detection?.arpesDatasets || []).filter(dataset => (dataset.shape || []).length >= 2);
+    }
+
+    async function addDetectedHDF5SummariesToLibrary(filename, detection) {
+      const primary = primaryDetectedHDF5Datasets(detection);
+      if (!primary.length) return;
+      const db = await openIDB();
+      const existing = await new Promise((resolve) => {
+        const tx = db.transaction("datasets", "readonly");
+        const req = tx.objectStore("datasets").getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => resolve([]);
+      });
+      const existingKeys = new Set(existing.map(row => `${row.source_file || ""}|${row.path || ""}`));
+      const tx = db.transaction("datasets", "readwrite");
+      const store = tx.objectStore("datasets");
+      let added = 0;
+      for (const dataset of primary) {
+        const key = `${filename}|${dataset.path}`;
+        if (existingKeys.has(key)) continue;
+        store.put({
+          id: `h5-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          name: dataset.name,
+          path: dataset.path,
+          shape: dataset.shape || [],
+          dtype: dataset.dtype || "",
+          attrs: {},
+          data: null,
+          source_file: filename,
+          imported_at: new Date().toISOString(),
+          tags: autoTag(dataset.name, {})
+        });
+        added++;
+      }
+      if (added) await new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
+      });
+      if (added) renderLibrary();
     }
 
     // ===== IndexedDB 数据仓库 =====
@@ -11011,7 +11274,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         setStatus(zh() ? `正在解析 ${file.name}...` : `Parsing ${file.name}...`);
         try {
           const buffer = await file.arrayBuffer();
-          const h5 = new HDF5.File(new Uint8Array(buffer));
+          const h5 = new HDF5.File(buffer);
           renderTree(h5);
           if (meta) meta.innerHTML = `<strong>${escHtml(file.name)}</strong><br>${zh() ? "文件结构已读取。" : "File structure loaded."}`;
           setStatus(zh()
