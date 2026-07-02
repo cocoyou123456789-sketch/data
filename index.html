@@ -4377,13 +4377,13 @@
               <label class="span-2" data-label-i18n="arxivQueryLabel">arXiv 检索式
                 <input id="arxivQuery" data-i18n-placeholder="arxivQueryPlaceholder" placeholder="all:ARPES AND all:superconductivity">
               </label>
-              <label data-label-i18n="arxivLimitLabel">数量
+              <label data-label-i18n="arxivLimitLabel">数量（最多 500）
                 <input id="arxivLimit" type="number" min="1" max="500" value="100">
               </label>
             </div>
             <div class="toolbar" style="margin-top:8px;">
               <button class="primary" id="runArxivBtn" type="button" data-i18n="runArxivBtn">📚 从 arXiv 导入</button>
-              <a id="arxivApiLink" target="_blank" rel="noopener" style="display:none;" data-i18n="openArxivXmlLink">打开 arXiv XML</a>
+              <a id="arxivApiLink" target="_blank" rel="noopener" style="display:none;" data-i18n="openArxivXmlLink">打开 arXiv 文档</a>
               <span class="status" id="arxivApiStatus"></span>
             </div>
           </div>
@@ -4422,11 +4422,11 @@
       <div class="content">
         <div class="drop-zone" id="hdf5DropZone">
           <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 文件</strong>
-          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据</p>
+          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据；也可拖入包含 .h5 的 .zip</p>
           <div class="upload-actions">
             <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 文件</button>
           </div>
-          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,application/x-hdf5,application/octet-stream" multiple>
+          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,application/x-hdf5,application/octet-stream,application/zip" multiple>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div class="card">
@@ -4924,15 +4924,16 @@
         arxivImportHelp: "输入关键词后直接从 arXiv API 批量导入 2016 年以后的题录。建议：all:ARPES AND all:superconductivity，也可以加 cat:cond-mat.supr-con。",
         arxivQueryLabel: "arXiv 检索式",
         arxivQueryPlaceholder: "all:ARPES AND all:superconductivity",
-        arxivLimitLabel: "数量",
+        arxivLimitLabel: "数量（最多 500）",
         runArxivBtn: "📚 从 arXiv 导入",
-        openArxivXmlLink: "打开 arXiv XML",
-        parseArxivXmlBtn: "🔍 解析 arXiv XML",
-        arxivXmlPlaceholder: "可选：粘贴 arXiv API 返回的 XML/Atom 文本；如果直接检索被浏览器拦截，就打开上方 XML 链接复制全文粘贴到这里。",
+        openArxivXmlLink: "打开 arXiv 文档",
+        parseArxivXmlBtn: "🔍 解析 arXiv 文档",
+        arxivXmlPlaceholder: "可选：粘贴 arXiv 文档内容；如果直接检索被浏览器拦截，就打开上方 arXiv 文档，全选复制后粘贴到这里。",
         arxivMissingQuery: "请先输入 arXiv 检索式",
         arxivSearching: "正在从 arXiv API 检索...",
+        arxivLimitAdjusted: "数量已自动调到 {limit} 条，避免 arXiv 文档过大。",
         arxivNoRecords: "没有找到 2016 年以后的 arXiv 记录",
-        arxivCorsFallback: "浏览器无法直接读取 arXiv；请打开 XML 链接，复制页面内容后粘贴到下方再解析。",
+        arxivCorsFallback: "GitHub Pages 不能直接读取 arXiv。请点“打开 arXiv 文档”，在新页面全选复制，再粘贴到下方解析。",
         arxivImportDone: "已导入 arXiv 记录",
         freeApiImportHelp: "免费导入流程：在本地运行 python3 scripts/import_free_arpes.py，脚本会从 OpenAlex、arXiv、Crossref 拉取 ARPES 题录，生成 data/free_arpes_articles.json。网页会自动合并显示；这些记录只代表官方元数据，需要全文核验后才作为实验数据。",
         parseImportBtn: "🔍 解析并导入",
@@ -5357,15 +5358,16 @@
         arxivImportHelp: "Enter a query to import 2016+ metadata from the arXiv API. Recommended: all:ARPES AND all:superconductivity; you can also add cat:cond-mat.supr-con.",
         arxivQueryLabel: "arXiv query",
         arxivQueryPlaceholder: "all:ARPES AND all:superconductivity",
-        arxivLimitLabel: "Limit",
+        arxivLimitLabel: "Limit (max 500)",
         runArxivBtn: "📚 Import from arXiv",
-        openArxivXmlLink: "Open arXiv XML",
-        parseArxivXmlBtn: "🔍 Parse arXiv XML",
-        arxivXmlPlaceholder: "Optional: paste XML/Atom text returned by the arXiv API. If direct fetch is blocked by the browser, open the XML link above, copy the full page, then paste it here.",
+        openArxivXmlLink: "Open arXiv document",
+        parseArxivXmlBtn: "🔍 Parse arXiv document",
+        arxivXmlPlaceholder: "Optional: paste the arXiv document content. If direct fetch is blocked by the browser, open the arXiv document above, copy the full page, then paste it here.",
         arxivMissingQuery: "Enter an arXiv query first",
         arxivSearching: "Searching arXiv API...",
+        arxivLimitAdjusted: "Limit was adjusted to {limit} records so the arXiv document is not too large.",
         arxivNoRecords: "No 2016+ arXiv records found",
-        arxivCorsFallback: "The browser could not read arXiv directly; open the XML link, copy the page content, paste it below, then parse.",
+        arxivCorsFallback: "GitHub Pages cannot read arXiv directly. Click “Open arXiv document”, copy the new page, paste it below, then parse.",
         arxivImportDone: "arXiv records imported",
         freeApiImportHelp: "Free import workflow: run python3 scripts/import_free_arpes.py locally. The script queries OpenAlex, arXiv, and Crossref for ARPES metadata and writes data/free_arpes_articles.json. The website loads it automatically; these records are official metadata and still need full-text verification before becoming experimental data.",
         parseImportBtn: "🔍 Parse & Import",
@@ -6905,13 +6907,17 @@
     async function importArxivRecordsFromApi(options = {}) {
       const rawQuery = (arxivQuery?.value || "").trim();
       const query = normalizeArxivQuery(rawQuery);
-      const limit = Math.max(1, Math.min(Number(arxivLimit?.value) || 100, 500));
+      const requestedLimit = Number(arxivLimit?.value) || 100;
+      const limit = Math.max(1, Math.min(requestedLimit, 500));
+      const adjustedLimitMessage = requestedLimit > limit ? t("arxivLimitAdjusted").replace("{limit}", String(limit)) : "";
+      if (arxivLimit && String(arxivLimit.value) !== String(limit)) arxivLimit.value = String(limit);
       if (!query) {
         if (arxivApiStatus) arxivApiStatus.textContent = t("arxivMissingQuery");
         return [];
       }
-      if (arxivApiStatus) arxivApiStatus.textContent = t("arxivSearching");
-      if (importParseStatus) importParseStatus.textContent = t("arxivSearching");
+      const searchingMessage = adjustedLimitMessage ? `${t("arxivSearching")} ${adjustedLimitMessage}` : t("arxivSearching");
+      if (arxivApiStatus) arxivApiStatus.textContent = searchingMessage;
+      if (importParseStatus) importParseStatus.textContent = searchingMessage;
       if (runArxivBtn) runArxivBtn.disabled = true;
       try {
         const xml = await fetchArxivXml(query, limit);
