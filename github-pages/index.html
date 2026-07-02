@@ -3326,6 +3326,50 @@
       overflow: hidden;
     }
     .band-plot-wrap canvas { display: block; width: 100%; }
+    .hdf5-preview-card { overflow: hidden; }
+    .hdf5-preview-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .hdf5-preview-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.9fr) minmax(220px, 0.8fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+    .hdf5-preview-canvas-wrap {
+      min-height: 300px;
+      aspect-ratio: 12 / 7;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #070b10;
+      overflow: hidden;
+    }
+    .hdf5-preview-canvas-wrap canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .hdf5-preview-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .hdf5-preview-info strong { color: var(--text); }
+    .hdf5-preview-info .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 9px;
+      background: rgba(8, 13, 20, 0.55);
+    }
     .data-library-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -3341,6 +3385,28 @@
     }
     .library-card:hover { border-color: var(--accent-glow); transform: translateY(-2px); }
     .library-card.selected { border: 2px solid var(--accent-glow); background: rgba(15,118,110,0.08); }
+    .library-card.has-thumb { padding: 8px; }
+    .hdf5-library-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: block;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #070b10;
+      margin-bottom: 8px;
+    }
+    .library-card-title {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+    }
+    .library-card-title strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     /* === 语言切换 === */
     .lang-toggle {
@@ -3724,6 +3790,14 @@
       .library-card,
       .compare-card {
         padding: 10px;
+      }
+
+      .hdf5-preview-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hdf5-preview-canvas-wrap {
+        min-height: 220px;
       }
 
       .table-wrap {
@@ -4438,6 +4512,20 @@
             <div id="hdf5Meta"><span class="muted" data-i18n="hdf5MetaEmpty">点击数据集查看元数据</span></div>
           </div>
         </div>
+        <div class="card hdf5-preview-card">
+          <div class="hdf5-preview-header">
+            <h3 data-i18n="hdf5PreviewTitle">🖼️ HDF5 数据预览</h3>
+            <span class="muted" id="hdf5PreviewHint" data-i18n="hdf5PreviewEmpty">导入后自动显示可预览的二维谱图或三维切片</span>
+          </div>
+          <div class="hdf5-preview-layout">
+            <div class="hdf5-preview-canvas-wrap">
+              <canvas id="hdf5PreviewCanvas" width="960" height="560"></canvas>
+            </div>
+            <div class="hdf5-preview-info" id="hdf5PreviewInfo">
+              <span class="muted" data-i18n="hdf5PreviewEmpty">导入后自动显示可预览的二维谱图或三维切片</span>
+            </div>
+          </div>
+        </div>
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
             <h3 data-i18n="localLibraryTitle">🗄️ 本地数据仓库</h3>
@@ -4970,6 +5058,16 @@
         hdf5TreeEmpty: "上传文件后显示结构",
         hdf5MetaTitle: "🏷️ 元数据",
         hdf5MetaEmpty: "点击数据集查看元数据",
+        hdf5PreviewTitle: "🖼️ HDF5 数据预览",
+        hdf5PreviewEmpty: "导入后自动显示可预览的二维谱图或三维切片",
+        hdf5PreviewDrawing: "正在生成预览图...",
+        hdf5PreviewUnavailable: "这个数据集暂时不能直接预览，但结构和元数据已经导入。",
+        hdf5PreviewLargeChunked: "这个数据集太大且不是连续存储，浏览器安全预览已跳过。",
+        hdf5PreviewSlice: "三维数据中间切片预览",
+        hdf5PreviewResolution: "预览分辨率",
+        hdf5PreviewRange: "强度范围",
+        hdf5PreviewDataset: "数据集",
+        hdf5PreviewAxes: "坐标轴",
         localLibraryTitle: "🗄️ 本地数据仓库",
         librarySearchPlaceholder: "搜索：能量范围、温度、材料...",
         compareSelectedBtn: "📊 对比选中",
@@ -5413,6 +5511,16 @@
         hdf5TreeEmpty: "Structure appears after upload",
         hdf5MetaTitle: "🏷️ Metadata",
         hdf5MetaEmpty: "Click a dataset to inspect metadata",
+        hdf5PreviewTitle: "🖼️ HDF5 Data Preview",
+        hdf5PreviewEmpty: "A previewable 2D spectrum or 3D slice appears after import",
+        hdf5PreviewDrawing: "Drawing preview...",
+        hdf5PreviewUnavailable: "This dataset cannot be previewed directly yet, but structure and metadata were imported.",
+        hdf5PreviewLargeChunked: "This dataset is too large and not contiguous; browser-safe preview was skipped.",
+        hdf5PreviewSlice: "Middle-slice preview from 3D data",
+        hdf5PreviewResolution: "Preview resolution",
+        hdf5PreviewRange: "Intensity range",
+        hdf5PreviewDataset: "Dataset",
+        hdf5PreviewAxes: "Axes",
         localLibraryTitle: "🗄️ Local Data Library",
         librarySearchPlaceholder: "Search: energy range, temperature, material...",
         compareSelectedBtn: "📊 Compare Selected",
@@ -10429,12 +10537,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5Tree = document.querySelector("#hdf5Tree");
     const hdf5Meta = document.querySelector("#hdf5Meta");
     const hdf5Status = document.querySelector("#hdf5Status");
+    const hdf5PreviewCanvas = document.querySelector("#hdf5PreviewCanvas");
+    const hdf5PreviewInfo = document.querySelector("#hdf5PreviewInfo");
+    const hdf5PreviewHint = document.querySelector("#hdf5PreviewHint");
     const librarySearch = document.querySelector("#librarySearch");
     const dataLibraryGrid = document.querySelector("#dataLibraryGrid");
     const compareSelectedBtn = document.querySelector("#compareSelectedBtn");
     const clearLibraryBtn = document.querySelector("#clearLibraryBtn");
 
     let currentH5 = null;
+    let currentH5Detection = null;
     let currentH5Path = "";
     let librarySelection = new Set();
     window.__hdf5UploadBound = true;
@@ -10547,8 +10659,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         ? `✅ 已加载: ${filename} (${formatBytes(buffer.byteLength)})`
         : `✅ Loaded: ${filename} (${formatBytes(buffer.byteLength)})`);
       const detection = autoScanARPES(h5, filename);
+      currentH5Detection = detection;
+      await renderAutomaticHDF5Preview(h5, detection, filename);
       if (options.addSummaries) {
-        try { await addDetectedHDF5SummariesToLibrary(filename, detection); }
+        try { await addDetectedHDF5SummariesToLibrary(filename, detection, h5); }
         catch (error) { console.warn("Could not add HDF5 summaries", error); }
       }
       await yieldToBrowser();
@@ -10737,6 +10851,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
         html += `<br><button class="primary" onclick="addDatasetToLibrary('${esc(path)}')" style="font-size:12px;">${esc(t("addToLibraryBtn"))}</button>`;
         hdf5Meta.innerHTML = html;
+        try { await renderHDF5PreviewForPath(path); }
+        catch (error) { console.warn("Could not preview selected HDF5 dataset", path, error); }
       } catch(e) {
         hdf5Meta.innerHTML = currentLang === "zh" ? "读取失败: " + e.message : "Read failed: " + e.message;
       }
@@ -10824,13 +10940,472 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return layouts;
     }
 
+    function getHDF5NodeByPath(h5, path) {
+      let node = h5;
+      const parts = String(path || "").split("/").filter(Boolean);
+      for (const part of parts) node = node.get(part);
+      return node;
+    }
+
+    function hdf5DatasetSize(shape) {
+      return (shape || []).reduce((total, value) => total * (Number(value) || 0), 1);
+    }
+
+    function isNumericHDF5Dtype(dtype) {
+      return /^[<>=!@|]?[fiu]\d*$/i.test(String(dtype || ""));
+    }
+
+    function numericHDF5Reader(dtype) {
+      const match = String(dtype || "").match(/^([<>=!@|]?)([fiu])(\d*)$/i);
+      if (!match) return null;
+      const endian = match[1] || "<";
+      const kind = match[2].toLowerCase();
+      const size = Number(match[3] || (kind === "f" ? 4 : 4));
+      const littleEndian = endian !== ">" && endian !== "!";
+      const readers = {
+        f4: (view, offset) => view.getFloat32(offset, littleEndian),
+        f8: (view, offset) => view.getFloat64(offset, littleEndian),
+        i1: (view, offset) => view.getInt8(offset),
+        u1: (view, offset) => view.getUint8(offset),
+        i2: (view, offset) => view.getInt16(offset, littleEndian),
+        u2: (view, offset) => view.getUint16(offset, littleEndian),
+        i4: (view, offset) => view.getInt32(offset, littleEndian),
+        u4: (view, offset) => view.getUint32(offset, littleEndian),
+        i8: (view, offset) => Number(view.getBigInt64(offset, littleEndian)),
+        u8: (view, offset) => Number(view.getBigUint64(offset, littleEndian))
+      };
+      const read = readers[`${kind}${size}`];
+      return read ? { size, read } : null;
+    }
+
+    function getUint64LE(view, offset) {
+      return view.getUint32(offset, true) + view.getUint32(offset + 4, true) * 4294967296;
+    }
+
+    function getContiguousDatasetInfo(dataset) {
+      const dataobjects = dataset?._dataobjects;
+      if (!dataobjects?.find_msg_type || !dataobjects?._get_data_message_properties) return null;
+      const storageMsg = dataobjects.find_msg_type(8)?.[0];
+      if (!storageMsg?.get) return null;
+      const msgOffset = storageMsg.get("offset_to_message");
+      const [, , layoutClass, propertyOffset] = dataobjects._get_data_message_properties(msgOffset);
+      if (layoutClass !== 1) return null;
+      const view = new DataView(dataobjects.fh);
+      const dataOffset = getUint64LE(view, propertyOffset);
+      if (!Number.isFinite(dataOffset) || dataOffset <= 0) return null;
+      const reader = numericHDF5Reader(dataset.dtype);
+      if (!reader) return null;
+      return { buffer: dataobjects.fh, dataOffset, reader };
+    }
+
+    function inferHDF5Axes(detection) {
+      const axes = {};
+      const candidates = detection?.allDatasets || [];
+      for (const dataset of candidates) {
+        if ((dataset.shape || []).length !== 1) continue;
+        const name = String(dataset.nameLower || "").replace(/[^a-z0-9]/g, "");
+        if (/^(ev|energy|energies|bindingenergy)$/.test(name)) axes.ev = dataset;
+        else if (/^(alpha|theta|angle|kx|momentum)$/.test(name)) axes.alpha = dataset;
+        else if (/^(beta|phi|ky)$/.test(name)) axes.beta = dataset;
+      }
+      return axes;
+    }
+
+    function axisLength(axis) {
+      return Number(axis?.shape?.[0]) || 0;
+    }
+
+    function dimMatchingAxis(shape, axis, used = new Set()) {
+      const length = axisLength(axis);
+      if (!length) return null;
+      for (let i = 0; i < shape.length; i++) {
+        if (!used.has(i) && Number(shape[i]) === length) return i;
+      }
+      return null;
+    }
+
+    function labelForHDF5Dim(dim, shape, axes) {
+      const length = Number(shape?.[dim]) || 0;
+      if (length && axisLength(axes.ev) === length) return "eV";
+      if (length && axisLength(axes.alpha) === length) return "alpha";
+      if (length && axisLength(axes.beta) === length) return "beta";
+      return `dim ${dim + 1}`;
+    }
+
+    function buildHDF5PreviewPlan(h5, datasetInfo, detection) {
+      const shape = (datasetInfo?.shape || []).map(Number);
+      if (!datasetInfo || shape.length < 2 || shape.length > 3) return null;
+      if (!isNumericHDF5Dtype(datasetInfo.dtype)) return null;
+      const dataset = getHDF5NodeByPath(h5, datasetInfo.path);
+      const axes = inferHDF5Axes(detection);
+      const used = new Set();
+      let xDim = null;
+      let yDim = null;
+      let fixedDim = null;
+      let fixedIndex = null;
+
+      if (shape.length === 2) {
+        yDim = dimMatchingAxis(shape, axes.ev, used);
+        if (yDim != null) used.add(yDim);
+        xDim = dimMatchingAxis(shape, axes.alpha, used);
+        if (xDim == null) xDim = shape.findIndex((_, index) => index !== yDim);
+        if (yDim == null) yDim = xDim === 0 ? 1 : 0;
+      } else if (shape.length === 3) {
+        yDim = dimMatchingAxis(shape, axes.ev, used);
+        if (yDim != null) used.add(yDim);
+        xDim = dimMatchingAxis(shape, axes.alpha, used);
+        if (xDim != null) used.add(xDim);
+        if (yDim == null) yDim = shape.length - 1;
+        if (xDim == null || xDim === yDim) xDim = yDim === 2 ? 1 : 2;
+        fixedDim = [0, 1, 2].find(index => index !== xDim && index !== yDim);
+        fixedIndex = Math.floor((Number(shape[fixedDim]) || 1) / 2);
+      }
+
+      if (xDim == null || yDim == null || xDim === yDim) return null;
+      return {
+        h5,
+        dataset,
+        path: datasetInfo.path,
+        name: datasetInfo.name,
+        dtype: datasetInfo.dtype,
+        shape,
+        xDim,
+        yDim,
+        fixedDim,
+        fixedIndex,
+        xLabel: labelForHDF5Dim(xDim, shape, axes),
+        yLabel: labelForHDF5Dim(yDim, shape, axes),
+        fixedLabel: fixedDim == null ? "" : labelForHDF5Dim(fixedDim, shape, axes)
+      };
+    }
+
+    function hdf5PreviewCandidates(detection) {
+      const primary = primaryDetectedHDF5Datasets(detection);
+      const fallback = (detection?.allDatasets || []).filter(dataset => (dataset.shape || []).length >= 2);
+      const seen = new Set();
+      const priority = name => {
+        const lower = String(name || "").toLowerCase();
+        if (lower === "fine_cut") return 0;
+        if (lower === "core_level") return 1;
+        if (lower === "quick_map") return 2;
+        if (lower === "fine_map") return 3;
+        return 10;
+      };
+      return [...primary, ...fallback]
+        .filter(dataset => {
+          if (seen.has(dataset.path)) return false;
+          seen.add(dataset.path);
+          return isNumericHDF5Dtype(dataset.dtype);
+        })
+        .sort((a, b) => {
+          const shapeA = a.shape || [];
+          const shapeB = b.shape || [];
+          return priority(a.name) - priority(b.name)
+            || shapeA.length - shapeB.length
+            || hdf5DatasetSize(shapeA) - hdf5DatasetSize(shapeB);
+        });
+    }
+
+    function linearHDF5Index(shape, coords) {
+      let index = 0;
+      for (let dim = 0; dim < shape.length; dim++) index = index * shape[dim] + coords[dim];
+      return index;
+    }
+
+    function isRenderableHDF5Value(value) {
+      return Number.isFinite(value) && Math.abs(value) < 1e38;
+    }
+
+    function sampleHDF5Dataset(plan, options = {}) {
+      const maxCols = options.maxCols || 560;
+      const maxRows = options.maxRows || 340;
+      const xLen = Number(plan.shape[plan.xDim]) || 0;
+      const yLen = Number(plan.shape[plan.yDim]) || 0;
+      if (!xLen || !yLen) throw new Error(t("hdf5PreviewUnavailable"));
+      const cols = Math.min(maxCols, xLen);
+      const rows = Math.min(maxRows, yLen);
+      const values = new Float32Array(cols * rows);
+      const contiguous = getContiguousDatasetInfo(plan.dataset);
+      const totalSize = hdf5DatasetSize(plan.shape);
+      let source = null;
+      let view = null;
+      if (contiguous) {
+        view = new DataView(contiguous.buffer);
+      } else {
+        if (totalSize > 1400000) throw new Error(t("hdf5PreviewLargeChunked"));
+        source = plan.dataset.value;
+      }
+      const finite = [];
+      const coords = new Array(plan.shape.length).fill(0);
+      if (plan.fixedDim != null) coords[plan.fixedDim] = plan.fixedIndex;
+      for (let row = 0; row < rows; row++) {
+        const srcY = Math.min(yLen - 1, Math.floor(row * yLen / rows));
+        coords[plan.yDim] = srcY;
+        for (let col = 0; col < cols; col++) {
+          const srcX = Math.min(xLen - 1, Math.floor(col * xLen / cols));
+          coords[plan.xDim] = srcX;
+          const linearIndex = linearHDF5Index(plan.shape, coords);
+          const value = contiguous
+            ? contiguous.reader.read(view, contiguous.dataOffset + linearIndex * contiguous.reader.size)
+            : Number(source[linearIndex]);
+          const outIndex = row * cols + col;
+          values[outIndex] = isRenderableHDF5Value(value) ? value : NaN;
+          if (isRenderableHDF5Value(value)) {
+            finite.push(value);
+          }
+        }
+      }
+      if (!finite.length) throw new Error(t("hdf5PreviewUnavailable"));
+      finite.sort((a, b) => a - b);
+      const q1 = finite[Math.floor((finite.length - 1) * 0.25)];
+      const q3 = finite[Math.floor((finite.length - 1) * 0.75)];
+      const iqr = Math.max(1e-12, q3 - q1);
+      const guardLow = q1 - iqr * 8;
+      const guardHigh = q3 + iqr * 8;
+      const filtered = [];
+      let min = Infinity;
+      let max = -Infinity;
+      for (let i = 0; i < values.length; i++) {
+        const value = values[i];
+        if (!Number.isFinite(value) || value < guardLow || value > guardHigh) {
+          values[i] = NaN;
+          continue;
+        }
+        filtered.push(value);
+        if (value < min) min = value;
+        if (value > max) max = value;
+      }
+      const scaleValues = filtered.length ? filtered : finite;
+      scaleValues.sort((a, b) => a - b);
+      if (!filtered.length) {
+        min = scaleValues[0];
+        max = scaleValues[scaleValues.length - 1];
+      }
+      const low = scaleValues[Math.floor((scaleValues.length - 1) * 0.02)];
+      const high = scaleValues[Math.floor((scaleValues.length - 1) * 0.98)];
+      return {
+        values,
+        cols,
+        rows,
+        min,
+        max,
+        low,
+        high: high > low ? high : max,
+        xLen,
+        yLen
+      };
+    }
+
+    function heatmapColor(value) {
+      const stops = [
+        [0.00, [5, 12, 26]],
+        [0.18, [39, 68, 145]],
+        [0.38, [0, 188, 212]],
+        [0.58, [104, 211, 145]],
+        [0.78, [255, 209, 102]],
+        [1.00, [239, 68, 68]]
+      ];
+      const tValue = Math.max(0, Math.min(1, Number(value) || 0));
+      for (let i = 1; i < stops.length; i++) {
+        if (tValue <= stops[i][0]) {
+          const [t0, c0] = stops[i - 1];
+          const [t1, c1] = stops[i];
+          const mix = (tValue - t0) / Math.max(0.0001, t1 - t0);
+          return [
+            Math.round(c0[0] + (c1[0] - c0[0]) * mix),
+            Math.round(c0[1] + (c1[1] - c0[1]) * mix),
+            Math.round(c0[2] + (c1[2] - c0[2]) * mix)
+          ];
+        }
+      }
+      return stops[stops.length - 1][1];
+    }
+
+    function drawHDF5Heatmap(canvas, sample, plan, options = {}) {
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width;
+      const H = canvas.height;
+      const compact = !!options.compact;
+      const margin = compact
+        ? { top: 16, right: 10, bottom: 12, left: 10 }
+        : { top: 50, right: 88, bottom: 58, left: 72 };
+      const plotW = W - margin.left - margin.right;
+      const plotH = H - margin.top - margin.bottom;
+      const range = Math.max(1e-12, sample.high - sample.low);
+      ctx.fillStyle = "#070b10";
+      ctx.fillRect(0, 0, W, H);
+
+      const imageCanvas = document.createElement("canvas");
+      imageCanvas.width = sample.cols;
+      imageCanvas.height = sample.rows;
+      const imageCtx = imageCanvas.getContext("2d");
+      const image = imageCtx.createImageData(sample.cols, sample.rows);
+      for (let i = 0; i < sample.values.length; i++) {
+        const value = sample.values[i];
+        const normalized = Number.isFinite(value) ? (value - sample.low) / range : 0;
+        const [r, g, b] = heatmapColor(normalized);
+        const offset = i * 4;
+        image.data[offset] = r;
+        image.data[offset + 1] = g;
+        image.data[offset + 2] = b;
+        image.data[offset + 3] = Number.isFinite(value) ? 255 : 0;
+      }
+      imageCtx.putImageData(image, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(imageCanvas, margin.left, margin.top, plotW, plotH);
+
+      if (compact) {
+        ctx.fillStyle = "rgba(7, 11, 16, 0.72)";
+        ctx.fillRect(0, 0, W, 30);
+        ctx.fillStyle = "#e5edf5";
+        ctx.font = "bold 20px system-ui, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(plan.name || "HDF5", 14, 22);
+        return;
+      }
+
+      ctx.strokeStyle = "#243244";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(margin.left, margin.top, plotW, plotH);
+      ctx.fillStyle = "#e5edf5";
+      ctx.font = "bold 17px system-ui, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(plan.name || "HDF5", margin.left, 28);
+      ctx.fillStyle = "#9fb0c2";
+      ctx.font = "12px system-ui, sans-serif";
+      ctx.fillText((options.filename || "") + (plan.fixedDim != null ? ` · ${t("hdf5PreviewSlice")}` : ""), margin.left, 45);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.18)";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "#9fb0c2";
+      ctx.font = "12px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      for (let i = 0; i <= 4; i++) {
+        const x = margin.left + plotW * i / 4;
+        ctx.beginPath(); ctx.moveTo(x, margin.top + plotH); ctx.lineTo(x, margin.top + plotH + 5); ctx.stroke();
+        ctx.fillText(String(Math.round(sample.xLen * i / 4)), x, H - 34);
+      }
+      for (let i = 0; i <= 4; i++) {
+        const y = margin.top + plotH * i / 4;
+        ctx.beginPath(); ctx.moveTo(margin.left - 5, y); ctx.lineTo(margin.left, y); ctx.stroke();
+        ctx.textAlign = "right";
+        ctx.fillText(String(Math.round(sample.yLen * i / 4)), margin.left - 10, y + 4);
+      }
+      ctx.textAlign = "center";
+      ctx.fillText(plan.xLabel, margin.left + plotW / 2, H - 12);
+      ctx.save();
+      ctx.translate(20, margin.top + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText(plan.yLabel, 0, 0);
+      ctx.restore();
+
+      const barX = margin.left + plotW + 26;
+      const barY = margin.top;
+      const barW = 16;
+      const barH = plotH;
+      for (let y = 0; y < barH; y++) {
+        const [r, g, b] = heatmapColor(1 - y / Math.max(1, barH - 1));
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.fillRect(barX, barY + y, barW, 1);
+      }
+      ctx.strokeStyle = "#243244";
+      ctx.strokeRect(barX, barY, barW, barH);
+      ctx.fillStyle = "#9fb0c2";
+      ctx.font = "11px system-ui, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(sample.high.toExponential(2), barX + 24, barY + 8);
+      ctx.fillText(sample.low.toExponential(2), barX + 24, barY + barH);
+    }
+
+    function updateHDF5PreviewInfo(plan, sample, filename) {
+      if (hdf5PreviewHint) hdf5PreviewHint.textContent = `${plan.name} · ${sample.cols}×${sample.rows}`;
+      if (!hdf5PreviewInfo) return;
+      const fixed = plan.fixedDim == null
+        ? ""
+        : `<div class="metric"><strong>${esc(plan.fixedLabel)}:</strong> ${plan.fixedIndex + 1} / ${plan.shape[plan.fixedDim]}</div>`;
+      hdf5PreviewInfo.innerHTML = [
+        `<div class="metric"><strong>${esc(t("hdf5PreviewDataset"))}:</strong> ${esc(filename)} · ${esc(plan.path)}</div>`,
+        `<div class="metric"><strong>Shape:</strong> [${plan.shape.join("×")}] ${esc(plan.dtype)}</div>`,
+        `<div class="metric"><strong>${esc(t("hdf5PreviewAxes"))}:</strong> x=${esc(plan.xLabel)} · y=${esc(plan.yLabel)}</div>`,
+        fixed,
+        `<div class="metric"><strong>${esc(t("hdf5PreviewResolution"))}:</strong> ${sample.cols}×${sample.rows}</div>`,
+        `<div class="metric"><strong>${esc(t("hdf5PreviewRange"))}:</strong> ${sample.low.toExponential(2)} – ${sample.high.toExponential(2)}</div>`
+      ].filter(Boolean).join("");
+    }
+
+    function showHDF5PreviewMessage(message) {
+      if (hdf5PreviewHint) hdf5PreviewHint.textContent = message;
+      if (hdf5PreviewInfo) hdf5PreviewInfo.innerHTML = `<span class="muted">${esc(message)}</span>`;
+      if (!hdf5PreviewCanvas) return;
+      const ctx = hdf5PreviewCanvas.getContext("2d");
+      ctx.fillStyle = "#070b10";
+      ctx.fillRect(0, 0, hdf5PreviewCanvas.width, hdf5PreviewCanvas.height);
+      ctx.fillStyle = "#9fb0c2";
+      ctx.font = "18px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(message, hdf5PreviewCanvas.width / 2, hdf5PreviewCanvas.height / 2);
+    }
+
+    async function renderAutomaticHDF5Preview(h5, detection, filename) {
+      if (!hdf5PreviewCanvas) return null;
+      showHDF5PreviewMessage(t("hdf5PreviewDrawing"));
+      await yieldToBrowser();
+      for (const datasetInfo of hdf5PreviewCandidates(detection)) {
+        try {
+          const plan = buildHDF5PreviewPlan(h5, datasetInfo, detection);
+          if (!plan) continue;
+          const sample = sampleHDF5Dataset(plan);
+          drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename });
+          updateHDF5PreviewInfo(plan, sample, filename);
+          return { plan, sample };
+        } catch (error) {
+          console.warn("HDF5 preview skipped", datasetInfo?.path, error);
+        }
+      }
+      showHDF5PreviewMessage(t("hdf5PreviewUnavailable"));
+      return null;
+    }
+
+    async function renderHDF5PreviewForPath(path, filename = currentH5?.filename || "HDF5") {
+      if (!currentH5 || !currentH5Detection) return null;
+      const node = getHDF5NodeByPath(currentH5, path);
+      const datasetInfo = {
+        path,
+        name: path.split("/").filter(Boolean).pop() || path,
+        nameLower: (path.split("/").filter(Boolean).pop() || path).toLowerCase(),
+        shape: node.shape || [],
+        dtype: node.dtype || ""
+      };
+      const plan = buildHDF5PreviewPlan(currentH5, datasetInfo, currentH5Detection);
+      if (!plan) {
+        showHDF5PreviewMessage(t("hdf5PreviewUnavailable"));
+        return null;
+      }
+      const sample = sampleHDF5Dataset(plan);
+      drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename });
+      updateHDF5PreviewInfo(plan, sample, filename);
+      return { plan, sample };
+    }
+
+    async function createHDF5DatasetThumbnail(h5, datasetInfo, detection) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 360;
+      canvas.height = 220;
+      const plan = buildHDF5PreviewPlan(h5, datasetInfo, detection);
+      if (!plan) return "";
+      const sample = sampleHDF5Dataset(plan, { maxCols: 220, maxRows: 140 });
+      drawHDF5Heatmap(canvas, sample, plan, { compact: true });
+      return canvas.toDataURL("image/jpeg", 0.78);
+    }
+
     function primaryDetectedHDF5Datasets(detection) {
       const primaryName = /^(quick_map|fine_map|fine_cut|core_level)$/i;
       const primary = (detection?.allDatasets || []).filter(dataset => primaryName.test(dataset.name));
       return primary.length ? primary : (detection?.arpesDatasets || []).filter(dataset => (dataset.shape || []).length >= 2);
     }
 
-    async function addDetectedHDF5SummariesToLibrary(filename, detection) {
+    async function addDetectedHDF5SummariesToLibrary(filename, detection, h5 = null) {
       const primary = primaryDetectedHDF5Datasets(detection);
       if (!primary.length) return;
       const db = await openIDB();
@@ -10840,13 +11415,26 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         req.onsuccess = () => resolve(req.result || []);
         req.onerror = () => resolve([]);
       });
-      const existingKeys = new Set(existing.map(row => `${row.source_file || ""}|${row.path || ""}`));
+      const existingByKey = new Map(existing.map(row => [`${row.source_file || ""}|${row.path || ""}`, row]));
       const tx = db.transaction("datasets", "readwrite");
       const store = tx.objectStore("datasets");
-      let added = 0;
+      let changed = 0;
       for (const dataset of primary) {
         const key = `${filename}|${dataset.path}`;
-        if (existingKeys.has(key)) continue;
+        let thumbnail = "";
+        if (h5) {
+          try { thumbnail = await createHDF5DatasetThumbnail(h5, dataset, detection); }
+          catch (error) { console.warn("Could not create HDF5 thumbnail", dataset.path, error); }
+          await yieldToBrowser();
+        }
+        const existingRecord = existingByKey.get(key);
+        if (existingRecord) {
+          if (thumbnail && !existingRecord.thumbnail) {
+            store.put({ ...existingRecord, thumbnail });
+            changed++;
+          }
+          continue;
+        }
         store.put({
           id: `h5-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
           name: dataset.name,
@@ -10855,18 +11443,19 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           dtype: dataset.dtype || "",
           attrs: {},
           data: null,
+          thumbnail,
           source_file: filename,
           imported_at: new Date().toISOString(),
           tags: autoTag(dataset.name, {})
         });
-        added++;
+        changed++;
       }
-      if (added) await new Promise((resolve, reject) => {
+      if (changed) await new Promise((resolve, reject) => {
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error);
         tx.onabort = () => reject(tx.error);
       });
-      if (added) renderLibrary();
+      if (changed) renderLibrary();
     }
 
     // ===== IndexedDB 数据仓库 =====
@@ -10912,12 +11501,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const name = path.split("/").pop();
         const attrs = {};
         if (node.attrs) Object.entries(node.attrs).forEach(([k,v]) => { attrs[k] = v; });
+        let thumbnail = "";
+        if (currentH5Detection) {
+          try {
+            thumbnail = await createHDF5DatasetThumbnail(currentH5, {
+              path,
+              name,
+              nameLower: name.toLowerCase(),
+              shape,
+              dtype: node.dtype || ""
+            }, currentH5Detection);
+          } catch (error) {
+            console.warn("Could not create HDF5 thumbnail", path, error);
+          }
+        }
 
         const record = {
           id: `h5-${Date.now()}-${Math.random().toString(16).slice(2,8)}`,
           name, path, shape, dtype: node.dtype || "",
           attrs,
           data: data ? data.slice(0, 5000) : null,
+          thumbnail,
           source_file: currentH5.filename || "unknown.h5",
           imported_at: new Date().toISOString(),
           tags: autoTag(name, attrs)
@@ -10961,8 +11565,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
       dataLibraryGrid.innerHTML = filtered.map(r => {
         const sel = librarySelection.has(r.id) ? "selected" : "";
-        return `<div class="library-card ${sel}" data-id="${esc(r.id)}" onclick="toggleLibrarySelect('${esc(r.id)}')">
-          <strong>📊 ${esc(r.name)}</strong>
+        const thumb = r.thumbnail ? `<img class="hdf5-library-thumb" src="${esc(r.thumbnail)}" alt="${esc(r.name)} preview" loading="lazy">` : "";
+        return `<div class="library-card ${sel} ${thumb ? "has-thumb" : ""}" data-id="${esc(r.id)}" onclick="toggleLibrarySelect('${esc(r.id)}')">
+          ${thumb}
+          <div class="library-card-title"><span>📊</span><strong>${esc(r.name)}</strong></div>
           <span class="muted">[${(r.shape||[]).join("×")}] ${esc(r.dtype)}</span>
           <span class="muted">📁 ${t("sourceFileLabel")}: ${esc(r.source_file)}</span>
           <div class="chips">${(r.tags||[]).map(t => `<span class="chip good">${esc(t)}</span>`).join("")}</div>
@@ -10971,10 +11577,24 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }).join("");
     }
 
-    window.toggleLibrarySelect = function(id) {
+    window.toggleLibrarySelect = async function(id) {
       if (librarySelection.has(id)) librarySelection.delete(id);
       else librarySelection.add(id);
       renderLibrary();
+      try {
+        const db = await openIDB();
+        const record = await new Promise((resolve) => {
+          const tx = db.transaction("datasets", "readonly");
+          const req = tx.objectStore("datasets").get(id);
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        });
+        if (record?.path && currentH5?.filename === record.source_file) {
+          await renderHDF5PreviewForPath(record.path, record.source_file);
+        }
+      } catch (error) {
+        console.warn("Could not preview selected library record", error);
+      }
     };
 
     clearLibraryBtn.addEventListener("click", async () => {
