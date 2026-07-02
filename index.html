@@ -3230,6 +3230,112 @@
     .floating-compare.is-minimized .floating-compare-footer {
       display: none;
     }
+    .floating-figure-panel {
+      left: 18px;
+      right: auto;
+      width: min(760px, calc(100vw - 28px));
+      max-height: min(760px, calc(100vh - 36px));
+    }
+    .floating-figure-panel .floating-compare-body {
+      max-height: calc(min(760px, calc(100vh - 36px)) - 106px);
+    }
+    .floating-figure-drop {
+      border: 1px dashed rgba(20,184,166,0.58);
+      border-radius: 8px;
+      background: rgba(20,184,166,0.07);
+      min-height: 74px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 5px;
+      color: var(--ink);
+      text-align: center;
+      cursor: pointer;
+    }
+    .floating-figure-drop span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .floating-figure-drop.drag-over {
+      border-color: var(--accent-glow);
+      background: rgba(20,184,166,0.16);
+      box-shadow: inset 0 0 18px rgba(20,184,166,0.18);
+    }
+    .floating-figure-grid,
+    .floating-figure-db-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 9px;
+    }
+    .floating-figure-card,
+    .floating-figure-db-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.035);
+      overflow: hidden;
+      min-width: 0;
+    }
+    .floating-figure-card {
+      border-color: rgba(20,184,166,0.34);
+      background: rgba(15,118,110,0.08);
+    }
+    .floating-figure-card img,
+    .floating-figure-db-card img {
+      width: 100%;
+      height: 150px;
+      display: block;
+      object-fit: contain;
+      background: #06101a;
+      border-bottom: 1px solid var(--line);
+    }
+    .floating-figure-db-card img {
+      background: #f8fafc;
+      padding: 6px;
+    }
+    .floating-figure-meta {
+      padding: 8px;
+      display: grid;
+      gap: 4px;
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+    .floating-figure-meta strong {
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.25;
+    }
+    .floating-figure-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .floating-figure-meta-row button {
+      min-height: 24px;
+      min-width: 26px;
+      padding: 1px 7px;
+      font-size: 11px;
+    }
+    .floating-figure-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 2px;
+      color: var(--ink);
+    }
+    .floating-figure-section-head span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .floating-figure-empty {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
     @media (max-width: 720px) {
       .floating-compare {
         left: 10px !important;
@@ -4732,6 +4838,36 @@
     </div>
   </aside>
 
+  <aside class="floating-compare floating-figure-panel" id="floatingFigurePanel" hidden aria-live="polite">
+    <div class="floating-compare-header" id="floatingFigureHeader">
+      <div class="floating-compare-title">
+        <strong data-i18n="floatingFigureTitle">悬浮图像对比</strong>
+        <span id="floatingFigureCount">0 张实验图</span>
+      </div>
+      <div class="floating-window-actions">
+        <button id="floatingFigureMinBtn" type="button" aria-label="Minimize">−</button>
+        <button id="floatingFigureCloseBtn" type="button" aria-label="Close">×</button>
+      </div>
+    </div>
+    <div class="floating-compare-body floating-figure-body" id="floatingFigureBody">
+      <label class="floating-figure-drop" id="floatingFigureDrop" for="floatingFigureInput">
+        <strong data-i18n="floatingFigureDropTitle">拖入实验图 / HDF5 截图</strong>
+        <span data-i18n="floatingFigureDropHint">支持 PNG、JPG、WebP；HDF5 导入后会自动放入这里</span>
+        <input type="file" id="floatingFigureInput" accept="image/*" multiple hidden>
+      </label>
+      <div class="floating-figure-grid" id="floatingFigureUserGrid"></div>
+      <div class="floating-figure-section-head">
+        <strong data-i18n="floatingFigureDbTitle">数据库论文图</strong>
+        <span id="floatingFigureDbStatus">0 张</span>
+      </div>
+      <div class="floating-figure-db-grid" id="floatingFigureDbGrid"></div>
+    </div>
+    <div class="floating-compare-footer">
+      <button id="floatingFigureOpenFiguresBtn" type="button" data-i18n="floatingFigureOpenFiguresBtn">打开图表库</button>
+      <button id="floatingFigureClearBtn" type="button" data-i18n="floatingFigureClearBtn">清空图像</button>
+    </div>
+  </aside>
+
   <script>
     // ===== 国际化 i18n =====
     const LANG_STORAGE_KEY = "arpes-explorer-lang-v1";
@@ -5096,6 +5232,23 @@
         floatingPinnedToast: "已加入悬浮对比窗",
         floatingClearedToast: "悬浮对比已清空",
         floatingRemovedToast: "已从悬浮窗移除",
+        floatingFigureTitle: "悬浮图像对比",
+        floatingFigureCount: "{count} 张实验图",
+        floatingFigureDropTitle: "拖入实验图 / HDF5 截图",
+        floatingFigureDropHint: "支持 PNG、JPG、WebP；HDF5 导入后会自动放入这里",
+        floatingFigureDbTitle: "数据库论文图",
+        floatingFigureDbStatus: "{count} 张可对比论文图",
+        floatingFigureNoImages: "导入 HDF5 后会自动生成预览图。也可以把自己的 PNG/JPG 拖到这里。",
+        floatingFigureNoDb: "当前筛选下暂无数据库论文图。可以切到文献页导入更多文章或清除筛选。",
+        floatingFigureOpenFiguresBtn: "打开图表库",
+        floatingFigureClearBtn: "清空图像",
+        floatingFigureClearedToast: "悬浮图像已清空",
+        floatingFigureAddedToast: "已加入悬浮图像对比",
+        floatingFigureAutoToast: "HDF5 预览图已放入悬浮对比窗",
+        floatingFigureRemovedToast: "已移除图像",
+        floatingFigureRemove: "移除",
+        floatingFigureSourceHdf5: "HDF5 导入",
+        floatingFigureSourceUpload: "手动上传",
         noMatchSource: "未找到匹配的光源或档案。试试搜索\"上海\"、\"北京\"、\"NSRRC\"、\"ALS\"、\"arXiv\"。",
         seedMaterials: "种子材料",
         seedDataNote: "本页面是超导主题的交互式探索模板。Tc 值和历史记录为代表性和种子数据，非最终精选条目。个人数据保存在浏览器 localStorage 中。点击 SUPERCONDUCTOR 按钮让周期表元素跳舞！支持按地区搜索光源设施（上海 SSRF、北京 BSRF、合肥 NSRL、台湾 NSRRC 及全球各地）。文章数据从 articles.json、free_arpes_articles.json 和 shared_articles.json 加载，包含公开共享的 WoS 元数据、开放 API 题录和已发表文献。",
@@ -5549,6 +5702,23 @@
         floatingPinnedToast: "Added to floating compare",
         floatingClearedToast: "Floating compare cleared",
         floatingRemovedToast: "Removed from floating window",
+        floatingFigureTitle: "Floating Figure Compare",
+        floatingFigureCount: "{count} experiment image(s)",
+        floatingFigureDropTitle: "Drop experiment figures / HDF5 snapshots",
+        floatingFigureDropHint: "PNG, JPG, and WebP supported; HDF5 previews are added here automatically",
+        floatingFigureDbTitle: "Database Paper Figures",
+        floatingFigureDbStatus: "{count} paper figure(s) to compare",
+        floatingFigureNoImages: "HDF5 imports will create preview images automatically. You can also drop PNG/JPG files here.",
+        floatingFigureNoDb: "No database paper figures match the current filters. Import more literature or clear filters.",
+        floatingFigureOpenFiguresBtn: "Open Figure Library",
+        floatingFigureClearBtn: "Clear Images",
+        floatingFigureClearedToast: "Floating figures cleared",
+        floatingFigureAddedToast: "Added to floating figure compare",
+        floatingFigureAutoToast: "HDF5 preview added to the floating compare window",
+        floatingFigureRemovedToast: "Figure removed",
+        floatingFigureRemove: "Remove",
+        floatingFigureSourceHdf5: "HDF5 import",
+        floatingFigureSourceUpload: "Manual upload",
         noMatchSource: "No matching light source or archive. Try Shanghai, Beijing, NSRRC, ALS, arXiv.",
         seedMaterials: "seed materials",
         seedDataNote: "This page is an interactive superconductivity exploration template. Tc values and historical notes are representative seed data, not final curated entries. Personal data is stored in browser localStorage. Click SUPERCONDUCTOR to make the periodic table dance! Search by region for light source facilities (SSRF, BSRF, NSRL, NSRRC, and global). Article data loads from articles.json, free_arpes_articles.json, and shared_articles.json, including public shared WoS metadata, open API metadata, and published literature.",
@@ -5701,6 +5871,7 @@
       renderAxisPoints();
       applyCubeViewMode();
       renderFloatingComparison();
+      renderFloatingFigureComparison();
       renderModelRegistry();
       renderToc();
       showAppPage(activeAppPage, { preserveScroll: true });
@@ -5746,6 +5917,7 @@
       filtered: [],
       ourData: [],
       floatingDataIds: new Set(),
+      floatingFigures: [],
       compareSet: new Set(),
       chatMessages: [],
       chatTableRows: [],
@@ -5755,6 +5927,9 @@
     const STORAGE_KEY = "arpes-superconductivity-our-data-v1";
     const FLOATING_COMPARE_STORAGE_KEY = "arpes-floating-compare-v1";
     const FLOATING_COMPARE_POSITION_KEY = "arpes-floating-compare-position-v1";
+    const FLOATING_FIGURE_STORAGE_KEY = "arpes-floating-figures-v1";
+    const FLOATING_FIGURE_POSITION_KEY = "arpes-floating-figures-position-v1";
+    const FLOATING_FIGURE_LIMIT = 8;
     const ARTICLE_IMPORT_STORAGE_KEY = "arpes-imported-articles-v1";
     const ARTICLE_MIN_YEAR = 2016;
     const ARTICLE_IMPORT_PREVIEW_LIMIT = 60000;
@@ -5927,6 +6102,18 @@
     const floatingCompareCloseBtn = $("#floatingCompareCloseBtn");
     const floatingCompareClearBtn = $("#floatingCompareClearBtn");
     const floatingCompareOpenDataBtn = $("#floatingCompareOpenDataBtn");
+    const floatingFigurePanel = $("#floatingFigurePanel");
+    const floatingFigureHeader = $("#floatingFigureHeader");
+    const floatingFigureCount = $("#floatingFigureCount");
+    const floatingFigureDrop = $("#floatingFigureDrop");
+    const floatingFigureInput = $("#floatingFigureInput");
+    const floatingFigureUserGrid = $("#floatingFigureUserGrid");
+    const floatingFigureDbGrid = $("#floatingFigureDbGrid");
+    const floatingFigureDbStatus = $("#floatingFigureDbStatus");
+    const floatingFigureMinBtn = $("#floatingFigureMinBtn");
+    const floatingFigureCloseBtn = $("#floatingFigureCloseBtn");
+    const floatingFigureClearBtn = $("#floatingFigureClearBtn");
+    const floatingFigureOpenFiguresBtn = $("#floatingFigureOpenFiguresBtn");
     const soundBars = $("#soundBars");
     const particles = $("#particles");
 
@@ -7401,6 +7588,7 @@
         articleMetricsDirty = true;
         state.ourData = loadOurData();
         state.floatingDataIds = loadFloatingCompareIds();
+        state.floatingFigures = loadFloatingFigures();
         // 应用语言
         switchLang(currentLang);
         renderFamilyFilter();
@@ -9522,6 +9710,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!shownItems.length) {
         figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${t("noFigureMatch")}</p></div>`;
         figShowMoreBtn.style.display = "none";
+        renderFloatingFigureComparison();
         return;
       }
 
@@ -9570,6 +9759,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       } else {
         figShowMoreBtn.style.display = "none";
       }
+      renderFloatingFigureComparison();
     }
 
     function renderFigureElementChips() {
@@ -10053,6 +10243,34 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       localStorage.setItem(FLOATING_COMPARE_STORAGE_KEY, JSON.stringify([...state.floatingDataIds]));
     }
 
+    function loadFloatingFigures() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(FLOATING_FIGURE_STORAGE_KEY) || "[]");
+        if (!Array.isArray(raw)) return [];
+        return raw
+          .filter(item => item && typeof item.src === "string" && item.src.startsWith("data:image/"))
+          .slice(0, FLOATING_FIGURE_LIMIT);
+      } catch {
+        return [];
+      }
+    }
+
+    function persistFloatingFigures() {
+      try {
+        localStorage.setItem(
+          FLOATING_FIGURE_STORAGE_KEY,
+          JSON.stringify((state.floatingFigures || []).slice(0, FLOATING_FIGURE_LIMIT))
+        );
+      } catch (error) {
+        state.floatingFigures = (state.floatingFigures || []).slice(0, Math.max(1, FLOATING_FIGURE_LIMIT - 3));
+        try {
+          localStorage.setItem(FLOATING_FIGURE_STORAGE_KEY, JSON.stringify(state.floatingFigures));
+        } catch {
+          console.warn("Could not persist floating figures", error);
+        }
+      }
+    }
+
     function saveOurData(options = {}) {
       const record = {
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -10364,6 +10582,276 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       window.addEventListener("resize", applyFloatingComparePosition);
     }
 
+    function sourceLabelForFloatingFigure(source) {
+      return source === "hdf5" ? t("floatingFigureSourceHdf5") : t("floatingFigureSourceUpload");
+    }
+
+    function floatingFigureTitle(text) {
+      const value = String(text || "").trim();
+      return value.length > 86 ? `${value.slice(0, 84)}...` : value;
+    }
+
+    function gatherFloatingDatabaseFigures(limit = 6, relaxed = false) {
+      const items = [];
+      const term = relaxed ? "" : (searchInput?.value || "").trim().toLowerCase();
+      const family = relaxed ? "" : (familyFilter?.value || "");
+      const selectedElement = relaxed ? "" : (state.selectedElement || "");
+      for (const article of curatedArticles()) {
+        if (!isRecentArticle(article)) continue;
+        if (selectedElement && !articleMatchesElement(article, selectedElement)) continue;
+        const articleText = [
+          article.title,
+          ...(article.materials || []),
+          ...(article.elements || []),
+          ...(article.keywords || []),
+          ...(article.techniques || [])
+        ].join(" ").toLowerCase();
+        if (term && !articleText.includes(term)) continue;
+        if (family) {
+          const matchesFamily = (article.materials || []).some(material => {
+            const dbMat = state.db?.materials?.find(row => row.material === material || row.display_name === material);
+            return dbMat && dbMat.family === family;
+          });
+          if (!matchesFamily) continue;
+        }
+        for (const fig of article.figures || []) {
+          const imageUrl = resolveFigureImage(fig, article);
+          if (!imageUrl) continue;
+          const normalizedType = classifyFigureType(fig);
+          if (figFilterType !== "all" && normalizedType !== normalizeFigureType(figFilterType)) continue;
+          items.push({
+            ...fig,
+            normalized_type: normalizedType,
+            image_url: imageUrl,
+            article_title: article.title || "",
+            article_url: article.url || article.ar5iv_url || fig.original_figure_url || imageUrl,
+            article_source: article.source || "",
+            year: article.year || "",
+            materials: article.materials || [],
+            data_quality: article.data_quality || article.verification_status || "curated_real_article_figure"
+          });
+        }
+      }
+      return items
+        .sort((a, b) =>
+          Number(b.year || 0) - Number(a.year || 0) ||
+          String(a.article_title || "").localeCompare(String(b.article_title || ""))
+        )
+        .slice(0, limit);
+    }
+
+    function floatingDatabaseFigures(limit = 6) {
+      const filtered = gatherFloatingDatabaseFigures(limit, false);
+      return filtered.length ? filtered : gatherFloatingDatabaseFigures(limit, true);
+    }
+
+    function renderFloatingFigureComparison(options = {}) {
+      if (!floatingFigurePanel || !floatingFigureUserGrid || !floatingFigureDbGrid) return;
+      const figures = Array.isArray(state.floatingFigures) ? state.floatingFigures : [];
+      if (!figures.length && !options.open) {
+        floatingFigurePanel.hidden = true;
+        if (floatingFigureCount) floatingFigureCount.textContent = tf("floatingFigureCount", { count: 0 });
+        return;
+      }
+      if (options.open) floatingFigurePanel.dataset.dismissed = "false";
+      floatingFigurePanel.hidden = floatingFigurePanel.dataset.dismissed === "true";
+      if (options.open) floatingFigurePanel.classList.remove("is-minimized");
+      if (floatingFigureCount) floatingFigureCount.textContent = tf("floatingFigureCount", { count: figures.length });
+
+      floatingFigureUserGrid.innerHTML = figures.length
+        ? figures.map(item => `
+            <div class="floating-figure-card">
+              <img src="${esc(item.src)}" alt="${esc(item.title || "HDF5 preview")}">
+              <div class="floating-figure-meta">
+                <div class="floating-figure-meta-row">
+                  <strong>${esc(floatingFigureTitle(item.title || "HDF5"))}</strong>
+                  <button type="button" data-floating-figure-remove="${esc(item.id)}" aria-label="${esc(t("floatingFigureRemove"))}">×</button>
+                </div>
+                <span>${esc(sourceLabelForFloatingFigure(item.source))}${item.dataset ? ` · ${esc(item.dataset)}` : ""}</span>
+                ${item.created_at ? `<span>${esc(new Date(item.created_at).toLocaleString(currentLang === "zh" ? "zh-CN" : "en-US"))}</span>` : ""}
+              </div>
+            </div>
+          `).join("")
+        : `<div class="floating-figure-empty" style="grid-column:1/-1;">${esc(t("floatingFigureNoImages"))}</div>`;
+
+      const dbFigures = floatingDatabaseFigures(6);
+      if (floatingFigureDbStatus) floatingFigureDbStatus.textContent = tf("floatingFigureDbStatus", { count: dbFigures.length });
+      floatingFigureDbGrid.innerHTML = dbFigures.length
+        ? dbFigures.map(fig => `
+            <div class="floating-figure-db-card ${esc(figureTypeClass[fig.normalized_type] || "fig-type-other")}">
+              <img src="${esc(fig.image_url)}" alt="${esc(fig.caption || fig.article_title)}"
+                referrerpolicy="no-referrer"
+                loading="lazy"
+                decoding="async"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">
+              <div class="floating-figure-empty" style="display:none;border:0;border-bottom:1px solid var(--line);border-radius:0;min-height:150px;align-content:center;">${esc(t("figureFallback"))}</div>
+              <div class="floating-figure-meta">
+                <strong>${esc(floatingFigureTitle(fig.caption || fig.article_title))}</strong>
+                <span>${esc(figureTypeLabel(fig.normalized_type))} · ${esc(fig.year || "")} · ${esc((fig.materials || []).join(", "))}</span>
+                <a href="${esc(fig.article_url || fig.image_url)}" target="_blank" rel="noreferrer" class="chip good" style="width:max-content;font-size:10px;">${esc(t("viewFigureSource"))}</a>
+              </div>
+            </div>
+          `).join("")
+        : `<div class="floating-figure-empty" style="grid-column:1/-1;">${esc(t("floatingFigureNoDb"))}</div>`;
+
+      floatingFigureUserGrid.querySelectorAll("[data-floating-figure-remove]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.floatingFigures = (state.floatingFigures || []).filter(item => item.id !== btn.dataset.floatingFigureRemove);
+          persistFloatingFigures();
+          renderFloatingFigureComparison({ open: true });
+          showToast(t("floatingFigureRemovedToast"));
+        });
+      });
+      applyFloatingFigurePosition();
+    }
+
+    function addFloatingFigureImage(input, options = {}) {
+      if (!input?.src) return;
+      const item = {
+        id: input.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        title: input.title || "HDF5",
+        src: input.src,
+        source: input.source || "upload",
+        dataset: input.dataset || "",
+        created_at: input.created_at || new Date().toISOString()
+      };
+      state.floatingFigures = [item, ...(state.floatingFigures || []).filter(existing => existing.src !== item.src)]
+        .slice(0, FLOATING_FIGURE_LIMIT);
+      persistFloatingFigures();
+      renderFloatingFigureComparison({ open: options.open !== false });
+      if (options.toast !== false) showToast(options.auto ? t("floatingFigureAutoToast") : t("floatingFigureAddedToast"));
+    }
+
+    function addHDF5PreviewToFloatingFigure(preview, filename) {
+      if (!preview || !hdf5PreviewCanvas) return;
+      try {
+        const src = hdf5PreviewCanvas.toDataURL("image/jpeg", 0.82);
+        addFloatingFigureImage({
+          title: `${filename || "HDF5"} · ${preview.plan?.name || preview.plan?.path || ""}`,
+          src,
+          source: "hdf5",
+          dataset: preview.plan?.path || preview.plan?.name || ""
+        }, { open: true, auto: true });
+      } catch (error) {
+        console.warn("Could not add HDF5 preview to floating figure panel", error);
+      }
+    }
+
+    function readImageFileAsFloatingFigure(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = event => resolve({
+          title: file.name,
+          src: String(event.target?.result || ""),
+          source: "upload"
+        });
+        reader.onerror = () => reject(reader.error || new Error("Could not read image"));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function addFloatingImageFiles(files) {
+      const imageFiles = Array.from(files || []).filter(file => /^image\//i.test(file.type || ""));
+      for (const file of imageFiles) {
+        try {
+          addFloatingFigureImage(await readImageFileAsFloatingFigure(file), { open: true, toast: false });
+        } catch (error) {
+          console.warn("Could not add floating image", error);
+        }
+      }
+      if (imageFiles.length) showToast(t("floatingFigureAddedToast"));
+    }
+
+    function applyFloatingFigurePosition() {
+      if (!floatingFigurePanel || window.matchMedia("(max-width: 720px)").matches) return;
+      try {
+        const pos = JSON.parse(localStorage.getItem(FLOATING_FIGURE_POSITION_KEY) || "{}");
+        if (!Number.isFinite(pos.left) || !Number.isFinite(pos.top)) return;
+        const width = floatingFigurePanel.offsetWidth || 760;
+        const height = floatingFigurePanel.offsetHeight || 520;
+        const left = Math.max(8, Math.min(pos.left, window.innerWidth - width - 8));
+        const top = Math.max(8, Math.min(pos.top, window.innerHeight - height - 8));
+        floatingFigurePanel.style.left = `${left}px`;
+        floatingFigurePanel.style.top = `${top}px`;
+        floatingFigurePanel.style.right = "auto";
+        floatingFigurePanel.style.bottom = "auto";
+      } catch {}
+    }
+
+    function persistFloatingFigurePosition() {
+      if (!floatingFigurePanel || floatingFigurePanel.hidden) return;
+      const rect = floatingFigurePanel.getBoundingClientRect();
+      localStorage.setItem(FLOATING_FIGURE_POSITION_KEY, JSON.stringify({ left: rect.left, top: rect.top }));
+    }
+
+    function initFloatingFigurePanel() {
+      applyFloatingFigurePosition();
+      floatingFigureMinBtn?.addEventListener("click", () => {
+        floatingFigurePanel.classList.toggle("is-minimized");
+      });
+      floatingFigureCloseBtn?.addEventListener("click", () => {
+        floatingFigurePanel.dataset.dismissed = "true";
+        floatingFigurePanel.hidden = true;
+      });
+      floatingFigureClearBtn?.addEventListener("click", () => {
+        state.floatingFigures = [];
+        persistFloatingFigures();
+        renderFloatingFigureComparison();
+        showToast(t("floatingFigureClearedToast"));
+      });
+      floatingFigureOpenFiguresBtn?.addEventListener("click", () => {
+        showAppPage("literature");
+        requestAnimationFrame(() => {
+          document.querySelector("#section-overview")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+      floatingFigureInput?.addEventListener("change", () => {
+        addFloatingImageFiles(floatingFigureInput.files);
+        floatingFigureInput.value = "";
+      });
+      floatingFigureDrop?.addEventListener("dragover", event => {
+        event.preventDefault();
+        floatingFigureDrop.classList.add("drag-over");
+      });
+      floatingFigureDrop?.addEventListener("dragleave", () => {
+        floatingFigureDrop.classList.remove("drag-over");
+      });
+      floatingFigureDrop?.addEventListener("drop", event => {
+        event.preventDefault();
+        floatingFigureDrop.classList.remove("drag-over");
+        addFloatingImageFiles(event.dataTransfer?.files || []);
+      });
+
+      let draggingFigure = false;
+      let dragOffset = { x: 0, y: 0 };
+      floatingFigureHeader?.addEventListener("pointerdown", event => {
+        if (window.matchMedia("(max-width: 720px)").matches) return;
+        if (event.target.closest("button")) return;
+        draggingFigure = true;
+        const rect = floatingFigurePanel.getBoundingClientRect();
+        dragOffset = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        floatingFigureHeader.setPointerCapture?.(event.pointerId);
+      });
+      floatingFigureHeader?.addEventListener("pointermove", event => {
+        if (!draggingFigure) return;
+        const rect = floatingFigurePanel.getBoundingClientRect();
+        const left = Math.max(8, Math.min(event.clientX - dragOffset.x, window.innerWidth - rect.width - 8));
+        const top = Math.max(8, Math.min(event.clientY - dragOffset.y, window.innerHeight - rect.height - 8));
+        floatingFigurePanel.style.left = `${left}px`;
+        floatingFigurePanel.style.top = `${top}px`;
+        floatingFigurePanel.style.right = "auto";
+        floatingFigurePanel.style.bottom = "auto";
+      });
+      const stopFloatingFigureDrag = () => {
+        if (!draggingFigure) return;
+        draggingFigure = false;
+        persistFloatingFigurePosition();
+      };
+      floatingFigureHeader?.addEventListener("pointerup", stopFloatingFigureDrag);
+      floatingFigureHeader?.addEventListener("pointercancel", stopFloatingFigureDrag);
+      window.addEventListener("resize", applyFloatingFigurePosition);
+    }
+
     function exportOurData() {
       const blob = new Blob([JSON.stringify(state.ourData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -10660,7 +11148,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : `✅ Loaded: ${filename} (${formatBytes(buffer.byteLength)})`);
       const detection = autoScanARPES(h5, filename);
       currentH5Detection = detection;
-      await renderAutomaticHDF5Preview(h5, detection, filename);
+      const preview = await renderAutomaticHDF5Preview(h5, detection, filename);
+      addHDF5PreviewToFloatingFigure(preview, filename);
       if (options.addSummaries) {
         try { await addDetectedHDF5SummariesToLibrary(filename, detection, h5); }
         catch (error) { console.warn("Could not add HDF5 summaries", error); }
@@ -11843,6 +12332,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     setupRoundtableModules();
     setupTocScrollSpy();
     initFloatingComparePanel();
+    initFloatingFigurePanel();
     init();
     window.setTimeout(updateHDF5ParserStatus, 0);
   </script>
