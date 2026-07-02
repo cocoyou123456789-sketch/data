@@ -4931,9 +4931,10 @@
         arxivXmlPlaceholder: "可选：粘贴 arXiv 文档内容；如果直接检索被浏览器拦截，就打开上方 arXiv 文档，全选复制后粘贴到这里。",
         arxivMissingQuery: "请先输入 arXiv 检索式",
         arxivSearching: "正在从 arXiv API 检索...",
+        arxivProxySearching: "arXiv 被浏览器拦截，正在尝试备用导入通道...",
         arxivLimitAdjusted: "数量已自动调到 {limit} 条，避免 arXiv 文档过大。",
         arxivNoRecords: "没有找到 2016 年以后的 arXiv 记录",
-        arxivCorsFallback: "GitHub Pages 不能直接读取 arXiv。请点“打开 arXiv 文档”，在新页面全选复制，再粘贴到下方解析。",
+        arxivCorsFallback: "自动导入仍被网络拦截。请点“打开 arXiv 文档”，在新页面全选复制，再粘贴到下方解析。",
         arxivImportDone: "已导入 arXiv 记录",
         freeApiImportHelp: "免费导入流程：在本地运行 python3 scripts/import_free_arpes.py，脚本会从 OpenAlex、arXiv、Crossref 拉取 ARPES 题录，生成 data/free_arpes_articles.json。网页会自动合并显示；这些记录只代表官方元数据，需要全文核验后才作为实验数据。",
         parseImportBtn: "🔍 解析并导入",
@@ -5373,9 +5374,10 @@
         arxivXmlPlaceholder: "Optional: paste the arXiv document content. If direct fetch is blocked by the browser, open the arXiv document above, copy the full page, then paste it here.",
         arxivMissingQuery: "Enter an arXiv query first",
         arxivSearching: "Searching arXiv API...",
+        arxivProxySearching: "The browser blocked arXiv; trying a fallback import channel...",
         arxivLimitAdjusted: "Limit was adjusted to {limit} records so the arXiv document is not too large.",
         arxivNoRecords: "No 2016+ arXiv records found",
-        arxivCorsFallback: "GitHub Pages cannot read arXiv directly. Click “Open arXiv document”, copy the new page, paste it below, then parse.",
+        arxivCorsFallback: "Automatic import is still blocked by the network. Click “Open arXiv document”, copy the new page, paste it below, then parse.",
         arxivImportDone: "arXiv records imported",
         freeApiImportHelp: "Free import workflow: run python3 scripts/import_free_arpes.py locally. The script queries OpenAlex, arXiv, and Crossref for ARPES metadata and writes data/free_arpes_articles.json. The website loads it automatically; these records are official metadata and still need full-text verification before becoming experimental data.",
         parseImportBtn: "🔍 Parse & Import",
@@ -6810,6 +6812,28 @@
       return `https://export.arxiv.org/api/query?${params.toString()}`;
     }
 
+    function arxivCorsProxyUrls(directUrl) {
+      return [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`
+      ];
+    }
+
+    function setArxivImportStatus(message) {
+      if (arxivApiStatus) arxivApiStatus.textContent = message;
+      if (importParseStatus) importParseStatus.textContent = message;
+    }
+
+    function looksLikeArxivFeed(text) {
+      return /<feed[\s>]/i.test(text) && /(?:arxiv|opensearch|<entry[\s>])/i.test(text);
+    }
+
+    async function readArxivResponse(response) {
+      const text = await response.text();
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!looksLikeArxivFeed(text)) throw new Error(currentLang === "zh" ? "返回内容不是 arXiv 文档" : "Response was not an arXiv document");
+      return text;
+    }
+
     async function fetchArxivXml(query, limit) {
       const directUrl = arxivApiUrl(query, limit);
       if (arxivApiLink) {
@@ -6826,14 +6850,29 @@
         if (proxyResponse.ok) return proxyResponse.text();
         if (proxyResponse.status !== 404) {
           const message = await proxyResponse.text().catch(() => "");
-          throw new Error(message || `arXiv proxy HTTP ${proxyResponse.status}`);
+          console.warn(message || `arXiv proxy HTTP ${proxyResponse.status}`);
         }
       }
-      const response = await fetch(directUrl, {
-        headers: { Accept: "application/atom+xml, application/xml, text/xml" }
-      });
-      if (!response.ok) throw new Error(`arXiv API HTTP ${response.status}`);
-      return response.text();
+      try {
+        const response = await fetch(directUrl, {
+          headers: { Accept: "application/atom+xml, application/xml, text/xml" }
+        });
+        return readArxivResponse(response);
+      } catch (directError) {
+        console.warn("Direct arXiv import failed", directError);
+      }
+      setArxivImportStatus(t("arxivProxySearching"));
+      for (const proxyUrl of arxivCorsProxyUrls(directUrl)) {
+        try {
+          const response = await fetch(proxyUrl, {
+            headers: { Accept: "application/atom+xml, application/xml, text/xml, text/plain" }
+          });
+          return await readArxivResponse(response);
+        } catch (proxyError) {
+          console.warn("Fallback arXiv import failed", proxyError);
+        }
+      }
+      throw new Error(t("arxivCorsFallback"));
     }
 
     function cleanXmlText(value) {
