@@ -23,6 +23,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "github-pages" / "data" / "free_arpes_articles.json"
+MIN_ARTICLE_YEAR = 2016
 
 DEFAULT_QUERIES = [
     "ARPES superconductivity",
@@ -340,6 +341,9 @@ def infer_properties(text: str) -> list[str]:
 def dedupe(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     merged: dict[str, dict[str, Any]] = {}
     for record in records:
+        year = record.get("year")
+        if not isinstance(year, int) or year < MIN_ARTICLE_YEAR:
+            continue
         key = dedupe_key(record)
         if key in merged:
             target = merged[key]

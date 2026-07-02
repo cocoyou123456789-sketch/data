@@ -5,6 +5,7 @@ const DEFAULT_IN = "github-pages/data/shared_articles.json";
 const DEFAULT_OUT = "github-pages/data/open_figure_articles.json";
 const DEFAULT_LIMIT = 220;
 const MAX_FIGURES_PER_ARTICLE = 8;
+const MIN_ARTICLE_YEAR = 2016;
 
 function parseArgs(argv) {
   const args = {
@@ -151,6 +152,7 @@ async function runPool(items, worker, concurrency) {
 const args = parseArgs(process.argv.slice(2));
 const articles = JSON.parse(fs.readFileSync(args.inFile, "utf8"));
 const candidates = articles
+  .filter(article => Number.isFinite(Number(article.year)) && Number(article.year) >= MIN_ARTICLE_YEAR)
   .filter(isSupportedOpenPublisher)
   .slice(0, args.limit);
 

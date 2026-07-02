@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const DEFAULT_OUT = "github-pages/data/shared_articles.json";
+const MIN_ARTICLE_YEAR = 2016;
 
 const KNOWN_MATERIALS = [
   "Bi2Se3", "Bi2Te3", "Sb2Te3", "WTe2", "MoS2", "MoSe2", "MoTe2", "WS2", "WSe2",
@@ -240,7 +241,7 @@ const articles = [...byKey.values()].sort((a, b) =>
   (Number(b.year || 0) - Number(a.year || 0)) ||
   (Number(b.citation_count || 0) - Number(a.citation_count || 0)) ||
   a.title.localeCompare(b.title)
-);
+).filter(article => Number.isFinite(Number(article.year)) && Number(article.year) >= MIN_ARTICLE_YEAR);
 
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, JSON.stringify(articles, null, 2) + "\n");
