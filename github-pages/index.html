@@ -4346,6 +4346,7 @@
           <button class="primary" id="importWosBtn" data-i18n="importWosBtn">📥 导入 WoS</button>
           <button class="primary" id="importWosApiBtn" data-i18n="importWosApiBtn">🔎 WoS API 搜索</button>
           <button class="primary" id="importScholarBtn" data-i18n="importScholarBtn">📥 导入 Google Scholar</button>
+          <button class="primary" id="importArxivBtn" data-i18n="importArxivBtn">📚 导入 arXiv</button>
           <button id="resetArticlesBtn" data-i18n="resetArticlesBtn">🔄 恢复默认数据</button>
         </div>
         <div id="importPanel" style="display:none; border:2px solid var(--accent-glow); border-radius:10px; padding:12px; background:rgba(15,118,110,0.05);">
@@ -4371,12 +4372,27 @@
               <span class="status" id="wosApiStatus"></span>
             </div>
           </div>
+          <div id="arxivApiPanel" style="display:none; border:1px solid var(--line); border-radius:8px; padding:10px; margin:10px 0; background:rgba(255,255,255,0.03);">
+            <div class="form-grid">
+              <label class="span-2" data-label-i18n="arxivQueryLabel">arXiv 检索式
+                <input id="arxivQuery" data-i18n-placeholder="arxivQueryPlaceholder" placeholder="all:ARPES AND all:superconductivity">
+              </label>
+              <label data-label-i18n="arxivLimitLabel">数量
+                <input id="arxivLimit" type="number" min="1" max="500" value="100">
+              </label>
+            </div>
+            <div class="toolbar" style="margin-top:8px;">
+              <button class="primary" id="runArxivBtn" type="button" data-i18n="runArxivBtn">📚 从 arXiv 导入</button>
+              <a id="arxivApiLink" target="_blank" rel="noopener" style="display:none;" data-i18n="openArxivXmlLink">打开 arXiv XML</a>
+              <span class="status" id="arxivApiStatus"></span>
+            </div>
+          </div>
           <div class="import-drop-zone" id="articleImportDropZone">
             <strong data-i18n="importDropTitle">拖拽 WoS / Scholar 导出文件到这里</strong>
             <span data-i18n="importDropHint">支持 .txt/.csv/.tsv/.bib/.ris，以及 WoS 的文本型 .xls</span>
           </div>
           <div class="import-file-row">
-            <input type="file" id="articleImportFile" accept=".csv,.tsv,.txt,.bib,.ris,.xls,.xlsx">
+            <input type="file" id="articleImportFile" accept=".csv,.tsv,.txt,.bib,.ris,.xml,.xls,.xlsx">
             <span class="status" id="articleImportFileStatus"></span>
           </div>
           <textarea id="importTextarea" style="width:100%; min-height:200px; font-family:monospace; font-size:12px;" data-i18n-placeholder="importTextareaPlaceholder" placeholder="在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本..."></textarea>
@@ -4875,12 +4891,15 @@
         importWosBtn: "📥 导入 WoS",
         importWosApiBtn: "🔎 WoS API 搜索",
         importScholarBtn: "📥 导入 Google Scholar",
+        importArxivBtn: "📚 导入 arXiv",
         resetArticlesBtn: "🔄 恢复默认数据",
         importPanelTitle: "导入文章",
         importHelpText: "公共数据来自 data/shared_articles.json；本地 WoS/Scholar 导入只在当前浏览器预览，发布到 Git 后大家才都能看到。截图页面本身不能提供完整元数据。",
         importTextareaPlaceholder: "在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本...",
         importDropTitle: "拖拽 WoS / Scholar 导出文件到这里",
         importDropHint: "支持 .txt/.csv/.tsv/.bib/.ris，以及 WoS 的文本型 .xls",
+        arxivDropTitle: "拖拽 arXiv XML / BibTeX 文件到这里",
+        arxivDropHint: "支持 arXiv API XML、.xml、.txt、.bib；也可以直接点击上方 arXiv 检索导入",
         importDropActive: "松开鼠标即可导入文件",
         importBinaryExcelUnsupported: "这个 Excel 是二进制格式，浏览器暂不能直接解析。请在 WoS 导出 Tab-delimited / Plain text，或复制表格文本后粘贴。",
         articleCollapseBtn: "折叠列表",
@@ -4901,6 +4920,20 @@
         wosApiSearching: "正在从 Web of Science API 检索...",
         wosApiNoRecords: "没有返回文章记录",
         wosApiEndpointMissing: "请填写 Vercel /api/wos 地址，或在 Vercel 版本中使用 /api/wos",
+        arxivImportTitle: "📚 arXiv 批量导入",
+        arxivImportHelp: "输入关键词后直接从 arXiv API 批量导入 2016 年以后的题录。建议：all:ARPES AND all:superconductivity，也可以加 cat:cond-mat.supr-con。",
+        arxivQueryLabel: "arXiv 检索式",
+        arxivQueryPlaceholder: "all:ARPES AND all:superconductivity",
+        arxivLimitLabel: "数量",
+        runArxivBtn: "📚 从 arXiv 导入",
+        openArxivXmlLink: "打开 arXiv XML",
+        parseArxivXmlBtn: "🔍 解析 arXiv XML",
+        arxivXmlPlaceholder: "可选：粘贴 arXiv API 返回的 XML/Atom 文本；如果直接检索被浏览器拦截，就打开上方 XML 链接复制全文粘贴到这里。",
+        arxivMissingQuery: "请先输入 arXiv 检索式",
+        arxivSearching: "正在从 arXiv API 检索...",
+        arxivNoRecords: "没有找到 2016 年以后的 arXiv 记录",
+        arxivCorsFallback: "浏览器无法直接读取 arXiv；请打开 XML 链接，复制页面内容后粘贴到下方再解析。",
+        arxivImportDone: "已导入 arXiv 记录",
         freeApiImportHelp: "免费导入流程：在本地运行 python3 scripts/import_free_arpes.py，脚本会从 OpenAlex、arXiv、Crossref 拉取 ARPES 题录，生成 data/free_arpes_articles.json。网页会自动合并显示；这些记录只代表官方元数据，需要全文核验后才作为实验数据。",
         parseImportBtn: "🔍 解析并导入",
         noArticles: "暂无文章数据。",
@@ -5291,12 +5324,15 @@
         importWosBtn: "📥 Import WoS",
         importWosApiBtn: "🔎 WoS API Search",
         importScholarBtn: "📥 Import Google Scholar",
+        importArxivBtn: "📚 Import arXiv",
         resetArticlesBtn: "🔄 Restore Defaults",
         importPanelTitle: "Import Articles",
         importHelpText: "Public records load from data/shared_articles.json. Local WoS/Scholar imports are browser previews until published to Git. A screenshot alone does not contain complete metadata.",
         importTextareaPlaceholder: "Paste Web of Science CSV/TSV export text, or Google Scholar BibTeX text...",
         importDropTitle: "Drag WoS / Scholar export files here",
         importDropHint: "Supports .txt/.csv/.tsv/.bib/.ris and text-based WoS .xls",
+        arxivDropTitle: "Drag arXiv XML / BibTeX files here",
+        arxivDropHint: "Supports arXiv API XML, .xml, .txt, .bib; or import directly from the arXiv search above",
         importDropActive: "Release to import the file",
         importBinaryExcelUnsupported: "This Excel file is binary and cannot be parsed directly in the browser yet. Export Tab-delimited / Plain text from WoS, or paste copied table text.",
         articleCollapseBtn: "Collapse List",
@@ -5317,6 +5353,20 @@
         wosApiSearching: "Searching Web of Science API...",
         wosApiNoRecords: "No article records returned",
         wosApiEndpointMissing: "Enter the Vercel /api/wos URL, or use /api/wos on the Vercel deployment",
+        arxivImportTitle: "📚 arXiv Bulk Import",
+        arxivImportHelp: "Enter a query to import 2016+ metadata from the arXiv API. Recommended: all:ARPES AND all:superconductivity; you can also add cat:cond-mat.supr-con.",
+        arxivQueryLabel: "arXiv query",
+        arxivQueryPlaceholder: "all:ARPES AND all:superconductivity",
+        arxivLimitLabel: "Limit",
+        runArxivBtn: "📚 Import from arXiv",
+        openArxivXmlLink: "Open arXiv XML",
+        parseArxivXmlBtn: "🔍 Parse arXiv XML",
+        arxivXmlPlaceholder: "Optional: paste XML/Atom text returned by the arXiv API. If direct fetch is blocked by the browser, open the XML link above, copy the full page, then paste it here.",
+        arxivMissingQuery: "Enter an arXiv query first",
+        arxivSearching: "Searching arXiv API...",
+        arxivNoRecords: "No 2016+ arXiv records found",
+        arxivCorsFallback: "The browser could not read arXiv directly; open the XML link, copy the page content, paste it below, then parse.",
+        arxivImportDone: "arXiv records imported",
         freeApiImportHelp: "Free import workflow: run python3 scripts/import_free_arpes.py locally. The script queries OpenAlex, arXiv, and Crossref for ARPES metadata and writes data/free_arpes_articles.json. The website loads it automatically; these records are official metadata and still need full-text verification before becoming experimental data.",
         parseImportBtn: "🔍 Parse & Import",
         noArticles: "No article data.",
@@ -5702,9 +5752,11 @@
     const importWosBtn = $("#importWosBtn");
     const importWosApiBtn = $("#importWosApiBtn");
     const importScholarBtn = $("#importScholarBtn");
+    const importArxivBtn = $("#importArxivBtn");
     const resetArticlesBtn = $("#resetArticlesBtn");
     const importPanel = $("#importPanel");
     const importPanelTitle = $("#importPanelTitle");
+    const importHelpText = $("#importHelpText");
     const importTextarea = $("#importTextarea");
     const parseImportBtn = $("#parseImportBtn");
     const importParseStatus = $("#importParseStatus");
@@ -5717,6 +5769,12 @@
     const wosApiLimit = $("#wosApiLimit");
     const runWosApiBtn = $("#runWosApiBtn");
     const wosApiStatus = $("#wosApiStatus");
+    const arxivApiPanel = $("#arxivApiPanel");
+    const arxivQuery = $("#arxivQuery");
+    const arxivLimit = $("#arxivLimit");
+    const runArxivBtn = $("#runArxivBtn");
+    const arxivApiStatus = $("#arxivApiStatus");
+    const arxivApiLink = $("#arxivApiLink");
     const importMetricRecords = $("#importMetricRecords");
     const importMetricWos = $("#importMetricWos");
     const importMetricFree = $("#importMetricFree");
@@ -6402,13 +6460,26 @@
     });
 
     function setImportMode(mode) {
-      const isApi = mode === "wos-api";
-      if (wosApiPanel) wosApiPanel.style.display = isApi ? "block" : "none";
-      if (articleImportDropZone) articleImportDropZone.style.display = isApi ? "none" : "grid";
+      const isWosApi = mode === "wos-api";
+      const isArxiv = mode === "arxiv";
+      if (wosApiPanel) wosApiPanel.style.display = isWosApi ? "block" : "none";
+      if (arxivApiPanel) arxivApiPanel.style.display = isArxiv ? "block" : "none";
+      if (articleImportDropZone) articleImportDropZone.style.display = isWosApi ? "none" : "grid";
       const fileRow = articleImportFile?.closest(".import-file-row");
-      if (fileRow) fileRow.style.display = isApi ? "none" : "";
-      if (importTextarea) importTextarea.style.display = isApi ? "none" : "";
-      if (parseImportBtn) parseImportBtn.style.display = isApi ? "none" : "";
+      if (fileRow) fileRow.style.display = isWosApi ? "none" : "";
+      if (importTextarea) importTextarea.style.display = isWosApi ? "none" : "";
+      if (parseImportBtn) {
+        parseImportBtn.style.display = isWosApi ? "none" : "";
+        parseImportBtn.textContent = isArxiv ? t("parseArxivXmlBtn") : t("parseImportBtn");
+      }
+      setImportDropCopy(isArxiv ? "arxivDropTitle" : "importDropTitle", isArxiv ? "arxivDropHint" : "importDropHint");
+    }
+
+    function setImportDropCopy(titleKey, hintKey) {
+      const title = articleImportDropZone?.querySelector("strong");
+      const hint = articleImportDropZone?.querySelector("span");
+      if (title) title.textContent = t(titleKey);
+      if (hint) hint.textContent = t(hintKey);
     }
 
     importWosBtn.addEventListener("click", () => {
@@ -6416,6 +6487,7 @@
       setImportMode("wos");
       clearPendingImportText();
       importPanelTitle.textContent = "📥 粘贴 Web of Science 导出 (CSV/TSV)";
+      if (importHelpText) importHelpText.textContent = t("importHelpText");
       importTextarea.placeholder = "从 Web of Science 导出 → 全选复制粘贴到这里...";
       importParseStatus.textContent = "";
       articleImportFileStatus.textContent = "";
@@ -6429,6 +6501,7 @@
       setImportMode("wos-api");
       clearPendingImportText();
       importPanelTitle.textContent = currentLang === "zh" ? "🔎 Web of Science API 搜索" : "🔎 Web of Science API Search";
+      if (importHelpText) importHelpText.textContent = t("wosApiHelp");
       importParseStatus.textContent = "";
       articleImportFileStatus.textContent = "";
       if (wosApiStatus) wosApiStatus.textContent = t("wosApiHelp");
@@ -6442,6 +6515,7 @@
       setImportMode("scholar");
       clearPendingImportText();
       importPanelTitle.textContent = "📥 粘贴 Google Scholar BibTeX";
+      if (importHelpText) importHelpText.textContent = t("importHelpText");
       importTextarea.placeholder = "在 Google Scholar 搜索 → 点击 Cite → BibTeX → 复制粘贴到这里...";
       importParseStatus.textContent = "";
       articleImportFileStatus.textContent = "";
@@ -6450,11 +6524,30 @@
       importTextarea.focus();
       importTextarea.dataset.mode = "scholar";
     });
+    importArxivBtn.addEventListener("click", () => {
+      importPanel.style.display = "block";
+      setImportMode("arxiv");
+      clearPendingImportText();
+      importPanelTitle.textContent = t("arxivImportTitle");
+      if (importHelpText) importHelpText.textContent = t("arxivImportHelp");
+      importTextarea.placeholder = t("arxivXmlPlaceholder");
+      importParseStatus.textContent = "";
+      articleImportFileStatus.textContent = "";
+      if (arxivApiStatus) arxivApiStatus.textContent = t("arxivImportHelp");
+      if (arxivApiLink) arxivApiLink.style.display = "none";
+      if (arxivQuery && !arxivQuery.value) arxivQuery.value = "all:ARPES AND all:superconductivity";
+      if (arxivLimit && !arxivLimit.value) arxivLimit.value = "100";
+      articleImportFile.value = "";
+      importTextarea.value = "";
+      importTextarea.dataset.mode = "arxiv";
+      arxivQuery?.focus();
+    });
     importFreeApiBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
       setImportMode("free-api-guide");
       clearPendingImportText();
       importPanelTitle.textContent = currentLang === "zh" ? "🌐 免费 ARPES API 导入" : "🌐 Free ARPES API Import";
+      if (importHelpText) importHelpText.textContent = t("freeApiImportHelp");
       importTextarea.value = currentLang === "zh"
         ? "命令：python3 scripts/import_free_arpes.py\n\n可选：OPENALEX_EMAIL=you@example.com python3 scripts/import_free_arpes.py --per-query 12 --max-records 160\n\n输出：github-pages/data/free_arpes_articles.json\n\n说明：OpenAlex/arXiv/Crossref 返回的是官方题录/摘要/DOI/开放链接；这些记录会自动显示在文章列表中，但图和实验数值仍需全文核验。"
         : "Command: python3 scripts/import_free_arpes.py\n\nOptional: OPENALEX_EMAIL=you@example.com python3 scripts/import_free_arpes.py --per-query 12 --max-records 160\n\nOutput: github-pages/data/free_arpes_articles.json\n\nNote: OpenAlex/arXiv/Crossref return official metadata, abstracts, DOI, and open links. These records show in the article list automatically, while figures and experimental values still require full-text verification.";
@@ -6496,7 +6589,12 @@
       }).join("\t")).join("\n");
     }
 
+    function looksLikeArxivAtom(text) {
+      return /<feed[\s\S]+<entry/i.test(text) && /arxiv\.org/i.test(text);
+    }
+
     function inferImportModeFromFile(file, text) {
+      if (/\.(xml)$/i.test(file.name) || looksLikeArxivAtom(text)) return "arxiv";
       if (/\.(bib|ris)$/i.test(file.name)) return "scholar";
       if (/^@(?:article|inproceedings|misc|book)\s*{/i.test(text.trim())) return "scholar";
       return "wos";
@@ -6540,7 +6638,9 @@
       if (/<table[\s>]/i.test(text) || /<tr[\s>]/i.test(text)) text = htmlTableToTsv(text);
       setImportTextFromFile(file, text);
       articleImportFileStatus.textContent = `${file.name} · ${(file.size / 1024).toFixed(1)} KB`;
-      importTextarea.dataset.mode = inferImportModeFromFile(file, text);
+      const inferredMode = inferImportModeFromFile(file, text);
+      importTextarea.dataset.mode = inferredMode;
+      if (inferredMode === "arxiv") setImportMode("arxiv");
       importParseStatus.textContent = currentLang === "zh"
         ? `已读取 ${file.name}${text.length > ARTICLE_IMPORT_PREVIEW_LIMIT ? "（大文件已启用预览模式）" : ""}，可以点击“解析并导入”`
         : `${file.name} loaded${text.length > ARTICLE_IMPORT_PREVIEW_LIMIT ? " in preview mode" : ""}; click Parse & Import`;
@@ -6567,7 +6667,7 @@
         event.preventDefault();
         articleImportDropZone.classList.remove("drag-over");
         const hint = articleImportDropZone.querySelector("span");
-        if (hint) hint.textContent = t("importDropHint");
+        if (hint) hint.textContent = t(importTextarea?.dataset.mode === "arxiv" ? "arxivDropHint" : "importDropHint");
       });
     });
     articleImportDropZone?.addEventListener("drop", async event => {
@@ -6670,6 +6770,179 @@
       return newArticles;
     }
 
+    function normalizeArxivQuery(raw) {
+      const query = String(raw || "").replace(/\s+/g, " ").trim();
+      if (!query) return "";
+      const scoped = /\b(?:all|ti|au|abs|co|jr|cat|rn|id|submittedDate):/i.test(query)
+        ? query
+        : query.split(/\s+/).filter(Boolean).map(term => `all:${term}`).join(" AND ");
+      if (/submittedDate\s*:/i.test(scoped)) return scoped;
+      const endYear = Math.max(new Date().getUTCFullYear(), ARTICLE_MIN_YEAR);
+      return `${scoped} AND submittedDate:[${ARTICLE_MIN_YEAR}01010000 TO ${endYear}12312359]`;
+    }
+
+    function arxivApiUrl(query, limit) {
+      const params = new URLSearchParams({
+        search_query: query,
+        start: "0",
+        max_results: String(limit),
+        sortBy: "submittedDate",
+        sortOrder: "descending"
+      });
+      return `https://export.arxiv.org/api/query?${params.toString()}`;
+    }
+
+    async function fetchArxivXml(query, limit) {
+      const directUrl = arxivApiUrl(query, limit);
+      if (arxivApiLink) {
+        arxivApiLink.href = directUrl;
+        arxivApiLink.style.display = "";
+      }
+      const endpoint = defaultArxivApiEndpoint();
+      if (endpoint) {
+        const proxyResponse = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, limit })
+        });
+        if (proxyResponse.ok) return proxyResponse.text();
+        if (proxyResponse.status !== 404) {
+          const message = await proxyResponse.text().catch(() => "");
+          throw new Error(message || `arXiv proxy HTTP ${proxyResponse.status}`);
+        }
+      }
+      const response = await fetch(directUrl, {
+        headers: { Accept: "application/atom+xml, application/xml, text/xml" }
+      });
+      if (!response.ok) throw new Error(`arXiv API HTTP ${response.status}`);
+      return response.text();
+    }
+
+    function cleanXmlText(value) {
+      return String(value || "").replace(/\s+/g, " ").trim();
+    }
+
+    function xmlLocalText(node, localName) {
+      const child = [...(node?.childNodes || [])].find(item => item.nodeType === 1 && item.localName === localName);
+      return cleanXmlText(child?.textContent || "");
+    }
+
+    function xmlLocalElements(node, localName) {
+      return [...(node?.getElementsByTagNameNS?.("*", localName) || [])];
+    }
+
+    function arxivIdFromUrl(value) {
+      const text = String(value || "").trim();
+      const match = text.match(/\/abs\/([^?#\s]+)/i);
+      return (match ? match[1] : text).replace(/^arxiv:/i, "").replace(/v\d+$/i, "");
+    }
+
+    function parseArxivAtomXml(text) {
+      const doc = new DOMParser().parseFromString(text, "application/xml");
+      const parserError = doc.getElementsByTagName("parsererror")[0];
+      if (parserError) {
+        throw new Error(currentLang === "zh" ? "arXiv XML 格式无法解析" : "Could not parse arXiv XML");
+      }
+      const entries = xmlLocalElements(doc, "entry");
+      const articles = [];
+      entries.forEach((entry, index) => {
+        const idUrl = xmlLocalText(entry, "id");
+        const arxivId = arxivIdFromUrl(idUrl);
+        const title = xmlLocalText(entry, "title");
+        if (!title) return;
+        const summary = xmlLocalText(entry, "summary");
+        const published = xmlLocalText(entry, "published") || xmlLocalText(entry, "updated");
+        const year = Number((published.match(/\d{4}/) || [])[0]) || null;
+        if (year && year < ARTICLE_MIN_YEAR) return;
+        const authors = xmlLocalElements(entry, "author")
+          .map(author => xmlLocalText(author, "name"))
+          .filter(Boolean)
+          .join("; ");
+        const categories = xmlLocalElements(entry, "category")
+          .map(category => category.getAttribute("term"))
+          .filter(Boolean);
+        const links = xmlLocalElements(entry, "link");
+        const pdfLink = links.find(link =>
+          /pdf/i.test(link.getAttribute("title") || "") ||
+          /application\/pdf/i.test(link.getAttribute("type") || "")
+        );
+        const doi = xmlLocalText(entry, "doi");
+        const url = arxivId ? `https://arxiv.org/abs/${arxivId}` : (idUrl || "");
+        const pdfUrl = pdfLink?.getAttribute("href") || (arxivId ? `https://arxiv.org/pdf/${arxivId}` : "");
+        const allText = [title, summary, categories.join(" ")].join(" ");
+        const techniques = extractTechniques(allText);
+        articles.push({
+          id: arxivId ? `arxiv:${arxivId}` : `arxiv-import-${Date.now()}-${index}`,
+          title,
+          year,
+          source: "arXiv",
+          source_title: categories.join(", ") || "arXiv preprint",
+          authors,
+          url,
+          doi,
+          materials: extractMaterials(allText),
+          elements: extractElements(allText),
+          dopants: [],
+          techniques: techniques.length ? techniques : (/\barpes\b/i.test(allText) ? ["ARPES"] : []),
+          keywords: uniq(["arXiv", ...categories, ...techniques]),
+          citation_count: null,
+          temperature_K: null,
+          photon_energy_eV: null,
+          beamline: "",
+          properties: [],
+          evidence: [title, arxivId ? `arXiv:${arxivId}` : "", categories[0] ? `cat:${categories[0]}` : ""].filter(Boolean),
+          verification_status: "arxiv_imported_metadata",
+          open_access_url: pdfUrl,
+          free_sources: ["arXiv"],
+          data_quality: "official_preprint_metadata",
+          abstract: summary,
+          figures: []
+        });
+      });
+      return articles;
+    }
+
+    async function importArxivRecordsFromApi(options = {}) {
+      const rawQuery = (arxivQuery?.value || "").trim();
+      const query = normalizeArxivQuery(rawQuery);
+      const limit = Math.max(1, Math.min(Number(arxivLimit?.value) || 100, 500));
+      if (!query) {
+        if (arxivApiStatus) arxivApiStatus.textContent = t("arxivMissingQuery");
+        return [];
+      }
+      if (arxivApiStatus) arxivApiStatus.textContent = t("arxivSearching");
+      if (importParseStatus) importParseStatus.textContent = t("arxivSearching");
+      if (runArxivBtn) runArxivBtn.disabled = true;
+      try {
+        const xml = await fetchArxivXml(query, limit);
+        const parsed = parseArxivAtomXml(xml);
+        if (!parsed.length) {
+          if (arxivApiStatus) arxivApiStatus.textContent = t("arxivNoRecords");
+          if (importParseStatus) importParseStatus.textContent = t("arxivNoRecords");
+          return [];
+        }
+        const imported = await importArticleRecords(parsed, {
+          label: options.label || t("arxivImportDone"),
+          hidePanel: false
+        });
+        if (arxivApiStatus) {
+          arxivApiStatus.textContent = currentLang === "zh"
+            ? `已导入 ${imported.length} 条 arXiv 记录；已自动过滤 2016 年以前文章`
+            : `${imported.length} arXiv records imported; pre-2016 records were filtered`;
+        }
+        return imported;
+      } catch (error) {
+        const message = error?.name === "TypeError" || /Failed to fetch|NetworkError|CORS/i.test(error?.message || "")
+          ? t("arxivCorsFallback")
+          : (error?.message || "arXiv import failed");
+        if (arxivApiStatus) arxivApiStatus.textContent = message;
+        if (importParseStatus) importParseStatus.textContent = message;
+        return [];
+      } finally {
+        if (runArxivBtn) runArxivBtn.disabled = false;
+      }
+    }
+
     async function parseAndImportCurrentText(options = {}) {
       const text = currentImportText().trim();
       if (!text) { importParseStatus.textContent = "请先粘贴文本或拖入文件"; return []; }
@@ -6685,7 +6958,9 @@
         : `Parsing${pendingImportFileName ? ` ${pendingImportFileName}` : ""}...`;
       await yieldToBrowser();
       try {
-        const parsed = mode === "wos" ? parseWoSExport(text) : parseScholarBibTeX(text);
+        const parsed = mode === "wos"
+          ? parseWoSExport(text)
+          : (mode === "arxiv" ? parseArxivAtomXml(text) : parseScholarBibTeX(text));
         if (!parsed.length) {
           importParseStatus.textContent = "未识别到文章记录，请检查格式";
           return [];
@@ -6745,6 +7020,10 @@
       } finally {
         runWosApiBtn.disabled = false;
       }
+    });
+
+    runArxivBtn?.addEventListener("click", () => {
+      importArxivRecordsFromApi({ label: t("arxivImportDone") });
     });
 
     parseImportBtn.addEventListener("click", () => {
@@ -8768,6 +9047,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const host = window.location.hostname || "";
       if (!host || host.includes("github.io")) return "";
       return "/api/wos";
+    }
+
+    function defaultArxivApiEndpoint() {
+      const host = window.location.hostname || "";
+      if (!host || host.includes("github.io") || host === "127.0.0.1" || host === "localhost") return "";
+      return "/api/arxiv";
     }
 
     function initAiConfigForm() {
