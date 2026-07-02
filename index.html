@@ -5578,6 +5578,7 @@
     const FLOATING_COMPARE_STORAGE_KEY = "arpes-floating-compare-v1";
     const FLOATING_COMPARE_POSITION_KEY = "arpes-floating-compare-position-v1";
     const ARTICLE_IMPORT_STORAGE_KEY = "arpes-imported-articles-v1";
+    const ARTICLE_MIN_YEAR = 2016;
     const ARTICLE_IMPORT_PREVIEW_LIMIT = 60000;
     const ARTICLE_IMPORT_CHUNK_SIZE = 125;
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
@@ -5756,10 +5757,21 @@
       return `title:${String(article.title || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()}:${article.year || ""}`;
     }
 
+    function articleYear(article) {
+      const year = Number(article?.year);
+      return Number.isFinite(year) ? year : null;
+    }
+
+    function isRecentArticle(article) {
+      const year = articleYear(article);
+      return year != null && year >= ARTICLE_MIN_YEAR;
+    }
+
     function mergeArticleRecords(...groups) {
       const byId = new Map();
       for (const group of groups) {
         for (const article of group || []) {
+          if (!isRecentArticle(article)) continue;
           const key = articleIdentity(article);
           if (!key || key === "title::") continue;
           if (byId.has(key)) {
@@ -5835,7 +5847,7 @@
       const stored = {
         id,
         title: trimStorageText(source.title || "(untitled)", 520),
-        year: source.year || null,
+        year: articleYear(source),
         source: trimStorageText(source.source || "Imported metadata", 140),
         source_title: trimStorageText(source.source_title, 220),
         authors: trimStorageText(source.authors, 360),
@@ -5865,7 +5877,7 @@
     function loadStoredImportedArticles() {
       try {
         const parsed = JSON.parse(localStorage.getItem(ARTICLE_IMPORT_STORAGE_KEY) || "[]");
-        return Array.isArray(parsed) ? parsed : [];
+        return Array.isArray(parsed) ? parsed.filter(isRecentArticle) : [];
       } catch {
         return [];
       }
@@ -5873,6 +5885,7 @@
 
     function persistImportedArticles(articles) {
       const imported = (articles || [])
+        .filter(isRecentArticle)
         .filter(article => /(?:imported|wos_api_metadata|wos_imported_metadata|scholar_imported)/i.test(String(article.verification_status || "")))
         .map(sanitizeArticleForStorage);
       try {
