@@ -3015,16 +3015,42 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.76);
-      background-color: var(--point-color, #22d3ee);
+      background: transparent;
+      transform: translate(-50%, -50%) translateZ(42px);
+      transform-style: preserve-3d;
+      backface-visibility: visible;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .axis-sphere-core,
+    .axis-sphere-ring,
+    .axis-sphere-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      transform-style: preserve-3d;
+      backface-visibility: visible;
+    }
+
+    .axis-sphere-glow {
+      background: radial-gradient(circle, var(--point-color, #22d3ee) 0 28%, transparent 72%);
+      filter: blur(5px);
+      opacity: 0.62;
+      transform: scale(1.52) translateZ(-3px);
+    }
+
+    .axis-sphere-core {
+      border: 1px solid rgba(255,255,255,0.22);
       background:
-        radial-gradient(circle at 30% 21%, #ffffff 0 7%, rgba(255,255,255,0.9) 8% 14%, transparent 15%),
-        radial-gradient(circle at 39% 32%, rgba(255,255,255,0.48) 0 17%, transparent 18%),
-        radial-gradient(circle at 68% 76%, rgba(0,0,0,0) 0 24%, rgba(0,0,0,0.44) 55%, rgba(0,0,0,0.88) 100%),
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.16), transparent 55%),
+        radial-gradient(circle at 29% 20%, #ffffff 0 8%, rgba(255,255,255,0.9) 9% 15%, transparent 16%),
+        radial-gradient(circle at 39% 32%, rgba(255,255,255,0.5) 0 17%, transparent 18%),
+        radial-gradient(circle at 68% 77%, rgba(0,0,0,0) 0 24%, rgba(0,0,0,0.46) 55%, rgba(0,0,0,0.9) 100%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 55%),
         var(--point-color, #22d3ee);
       box-shadow:
         inset -9px -10px 11px rgba(0,0,0,0.62),
@@ -3033,42 +3059,31 @@
         0 0 18px var(--point-color, #22d3ee),
         0 11px 16px rgba(0,0,0,0.46);
       filter: saturate(1.95) brightness(1.22) drop-shadow(0 0 7px var(--point-color, #22d3ee));
-      transform: translate(-50%, -50%) translateZ(42px) rotateY(var(--orb-y, -32deg)) rotateX(var(--orb-x, 18deg));
-      transform-style: preserve-3d;
-      backface-visibility: visible;
-      pointer-events: none;
-      will-change: transform;
+      transform: rotateX(var(--orb-x, 18deg)) rotateY(var(--orb-y, -32deg));
     }
 
-    .axis-point-orb::before {
+    .axis-sphere-core::before {
       content: "";
       position: absolute;
-      inset: 1px;
+      inset: 2px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.22);
-      background:
-        radial-gradient(circle at 32% 24%, rgba(255,255,255,0.5), transparent 22%),
-        radial-gradient(circle at 70% 76%, rgba(0,0,0,0.5), transparent 50%),
-        var(--point-color, #22d3ee);
-      opacity: 0.42;
-      transform: rotateY(88deg);
-      transform-style: preserve-3d;
+      background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.52), transparent 25%);
+      mix-blend-mode: screen;
     }
 
-    .axis-point-orb::after {
-      content: "";
-      position: absolute;
-      inset: 1px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.18);
-      background:
-        radial-gradient(circle at 30% 22%, rgba(255,255,255,0.44), transparent 24%),
-        radial-gradient(circle at 72% 76%, rgba(0,0,0,0.52), transparent 52%),
-        var(--point-color, #22d3ee);
-      opacity: 0.28;
-      transform: rotateX(88deg);
-      transform-style: preserve-3d;
-      pointer-events: none;
+    .axis-sphere-ring {
+      inset: 2px;
+      border: 1px solid rgba(255,255,255,0.46);
+      opacity: 0.34;
+      box-shadow: 0 0 8px rgba(255,255,255,0.2);
+    }
+
+    .axis-sphere-ring.lat {
+      transform: rotateX(var(--orb-x, 18deg)) rotateY(var(--orb-y, -32deg)) rotateX(58deg);
+    }
+
+    .axis-sphere-ring.lon {
+      transform: rotateX(var(--orb-x, 18deg)) rotateY(var(--orb-y, -32deg)) rotateY(58deg);
     }
 
     .axis-point-glint {
@@ -3080,7 +3095,7 @@
       border-radius: 50%;
       background: radial-gradient(circle, rgba(255,255,255,0.96), rgba(255,255,255,0.56) 45%, transparent 74%);
       filter: blur(0.25px);
-      transform: translateZ(12px);
+      transform: rotateX(var(--orb-x, 18deg)) rotateY(var(--orb-y, -32deg)) translateZ(14px);
       z-index: 3;
       pointer-events: none;
     }
@@ -3116,7 +3131,11 @@
 
     .axis-point:hover .axis-point-orb,
     .axis-point.active .axis-point-orb {
-      transform: translate(-50%, -50%) translateZ(50px) rotateY(var(--orb-y, -32deg)) rotateX(var(--orb-x, 18deg)) scale(1.12);
+      transform: translate(-50%, -50%) translateZ(50px) scale(1.12);
+    }
+
+    .axis-point:hover .axis-sphere-core,
+    .axis-point.active .axis-sphere-core {
       box-shadow:
         inset -8px -9px 10px rgba(0,0,0,0.5),
         inset 5px 5px 8px rgba(255,255,255,0.42),
@@ -3135,6 +3154,93 @@
       transform-style: preserve-3d;
       pointer-events: auto;
       z-index: 9;
+    }
+
+    #axisSpriteLayer {
+      position: absolute;
+      inset: 0;
+      z-index: 88;
+      pointer-events: none;
+    }
+
+    #axisSpriteLayer[hidden] {
+      display: none;
+    }
+
+    #axisPointLayer .axis-point-orb,
+    #axisPointLayer .axis-point-shadow {
+      opacity: 0;
+    }
+
+    .axis-sprite {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 38px;
+      height: 38px;
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.38));
+      transition: transform 140ms ease, opacity 140ms ease, filter 140ms ease;
+    }
+
+    .axis-sprite-orb {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .axis-sprite .axis-sphere-core,
+    .axis-sprite .axis-sphere-glow,
+    .axis-sprite .axis-sphere-ring,
+    .axis-sprite .axis-point-glint {
+      transform-style: flat;
+      backface-visibility: visible;
+    }
+
+    .axis-sprite .axis-sphere-core {
+      transform: none;
+    }
+
+    .axis-sprite .axis-sphere-ring.lat {
+      transform: scaleY(0.34) rotate(-8deg);
+      opacity: 0.28;
+    }
+
+    .axis-sprite .axis-sphere-ring.lon {
+      transform: scaleX(0.34) rotate(8deg);
+      opacity: 0.26;
+    }
+
+    .axis-sprite .axis-point-glint {
+      transform: translateZ(0);
+    }
+
+    .axis-sprite:hover,
+    .axis-sprite.active {
+      transform: translate(-50%, -50%) scale(1.16);
+      filter: drop-shadow(0 13px 18px rgba(0,0,0,0.42));
+    }
+
+    .axis-sprite:hover .axis-sphere-core,
+    .axis-sprite.active .axis-sphere-core {
+      box-shadow:
+        inset -8px -9px 10px rgba(0,0,0,0.5),
+        inset 5px 5px 8px rgba(255,255,255,0.42),
+        0 0 26px var(--point-color, #22d3ee),
+        0 12px 16px rgba(0,0,0,0.46);
     }
 
     #axisHitLayer {
@@ -4865,8 +4971,8 @@
       }
 
       .axis-point-orb {
-        width: clamp(18px, 5.3cqw, 24px);
-        height: clamp(18px, 5.3cqw, 24px);
+        width: clamp(18px, 5.6cqw, 26px);
+        height: clamp(18px, 5.6cqw, 26px);
       }
 
       .axis-point-glint {
@@ -5188,6 +5294,7 @@
                   <button class="cube-face top" type="button" data-cube-face="arpes"><strong>ARPES</strong><span>bands · gaps</span></button>
                   <button class="cube-face bottom" type="button" data-cube-face="personal"><strong>Our Data</strong><span>local records</span></button>
                 </div>
+                <div id="axisSpriteLayer" aria-hidden="true"></div>
                 <div class="axis-point-tooltip" id="axisPointTooltip" hidden></div>
               </div>
               <div class="axis-legend">
@@ -7061,6 +7168,7 @@
     const cubeReadout = $("#cubeReadout");
     const cubeFacePicker = $("#cubeFacePicker");
     const axisPointLayer = $("#axisPointLayer");
+    const axisSpriteLayer = $("#axisSpriteLayer");
     const axisHitLayer = $("#axisHitLayer");
     const axisPointTooltip = $("#axisPointTooltip");
     const axisModeBtn = $("#axisModeBtn");
@@ -10231,6 +10339,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let activeAxisPointId = "";
     let cubeResizeRaf = 0;
     let cubeResizeObserver = null;
+    let axisSpriteRaf = 0;
     const cubeFaces = {
       conventional: {
         zh: ["常规超导", "Hg, Pb, Nb, Nb3Sn 等低温常规超导是历史基线。"],
@@ -10274,6 +10383,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       historyCube.style.setProperty("--orb-x", `${-cubeRotation.x}deg`);
       historyCube.style.setProperty("--orb-y", `${-cubeRotation.y}deg`);
       historyCube.style.setProperty("--cube-scale", String(cubeScale));
+      scheduleAxisSpriteUpdate();
     }
 
     function setCubeScale(nextScale) {
@@ -10307,10 +10417,43 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
     }
 
+    function updateAxisSprites() {
+      if (!axisSpriteLayer || !axisPointLayer || !cubeViewport) return;
+      const viewportRect = cubeViewport.getBoundingClientRect();
+      axisSpriteLayer.querySelectorAll(".axis-sprite").forEach(sprite => {
+        const anchor = axisPointLayer.querySelector(`.axis-point[data-history-point="${CSS.escape(sprite.dataset.historyPoint || "")}"]`);
+        if (!anchor) {
+          sprite.hidden = true;
+          return;
+        }
+        const rect = anchor.getBoundingClientRect();
+        const x = rect.left + rect.width / 2 - viewportRect.left;
+        const y = rect.top + rect.height / 2 - viewportRect.top;
+        const inBounds = x > -20 && x < viewportRect.width + 20 && y > -20 && y < viewportRect.height + 20;
+        sprite.hidden = !inBounds;
+        sprite.style.left = `${x.toFixed(1)}px`;
+        sprite.style.top = `${y.toFixed(1)}px`;
+        sprite.classList.toggle("active", sprite.dataset.historyPoint === activeAxisPointId);
+      });
+    }
+
+    function scheduleAxisSpriteUpdate() {
+      if (!axisSpriteLayer || axisSpriteLayer.hidden) return;
+      if (axisSpriteRaf) return;
+      axisSpriteRaf = requestAnimationFrame(() => {
+        axisSpriteRaf = 0;
+        updateAxisSprites();
+      });
+    }
+
     function applyCubeViewMode() {
       if (!historyCube) return;
       historyCube.classList.toggle("cube-view-axis", cubeViewMode === "axis");
       historyCube.classList.toggle("cube-view-cube", cubeViewMode === "cube");
+      if (axisSpriteLayer) {
+        axisSpriteLayer.hidden = cubeViewMode !== "cube";
+        if (!axisSpriteLayer.hidden) scheduleAxisSpriteUpdate();
+      }
       if (axisModeBtn) axisModeBtn.style.display = "none";
       if (cubeViewModeBtn) cubeViewModeBtn.textContent = cubeViewMode === "axis" ? t("cubeViewModeCube") : t("cubeViewModeAxis");
       if (cubeViewMode === "axis") renderCubeReadout();
@@ -10489,9 +10632,32 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
           title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa">
           <span class="axis-point-shadow" aria-hidden="true"></span>
-          <span class="axis-point-orb" aria-hidden="true"><span class="axis-point-glint"></span></span>
+          <span class="axis-point-orb" aria-hidden="true">
+            <span class="axis-sphere-glow"></span>
+            <span class="axis-sphere-core"></span>
+            <span class="axis-sphere-ring lat"></span>
+            <span class="axis-sphere-ring lon"></span>
+            <span class="axis-point-glint"></span>
+          </span>
         </button>`;
       }).join("");
+      if (axisSpriteLayer) {
+        axisSpriteLayer.innerHTML = plottedPoints.map(({ point, pressure, color }) => {
+          const activeClass = point.id === activeAxisPointId ? " active" : "";
+          return `<button class="axis-sprite${activeClass}" type="button" data-history-point="${esc(point.id)}"
+            style="--point-color:${esc(color)}" tabindex="-1"
+            aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
+            title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa">
+            <span class="axis-sprite-orb" aria-hidden="true">
+              <span class="axis-sphere-glow"></span>
+              <span class="axis-sphere-core"></span>
+              <span class="axis-sphere-ring lat"></span>
+              <span class="axis-sphere-ring lon"></span>
+              <span class="axis-point-glint"></span>
+            </span>
+          </button>`;
+        }).join("");
+      }
       if (axisHitLayer) axisHitLayer.innerHTML = "";
       const activatePoint = (pointEl, event) => {
         event?.preventDefault?.();
@@ -10509,10 +10675,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const pointId = pointEl.dataset.historyPoint;
         activeAxisPointId = pointId;
         axisPointLayer.querySelector(`.axis-point[data-history-point="${CSS.escape(pointId)}"]`)?.classList.add("active");
+        axisSpriteLayer?.querySelectorAll(".axis-sprite").forEach(node => node.classList.toggle("active", node.dataset.historyPoint === pointId));
+        scheduleAxisSpriteUpdate();
         renderCubeReadout(point);
       };
       window.__selectAxisPoint = activatePoint;
-      axisPointLayer.querySelectorAll(".axis-point").forEach(pointEl => {
+      const bindPointPreview = pointEl => {
         const previewPoint = event => {
           const point = historyChartPoints.find(entry => entry.id === pointEl?.dataset.historyPoint);
           if (point) {
@@ -10534,7 +10702,17 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             activatePoint(pointEl, event);
           }
         });
-      });
+      };
+      axisPointLayer.querySelectorAll(".axis-point").forEach(bindPointPreview);
+      axisSpriteLayer?.querySelectorAll(".axis-sprite").forEach(bindPointPreview);
+      if (axisSpriteLayer) {
+        axisSpriteLayer.onclick = event => {
+          const pointEl = event.target.closest?.(".axis-sprite");
+          if (pointEl) activatePoint(pointEl, event);
+        };
+        axisSpriteLayer.hidden = cubeViewMode !== "cube";
+        if (!axisSpriteLayer.hidden) updateAxisSprites();
+      }
       axisPointLayer.onclick = event => {
         const pointEl = event.target.closest?.(".axis-point");
         if (pointEl) activatePoint(pointEl, event);
