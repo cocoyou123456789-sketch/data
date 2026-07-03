@@ -770,6 +770,7 @@
       outline: none;
     }
 
+    .magic-book-cover,
     .magic-book-shadow,
     .magic-book-spine,
     .magic-page,
@@ -777,13 +778,90 @@
     .magic-page::after,
     .magic-page-card,
     .magic-page-line,
+    .magic-page-turner,
     .magic-book-light {
       position: absolute;
       display: block;
+    }
+
+    .magic-book-cover {
+      inset: 4% 18% 12%;
+      width: auto;
+      border: 0;
+      border-radius: 24px 30px 28px 18px;
+      padding: 28px;
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255,255,255,0.42), transparent 24%),
+        linear-gradient(140deg, #0a87cb 0%, #064a9d 48%, #04245a 100%);
+      box-shadow:
+        0 34px 42px rgba(2,20,39,0.38),
+        inset 16px 0 0 rgba(0,0,0,0.18),
+        inset 0 -18px 0 rgba(2,16,36,0.24),
+        inset 0 0 0 1px rgba(255,255,255,0.18);
+      cursor: pointer;
+      transform: rotateX(58deg) rotateZ(-1deg);
+      transform-style: preserve-3d;
+      transition: opacity 220ms ease, transform 520ms cubic-bezier(0.19, 1, 0.22, 1), filter 220ms ease;
+      z-index: 8;
+    }
+
+    .magic-book-cover::before,
+    .magic-book-cover::after {
+      content: "";
+      position: absolute;
       pointer-events: none;
     }
 
+    .magic-book-cover::before {
+      inset: 12% 16%;
+      border: 2px solid rgba(220,250,255,0.72);
+      border-radius: 22px;
+      box-shadow: inset 0 0 26px rgba(92,230,255,0.18), 0 0 26px rgba(92,230,255,0.22);
+    }
+
+    .magic-book-cover::after {
+      left: 9%;
+      right: 7%;
+      bottom: -7%;
+      height: 12%;
+      border-radius: 0 0 18px 18px;
+      background: linear-gradient(180deg, #f7fbff, #bdd3e8);
+      transform: rotateX(72deg);
+      box-shadow: 0 10px 18px rgba(2,20,39,0.24);
+      z-index: -1;
+    }
+
+    .magic-cover-title,
+    .magic-cover-hint {
+      position: relative;
+      z-index: 1;
+      display: block;
+      text-align: center;
+      text-shadow: 0 2px 18px rgba(0,16,36,0.52);
+    }
+
+    .magic-cover-title {
+      margin-top: 18%;
+      font-size: clamp(24px, 3.4vw, 42px);
+      font-weight: 940;
+      line-height: 1;
+    }
+
+    .magic-cover-hint {
+      width: fit-content;
+      margin: 22px auto 0;
+      border: 1px solid rgba(218,250,255,0.54);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: rgba(4,25,54,0.32);
+      color: rgba(238,252,255,0.92);
+      font-size: 13px;
+      font-weight: 840;
+    }
+
     .magic-book-shadow {
+      pointer-events: none;
       left: 6%;
       right: 6%;
       bottom: 2%;
@@ -794,6 +872,7 @@
     }
 
     .magic-book-spine {
+      pointer-events: none;
       left: 50%;
       bottom: 9%;
       width: 4.2%;
@@ -803,9 +882,12 @@
       transform: translateX(-50%) rotateX(62deg);
       box-shadow: 0 0 28px rgba(31,196,255,0.58), inset 0 0 22px rgba(255,255,255,0.18);
       z-index: 4;
+      opacity: 0;
+      transition: opacity 260ms ease;
     }
 
     .magic-page {
+      pointer-events: auto;
       bottom: 8%;
       width: 50.5%;
       height: 77%;
@@ -820,6 +902,11 @@
       transform-style: preserve-3d;
       overflow: hidden;
       z-index: 3;
+      opacity: 0;
+      transition:
+        opacity 260ms ease,
+        transform 620ms cubic-bezier(0.19, 1, 0.22, 1),
+        filter 260ms ease;
     }
 
     .magic-page::before {
@@ -845,14 +932,14 @@
       left: 0;
       border-radius: 24px 8px 22px 28px;
       transform-origin: 100% 100%;
-      transform: rotateX(62deg) rotateY(18deg) rotateZ(-3deg);
+      transform: rotateX(62deg) rotateY(78deg) rotateZ(-3deg);
     }
 
     .magic-page.right {
       right: 0;
       border-radius: 8px 24px 28px 22px;
       transform-origin: 0 100%;
-      transform: rotateX(62deg) rotateY(-18deg) rotateZ(3deg);
+      transform: rotateX(62deg) rotateY(-78deg) rotateZ(3deg);
       background:
         linear-gradient(130deg, rgba(255,255,255,0.2), transparent 20%),
         linear-gradient(180deg, #0477c7, #053d7c 50%, #031b43);
@@ -911,6 +998,81 @@
 
     .magic-page-line.top { top: 23%; }
     .magic-page-line.bottom { bottom: 14%; }
+
+    .magic-toc-list {
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      top: 28%;
+      display: grid;
+      gap: clamp(6px, 1.1vw, 10px);
+      z-index: 3;
+    }
+
+    .magic-toc-item {
+      min-height: 0;
+      width: 100%;
+      border: 1px solid rgba(222,250,255,0.58);
+      border-radius: 12px;
+      padding: clamp(7px, 1.2vw, 10px) clamp(9px, 1.5vw, 14px);
+      color: #f3fbff;
+      background: rgba(4,25,54,0.38);
+      box-shadow: 0 0 18px rgba(62,210,255,0.16), inset 0 0 16px rgba(255,255,255,0.08);
+      text-align: left;
+      cursor: pointer;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+    }
+
+    .magic-toc-item:hover,
+    .magic-toc-item:focus-visible,
+    .magic-toc-item.active {
+      border-color: rgba(96,245,255,0.92);
+      background: rgba(10,66,100,0.52);
+      transform: translateX(5px);
+      outline: none;
+    }
+
+    .magic-toc-item strong {
+      display: block;
+      font-size: clamp(12px, 1.35vw, 16px);
+      line-height: 1.15;
+      text-shadow: 0 0 14px rgba(96,208,255,0.54);
+    }
+
+    .magic-toc-item span {
+      display: block;
+      margin-top: 3px;
+      color: rgba(229,247,255,0.76);
+      font-size: clamp(9px, 1vw, 12px);
+      line-height: 1.25;
+    }
+
+    .magic-page-turner {
+      pointer-events: none;
+      right: 0;
+      bottom: 8%;
+      width: 50.5%;
+      height: 77%;
+      border: 1px solid rgba(172,235,255,0.76);
+      border-radius: 8px 24px 28px 22px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.12), transparent 30%),
+        linear-gradient(180deg, #f8fbff, #cfeeff 50%, #6ab9f1);
+      box-shadow: 0 20px 38px rgba(2,23,45,0.34), inset 0 0 24px rgba(36,203,255,0.22);
+      color: #074b77;
+      font-weight: 920;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transform-origin: 0 100%;
+      transform: rotateX(62deg) rotateY(-18deg) rotateZ(3deg);
+      z-index: 9;
+    }
+
+    .magic-page-turner span {
+      transform: rotateZ(-4deg);
+      text-shadow: 0 1px 0 rgba(255,255,255,0.74);
+    }
 
     .magic-book-light {
       left: 50%;
@@ -982,6 +1144,35 @@
       animation-duration: 0.7s;
     }
 
+    .magic-book-screen.is-toc .magic-book-cover,
+    .magic-book-screen.is-flipping .magic-book-cover {
+      opacity: 0;
+      pointer-events: none;
+      transform: rotateX(58deg) rotateY(-76deg) rotateZ(-4deg) translateX(-20%);
+      filter: blur(0.4px);
+    }
+
+    .magic-book-screen.is-toc .magic-book-spine,
+    .magic-book-screen.is-flipping .magic-book-spine,
+    .magic-book-screen.is-toc .magic-page,
+    .magic-book-screen.is-flipping .magic-page {
+      opacity: 1;
+    }
+
+    .magic-book-screen.is-toc .magic-page.left,
+    .magic-book-screen.is-flipping .magic-page.left {
+      transform: rotateX(62deg) rotateY(18deg) rotateZ(-3deg);
+    }
+
+    .magic-book-screen.is-toc .magic-page.right,
+    .magic-book-screen.is-flipping .magic-page.right {
+      transform: rotateX(62deg) rotateY(-18deg) rotateZ(3deg);
+    }
+
+    .magic-book-screen.is-flipping .magic-page-turner {
+      animation: magic-page-turn 840ms cubic-bezier(0.2, 0.86, 0.18, 1) forwards;
+    }
+
     @keyframes magic-aurora {
       0% { transform: rotate(0deg) scale(1); }
       50% { transform: rotate(8deg) scale(1.04); }
@@ -1007,6 +1198,14 @@
       0%, 100% { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.4); }
       35% { opacity: 1; }
       70% { opacity: 0.45; transform: translate3d(10px, -24px, 0) scale(1.1); }
+    }
+
+    @keyframes magic-page-turn {
+      0% { opacity: 0; transform: rotateX(62deg) rotateY(-18deg) rotateZ(3deg); }
+      12% { opacity: 1; }
+      48% { opacity: 0.98; transform: rotateX(62deg) rotateY(-92deg) rotateZ(0deg) translateX(-2%); }
+      82% { opacity: 0.92; transform: rotateX(62deg) rotateY(-166deg) rotateZ(-3deg) translateX(-7%); }
+      100% { opacity: 0; transform: rotateX(62deg) rotateY(-184deg) rotateZ(-4deg) translateX(-9%); }
     }
 
     @media (max-height: 680px) {
@@ -3966,12 +4165,40 @@
         height: auto;
         margin-top: clamp(18px, 7vw, 44px);
       }
+      .magic-book-cover {
+        inset: 7% 16% 14%;
+        padding: 16px;
+      }
+      .magic-cover-title {
+        margin-top: 16%;
+        font-size: clamp(22px, 8vw, 34px);
+      }
+      .magic-cover-hint {
+        margin-top: 14px;
+        font-size: 11px;
+      }
       .magic-page-card {
         left: 9%;
         right: 9%;
         min-height: 36px;
         padding: 7px 9px;
         font-size: 11px;
+      }
+      .magic-toc-list {
+        left: 8%;
+        right: 8%;
+        top: 27%;
+        gap: 5px;
+      }
+      .magic-toc-item {
+        border-radius: 9px;
+        padding: 6px 7px;
+      }
+      .magic-toc-item strong {
+        font-size: 11px;
+      }
+      .magic-toc-item span {
+        font-size: 8px;
       }
       .magic-page-title {
         left: 10%;
@@ -4780,29 +5007,56 @@
         <div class="magic-tome orange"><span data-i18n="magicBookBiology">生物</span></div>
         <div class="magic-tome purple"><span data-i18n="magicBookInfo">信息</span></div>
       </div>
-      <button class="magic-open-book" id="magicBookEnterBtn" type="button" aria-label="打开材料魔法书">
+      <div class="magic-open-book" id="magicBookPanel" aria-label="打开材料魔法书">
         <span class="magic-book-shadow"></span>
+        <button class="magic-book-cover" id="magicBookEnterBtn" type="button" aria-label="打开目录">
+          <span class="magic-cover-title" data-i18n="magicBookCoverTitle">ARPES 材料手册</span>
+          <span class="magic-cover-hint" data-i18n="magicBookCoverHint">点击打开目录</span>
+        </button>
         <span class="magic-book-spine"></span>
-        <span class="magic-page left">
-          <span class="magic-page-title" data-i18n="magicBookPageLeft">物理材料</span>
+        <div class="magic-page left">
+          <span class="magic-page-title" data-i18n="magicBookCatalogLeft">目录</span>
           <span class="magic-page-line top"></span>
-          <span class="magic-page-card one" data-i18n="magicBookCardSuper">超导材料</span>
-          <span class="magic-page-card two" data-i18n="magicBookCardPhoton">光子晶体</span>
-          <span class="magic-page-card three" data-i18n="magicBookCardTopo">拓扑绝缘体</span>
+          <div class="magic-toc-list">
+            <button class="magic-toc-item" type="button" data-magic-page="history">
+              <strong data-i18n="topMenuHome">历史</strong>
+              <span data-i18n="magicBookTocHistory">三维材料魔方与超导历史。</span>
+            </button>
+            <button class="magic-toc-item" type="button" data-magic-page="materials">
+              <strong data-i18n="topMenuMaterials">材料</strong>
+              <span data-i18n="magicBookTocMaterials">周期表、元素筛选和材料索引。</span>
+            </button>
+            <button class="magic-toc-item" type="button" data-magic-page="literature">
+              <strong data-i18n="topMenuLiterature">文献</strong>
+              <span data-i18n="magicBookTocLiterature">论文搜索、图谱和文献库。</span>
+            </button>
+          </div>
           <span class="magic-page-line bottom"></span>
-        </span>
-        <span class="magic-page right">
-          <span class="magic-page-title" data-i18n="magicBookPageRight">数据工作台</span>
+        </div>
+        <div class="magic-page right">
+          <span class="magic-page-title" data-i18n="magicBookCatalogRight">工作台</span>
           <span class="magic-page-line top"></span>
-          <span class="magic-page-card one" data-i18n="magicBookCardHistory">历史魔方</span>
-          <span class="magic-page-card two" data-i18n="magicBookCardPapers">文献图谱</span>
-          <span class="magic-page-card three" data-i18n="magicBookCardModel">模型接口</span>
+          <div class="magic-toc-list">
+            <button class="magic-toc-item" type="button" data-magic-page="data">
+              <strong data-i18n="topMenuData">数据</strong>
+              <span data-i18n="magicBookTocData">HDF5 导入、图像浮窗和本地数据。</span>
+            </button>
+            <button class="magic-toc-item" type="button" data-magic-page="model">
+              <strong data-i18n="topMenuModel">模型</strong>
+              <span data-i18n="magicBookTocModel">AI 接口、运行模型和检查接口。</span>
+            </button>
+            <button class="magic-toc-item" type="button" data-magic-page="report">
+              <strong data-i18n="topMenuReport">报告</strong>
+              <span data-i18n="magicBookTocReport">导出当前筛选和调研报告。</span>
+            </button>
+          </div>
           <span class="magic-page-line bottom"></span>
-        </span>
+        </div>
+        <span class="magic-page-turner" aria-hidden="true"><span data-i18n="magicBookFlipping">正在翻页...</span></span>
         <span class="magic-book-light"></span>
-      </button>
-      <button class="magic-primary" id="magicBookOpenBtn" type="button" data-i18n="magicBookEnter">打开魔法书进入主界面</button>
-      <div class="magic-hint" data-i18n="magicBookHint">也可以直接点击中间书页进入后续界面</div>
+      </div>
+      <button class="magic-primary" id="magicBookOpenBtn" type="button" data-i18n="magicBookOpenCatalog">打开目录</button>
+      <div class="magic-hint" data-i18n="magicBookHint">先打开目录，再点击章节，书页会翻到对应页面。</div>
     </div>
   </div>
   <!-- 粒子背景 -->
@@ -5650,6 +5904,19 @@
         magicBookChemistry: "化学",
         magicBookBiology: "生物",
         magicBookInfo: "信息",
+        magicBookCoverTitle: "ARPES 材料手册",
+        magicBookCoverHint: "点击打开目录",
+        magicBookOpenCatalog: "打开目录",
+        magicBookChoosePage: "选择目录页进入",
+        magicBookCatalogLeft: "目录",
+        magicBookCatalogRight: "工作台",
+        magicBookTocHistory: "三维材料魔方与超导历史。",
+        magicBookTocMaterials: "周期表、元素筛选和材料索引。",
+        magicBookTocLiterature: "论文搜索、图谱和文献库。",
+        magicBookTocData: "HDF5 导入、图像浮窗和本地数据。",
+        magicBookTocModel: "AI 接口、运行模型和检查接口。",
+        magicBookTocReport: "导出当前筛选和调研报告。",
+        magicBookFlipping: "正在翻页...",
         magicBookPageLeft: "物理材料",
         magicBookPageRight: "数据工作台",
         magicBookCardSuper: "超导材料",
@@ -5659,7 +5926,7 @@
         magicBookCardPapers: "文献图谱",
         magicBookCardModel: "模型接口",
         magicBookEnter: "打开魔法书进入主界面",
-        magicBookHint: "也可以直接点击中间书页进入后续界面",
+        magicBookHint: "先打开目录，再点击章节，书页会翻到对应页面。",
         loginFeatureHistory: "历史图",
         loginFeatureHistoryHint: "大事件已合并到 Tc 历史图。",
         loginFeatureCube: "3D 魔方",
@@ -6136,6 +6403,19 @@
         magicBookChemistry: "Chemistry",
         magicBookBiology: "Biology",
         magicBookInfo: "Information",
+        magicBookCoverTitle: "ARPES Material Book",
+        magicBookCoverHint: "Click to open the contents",
+        magicBookOpenCatalog: "Open contents",
+        magicBookChoosePage: "Choose a page",
+        magicBookCatalogLeft: "Contents",
+        magicBookCatalogRight: "Workbench",
+        magicBookTocHistory: "3D material cube and superconductivity history.",
+        magicBookTocMaterials: "Periodic table, element filters, and material index.",
+        magicBookTocLiterature: "Paper search, figure atlas, and literature library.",
+        magicBookTocData: "HDF5 import, figure overlay, and local data.",
+        magicBookTocModel: "AI API, model run, and interface checks.",
+        magicBookTocReport: "Export filters, notes, and research report.",
+        magicBookFlipping: "Turning pages...",
         magicBookPageLeft: "Physical Materials",
         magicBookPageRight: "Data Workbench",
         magicBookCardSuper: "Superconductors",
@@ -6145,7 +6425,7 @@
         magicBookCardPapers: "Paper atlas",
         magicBookCardModel: "Model API",
         magicBookEnter: "Open the spellbook",
-        magicBookHint: "You can also click the center book pages to continue",
+        magicBookHint: "Open the contents, then choose a chapter; the book will turn to that page.",
         loginFeatureHistory: "History Chart",
         loginFeatureHistoryHint: "Milestones are merged into the Tc chart.",
         loginFeatureCube: "3D Cube",
@@ -6653,6 +6933,9 @@
       renderFloatingFigureComparison();
       renderModelRegistry();
       renderToc();
+      if (magicBookScreen && !magicBookScreen.hidden) {
+        setMagicBookPrimary(magicBookMode === "toc" ? "magicBookChoosePage" : "magicBookOpenCatalog");
+      }
       showAppPage(activeAppPage, { preserveScroll: true });
       if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
       // Update section headings, buttons, etc.
@@ -6733,6 +7016,7 @@
     const magicBookScreen = $("#magicBookScreen");
     const magicBookEnterBtn = $("#magicBookEnterBtn");
     const magicBookOpenBtn = $("#magicBookOpenBtn");
+    const magicBookTocItems = $$(".magic-toc-item");
     const signInTab = $("#signInTab");
     const createAccountTab = $("#createAccountTab");
     const loginEmail = $("#loginEmail");
@@ -6792,6 +7076,8 @@
     const chatTableWrap = $("#chatTableWrap");
     let activeAppPage = "module-select";
     let pendingWorkbenchUser = null;
+    let magicBookMode = "cover";
+    let magicBookTargetPage = "history";
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -8529,6 +8815,30 @@
       setTimeout(() => t.remove(), 2200);
     }
 
+    function setMagicBookPrimary(key) {
+      if (!magicBookOpenBtn) return;
+      magicBookOpenBtn.dataset.i18n = key;
+      magicBookOpenBtn.textContent = t(key);
+    }
+
+    function resetMagicBook() {
+      magicBookMode = "cover";
+      magicBookTargetPage = "history";
+      if (magicBookScreen) {
+        magicBookScreen.classList.remove("is-toc", "is-flipping", "is-opening");
+      }
+      magicBookTocItems.forEach(item => item.classList.remove("active"));
+      setMagicBookPrimary("magicBookOpenCatalog");
+    }
+
+    function openMagicBookCatalog() {
+      if (!magicBookScreen || magicBookMode === "flipping") return;
+      magicBookMode = "toc";
+      magicBookScreen.classList.add("is-toc");
+      magicBookScreen.classList.remove("is-flipping", "is-opening");
+      setMagicBookPrimary("magicBookChoosePage");
+    }
+
     function initLogin() {
       const user = loadUser();
       document.body.classList.add("locked");
@@ -8536,7 +8846,7 @@
       if (loginScreen) loginScreen.style.display = "grid";
       if (magicBookScreen) {
         magicBookScreen.hidden = true;
-        magicBookScreen.classList.remove("is-opening");
+        resetMagicBook();
       }
       if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.account_mode !== "guest" && user.name) loginName.value = user.name;
@@ -8639,8 +8949,21 @@
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(guest));
         unlockWorkbench(guest);
       });
-      magicBookEnterBtn?.addEventListener("click", enterWorkbenchFromMagicBook);
-      magicBookOpenBtn?.addEventListener("click", enterWorkbenchFromMagicBook);
+      magicBookEnterBtn?.addEventListener("click", openMagicBookCatalog);
+      magicBookOpenBtn?.addEventListener("click", () => {
+        if (magicBookMode === "toc") {
+          enterWorkbenchFromMagicBook("history");
+        } else {
+          openMagicBookCatalog();
+        }
+      });
+      magicBookTocItems.forEach(item => {
+        item.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          enterWorkbenchFromMagicBook(item.dataset.magicPage || "history");
+        });
+      });
       logoutBtn?.addEventListener("click", logoutWorkbench);
       [loginEmail, loginPassword, confirmPassword, loginName, loginGroup].forEach(input => {
         input?.addEventListener("keydown", event => {
@@ -8668,7 +8991,7 @@
       if (loginScreen) loginScreen.style.display = "grid";
       if (magicBookScreen) {
         magicBookScreen.hidden = true;
-        magicBookScreen.classList.remove("is-opening");
+        resetMagicBook();
       }
       if (loginPassword) loginPassword.value = "";
       if (confirmPassword) confirmPassword.value = "";
@@ -8709,31 +9032,38 @@
       if (loginScreen) loginScreen.style.display = "none";
       if (magicBookScreen) {
         magicBookScreen.hidden = false;
-        magicBookScreen.classList.remove("is-opening");
+        resetMagicBook();
       } else {
         enterWorkbenchFromMagicBook();
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function enterWorkbenchFromMagicBook() {
+    function enterWorkbenchFromMagicBook(page = "history") {
       const user = pendingWorkbenchUser || loadUser();
+      magicBookTargetPage = page || "history";
       if (magicBookScreen && !magicBookScreen.hidden) {
-        magicBookScreen.classList.add("is-opening");
-        window.setTimeout(() => renderWorkbenchForUser(user), 420);
+        if (magicBookMode !== "toc") {
+          openMagicBookCatalog();
+          return;
+        }
+        magicBookMode = "flipping";
+        magicBookTocItems.forEach(item => item.classList.toggle("active", item.dataset.magicPage === magicBookTargetPage));
+        magicBookScreen.classList.add("is-flipping", "is-opening");
+        window.setTimeout(() => renderWorkbenchForUser(user, magicBookTargetPage), 880);
       } else {
-        renderWorkbenchForUser(user);
+        renderWorkbenchForUser(user, magicBookTargetPage);
       }
     }
 
-    function renderWorkbenchForUser(user = {}) {
+    function renderWorkbenchForUser(user = {}, targetPage = activeAppPage) {
       pendingWorkbenchUser = null;
       document.body.classList.remove("locked");
       document.body.classList.remove("magic-active");
       if (loginScreen) loginScreen.style.display = "none";
       if (magicBookScreen) {
         magicBookScreen.hidden = true;
-        magicBookScreen.classList.remove("is-opening");
+        resetMagicBook();
       }
       if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.name) loginName.value = user.name;
@@ -8744,7 +9074,7 @@
       renderOurData();
       renderArticles();
       renderToc();
-      showAppPage(activeAppPage, { preserveScroll: true });
+      showAppPage(targetPage || activeAppPage || "history", { preserveScroll: false });
       renderChatThread();
       renderChatTable();
     }
