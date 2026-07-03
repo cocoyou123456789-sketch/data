@@ -5231,7 +5231,7 @@
         <div class="article-list-controls" id="articleListControls">
           <span class="status" id="articleListStatus"></span>
           <div class="article-list-actions">
-            <button id="toggleArticleListBtn" type="button" data-i18n="articleCollapseBtn">折叠列表</button>
+            <button id="toggleArticleListBtn" type="button" data-i18n="articleCollapseBtn" hidden>折叠列表</button>
             <button id="articleShowMoreBtn" type="button" data-i18n="articleShowMoreBtn">显示更多</button>
             <button id="articleShowAllBtn" type="button" data-i18n="articleShowAllBtn">显示全部</button>
           </div>
@@ -6723,7 +6723,7 @@
     let figShowLimit = 12;
     let showFigureCandidates = false;
     const ARTICLE_PAGE_SIZE = 60;
-    const ARTICLE_LARGE_LIST_THRESHOLD = 200;
+    const ARTICLE_LARGE_LIST_THRESHOLD = Infinity;
     const KEYWORD_SAMPLE_LIMIT = 300;
     let articleShowLimit = ARTICLE_PAGE_SIZE;
     let articleListCollapsed = false;
