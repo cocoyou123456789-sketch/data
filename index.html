@@ -561,6 +561,453 @@
       user-select: none;
     }
 
+    body.magic-active {
+      overflow: hidden;
+    }
+
+    .magic-book-screen[hidden] {
+      display: none;
+    }
+
+    .magic-book-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 2050;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,0.96), rgba(207,251,255,0.9) 28%, rgba(144,235,243,0.46) 54%, rgba(7,18,34,0.96) 100%),
+        linear-gradient(180deg, #eaffff 0%, #c8fbff 48%, #08111d 100%);
+      color: #08213d;
+      isolation: isolate;
+    }
+
+    .magic-book-screen::before {
+      content: "";
+      position: absolute;
+      inset: -22%;
+      background:
+        radial-gradient(circle at 18% 76%, rgba(20,184,166,0.38), transparent 22%),
+        radial-gradient(circle at 82% 74%, rgba(147,51,234,0.26), transparent 20%),
+        conic-gradient(from 110deg at 50% 60%, transparent 0 14%, rgba(255,255,255,0.62) 16% 17%, transparent 19% 34%, rgba(60,210,255,0.34) 37% 39%, transparent 41% 100%);
+      opacity: 0.78;
+      animation: magic-aurora 12s linear infinite;
+      z-index: -2;
+    }
+
+    .magic-book-screen::after {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 7%;
+      height: 18%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(0,31,54,0.38), transparent 68%);
+      filter: blur(18px);
+      z-index: -1;
+    }
+
+    .magic-book-stage {
+      position: relative;
+      width: min(1160px, 96vw);
+      min-height: min(760px, 92vh);
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 18px;
+    }
+
+    .magic-book-copy {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      gap: 8px;
+      text-align: center;
+      margin-bottom: 12px;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.86);
+    }
+
+    .magic-kicker {
+      justify-self: center;
+      width: fit-content;
+      border: 1px solid rgba(0,83,130,0.18);
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.62);
+      color: #09637e;
+      font-size: 12px;
+      font-weight: 840;
+      box-shadow: 0 8px 26px rgba(36,183,219,0.14);
+    }
+
+    .magic-book-copy h1 {
+      margin: 0;
+      color: #061d3e;
+      font-size: clamp(34px, 4.7vw, 68px);
+      line-height: 1;
+      letter-spacing: 0;
+      text-shadow: 0 6px 24px rgba(36,119,176,0.2);
+    }
+
+    .magic-book-copy p {
+      max-width: 680px;
+      margin: 0 auto;
+      color: rgba(8,33,61,0.78);
+      font-size: clamp(14px, 1.7vw, 18px);
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .magic-tome-shelf {
+      position: absolute;
+      top: clamp(108px, 15vh, 156px);
+      left: 50%;
+      width: min(960px, 88vw);
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .magic-tome {
+      position: relative;
+      width: clamp(120px, 15vw, 188px);
+      aspect-ratio: 0.78;
+      display: grid;
+      place-items: center;
+      border-radius: 14px 18px 16px 12px;
+      color: #ffffff;
+      font-size: clamp(18px, 2.2vw, 30px);
+      font-weight: 920;
+      transform: rotateX(58deg) rotateZ(var(--book-tilt, 0deg)) translateY(var(--book-y, 0px));
+      transform-style: preserve-3d;
+      box-shadow:
+        0 24px 28px rgba(10,28,45,0.24),
+        inset 10px 0 0 rgba(0,0,0,0.16),
+        inset 0 -12px 0 rgba(0,0,0,0.1);
+      animation: magic-tome-float 5.8s ease-in-out infinite;
+    }
+
+    .magic-tome::before,
+    .magic-tome::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .magic-tome::before {
+      inset: 18% 18%;
+      border: 2px solid rgba(255,255,255,0.7);
+      border-radius: 999px;
+      box-shadow: 0 0 18px rgba(255,255,255,0.72), inset 0 0 24px rgba(255,255,255,0.24);
+    }
+
+    .magic-tome::after {
+      left: 6%;
+      right: 5%;
+      bottom: -12%;
+      height: 18%;
+      border-radius: 0 0 12px 12px;
+      background: linear-gradient(180deg, #f8fbff, #c7d6e8);
+      transform: rotateX(72deg);
+      box-shadow: 0 8px 18px rgba(10,28,45,0.22);
+      z-index: -1;
+    }
+
+    .magic-tome.green {
+      --book-tilt: -8deg;
+      --book-y: 10px;
+      background: linear-gradient(135deg, #14b86f, #0f8f78 58%, #086155);
+      animation-delay: -1.5s;
+    }
+
+    .magic-tome.orange {
+      --book-tilt: 0deg;
+      --book-y: -8px;
+      background: linear-gradient(135deg, #ffb031, #f97316 56%, #b5430f);
+      animation-delay: -0.2s;
+    }
+
+    .magic-tome.purple {
+      --book-tilt: 8deg;
+      --book-y: 10px;
+      background: linear-gradient(135deg, #a855f7, #7c3aed 58%, #4c1d95);
+      animation-delay: -2.3s;
+    }
+
+    .magic-tome span {
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.34);
+    }
+
+    .magic-open-book {
+      position: relative;
+      z-index: 4;
+      width: min(780px, 88vw);
+      height: clamp(280px, 42vw, 430px);
+      border: 0;
+      border-radius: 26px;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      perspective: 1400px;
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 34px 30px rgba(4,22,36,0.4));
+      transition: transform 220ms ease, filter 220ms ease;
+    }
+
+    .magic-open-book:hover,
+    .magic-open-book:focus-visible {
+      transform: translateY(-6px) scale(1.015);
+      filter: drop-shadow(0 44px 38px rgba(4,22,36,0.48));
+      outline: none;
+    }
+
+    .magic-book-shadow,
+    .magic-book-spine,
+    .magic-page,
+    .magic-page::before,
+    .magic-page::after,
+    .magic-page-card,
+    .magic-page-line,
+    .magic-book-light {
+      position: absolute;
+      display: block;
+      pointer-events: none;
+    }
+
+    .magic-book-shadow {
+      left: 6%;
+      right: 6%;
+      bottom: 2%;
+      height: 18%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(0,22,42,0.46), transparent 72%);
+      filter: blur(8px);
+    }
+
+    .magic-book-spine {
+      left: 50%;
+      bottom: 9%;
+      width: 4.2%;
+      height: 73%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #041228, #0f5b9d 45%, #071a36);
+      transform: translateX(-50%) rotateX(62deg);
+      box-shadow: 0 0 28px rgba(31,196,255,0.58), inset 0 0 22px rgba(255,255,255,0.18);
+      z-index: 4;
+    }
+
+    .magic-page {
+      bottom: 8%;
+      width: 50.5%;
+      height: 77%;
+      border: 1px solid rgba(172,235,255,0.68);
+      background:
+        linear-gradient(130deg, rgba(255,255,255,0.14), transparent 22%),
+        linear-gradient(180deg, #035aa1, #053c76 52%, #031d43);
+      box-shadow:
+        inset 0 0 36px rgba(36,203,255,0.32),
+        inset 0 -20px 28px rgba(0,0,0,0.28),
+        0 18px 34px rgba(2,23,45,0.34);
+      transform-style: preserve-3d;
+      overflow: hidden;
+      z-index: 3;
+    }
+
+    .magic-page::before {
+      content: "";
+      inset: 8%;
+      border: 1px solid rgba(223,250,255,0.58);
+      border-radius: 18px;
+      box-shadow: inset 0 0 22px rgba(101,218,255,0.2);
+    }
+
+    .magic-page::after {
+      content: "";
+      inset: -18%;
+      background:
+        radial-gradient(circle at 58% 18%, rgba(255,255,255,0.82), transparent 13%),
+        radial-gradient(circle at 48% 42%, rgba(28,225,255,0.72), transparent 18%),
+        linear-gradient(105deg, transparent 0 42%, rgba(255,255,255,0.26) 45% 47%, transparent 50% 100%);
+      mix-blend-mode: screen;
+      animation: magic-page-shimmer 4.8s ease-in-out infinite;
+    }
+
+    .magic-page.left {
+      left: 0;
+      border-radius: 24px 8px 22px 28px;
+      transform-origin: 100% 100%;
+      transform: rotateX(62deg) rotateY(18deg) rotateZ(-3deg);
+    }
+
+    .magic-page.right {
+      right: 0;
+      border-radius: 8px 24px 28px 22px;
+      transform-origin: 0 100%;
+      transform: rotateX(62deg) rotateY(-18deg) rotateZ(3deg);
+      background:
+        linear-gradient(130deg, rgba(255,255,255,0.2), transparent 20%),
+        linear-gradient(180deg, #0477c7, #053d7c 50%, #031b43);
+    }
+
+    .magic-page-title {
+      position: absolute;
+      left: 12%;
+      top: 13%;
+      color: #ffffff;
+      font-size: clamp(18px, 2.5vw, 28px);
+      font-weight: 920;
+      text-shadow: 0 0 18px rgba(96,208,255,0.72);
+      z-index: 2;
+    }
+
+    .magic-page-card {
+      left: 12%;
+      right: 12%;
+      min-height: 46px;
+      border: 1px solid rgba(222,250,255,0.68);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #f3fbff;
+      background: rgba(4,25,54,0.38);
+      box-shadow: 0 0 22px rgba(62,210,255,0.2), inset 0 0 18px rgba(255,255,255,0.08);
+      text-align: left;
+      font-size: clamp(12px, 1.35vw, 15px);
+      font-weight: 780;
+      z-index: 2;
+    }
+
+    .magic-page-card.one { top: 30%; }
+    .magic-page-card.two { top: 48%; }
+    .magic-page-card.three { top: 66%; }
+
+    .magic-page-card::before {
+      content: "";
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff, #45f4ff 42%, #0e8ea0 72%);
+      box-shadow: 0 0 16px rgba(69,244,255,0.72);
+      vertical-align: -1px;
+    }
+
+    .magic-page-line {
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.82), transparent);
+      z-index: 2;
+    }
+
+    .magic-page-line.top { top: 23%; }
+    .magic-page-line.bottom { bottom: 14%; }
+
+    .magic-book-light {
+      left: 50%;
+      top: 42%;
+      width: 34%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, #ffffff 0 6%, rgba(255,244,159,0.92) 7% 16%, rgba(20,184,166,0.48) 17% 32%, transparent 62%);
+      transform: translate(-50%, -50%);
+      filter: blur(1px);
+      mix-blend-mode: screen;
+      animation: magic-pulse 2.6s ease-in-out infinite;
+      z-index: 6;
+    }
+
+    .magic-primary {
+      z-index: 6;
+      min-height: 46px;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 22px;
+      color: #06212a;
+      background: linear-gradient(135deg, #ffffff, #9af8ff 55%, #4fd1c5);
+      box-shadow: 0 16px 34px rgba(4,86,116,0.24), 0 0 22px rgba(69,244,255,0.44);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .magic-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 38px rgba(4,86,116,0.28), 0 0 30px rgba(69,244,255,0.56);
+    }
+
+    .magic-hint {
+      z-index: 6;
+      color: rgba(224,250,255,0.82);
+      font-size: 12px;
+      font-weight: 760;
+      text-shadow: 0 2px 16px rgba(0,20,38,0.82);
+    }
+
+    .magic-sparks {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .magic-sparks span {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--s, 5px);
+      height: var(--s, 5px);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 0 18px rgba(66,232,255,0.82);
+      animation: magic-spark var(--d, 4s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .magic-book-screen.is-opening .magic-open-book {
+      transform: translateY(-18px) scale(1.08) rotateX(4deg);
+      filter: drop-shadow(0 54px 46px rgba(4,22,36,0.52));
+    }
+
+    .magic-book-screen.is-opening .magic-book-light {
+      animation-duration: 0.7s;
+    }
+
+    @keyframes magic-aurora {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(8deg) scale(1.04); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+
+    @keyframes magic-tome-float {
+      0%, 100% { translate: 0 0; }
+      50% { translate: 0 -10px; }
+    }
+
+    @keyframes magic-page-shimmer {
+      0%, 100% { transform: translateX(-8%) rotate(0deg); opacity: 0.62; }
+      50% { transform: translateX(8%) rotate(8deg); opacity: 0.95; }
+    }
+
+    @keyframes magic-pulse {
+      0%, 100% { opacity: 0.76; transform: translate(-50%, -50%) scale(0.9); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+    }
+
+    @keyframes magic-spark {
+      0%, 100% { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.4); }
+      35% { opacity: 1; }
+      70% { opacity: 0.45; transform: translate3d(10px, -24px, 0) scale(1.1); }
+    }
+
     .top-menu-bar {
       position: sticky;
       top: 0;
@@ -3453,6 +3900,43 @@
         width: auto;
         max-height: min(560px, calc(100vh - 20px));
       }
+      .magic-book-screen {
+        padding: 14px;
+      }
+      .magic-book-stage {
+        min-height: 92vh;
+        gap: 12px;
+      }
+      .magic-tome-shelf {
+        top: 118px;
+        gap: 8px;
+        width: 94vw;
+      }
+      .magic-tome {
+        width: 28vw;
+        font-size: 16px;
+        border-radius: 10px;
+      }
+      .magic-open-book {
+        width: 96vw;
+        height: 310px;
+        margin-top: 44px;
+      }
+      .magic-page-card {
+        left: 9%;
+        right: 9%;
+        min-height: 36px;
+        padding: 7px 9px;
+        font-size: 11px;
+      }
+      .magic-page-title {
+        left: 10%;
+        top: 14%;
+        font-size: 17px;
+      }
+      .magic-book-copy p {
+        max-width: 92vw;
+      }
     }
 
     /* === 文章面板 === */
@@ -4172,6 +4656,55 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="magic-book-screen" id="magicBookScreen" hidden aria-live="polite">
+    <div class="magic-sparks" aria-hidden="true">
+      <span style="--x:14%;--y:28%;--s:5px;--d:4.4s;--delay:-0.6s"></span>
+      <span style="--x:26%;--y:62%;--s:7px;--d:5.2s;--delay:-1.8s"></span>
+      <span style="--x:39%;--y:34%;--s:4px;--d:3.8s;--delay:-0.2s"></span>
+      <span style="--x:53%;--y:22%;--s:6px;--d:4.6s;--delay:-2.4s"></span>
+      <span style="--x:66%;--y:58%;--s:5px;--d:5s;--delay:-1.1s"></span>
+      <span style="--x:81%;--y:31%;--s:7px;--d:4.2s;--delay:-2.9s"></span>
+      <span style="--x:87%;--y:70%;--s:4px;--d:3.7s;--delay:-0.8s"></span>
+      <span style="--x:18%;--y:76%;--s:4px;--d:4.8s;--delay:-3.1s"></span>
+      <span style="--x:47%;--y:76%;--s:6px;--d:5.4s;--delay:-1.6s"></span>
+      <span style="--x:73%;--y:18%;--s:4px;--d:3.9s;--delay:-2.1s"></span>
+    </div>
+    <div class="magic-book-stage">
+      <div class="magic-book-copy">
+        <span class="magic-kicker" data-i18n="magicBookKicker">登录成功 · 选择入口</span>
+        <h1 data-i18n="magicBookTitle">材料数据库</h1>
+        <p data-i18n="magicBookLead">打开材料魔法书，进入历史、材料、文献、数据、模型和报告工作台。</p>
+      </div>
+      <div class="magic-tome-shelf" aria-hidden="true">
+        <div class="magic-tome green"><span data-i18n="magicBookChemistry">化学</span></div>
+        <div class="magic-tome orange"><span data-i18n="magicBookBiology">生物</span></div>
+        <div class="magic-tome purple"><span data-i18n="magicBookInfo">信息</span></div>
+      </div>
+      <button class="magic-open-book" id="magicBookEnterBtn" type="button" aria-label="打开材料魔法书">
+        <span class="magic-book-shadow"></span>
+        <span class="magic-book-spine"></span>
+        <span class="magic-page left">
+          <span class="magic-page-title" data-i18n="magicBookPageLeft">物理材料</span>
+          <span class="magic-page-line top"></span>
+          <span class="magic-page-card one" data-i18n="magicBookCardSuper">超导材料</span>
+          <span class="magic-page-card two" data-i18n="magicBookCardPhoton">光子晶体</span>
+          <span class="magic-page-card three" data-i18n="magicBookCardTopo">拓扑绝缘体</span>
+          <span class="magic-page-line bottom"></span>
+        </span>
+        <span class="magic-page right">
+          <span class="magic-page-title" data-i18n="magicBookPageRight">数据工作台</span>
+          <span class="magic-page-line top"></span>
+          <span class="magic-page-card one" data-i18n="magicBookCardHistory">历史魔方</span>
+          <span class="magic-page-card two" data-i18n="magicBookCardPapers">文献图谱</span>
+          <span class="magic-page-card three" data-i18n="magicBookCardModel">模型接口</span>
+          <span class="magic-page-line bottom"></span>
+        </span>
+        <span class="magic-book-light"></span>
+      </button>
+      <button class="magic-primary" id="magicBookOpenBtn" type="button" data-i18n="magicBookEnter">打开魔法书进入主界面</button>
+      <div class="magic-hint" data-i18n="magicBookHint">也可以直接点击中间书页进入后续界面</div>
     </div>
   </div>
   <!-- 粒子背景 -->
@@ -5013,6 +5546,22 @@
         loginVirtualAccessLabel: "虚拟眼睛",
         loginRealEyeLabel: "USTC",
         loginVirtualEyeLabel: "NSRL / ARPES",
+        magicBookKicker: "登录成功 · 选择入口",
+        magicBookTitle: "材料数据库",
+        magicBookLead: "打开材料魔法书，进入历史、材料、文献、数据、模型和报告工作台。",
+        magicBookChemistry: "化学",
+        magicBookBiology: "生物",
+        magicBookInfo: "信息",
+        magicBookPageLeft: "物理材料",
+        magicBookPageRight: "数据工作台",
+        magicBookCardSuper: "超导材料",
+        magicBookCardPhoton: "光子晶体",
+        magicBookCardTopo: "拓扑绝缘体",
+        magicBookCardHistory: "历史魔方",
+        magicBookCardPapers: "文献图谱",
+        magicBookCardModel: "模型接口",
+        magicBookEnter: "打开魔法书进入主界面",
+        magicBookHint: "也可以直接点击中间书页进入后续界面",
         loginFeatureHistory: "历史图",
         loginFeatureHistoryHint: "大事件已合并到 Tc 历史图。",
         loginFeatureCube: "3D 魔方",
@@ -5483,6 +6032,22 @@
         loginVirtualAccessLabel: "Virtual Eye",
         loginRealEyeLabel: "USTC",
         loginVirtualEyeLabel: "NSRL / ARPES",
+        magicBookKicker: "Login complete · choose an entrance",
+        magicBookTitle: "Materials Database",
+        magicBookLead: "Open the materials spellbook to enter history, materials, papers, data, models, and reports.",
+        magicBookChemistry: "Chemistry",
+        magicBookBiology: "Biology",
+        magicBookInfo: "Information",
+        magicBookPageLeft: "Physical Materials",
+        magicBookPageRight: "Data Workbench",
+        magicBookCardSuper: "Superconductors",
+        magicBookCardPhoton: "Photonic crystals",
+        magicBookCardTopo: "Topological insulators",
+        magicBookCardHistory: "History cube",
+        magicBookCardPapers: "Paper atlas",
+        magicBookCardModel: "Model API",
+        magicBookEnter: "Open the spellbook",
+        magicBookHint: "You can also click the center book pages to continue",
         loginFeatureHistory: "History Chart",
         loginFeatureHistoryHint: "Milestones are merged into the Tc chart.",
         loginFeatureCube: "3D Cube",
@@ -6067,6 +6632,9 @@
     const compareBtn = $("#compareBtn");
     const keywordChips = $("#keywordChips");
     const loginScreen = $("#loginScreen");
+    const magicBookScreen = $("#magicBookScreen");
+    const magicBookEnterBtn = $("#magicBookEnterBtn");
+    const magicBookOpenBtn = $("#magicBookOpenBtn");
     const signInTab = $("#signInTab");
     const createAccountTab = $("#createAccountTab");
     const loginEmail = $("#loginEmail");
@@ -6125,6 +6693,7 @@
     const chatClearBtn = $("#chatClearBtn");
     const chatTableWrap = $("#chatTableWrap");
     let activeAppPage = "module-select";
+    let pendingWorkbenchUser = null;
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
     const loadStatus = $("#loadStatus");
@@ -7865,7 +8434,12 @@
     function initLogin() {
       const user = loadUser();
       document.body.classList.add("locked");
+      document.body.classList.remove("magic-active");
       if (loginScreen) loginScreen.style.display = "grid";
+      if (magicBookScreen) {
+        magicBookScreen.hidden = true;
+        magicBookScreen.classList.remove("is-opening");
+      }
       if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.account_mode !== "guest" && user.name) loginName.value = user.name;
       if (loginGroup && user.group) loginGroup.value = user.group;
@@ -7967,6 +8541,8 @@
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(guest));
         unlockWorkbench(guest);
       });
+      magicBookEnterBtn?.addEventListener("click", enterWorkbenchFromMagicBook);
+      magicBookOpenBtn?.addEventListener("click", enterWorkbenchFromMagicBook);
       logoutBtn?.addEventListener("click", logoutWorkbench);
       [loginEmail, loginPassword, confirmPassword, loginName, loginGroup].forEach(input => {
         input?.addEventListener("keydown", event => {
@@ -7988,8 +8564,14 @@
 
     function logoutWorkbench() {
       localStorage.removeItem(USER_STORAGE_KEY);
+      pendingWorkbenchUser = null;
       document.body.classList.add("locked");
+      document.body.classList.remove("magic-active");
       if (loginScreen) loginScreen.style.display = "grid";
+      if (magicBookScreen) {
+        magicBookScreen.hidden = true;
+        magicBookScreen.classList.remove("is-opening");
+      }
       if (loginPassword) loginPassword.value = "";
       if (confirmPassword) confirmPassword.value = "";
       showToast(t("logoutToast"));
@@ -8024,8 +8606,37 @@
     }
 
     function unlockWorkbench(user) {
-      document.body.classList.remove("locked");
+      pendingWorkbenchUser = user || loadUser();
+      document.body.classList.add("locked", "magic-active");
       if (loginScreen) loginScreen.style.display = "none";
+      if (magicBookScreen) {
+        magicBookScreen.hidden = false;
+        magicBookScreen.classList.remove("is-opening");
+      } else {
+        enterWorkbenchFromMagicBook();
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function enterWorkbenchFromMagicBook() {
+      const user = pendingWorkbenchUser || loadUser();
+      if (magicBookScreen && !magicBookScreen.hidden) {
+        magicBookScreen.classList.add("is-opening");
+        window.setTimeout(() => renderWorkbenchForUser(user), 420);
+      } else {
+        renderWorkbenchForUser(user);
+      }
+    }
+
+    function renderWorkbenchForUser(user = {}) {
+      pendingWorkbenchUser = null;
+      document.body.classList.remove("locked");
+      document.body.classList.remove("magic-active");
+      if (loginScreen) loginScreen.style.display = "none";
+      if (magicBookScreen) {
+        magicBookScreen.hidden = true;
+        magicBookScreen.classList.remove("is-opening");
+      }
       if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.name) loginName.value = user.name;
       if (loginGroup && user.group) loginGroup.value = user.group;
