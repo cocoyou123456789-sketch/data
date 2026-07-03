@@ -202,7 +202,7 @@
     .advanced-section-stack {
       display: grid;
       gap: 14px;
-      padding: 0 14px 14px;
+      padding: 14px;
     }
 
     .advanced-section-stack section {
@@ -1067,17 +1067,36 @@
     .periodic-wrap {
       overflow-x: hidden;
       padding-bottom: 4px;
-      display: flex;
-      justify-content: center;
+      display: grid;
+      justify-items: center;
+      gap: 10px;
     }
 
     .periodic {
       min-width: 0;
-      width: min(100%, 806px);
+      width: min(100%, 720px);
       display: grid;
       grid-template-columns: repeat(18, minmax(0, 1fr));
       grid-auto-rows: 39px;
       gap: 4px;
+    }
+
+    .periodic-callout {
+      grid-column: 4 / 16;
+      grid-row: 1;
+      align-self: center;
+      justify-self: center;
+      border: 1px solid rgba(20,184,166,0.38);
+      border-radius: 999px;
+      padding: 6px 14px;
+      color: var(--accent-glow);
+      background: rgba(15,118,110,0.1);
+      box-shadow: 0 0 16px rgba(20,184,166,0.12);
+      font-size: 12px;
+      font-weight: 760;
+      line-height: 1.2;
+      text-align: center;
+      pointer-events: none;
     }
 
     .element-cell {
@@ -1191,7 +1210,7 @@
 
     .periodic-workbench {
       display: grid;
-      grid-template-columns: minmax(720px, 1.35fr) minmax(300px, 0.65fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 14px;
       align-items: stretch;
     }
@@ -1575,7 +1594,7 @@
       padding: 14px;
       background: rgba(10,18,28,0.78);
       display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 14px;
       align-items: stretch;
     }
@@ -1589,6 +1608,29 @@
       display: grid;
       gap: 10px;
       align-content: start;
+    }
+
+    .periodic-crucible-panel {
+      width: min(100%, 806px);
+      grid-template-columns: minmax(120px, 0.38fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      margin-top: 0;
+    }
+
+    .periodic-crucible-panel h3 {
+      grid-column: 1 / -1;
+      margin-bottom: -2px;
+    }
+
+    .periodic-crucible-panel .crucible-visual {
+      min-height: 118px;
+    }
+
+    .periodic-crucible-panel .crucible-body {
+      display: grid;
+      gap: 8px;
+      align-content: center;
     }
 
     .history-timeline {
@@ -1941,19 +1983,19 @@
 
     .history-side-panel {
       display: grid;
-      grid-template-columns: minmax(560px, 1.42fr) minmax(280px, 0.58fr);
+      grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
       gap: 12px;
-      align-items: start;
+      align-items: stretch;
     }
 
     .history-cube-panel {
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #0b1119;
-      padding: 14px;
+      padding: 12px;
       display: grid;
-      gap: 12px;
-      min-height: 680px;
+      gap: 8px;
+      min-height: 0;
       overflow: hidden;
     }
 
@@ -1961,14 +2003,21 @@
       text-align: center;
     }
 
+    .history-cube-panel > div:first-child h3,
+    .history-cube-panel > div:first-child p {
+      margin-top: 0;
+      margin-bottom: 4px;
+    }
+
     .cube-viewport {
-      min-height: 540px;
+      min-height: 420px;
       width: min(880px, 100%);
       margin: 0 auto;
       display: grid;
       place-items: center;
       perspective: 1600px;
       overflow: hidden;
+      position: relative;
       touch-action: none;
       border-radius: 8px;
       background:
@@ -1977,13 +2026,13 @@
     }
 
     .history-cube {
-      --cube-edge: 258px;
-      --cube-depth: 129px;
-      --cube-origin: 62px;
+      --cube-edge: 238px;
+      --cube-depth: 119px;
+      --cube-origin: 52px;
       --axis-size: calc(var(--cube-edge) + 72px);
       --axis-origin: var(--cube-origin);
-      width: 430px;
-      height: 430px;
+      width: 390px;
+      height: 390px;
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(var(--cube-x, -18deg)) rotateY(var(--cube-y, 32deg)) scale(var(--cube-scale, 1));
@@ -2125,7 +2174,7 @@
     }
 
     .cube-view-cube::after {
-      content: "";
+      content: none;
       position: absolute;
       left: var(--axis-origin);
       bottom: var(--axis-origin);
@@ -2178,8 +2227,8 @@
       position: absolute;
       left: var(--axis-origin);
       bottom: var(--axis-origin);
-      width: 44px;
-      height: 44px;
+      width: 54px;
+      height: 54px;
       min-width: 0;
       min-height: 0;
       padding: 0;
@@ -2192,7 +2241,9 @@
       cursor: pointer;
       opacity: 0.98;
       pointer-events: auto;
-      z-index: 8;
+      z-index: 80;
+      isolation: isolate;
+      backface-visibility: visible;
     }
 
     .axis-point::before {
@@ -2262,12 +2313,12 @@
       position: absolute;
       left: 50%;
       top: 66%;
-      width: 30px;
-      height: 10px;
+      width: 32px;
+      height: 11px;
       border-radius: 50%;
       background: radial-gradient(ellipse at center, rgba(0,0,0,0.5), rgba(0,0,0,0.22) 42%, transparent 72%);
-      filter: blur(1.2px);
-      transform: translate(-50%, -50%) rotateX(68deg) translateZ(4px);
+      filter: blur(1.4px);
+      transform: translate(-50%, -50%) rotateX(68deg) translateZ(2px);
       pointer-events: none;
     }
 
@@ -2275,26 +2326,27 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.84);
+      border: 1px solid rgba(255,255,255,0.76);
       background-color: var(--point-color, #22d3ee);
       background:
-        radial-gradient(circle at 30% 20%, #ffffff 0 6%, rgba(255,255,255,0.9) 7% 14%, transparent 15%),
-        radial-gradient(circle at 38% 31%, rgba(255,255,255,0.48) 0 18%, transparent 19%),
-        radial-gradient(circle at 67% 76%, rgba(0,0,0,0) 0 27%, rgba(0,0,0,0.52) 59%, rgba(0,0,0,0.82) 100%),
-        radial-gradient(circle at 48% 48%, rgba(255,255,255,0.14), transparent 54%),
+        radial-gradient(circle at 30% 21%, #ffffff 0 7%, rgba(255,255,255,0.9) 8% 14%, transparent 15%),
+        radial-gradient(circle at 39% 32%, rgba(255,255,255,0.48) 0 17%, transparent 18%),
+        radial-gradient(circle at 68% 76%, rgba(0,0,0,0) 0 24%, rgba(0,0,0,0.44) 55%, rgba(0,0,0,0.88) 100%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.16), transparent 55%),
         var(--point-color, #22d3ee);
       box-shadow:
-        inset -8px -9px 10px rgba(0,0,0,0.58),
-        inset 4px 4px 7px rgba(255,255,255,0.36),
-        inset 0 0 5px rgba(255,255,255,0.22),
+        inset -9px -10px 11px rgba(0,0,0,0.62),
+        inset 5px 5px 8px rgba(255,255,255,0.38),
+        inset 0 0 7px rgba(255,255,255,0.24),
         0 0 18px var(--point-color, #22d3ee),
-        0 10px 14px rgba(0,0,0,0.44);
-      filter: saturate(1.9) brightness(1.2);
-      transform: translate(-50%, -50%) translateZ(32px) rotateY(var(--orb-y, -32deg)) rotateX(var(--orb-x, 18deg));
+        0 11px 16px rgba(0,0,0,0.46);
+      filter: saturate(1.95) brightness(1.22) drop-shadow(0 0 7px var(--point-color, #22d3ee));
+      transform: translate(-50%, -50%) translateZ(42px) rotateY(var(--orb-y, -32deg)) rotateX(var(--orb-x, 18deg));
       transform-style: preserve-3d;
+      backface-visibility: visible;
       pointer-events: none;
       will-change: transform;
     }
@@ -2302,35 +2354,84 @@
     .axis-point-orb::before {
       content: "";
       position: absolute;
-      left: 26%;
-      top: 19%;
-      width: 8px;
-      height: 8px;
+      inset: 1px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.96), rgba(255,255,255,0.56) 45%, transparent 74%);
-      filter: blur(0.25px);
-      transform: translateZ(8px);
+      border: 1px solid rgba(255,255,255,0.22);
+      background:
+        radial-gradient(circle at 32% 24%, rgba(255,255,255,0.5), transparent 22%),
+        radial-gradient(circle at 70% 76%, rgba(0,0,0,0.5), transparent 50%),
+        var(--point-color, #22d3ee);
+      opacity: 0.42;
+      transform: rotateY(88deg);
+      transform-style: preserve-3d;
     }
 
     .axis-point-orb::after {
       content: "";
       position: absolute;
-      inset: 2px;
+      inset: 1px;
       border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.18);
       background:
-        linear-gradient(135deg, rgba(255,255,255,0.26), transparent 34%),
-        radial-gradient(circle at 70% 78%, rgba(0,0,0,0.24), transparent 42%);
-      transform: translateZ(4px);
+        radial-gradient(circle at 30% 22%, rgba(255,255,255,0.44), transparent 24%),
+        radial-gradient(circle at 72% 76%, rgba(0,0,0,0.52), transparent 52%),
+        var(--point-color, #22d3ee);
+      opacity: 0.28;
+      transform: rotateX(88deg);
+      transform-style: preserve-3d;
       pointer-events: none;
+    }
+
+    .axis-point-glint {
+      position: absolute;
+      left: 27%;
+      top: 20%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.96), rgba(255,255,255,0.56) 45%, transparent 74%);
+      filter: blur(0.25px);
+      transform: translateZ(12px);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .axis-point-tooltip {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 120;
+      max-width: 220px;
+      border: 1px solid rgba(20,184,166,0.44);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: rgba(8,15,24,0.94);
+      color: var(--ink);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.38), 0 0 16px rgba(20,184,166,0.16);
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .axis-point-tooltip[hidden] {
+      display: none;
+    }
+
+    .axis-point-tooltip strong {
+      display: block;
+      color: var(--accent-glow);
+      font-size: 12px;
+      margin-bottom: 3px;
     }
 
     .axis-point:hover .axis-point-orb,
     .axis-point.active .axis-point-orb {
-      transform: translate(-50%, -50%) translateZ(40px) rotateY(var(--orb-y, -32deg)) rotateX(var(--orb-x, 18deg)) scale(1.12);
+      transform: translate(-50%, -50%) translateZ(50px) rotateY(var(--orb-y, -32deg)) rotateX(var(--orb-x, 18deg)) scale(1.12);
       box-shadow:
         inset -8px -9px 10px rgba(0,0,0,0.5),
-        inset 4px 4px 8px rgba(255,255,255,0.4),
-        0 0 24px var(--point-color, #22d3ee),
+        inset 5px 5px 8px rgba(255,255,255,0.42),
+        0 0 26px var(--point-color, #22d3ee),
         0 12px 16px rgba(0,0,0,0.46);
     }
 
@@ -2447,6 +2548,9 @@
       color: #ffffff;
       font-size: 12px;
       text-shadow: 0 1px 8px rgba(0,0,0,0.65);
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
     }
 
     .cube-face span {
@@ -2454,6 +2558,9 @@
       font-size: 10px;
       line-height: 1.3;
       text-shadow: 0 1px 8px rgba(0,0,0,0.65);
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
     }
 
     .cube-face.front { transform: translateZ(var(--cube-depth)); }
@@ -2481,7 +2588,7 @@
     }
 
     .cube-view-cube .cube-face {
-      pointer-events: auto;
+      pointer-events: none;
       opacity: 0.68;
       z-index: 10;
       border-color: rgba(47,101,183,0.92);
@@ -2613,7 +2720,8 @@
     }
 
     .history-chat-panel {
-      min-height: 300px;
+      min-height: 0;
+      height: 100%;
       border: 1px solid rgba(96,208,255,0.22);
       border-radius: 8px;
       padding: 12px;
@@ -3753,6 +3861,10 @@
         min-height: 300px;
       }
 
+      .periodic-crucible-panel {
+        grid-template-columns: 1fr;
+      }
+
       .history-cube {
         --cube-edge: 210px;
         --cube-depth: 105px;
@@ -4191,6 +4303,7 @@
                   <button class="cube-face top" type="button" data-cube-face="arpes"><strong>ARPES</strong><span>bands · gaps</span></button>
                   <button class="cube-face bottom" type="button" data-cube-face="personal"><strong>Our Data</strong><span>local records</span></button>
                 </div>
+                <div class="axis-point-tooltip" id="axisPointTooltip" hidden></div>
               </div>
               <div class="axis-legend">
                 <span>X = Year</span>
@@ -4240,7 +4353,7 @@
     <section id="section-periodic" class="app-page" data-app-page="materials" hidden>
       <div class="section-head">
         <h2 data-i18n="periodicTitle">元素周期表</h2>
-        <span class="status" data-i18n="periodicStatus">点击元素筛选材料</span>
+        <span class="status periodic-head-status" data-i18n="periodicStatus" hidden>点击元素筛选材料</span>
       </div>
       <div class="content">
         <div class="flow-tabs" aria-label="Material index workflow">
@@ -4254,6 +4367,16 @@
         <div class="periodic-workbench">
           <div class="periodic-wrap">
             <div class="periodic" id="periodicTable"></div>
+            <div class="crucible-panel periodic-crucible-panel" id="periodicCruciblePanel">
+              <h3>坩埚预测</h3>
+              <div class="crucible-visual" aria-hidden="true">
+                <div class="crucible-bubbles"><span></span><span></span><span></span></div>
+                <div class="crucible-bowl"></div>
+              </div>
+              <div class="crucible-body">
+                <p class="muted">坩埚会基于当前元素的材料家族、最高 Tc、文献密度和 ARPES 关键词生成下一步探索建议。</p>
+              </div>
+            </div>
           </div>
           <div class="periodic-index-panel">
             <div class="roundtable-panel" aria-label="Module round table">
@@ -4322,23 +4445,14 @@
             <h3>元素相关历史</h3>
             <p class="muted">选择周期表中的绿色元素后，这里会汇总相关材料、年份线索和 ARPES 论文记录。</p>
           </div>
-          <div class="crucible-panel">
-            <h3>坩埚预测</h3>
-            <div class="crucible-visual" aria-hidden="true">
-              <div class="crucible-bubbles"><span></span><span></span><span></span></div>
-              <div class="crucible-bowl"></div>
-            </div>
-            <p class="muted">坩埚会基于当前元素的材料家族、最高 Tc、文献密度和 ARPES 关键词生成下一步探索建议。</p>
-          </div>
         </div>
       </div>
     </section>
 
-    <details class="advanced-library app-page" id="advancedLibrary" data-app-page="materials literature data" hidden open>
-      <summary><span data-i18n="advancedLibraryTitle">高级资料库：文献图、数据、模板和导入工具</span><span class="status" data-i18n="advancedLibraryHint">默认折叠，保持主界面简洁</span></summary>
+    <section class="advanced-library app-page" id="advancedLibrary" data-app-page="materials literature data" hidden>
       <div class="advanced-section-stack">
     <!-- ===== 搜索 & 筛选 ===== -->
-    <section id="section-search" data-app-page-section="materials">
+    <section id="section-search" data-app-page-section="materials literature">
       <div class="section-head">
         <h2 data-i18n="searchFilterTitle">🔍 搜索与筛选</h2>
         <span class="status" id="loadStatus">Loading...</span>
@@ -4817,7 +4931,7 @@
       </div>
     </section>
       </div>
-    </details>
+    </section>
   </main>
 
   <aside class="floating-compare" id="floatingComparePanel" hidden aria-live="polite">
@@ -5870,6 +5984,8 @@
       renderCubeReadout("cuprate");
       renderAxisPoints();
       applyCubeViewMode();
+      renderPeriodicTable();
+      highlightPeriodicTable();
       renderFloatingComparison();
       renderFloatingFigureComparison();
       renderModelRegistry();
@@ -5996,6 +6112,7 @@
     const cubeFacePicker = $("#cubeFacePicker");
     const axisPointLayer = $("#axisPointLayer");
     const axisHitLayer = $("#axisHitLayer");
+    const axisPointTooltip = $("#axisPointTooltip");
     const axisModeBtn = $("#axisModeBtn");
     const cubeViewModeBtn = $("#cubeViewModeBtn");
     const axisViewButtons = $$("[data-axis-view]");
@@ -6015,6 +6132,7 @@
     const periodicTable = $("#periodicTable");
     const elementPanel = $("#elementPanel");
     const elementHistoryWorkbench = $("#elementHistoryWorkbench");
+    const periodicCruciblePanel = $("#periodicCruciblePanel");
     const familyPanel = $("#familyPanel");
     const familyChips = $("#familyChips");
     const tableStatus = $("#tableStatus");
@@ -7661,7 +7779,8 @@
 
     function renderPeriodicTable() {
       const available = new Set(curatedArticles().flatMap(article => article.elements || []));
-      periodicTable.innerHTML = periodicLayout.map(([sym, col, row], i) => {
+      const callout = `<div class="periodic-callout">${esc(t("periodicStatus"))}</div>`;
+      periodicTable.innerHTML = callout + periodicLayout.map(([sym, col, row], i) => {
         const meta = elementMeta[sym] || [sym, ""];
         const on = available.has(sym);
         return `<button class="element-cell ${on ? "available" : "disabled"}"
@@ -7676,7 +7795,7 @@
         cell.addEventListener("click", () => {
           state.selectedElement = cell.dataset.symbol;
           applyFilters();
-          elementHistoryWorkbench?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          periodicCruciblePanel?.scrollIntoView({ behavior: "smooth", block: "nearest" });
         });
       });
     }
@@ -7892,10 +8011,6 @@
       document.querySelectorAll("[data-page-tab]").forEach(tab => {
         tab.classList.toggle("active", tab.dataset.pageTab === page);
       });
-      if (advancedLibrary) {
-        if (["materials", "literature", "data"].includes(page)) advancedLibrary.setAttribute("open", "");
-        else advancedLibrary.removeAttribute("open");
-      }
       if (page === "report") makeChatTable();
       if (!options.preserveScroll) {
         const target = page === "module-select"
@@ -8574,12 +8689,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         <h3>${esc(state.selectedElement)} · ${esc(meta[0])}</h3>
         <p class="muted">${esc(intro)}</p>
         <div class="chips">
-          <span class="chip good">${esc(rows.length)} seed material rows</span>
+          <span class="chip good">${esc(rows.length)} ${currentLang === "zh" ? "材料条目" : "material rows"}</span>
           ${families.map(v => `<span class="chip good">${esc(v)}</span>`).join("")}
-          <span class="chip trusted">${articleRows.length} real article records</span>
+          <span class="chip trusted">${articleRows.length} ${currentLang === "zh" ? "图表线索" : "figure leads"}</span>
         </div>
         <p><strong>${currentLang === "zh" ? "代表材料" : "Representative materials"}:</strong> ${esc(mats.slice(0, 8).join(", ") || "-")}</p>
-        <ul>${articleRows.slice(0, 5).map(article => `<li>${esc(article.title)} <span class="muted">(${esc(article.year)})</span></li>`).join("") || `<li class="muted">${currentLang === "zh" ? "暂无精选真实论文图记录。" : "No curated real-figure article record yet."}</li>`}</ul>
+        <p class="muted">${currentLang === "zh"
+          ? `当前只显示元素摘要，不在这里展开文献列表；相关图表线索共 ${articleRows.length} 条，可在图表库继续查看。`
+          : `This card shows an element summary rather than a literature list; ${articleRows.length} figure leads can be inspected in the figure library.`}</p>
       `;
     }
 
@@ -8587,34 +8704,108 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const familyList = uniq(rows.map(r => familyName(r.family))).slice(0, 3).join(", ");
       const materialList = rows.map(r => r.display_name || r.material).slice(0, 3).join(", ");
       const articleText = articleRows.length
-        ? (currentLang === "zh" ? `已有 ${articleRows.length} 条精选 ARPES 真实论文图记录。` : `${articleRows.length} curated ARPES real-figure article records are available.`)
-        : (currentLang === "zh" ? "目前还没有精选真实论文图记录，可通过 WoS/Scholar 导入补充。" : "No curated real-figure record yet; add more through WoS/Scholar import.");
+        ? (currentLang === "zh" ? `页面已有 ${articleRows.length} 条相关图表记录可作背景参考。` : `${articleRows.length} related figure records are available as background context.`)
+        : (currentLang === "zh" ? "目前相关图表记录还少，可通过后续数据整理补充。" : "Related figure records are still sparse and can be expanded later.");
       const role = rows.length
         ? (currentLang === "zh"
           ? `${symbol} 出现在 ${rows.length} 个种子材料条目中，主要关联 ${familyList || "若干超导材料家族"}，例如 ${materialList || "待补充材料"}。`
           : `${symbol} appears in ${rows.length} seed material rows, mainly linked to ${familyList || "several superconducting families"}, such as ${materialList || "materials to be added"}.`)
         : (currentLang === "zh"
-          ? `${symbol} 暂无种子材料条目，但可以作为后续文献和实验数据导入的候选元素。`
-          : `${symbol} has no seed material row yet, but can be used as a candidate element for future literature and experimental data imports.`);
+          ? `${symbol} 暂无种子材料条目，但可以作为后续材料库和实验数据补充的候选元素。`
+          : `${symbol} has no seed material row yet, but can be used as a candidate element for future material-library and experimental-data expansion.`);
       return `${role} ${articleText}`;
+    }
+
+    function elementSummaryRows(symbol, rows, articleRows, prediction) {
+      const families = uniq(rows.map(row => familyName(row.family))).slice(0, 5);
+      const materials = rows
+        .slice()
+        .sort((a, b) => Number(b.transition_temperature_K || 0) - Number(a.transition_temperature_K || 0))
+        .slice(0, 5)
+        .map(row => row.display_name || row.material);
+      const tcValues = rows.map(row => Number(row.transition_temperature_K)).filter(Number.isFinite);
+      const tcRange = tcValues.length
+        ? `${Math.min(...tcValues)}-${Math.max(...tcValues)} K`
+        : (currentLang === "zh" ? "待补充" : "pending");
+      const arpesTerms = uniq(rows.flatMap(row => [
+        ...(row.arpes_special_properties || []),
+        ...(row.q_dependent_observables || []),
+        row.photon_arpes_notes
+      ]).map(value => localizeArpesText(value)).filter(Boolean)).slice(0, 5);
+      return [
+        {
+          label: currentLang === "zh" ? "元素定位" : "Element role",
+          value: elementIntro(symbol, rows, articleRows)
+        },
+        {
+          label: currentLang === "zh" ? "主要材料家族" : "Main families",
+          value: families.join(" / ") || (currentLang === "zh" ? "待建立材料家族" : "family pending")
+        },
+        {
+          label: currentLang === "zh" ? "代表材料" : "Representative materials",
+          value: materials.join(", ") || symbol
+        },
+        {
+          label: currentLang === "zh" ? "Tc 范围" : "Tc range",
+          value: tcRange
+        },
+        {
+          label: currentLang === "zh" ? "ARPES 关注点" : "ARPES focus",
+          value: arpesTerms.join("；") || (currentLang === "zh" ? "待从实验图或数据库图中补充" : "to be filled from experiment or database figures")
+        },
+        {
+          label: currentLang === "zh" ? "综合判断" : "Summary judgment",
+          value: prediction.summary
+        }
+      ];
+    }
+
+    function renderPeriodicCruciblePanel(symbol = "", rows = [], articleRows = [], prediction = null) {
+      if (!periodicCruciblePanel) return;
+      const hasElement = !!symbol;
+      const model = prediction || (hasElement ? predictElementPotential(symbol, rows, articleRows) : null);
+      periodicCruciblePanel.innerHTML = hasElement && model
+        ? `
+          <h3>${currentLang === "zh" ? "坩埚预测" : "Crucible Prediction"}</h3>
+          ${crucibleVisualHtml()}
+          <div class="crucible-body">
+            <div class="prediction-score">
+              <strong>${currentLang === "zh" ? "探索价值" : "Exploration value"}: ${model.score}/100</strong>
+              <div class="score-bar"><span style="--score:${model.score}%"></span></div>
+            </div>
+            <p>${esc(model.summary)}</p>
+            <div class="chips">
+              ${model.tags.map(tag => `<span class="chip">${esc(tag)}</span>`).join("")}
+            </div>
+            <button class="primary" type="button" id="runCrucibleBtn">${currentLang === "zh" ? "用坩埚生成建议" : "Run crucible"}</button>
+            <p class="muted" id="crucibleAdvice">${esc(model.advice)}</p>
+          </div>
+        `
+        : `
+          <h3>${currentLang === "zh" ? "坩埚预测" : "Crucible Prediction"}</h3>
+          ${crucibleVisualHtml()}
+          <div class="crucible-body">
+            <p class="muted">${currentLang === "zh"
+              ? "选择周期表中的绿色元素后，坩埚会根据元素、材料家族、Tc 和文献密度给出下一步探索建议。"
+              : "Select a green element; the crucible combines element, family, Tc, and article density into a next-step exploration hint."}</p>
+          </div>
+        `;
+      $("#runCrucibleBtn")?.addEventListener("click", () => {
+        const advice = $("#crucibleAdvice");
+        if (advice && model) advice.textContent = model.nextStep;
+      });
     }
 
     function renderElementHistoryWorkbench() {
       if (!elementHistoryWorkbench) return;
       if (!state.selectedElement) {
+        renderPeriodicCruciblePanel();
         elementHistoryWorkbench.innerHTML = `
           <div class="element-history-panel">
-            <h3>${currentLang === "zh" ? "元素相关历史" : "Element History"}</h3>
+            <h3>${currentLang === "zh" ? "元素相关总结" : "Element Summary"}</h3>
             <p class="muted">${currentLang === "zh"
-              ? "选择周期表中的绿色元素后，这里会显示相关材料历史，而不是跳转到文献页。"
-              : "Select a green element in the periodic table to show related material history here without jumping to the literature page."}</p>
-          </div>
-          <div class="crucible-panel">
-            <h3>${currentLang === "zh" ? "坩埚预测" : "Crucible Prediction"}</h3>
-            ${crucibleVisualHtml()}
-            <p class="muted">${currentLang === "zh"
-              ? "坩埚会根据元素、材料家族、Tc 和文献密度给出下一步探索建议。"
-              : "The crucible combines element, family, Tc, and article density into a next-step exploration hint."}</p>
+              ? "选择周期表中的绿色元素后，这里会汇总它在超导材料中的角色、代表体系、Tc 范围和 ARPES 关注点。"
+              : "Select a green element to summarize its superconducting-material role, representative systems, Tc range, and ARPES focus."}</p>
           </div>
         `;
         return;
@@ -8624,48 +8815,30 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const meta = elementMeta[symbol] || [symbol, ""];
       const rows = (state.db?.materials || []).filter(row => (row.elements || []).includes(symbol));
       const articleRows = curatedArticles().filter(article => articleMatchesElement(article, symbol));
-      const events = elementHistoryEvents(symbol, rows, articleRows);
       const prediction = predictElementPotential(symbol, rows, articleRows);
+      renderPeriodicCruciblePanel(symbol, rows, articleRows, prediction);
+      const summaryRows = elementSummaryRows(symbol, rows, articleRows, prediction);
       const familyChips = uniq(rows.map(row => familyName(row.family))).slice(0, 6)
         .map(value => `<span class="chip good">${esc(value)}</span>`).join("");
 
       elementHistoryWorkbench.innerHTML = `
         <div class="element-history-panel">
-          <h3>${esc(symbol)} · ${esc(meta[0])} ${currentLang === "zh" ? "相关历史" : "History"}</h3>
+          <h3>${esc(symbol)} · ${esc(meta[0])} ${currentLang === "zh" ? "元素相关总结" : "Element Summary"}</h3>
           <div class="chips">
             <span class="chip good">${esc(rows.length)} ${currentLang === "zh" ? "材料条目" : "material rows"}</span>
-            <span class="chip trusted">${esc(articleRows.length)} ${currentLang === "zh" ? "真实论文记录" : "real article records"}</span>
+            <span class="chip trusted">${esc(articleRows.length)} ${currentLang === "zh" ? "可参考图表记录" : "reference figure records"}</span>
             ${familyChips}
           </div>
           <div class="history-timeline">
-            ${events.map(event => `
+            ${summaryRows.map(item => `
               <div class="history-event">
-                <strong>${esc(event.year)} · ${esc(event.title)}</strong>
-                <span>${esc(event.note)}</span>
+                <strong>${esc(item.label)}</strong>
+                <span>${esc(item.value)}</span>
               </div>
             `).join("")}
           </div>
         </div>
-        <div class="crucible-panel">
-          <h3>${currentLang === "zh" ? "坩埚预测" : "Crucible Prediction"}</h3>
-          ${crucibleVisualHtml()}
-          <div class="prediction-score">
-            <strong>${currentLang === "zh" ? "探索价值" : "Exploration value"}: ${prediction.score}/100</strong>
-            <div class="score-bar"><span style="--score:${prediction.score}%"></span></div>
-          </div>
-          <p>${esc(prediction.summary)}</p>
-          <div class="chips">
-            ${prediction.tags.map(tag => `<span class="chip">${esc(tag)}</span>`).join("")}
-          </div>
-          <button class="primary" type="button" id="runCrucibleBtn">${currentLang === "zh" ? "用坩埚生成建议" : "Run crucible"}</button>
-          <p class="muted" id="crucibleAdvice">${esc(prediction.advice)}</p>
-        </div>
       `;
-
-      $("#runCrucibleBtn")?.addEventListener("click", () => {
-        const advice = $("#crucibleAdvice");
-        if (advice) advice.textContent = prediction.nextStep;
-      });
     }
 
     function crucibleVisualHtml() {
@@ -8700,7 +8873,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : [{
           year: currentLang === "zh" ? "待补充" : "Pending",
           title: `${symbol} ${currentLang === "zh" ? "历史线索" : "history leads"}`,
-          note: currentLang === "zh" ? "还没有相关材料或真实论文记录，可从 WoS/Scholar/API 导入。" : "No related material or real-article records yet; import from WoS, Scholar, or APIs."
+          note: currentLang === "zh" ? "还没有相关材料或图表记录，可从数据整理和导入工具继续补充。" : "No related material or figure records yet; expand through data curation and import tools."
         }];
     }
 
@@ -9147,8 +9320,56 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return 0;
     }
 
+    function axisPointTooltipHtml(point) {
+      const pressure = estimatePressureGPa(point);
+      const pressureText = pressure ? `${pressure} GPa` : (currentLang === "zh" ? "常压 / 未记录压力" : "ambient / pressure not recorded");
+      const note = currentLang === "zh" ? point.zh : point.en;
+      return `
+        <strong>${esc(point.label)} · ${esc(point.year)}</strong>
+        <div>${currentLang === "zh" ? "家族" : "Family"}: ${esc(point.family || "-")}</div>
+        <div>X: ${esc(point.year)} · Y: ${esc(pressureText)} · Z: Tc ${esc(point.tc)}</div>
+        <div>${esc(note)}</div>
+      `;
+    }
+
+    function positionAxisPointTooltip(pointEl, event) {
+      if (!axisPointTooltip || !cubeViewport) return;
+      const viewportRect = cubeViewport.getBoundingClientRect();
+      let x = 0;
+      let y = 0;
+      if (event && Number.isFinite(event.clientX) && Number.isFinite(event.clientY)) {
+        x = event.clientX - viewportRect.left + 14;
+        y = event.clientY - viewportRect.top + 14;
+      } else if (pointEl) {
+        const rect = pointEl.getBoundingClientRect();
+        x = rect.left + rect.width / 2 - viewportRect.left + 14;
+        y = rect.top + rect.height / 2 - viewportRect.top + 14;
+      }
+      axisPointTooltip.style.left = `${Math.max(8, x)}px`;
+      axisPointTooltip.style.top = `${Math.max(8, y)}px`;
+      requestAnimationFrame(() => {
+        const tipRect = axisPointTooltip.getBoundingClientRect();
+        const maxX = Math.max(8, viewportRect.width - tipRect.width - 8);
+        const maxY = Math.max(8, viewportRect.height - tipRect.height - 8);
+        axisPointTooltip.style.left = `${Math.min(Math.max(8, x), maxX)}px`;
+        axisPointTooltip.style.top = `${Math.min(Math.max(8, y), maxY)}px`;
+      });
+    }
+
+    function showAxisPointTooltip(pointEl, point, event) {
+      if (!axisPointTooltip || !point) return;
+      axisPointTooltip.innerHTML = axisPointTooltipHtml(point);
+      axisPointTooltip.hidden = false;
+      positionAxisPointTooltip(pointEl, event);
+    }
+
+    function hideAxisPointTooltip() {
+      if (axisPointTooltip) axisPointTooltip.hidden = true;
+    }
+
     function renderAxisPoints() {
       if (!axisPointLayer) return;
+      hideAxisPointTooltip();
       const yearMin = 1900;
       const yearMax = 2025;
       const tcMax = 300;
@@ -9199,18 +9420,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       axisPointLayer.innerHTML = plottedPoints.map(({ point, pressure, px, py, pz, color }) => {
         return `<button class="axis-point" type="button" data-history-point="${esc(point.id)}"
           style="--px:${px.toFixed(1)}px;--py:${py.toFixed(1)}px;--pz:${pz.toFixed(1)}px;--point-color:${esc(color)}"
-          onclick="window.__selectAxisPoint && window.__selectAxisPoint(this)"
-          onpointerdown="window.__selectAxisPoint && window.__selectAxisPoint(this)"
+          onclick="event.stopPropagation(); window.__selectAxisPoint && window.__selectAxisPoint(this, event)"
+          onpointerdown="event.stopPropagation(); window.__selectAxisPoint && window.__selectAxisPoint(this, event)"
           aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
           title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa">
           <span class="axis-point-shadow" aria-hidden="true"></span>
-          <span class="axis-point-orb" aria-hidden="true"></span>
+          <span class="axis-point-orb" aria-hidden="true"><span class="axis-point-glint"></span></span>
         </button>`;
       }).join("");
       if (axisHitLayer) axisHitLayer.innerHTML = "";
-      const activatePoint = pointEl => {
+      const activatePoint = (pointEl, event) => {
+        event?.preventDefault?.();
+        event?.stopPropagation?.();
         const point = historyChartPoints.find(entry => entry.id === pointEl?.dataset.historyPoint);
         if (!point) return;
+        activeCubeFace = "";
+        cubeViewMode = "cube";
+        historyCube?.classList.remove("cube-view-axis");
+        historyCube?.classList.add("cube-view-cube");
+        if (cubeViewModeBtn) cubeViewModeBtn.textContent = t("cubeViewModeAxis");
+        updateCubeFacePicker();
+        axisViewButtons.forEach(button => button.classList.remove("active"));
         axisPointLayer.querySelectorAll(".axis-point").forEach(node => node.classList.remove("active"));
         const pointId = pointEl.dataset.historyPoint;
         axisPointLayer.querySelector(`.axis-point[data-history-point="${CSS.escape(pointId)}"]`)?.classList.add("active");
@@ -9218,24 +9448,31 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       };
       window.__selectAxisPoint = activatePoint;
       axisPointLayer.querySelectorAll(".axis-point").forEach(pointEl => {
-        const previewPoint = () => {
+        const previewPoint = event => {
           const point = historyChartPoints.find(entry => entry.id === pointEl?.dataset.historyPoint);
-          if (point) renderCubeReadout(point);
+          if (point) {
+            renderCubeReadout(point);
+            showAxisPointTooltip(pointEl, point, event);
+          }
         };
         pointEl.addEventListener("mouseenter", previewPoint);
+        pointEl.addEventListener("pointermove", previewPoint);
+        pointEl.addEventListener("mouseleave", hideAxisPointTooltip);
         pointEl.addEventListener("focus", previewPoint);
-        pointEl.addEventListener("click", () => activatePoint(pointEl));
-        pointEl.addEventListener("pointerdown", () => activatePoint(pointEl));
+        pointEl.addEventListener("blur", hideAxisPointTooltip);
+        pointEl.addEventListener("click", event => activatePoint(pointEl, event));
+        pointEl.addEventListener("pointerdown", event => activatePoint(pointEl, event));
         pointEl.addEventListener("keydown", event => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            activatePoint(pointEl);
+            event.stopPropagation();
+            activatePoint(pointEl, event);
           }
         });
       });
       axisPointLayer.addEventListener("click", event => {
         const pointEl = event.target.closest?.(".axis-point");
-        if (pointEl) activatePoint(pointEl);
+        if (pointEl) activatePoint(pointEl, event);
       });
     }
 
