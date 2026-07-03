@@ -612,7 +612,7 @@
 
     .magic-book-stage {
       position: relative;
-      width: min(1160px, 96vw);
+      width: min(1160px, 96vw, 150vh);
       min-height: min(760px, 92vh);
       display: grid;
       place-items: center;
@@ -749,8 +749,9 @@
     .magic-open-book {
       position: relative;
       z-index: 4;
-      width: min(780px, 88vw);
-      height: clamp(280px, 42vw, 430px);
+      width: min(780px, 88vw, 105vh);
+      aspect-ratio: 1.82;
+      height: auto;
       border: 0;
       border-radius: 26px;
       padding: 0;
@@ -1006,6 +1007,43 @@
       0%, 100% { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.4); }
       35% { opacity: 1; }
       70% { opacity: 0.45; transform: translate3d(10px, -24px, 0) scale(1.1); }
+    }
+
+    @media (max-height: 680px) {
+      .magic-book-screen {
+        padding: 14px;
+      }
+      .magic-book-stage {
+        min-height: calc(100vh - 28px);
+        gap: 10px;
+      }
+      .magic-book-copy {
+        gap: 5px;
+        margin-bottom: 2px;
+      }
+      .magic-book-copy h1 {
+        font-size: clamp(30px, 5.6vh, 48px);
+      }
+      .magic-book-copy p {
+        font-size: 13px;
+      }
+      .magic-tome-shelf {
+        top: clamp(82px, 17vh, 112px);
+      }
+      .magic-tome {
+        width: clamp(92px, 16vh, 140px);
+        font-size: clamp(15px, 2.8vh, 22px);
+      }
+      .magic-open-book {
+        width: min(700px, 82vw, 92vh);
+      }
+      .magic-primary {
+        min-height: 40px;
+        padding: 8px 18px;
+      }
+      .magic-hint {
+        display: none;
+      }
     }
 
     .top-menu-bar {
@@ -3918,9 +3956,10 @@
         border-radius: 10px;
       }
       .magic-open-book {
-        width: 96vw;
-        height: 310px;
-        margin-top: 44px;
+        width: min(96vw, 86vh);
+        aspect-ratio: 1.82;
+        height: auto;
+        margin-top: clamp(18px, 7vw, 44px);
       }
       .magic-page-card {
         left: 9%;
