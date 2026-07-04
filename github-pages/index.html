@@ -9155,7 +9155,6 @@
       if (magicBookScreen && !magicBookScreen.hidden) {
         if (magicBookMode !== "toc") {
           openMagicBookCatalog();
-          return;
         }
         magicBookMode = "flipping";
         magicBookTocItems.forEach(item => item.classList.toggle("active", item.dataset.magicPage === magicBookTargetPage));
