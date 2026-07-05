@@ -278,7 +278,7 @@
       overflow: hidden;
       background:
         linear-gradient(180deg, rgba(3,7,14,0.12), rgba(3,7,14,0.56)),
-        url("assets/ustc-login-ring.png") center / cover no-repeat,
+        url("assets/ustc-login-ring.jpg") center / cover no-repeat,
         #050812;
       box-shadow: inset 0 0 46px rgba(0,0,0,0.54), 0 30px 42px rgba(0,0,0,0.56);
     }
@@ -674,9 +674,9 @@
       z-index: 1;
       opacity: 0.74;
       transition:
-        top 360ms cubic-bezier(0.19, 1, 0.22, 1),
-        opacity 220ms ease,
-        transform 360ms cubic-bezier(0.19, 1, 0.22, 1);
+        top 210ms cubic-bezier(0.19, 1, 0.22, 1),
+        opacity 150ms ease,
+        transform 210ms cubic-bezier(0.19, 1, 0.22, 1);
     }
 
     .magic-tome {
@@ -702,7 +702,7 @@
         inset 0 -12px 0 rgba(0,0,0,0.1);
       animation: magic-tome-float 5.8s ease-in-out infinite;
       cursor: pointer;
-      transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
+      transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
     }
 
     .magic-tome:hover,
@@ -822,7 +822,7 @@
       --magic-cover-x: 46deg;
       --magic-page-x: 34deg;
       filter: drop-shadow(0 34px 30px rgba(4,22,36,0.4));
-      transition: transform 220ms ease, filter 220ms ease;
+      transition: transform 150ms ease, filter 150ms ease;
     }
 
     .magic-book-screen.is-library .magic-tome-shelf {
@@ -883,7 +883,7 @@
       cursor: pointer;
       transform: rotateX(var(--magic-cover-x)) rotateZ(-1deg);
       transform-style: preserve-3d;
-      transition: opacity 220ms ease, transform 520ms cubic-bezier(0.19, 1, 0.22, 1), filter 220ms ease;
+      transition: opacity 150ms ease, transform 260ms cubic-bezier(0.19, 1, 0.22, 1), filter 150ms ease;
       z-index: 8;
     }
 
@@ -964,7 +964,7 @@
       box-shadow: 0 0 28px rgba(31,196,255,0.58), inset 0 0 22px rgba(255,255,255,0.18);
       z-index: 4;
       opacity: 0;
-      transition: opacity 260ms ease;
+      transition: opacity 150ms ease;
     }
 
     .magic-page {
@@ -985,9 +985,9 @@
       z-index: 3;
       opacity: 0;
       transition:
-        opacity 260ms ease,
-        transform 620ms cubic-bezier(0.19, 1, 0.22, 1),
-        filter 260ms ease;
+        opacity 150ms ease,
+        transform 300ms cubic-bezier(0.19, 1, 0.22, 1),
+        filter 150ms ease;
     }
 
     .magic-page::before {
@@ -1278,7 +1278,7 @@
     }
 
     .magic-book-screen.is-flipping .magic-page-turner {
-      animation: magic-page-turn 260ms cubic-bezier(0.2, 0.86, 0.18, 1) forwards;
+      animation: magic-page-turn 170ms cubic-bezier(0.2, 0.86, 0.18, 1) forwards;
     }
 
     @keyframes magic-aurora {
@@ -7188,10 +7188,12 @@
         historyInteractiveChart.dataset.rendered = "false";
         renderHistoryChartPoints();
       }
-      renderCubeFacePicker();
-      renderCubeReadout("cuprate");
-      renderAxisPoints();
-      applyCubeViewMode();
+      if (historyCubeSetupDone) {
+        renderCubeFacePicker();
+        renderCubeReadout("cuprate");
+        renderAxisPoints();
+        applyCubeViewMode();
+      }
       renderPeriodicTable();
       highlightPeriodicTable();
       renderFloatingComparison();
@@ -9330,7 +9332,7 @@
       if (loginPassword) loginPassword.value = "";
       if (confirmPassword) confirmPassword.value = "";
       showToast(t("logoutToast"));
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
 
     function pageListMatches(value, page) {
@@ -9354,13 +9356,19 @@
         }).catch(() => {});
       }
       if (page === "data") renderLibrary().catch(() => {});
+      if (page === "history") {
+        requestAnimationFrame(() => {
+          renderOverview();
+          ensureHistoryCubeReady();
+        });
+      }
       if (!options.preserveScroll) {
         const target = page === "module-select"
           ? document.querySelector("#section-module-select")
           : page === "history"
             ? document.querySelector("#section-milestones")
             : document.querySelector(`.app-page[data-app-page~="${CSS.escape(page)}"]`);
-        target?.scrollIntoView({ behavior: "smooth", block: "start" });
+        target?.scrollIntoView({ behavior: "auto", block: "start" });
       }
       updateTocActiveSection();
     }
@@ -9388,7 +9396,7 @@
         magicBookMode = "flipping";
         magicBookTocItems.forEach(item => item.classList.toggle("active", item.dataset.magicPage === magicBookTargetPage));
         magicBookScreen.classList.add("is-flipping", "is-opening");
-        window.setTimeout(() => renderWorkbenchForUser(user, magicBookTargetPage), 300);
+        window.setTimeout(() => renderWorkbenchForUser(user, magicBookTargetPage), 120);
       } else {
         renderWorkbenchForUser(user, magicBookTargetPage);
       }
@@ -9406,11 +9414,8 @@
       if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.name) loginName.value = user.name;
       if (loginGroup && user.group) loginGroup.value = user.group;
-      renderOverview();
-      renderCubeReadout("cuprate");
       applyFilters();
       renderOurData();
-      renderArticles();
       renderToc();
       showAppPage(targetPage || activeAppPage || "history", { preserveScroll: false });
       renderChatThread();
@@ -10054,7 +10059,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       renderArticles();
       highlightPeriodicTable();
       renderElementHistoryWorkbench();
-      renderOverview();
+      if (activeAppPage === "history" || activeAppPage === "literature") renderOverview();
       renderSourceDirectory();
       updateCompareUI();
       renderToc();
@@ -10579,6 +10584,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let cubeResizeRaf = 0;
     let cubeResizeObserver = null;
     let axisSpriteRaf = 0;
+    let historyCubeSetupDone = false;
     const cubeFaces = {
       conventional: {
         zh: ["常规超导", "Hg, Pb, Nb, Nb3Sn 等低温常规超导是历史基线。"],
@@ -10981,8 +10987,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       cubeReadout.innerHTML = `<strong style="color:var(--accent-glow);">${esc(title)}</strong><br>${esc(body)}`;
     }
 
+    function ensureHistoryCubeReady() {
+      if (!historyCube || !cubeViewport) return;
+      if (historyCubeSetupDone) {
+        scheduleCubePointRefresh();
+        applyCubeTransform();
+        return;
+      }
+      requestAnimationFrame(() => setupHistoryCube());
+    }
+
     function setupHistoryCube() {
       if (!historyCube || !cubeViewport) return;
+      if (historyCubeSetupDone) {
+        applyCubeTransform();
+        renderAxisPoints();
+        renderCubeFacePicker();
+        renderCubeFaceReadout(activeCubeFace || "cuprate");
+        applyCubeViewMode();
+        return;
+      }
+      historyCubeSetupDone = true;
       applyCubeTransform();
       renderAxisPoints();
       renderCubeFacePicker();
@@ -14069,7 +14094,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     // ===== 启动页面 =====
     installModelHub();
     initAiConfigForm();
-    setupHistoryCube();
     setupRoundtableModules();
     setupTocScrollSpy();
     initFloatingComparePanel();
