@@ -592,8 +592,7 @@
         radial-gradient(circle at 18% 76%, rgba(20,184,166,0.38), transparent 22%),
         radial-gradient(circle at 82% 74%, rgba(147,51,234,0.26), transparent 20%),
         conic-gradient(from 110deg at 50% 60%, transparent 0 14%, rgba(255,255,255,0.62) 16% 17%, transparent 19% 34%, rgba(60,210,255,0.34) 37% 39%, transparent 41% 100%);
-      opacity: 0.78;
-      animation: magic-aurora 12s linear infinite;
+      opacity: 0.48;
       z-index: -2;
     }
 
@@ -606,7 +605,6 @@
       height: 18%;
       border-radius: 50%;
       background: radial-gradient(ellipse at center, rgba(0,31,54,0.38), transparent 68%);
-      filter: blur(18px);
       z-index: -1;
     }
 
@@ -700,15 +698,14 @@
         0 24px 28px rgba(10,28,45,0.24),
         inset 10px 0 0 rgba(0,0,0,0.16),
         inset 0 -12px 0 rgba(0,0,0,0.1);
-      animation: magic-tome-float 5.8s ease-in-out infinite;
       cursor: pointer;
-      transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+      transition: transform 120ms ease, box-shadow 120ms ease;
     }
 
     .magic-tome:hover,
     .magic-tome:focus-visible,
     .magic-tome.active {
-      filter: brightness(1.08) saturate(1.1);
+      transform: rotateX(58deg) rotateZ(var(--book-tilt, 0deg)) translateY(calc(var(--book-y, 0px) - 5px));
       box-shadow:
         0 30px 36px rgba(10,28,45,0.3),
         0 0 32px rgba(69,244,255,0.42),
@@ -821,8 +818,7 @@
       transform-style: preserve-3d;
       --magic-cover-x: 46deg;
       --magic-page-x: 34deg;
-      filter: drop-shadow(0 34px 30px rgba(4,22,36,0.4));
-      transition: transform 150ms ease, filter 150ms ease;
+      transition: transform 150ms ease;
     }
 
     .magic-book-screen.is-library .magic-tome-shelf {
@@ -837,7 +833,6 @@
       opacity: 0;
       pointer-events: none;
       transform: translateY(72px) scale(0.7) rotateX(8deg);
-      filter: blur(0.6px) drop-shadow(0 24px 24px rgba(4,22,36,0.18));
     }
 
     .magic-book-screen.is-library .magic-book-light {
@@ -847,7 +842,6 @@
     .magic-open-book:hover,
     .magic-open-book:focus-visible {
       transform: translateY(-6px) scale(1.015);
-      filter: drop-shadow(0 44px 38px rgba(4,22,36,0.48));
       outline: none;
     }
 
@@ -883,7 +877,7 @@
       cursor: pointer;
       transform: rotateX(var(--magic-cover-x)) rotateZ(-1deg);
       transform-style: preserve-3d;
-      transition: opacity 150ms ease, transform 260ms cubic-bezier(0.19, 1, 0.22, 1), filter 150ms ease;
+      transition: opacity 150ms ease, transform 260ms cubic-bezier(0.19, 1, 0.22, 1);
       z-index: 8;
     }
 
@@ -949,7 +943,6 @@
       height: 18%;
       border-radius: 50%;
       background: radial-gradient(ellipse at center, rgba(0,22,42,0.46), transparent 72%);
-      filter: blur(8px);
     }
 
     .magic-book-spine {
@@ -986,8 +979,7 @@
       opacity: 0;
       transition:
         opacity 150ms ease,
-        transform 300ms cubic-bezier(0.19, 1, 0.22, 1),
-        filter 150ms ease;
+        transform 300ms cubic-bezier(0.19, 1, 0.22, 1);
     }
 
     .magic-page::before {
@@ -1005,8 +997,7 @@
         radial-gradient(circle at 58% 18%, rgba(255,255,255,0.82), transparent 13%),
         radial-gradient(circle at 48% 42%, rgba(28,225,255,0.72), transparent 18%),
         linear-gradient(105deg, transparent 0 42%, rgba(255,255,255,0.26) 45% 47%, transparent 50% 100%);
-      mix-blend-mode: screen;
-      animation: magic-page-shimmer 4.8s ease-in-out infinite;
+      opacity: 0.35;
     }
 
     .magic-page.left {
@@ -1191,9 +1182,7 @@
       background:
         radial-gradient(circle, #ffffff 0 6%, rgba(255,244,159,0.92) 7% 16%, rgba(20,184,166,0.48) 17% 32%, transparent 62%);
       transform: translate(-50%, -50%);
-      filter: blur(1px);
-      mix-blend-mode: screen;
-      animation: magic-pulse 2.6s ease-in-out infinite;
+      opacity: 0.78;
       z-index: 6;
     }
 
@@ -1224,10 +1213,7 @@
     }
 
     .magic-sparks {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 2;
+      display: none;
     }
 
     .magic-sparks span {
@@ -1245,11 +1231,10 @@
 
     .magic-book-screen.is-opening .magic-open-book {
       transform: translateY(-18px) scale(1.08) rotateX(4deg);
-      filter: drop-shadow(0 54px 46px rgba(4,22,36,0.52));
     }
 
     .magic-book-screen.is-opening .magic-book-light {
-      animation-duration: 0.7s;
+      opacity: 0.9;
     }
 
     .magic-book-screen.is-toc .magic-book-cover,
@@ -1257,7 +1242,6 @@
       opacity: 0;
       pointer-events: none;
       transform: rotateX(var(--magic-cover-x)) rotateY(-76deg) rotateZ(-4deg) translateX(-20%);
-      filter: blur(0.4px);
     }
 
     .magic-book-screen.is-toc .magic-book-spine,
@@ -3117,7 +3101,6 @@
       height: 11px;
       border-radius: 50%;
       background: radial-gradient(ellipse at center, rgba(0,0,0,0.5), rgba(0,0,0,0.22) 42%, transparent 72%);
-      filter: blur(1.4px);
       transform: translate(-50%, -50%) rotateX(68deg) translateZ(2px);
       pointer-events: none;
     }
@@ -3150,9 +3133,8 @@
 
     .axis-sphere-glow {
       background: radial-gradient(circle, var(--point-color, #22d3ee) 0 28%, transparent 72%);
-      filter: blur(4px);
-      opacity: 0.58;
-      transform: scale(1.42) translateZ(-3px);
+      opacity: 0.28;
+      transform: scale(1.18) translateZ(-3px);
     }
 
     .axis-sphere-core {
@@ -3164,12 +3146,10 @@
         radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 55%),
         var(--point-color, #22d3ee);
       box-shadow:
-        inset -9px -10px 11px rgba(0,0,0,0.62),
-        inset 5px 5px 8px rgba(255,255,255,0.38),
-        inset 0 0 7px rgba(255,255,255,0.24),
-        0 0 18px var(--point-color, #22d3ee),
-        0 11px 16px rgba(0,0,0,0.46);
-      filter: saturate(1.95) brightness(1.22) drop-shadow(0 0 7px var(--point-color, #22d3ee));
+        inset -7px -8px 9px rgba(0,0,0,0.56),
+        inset 4px 4px 7px rgba(255,255,255,0.34),
+        0 0 10px color-mix(in srgb, var(--point-color, #22d3ee), transparent 20%),
+        0 8px 12px rgba(0,0,0,0.38);
       transform: rotateX(var(--orb-x, 18deg)) rotateY(var(--orb-y, -32deg));
     }
 
@@ -3179,14 +3159,10 @@
       inset: 2px;
       border-radius: 50%;
       background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.52), transparent 25%);
-      mix-blend-mode: screen;
     }
 
     .axis-sphere-ring {
-      inset: 2px;
-      border: 1px solid rgba(255,255,255,0.46);
-      opacity: 0.34;
-      box-shadow: 0 0 8px rgba(255,255,255,0.2);
+      display: none;
     }
 
     .axis-sphere-ring.lat {
@@ -3205,7 +3181,6 @@
       height: 7px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(255,255,255,0.96), rgba(255,255,255,0.56) 45%, transparent 74%);
-      filter: blur(0.25px);
       transform: rotateX(var(--orb-x, 18deg)) rotateY(var(--orb-y, -32deg)) translateZ(14px);
       z-index: 3;
       pointer-events: none;
@@ -3223,7 +3198,6 @@
       background: rgba(8,15,24,0.94);
       color: var(--ink);
       box-shadow: 0 12px 28px rgba(0,0,0,0.38), 0 0 16px rgba(20,184,166,0.16);
-      backdrop-filter: blur(10px);
       pointer-events: none;
       font-size: 11px;
       line-height: 1.4;
@@ -3280,10 +3254,11 @@
 
     #axisPointLayer .axis-point-orb,
     #axisPointLayer .axis-point-shadow {
-      opacity: 0;
+      opacity: 1;
     }
 
     .axis-sprite {
+      display: none;
       position: absolute;
       left: 0;
       top: 0;
@@ -3298,8 +3273,7 @@
       cursor: pointer;
       transform: translate(-50%, -50%);
       pointer-events: auto;
-      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.38));
-      transition: transform 140ms ease, opacity 140ms ease, filter 140ms ease;
+      transition: transform 140ms ease, opacity 140ms ease;
     }
 
     .axis-sprite-orb {
@@ -3342,7 +3316,6 @@
     .axis-sprite:hover,
     .axis-sprite.active {
       transform: translate(-50%, -50%) scale(1.16);
-      filter: drop-shadow(0 13px 18px rgba(0,0,0,0.42));
     }
 
     .axis-sprite:hover .axis-sphere-core,
@@ -5434,7 +5407,7 @@
                   <button class="cube-face top" type="button" data-cube-face="arpes"><strong>ARPES</strong><span>bands · gaps</span></button>
                   <button class="cube-face bottom" type="button" data-cube-face="personal"><strong>Our Data</strong><span>local records</span></button>
                 </div>
-                <div id="axisSpriteLayer" aria-hidden="true"></div>
+                <div id="axisSpriteLayer" aria-hidden="true" hidden></div>
                 <div class="axis-point-tooltip" id="axisPointTooltip" hidden></div>
               </div>
               <div class="axis-legend">
@@ -10584,6 +10557,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let cubeResizeRaf = 0;
     let cubeResizeObserver = null;
     let axisSpriteRaf = 0;
+    const ENABLE_AXIS_SPRITES = false;
     let historyCubeSetupDone = false;
     const cubeFaces = {
       conventional: {
@@ -10628,7 +10602,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       historyCube.style.setProperty("--orb-x", `${-cubeRotation.x}deg`);
       historyCube.style.setProperty("--orb-y", `${-cubeRotation.y}deg`);
       historyCube.style.setProperty("--cube-scale", String(cubeScale));
-      scheduleAxisSpriteUpdate();
+      if (ENABLE_AXIS_SPRITES) scheduleAxisSpriteUpdate();
     }
 
     function setCubeScale(nextScale) {
@@ -10663,6 +10637,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function updateAxisSprites() {
+      if (!ENABLE_AXIS_SPRITES) return;
       if (!axisSpriteLayer || !axisPointLayer || !cubeViewport) return;
       const viewportRect = cubeViewport.getBoundingClientRect();
       axisSpriteLayer.querySelectorAll(".axis-sprite").forEach(sprite => {
@@ -10683,6 +10658,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function scheduleAxisSpriteUpdate() {
+      if (!ENABLE_AXIS_SPRITES) return;
       if (!axisSpriteLayer || axisSpriteLayer.hidden) return;
       if (axisSpriteRaf) return;
       axisSpriteRaf = requestAnimationFrame(() => {
@@ -10696,7 +10672,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       historyCube.classList.toggle("cube-view-axis", cubeViewMode === "axis");
       historyCube.classList.toggle("cube-view-cube", cubeViewMode === "cube");
       if (axisSpriteLayer) {
-        axisSpriteLayer.hidden = cubeViewMode !== "cube";
+        axisSpriteLayer.hidden = !ENABLE_AXIS_SPRITES || cubeViewMode !== "cube";
         if (!axisSpriteLayer.hidden) scheduleAxisSpriteUpdate();
       }
       if (axisModeBtn) axisModeBtn.style.display = "none";
@@ -10886,7 +10862,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           </span>
         </button>`;
       }).join("");
-      if (axisSpriteLayer) {
+      if (axisSpriteLayer && ENABLE_AXIS_SPRITES) {
         axisSpriteLayer.innerHTML = plottedPoints.map(({ point, pressure, color }) => {
           const activeClass = point.id === activeAxisPointId ? " active" : "";
           return `<button class="axis-sprite${activeClass}" type="button" data-history-point="${esc(point.id)}"
@@ -10902,6 +10878,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             </span>
           </button>`;
         }).join("");
+      } else if (axisSpriteLayer) {
+        axisSpriteLayer.innerHTML = "";
+        axisSpriteLayer.hidden = true;
       }
       if (axisHitLayer) axisHitLayer.innerHTML = "";
       const activatePoint = (pointEl, event) => {
@@ -10920,8 +10899,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const pointId = pointEl.dataset.historyPoint;
         activeAxisPointId = pointId;
         axisPointLayer.querySelector(`.axis-point[data-history-point="${CSS.escape(pointId)}"]`)?.classList.add("active");
-        axisSpriteLayer?.querySelectorAll(".axis-sprite").forEach(node => node.classList.toggle("active", node.dataset.historyPoint === pointId));
-        scheduleAxisSpriteUpdate();
+        if (ENABLE_AXIS_SPRITES) {
+          axisSpriteLayer?.querySelectorAll(".axis-sprite").forEach(node => node.classList.toggle("active", node.dataset.historyPoint === pointId));
+          scheduleAxisSpriteUpdate();
+        }
         renderCubeReadout(point);
       };
       window.__selectAxisPoint = activatePoint;
@@ -10934,7 +10915,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           }
         };
         pointEl.addEventListener("mouseenter", previewPoint);
-        pointEl.addEventListener("pointermove", previewPoint);
         pointEl.addEventListener("mouseleave", hideAxisPointTooltip);
         pointEl.addEventListener("focus", previewPoint);
         pointEl.addEventListener("blur", hideAxisPointTooltip);
@@ -10949,14 +10929,17 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         });
       };
       axisPointLayer.querySelectorAll(".axis-point").forEach(bindPointPreview);
-      axisSpriteLayer?.querySelectorAll(".axis-sprite").forEach(bindPointPreview);
-      if (axisSpriteLayer) {
+      if (ENABLE_AXIS_SPRITES) axisSpriteLayer?.querySelectorAll(".axis-sprite").forEach(bindPointPreview);
+      if (axisSpriteLayer && ENABLE_AXIS_SPRITES) {
         axisSpriteLayer.onclick = event => {
           const pointEl = event.target.closest?.(".axis-sprite");
           if (pointEl) activatePoint(pointEl, event);
         };
         axisSpriteLayer.hidden = cubeViewMode !== "cube";
         if (!axisSpriteLayer.hidden) updateAxisSprites();
+      } else if (axisSpriteLayer) {
+        axisSpriteLayer.onclick = null;
+        axisSpriteLayer.hidden = true;
       }
       axisPointLayer.onclick = event => {
         const pointEl = event.target.closest?.(".axis-point");
