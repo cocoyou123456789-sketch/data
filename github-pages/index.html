@@ -663,26 +663,36 @@
 
     .magic-tome-shelf {
       position: absolute;
-      top: clamp(108px, 15vh, 156px);
+      top: clamp(118px, 16vh, 164px);
       left: 50%;
-      width: min(960px, 88vw);
+      width: min(1080px, 92vw);
       display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      transform: translateX(-50%);
+      justify-content: center;
+      gap: clamp(14px, 2vw, 26px);
+      transform: translateX(-50%) scale(0.78);
       pointer-events: none;
       z-index: 1;
+      opacity: 0.74;
+      transition:
+        top 360ms cubic-bezier(0.19, 1, 0.22, 1),
+        opacity 220ms ease,
+        transform 360ms cubic-bezier(0.19, 1, 0.22, 1);
     }
 
     .magic-tome {
       position: relative;
-      width: clamp(120px, 15vw, 188px);
+      width: clamp(126px, 15vw, 190px);
       aspect-ratio: 0.78;
       display: grid;
       place-items: center;
+      align-content: center;
+      gap: 8px;
+      border: 0;
       border-radius: 14px 18px 16px 12px;
+      padding: 18px 12px 20px;
       color: #ffffff;
-      font-size: clamp(18px, 2.2vw, 30px);
+      font: inherit;
+      font-size: clamp(18px, 2.1vw, 28px);
       font-weight: 920;
       transform: rotateX(58deg) rotateZ(var(--book-tilt, 0deg)) translateY(var(--book-y, 0px));
       transform-style: preserve-3d;
@@ -691,6 +701,20 @@
         inset 10px 0 0 rgba(0,0,0,0.16),
         inset 0 -12px 0 rgba(0,0,0,0.1);
       animation: magic-tome-float 5.8s ease-in-out infinite;
+      cursor: pointer;
+      transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
+    }
+
+    .magic-tome:hover,
+    .magic-tome:focus-visible,
+    .magic-tome.active {
+      filter: brightness(1.08) saturate(1.1);
+      box-shadow:
+        0 30px 36px rgba(10,28,45,0.3),
+        0 0 32px rgba(69,244,255,0.42),
+        inset 10px 0 0 rgba(0,0,0,0.16),
+        inset 0 -12px 0 rgba(0,0,0,0.1);
+      outline: none;
     }
 
     .magic-tome::before,
@@ -719,6 +743,13 @@
       z-index: -1;
     }
 
+    .magic-tome.physics {
+      --book-tilt: -7deg;
+      --book-y: 4px;
+      background: linear-gradient(135deg, #0ea5e9, #0969b4 54%, #07306f);
+      animation-delay: -0.8s;
+    }
+
     .magic-tome.green {
       --book-tilt: -8deg;
       --book-y: 10px;
@@ -743,7 +774,36 @@
     .magic-tome span {
       position: relative;
       z-index: 1;
+      display: block;
+      line-height: 1.04;
       text-shadow: 0 2px 12px rgba(0,0,0,0.34);
+    }
+
+    .magic-tome small {
+      position: relative;
+      z-index: 1;
+      display: block;
+      max-width: 86%;
+      color: rgba(239,252,255,0.9);
+      font-size: clamp(10px, 1vw, 12px);
+      font-weight: 800;
+      line-height: 1.28;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.34);
+    }
+
+    .magic-tome em {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      border: 1px solid rgba(230,250,255,0.52);
+      border-radius: 999px;
+      padding: 3px 9px;
+      color: rgba(245,252,255,0.94);
+      background: rgba(2,18,42,0.24);
+      font-style: normal;
+      font-size: 10px;
+      font-weight: 860;
+      line-height: 1;
     }
 
     .magic-open-book {
@@ -763,6 +823,25 @@
       --magic-page-x: 34deg;
       filter: drop-shadow(0 34px 30px rgba(4,22,36,0.4));
       transition: transform 220ms ease, filter 220ms ease;
+    }
+
+    .magic-book-screen.is-library .magic-tome-shelf {
+      top: clamp(248px, 40vh, 330px);
+      transform: translateX(-50%) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 7;
+    }
+
+    .magic-book-screen.is-library .magic-open-book {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(72px) scale(0.7) rotateX(8deg);
+      filter: blur(0.6px) drop-shadow(0 24px 24px rgba(4,22,36,0.18));
+    }
+
+    .magic-book-screen.is-library .magic-book-light {
+      opacity: 0;
     }
 
     .magic-open-book:hover,
@@ -1049,6 +1128,33 @@
       line-height: 1.28;
     }
 
+    .magic-toc-item em {
+      display: inline-flex;
+      margin-top: 6px;
+      border: 1px solid rgba(180,230,255,0.34);
+      border-radius: 999px;
+      padding: 2px 8px;
+      color: rgba(229,246,255,0.78);
+      background: rgba(6,20,45,0.34);
+      font-style: normal;
+      font-size: 10px;
+      font-weight: 860;
+      letter-spacing: 0.2px;
+    }
+
+    .magic-toc-item.magic-toc-shell {
+      cursor: default;
+      opacity: 0.86;
+    }
+
+    .magic-toc-item.magic-toc-shell:hover,
+    .magic-toc-item.magic-toc-shell:focus-visible,
+    .magic-toc-item.magic-toc-shell.active {
+      border-color: rgba(180,230,255,0.5);
+      background: rgba(6,30,62,0.48);
+      transform: translateX(3px);
+    }
+
     .magic-page-turner {
       pointer-events: none;
       right: 0;
@@ -1230,6 +1336,9 @@
       }
       .magic-tome-shelf {
         top: clamp(82px, 17vh, 112px);
+      }
+      .magic-book-screen.is-library .magic-tome-shelf {
+        top: clamp(156px, 34vh, 222px);
       }
       .magic-tome {
         width: clamp(92px, 16vh, 140px);
@@ -4262,8 +4371,16 @@
         gap: 8px;
         width: 94vw;
       }
+      .magic-book-screen.is-library .magic-tome-shelf {
+        top: 220px;
+        width: min(520px, 92vw);
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        transform: translateX(-50%) scale(1);
+      }
       .magic-tome {
-        width: 28vw;
+        width: min(42vw, 190px);
+        justify-self: center;
         font-size: 16px;
         border-radius: 10px;
       }
@@ -5108,12 +5225,28 @@
       <div class="magic-book-copy">
         <span class="magic-kicker" data-i18n="magicBookKicker">登录成功 · 选择入口</span>
         <h1 data-i18n="magicBookTitle">材料数据库</h1>
-        <p data-i18n="magicBookLead">打开材料魔法书，进入历史、材料、文献、数据、模型和报告工作台。</p>
+        <p data-i18n="magicBookLead">先选择材料书，再打开对应材料数据库。</p>
       </div>
-      <div class="magic-tome-shelf" aria-hidden="true">
-        <div class="magic-tome green"><span data-i18n="magicBookChemistry">化学</span></div>
-        <div class="magic-tome orange"><span data-i18n="magicBookBiology">生物</span></div>
-        <div class="magic-tome purple"><span data-i18n="magicBookInfo">信息</span></div>
+      <div class="magic-tome-shelf" aria-label="选择材料书">
+        <button class="magic-tome physics" type="button" data-magic-library="physical">
+          <span data-i18n="magicBookShelfPhysical">物理材料</span>
+          <small data-i18n="magicBookShelfPhysicalHint">超导材料入口</small>
+        </button>
+        <button class="magic-tome green" type="button" data-magic-library-shell="chemistry">
+          <span data-i18n="magicBookChemistry">化学材料</span>
+          <small data-i18n="magicBookShelfChemistryHint">分子、晶体与反应库</small>
+          <em data-i18n="magicBookComingSoon">建设中</em>
+        </button>
+        <button class="magic-tome orange" type="button" data-magic-library-shell="biology">
+          <span data-i18n="magicBookBiology">生物材料</span>
+          <small data-i18n="magicBookShelfBiologyHint">软物质与生物界面</small>
+          <em data-i18n="magicBookComingSoon">建设中</em>
+        </button>
+        <button class="magic-tome purple" type="button" data-magic-library-shell="information">
+          <span data-i18n="magicBookInfo">信息材料</span>
+          <small data-i18n="magicBookShelfInfoHint">器件、光电与数据材料</small>
+          <em data-i18n="magicBookComingSoon">建设中</em>
+        </button>
       </div>
       <div class="magic-open-book" id="magicBookPanel" aria-label="打开材料魔法书">
         <span class="magic-book-shadow"></span>
@@ -5127,35 +5260,40 @@
           <span class="magic-page-line top"></span>
           <div class="magic-toc-list">
             <button class="magic-toc-item" type="button" data-magic-page="history">
-              <strong data-i18n="topMenuHome">历史</strong>
-              <span data-i18n="magicBookTocHistory">三维材料魔方与超导历史。</span>
+              <strong data-i18n="magicBookCardSuper">超导材料</strong>
+              <span data-i18n="magicBookTocSuper">进入 ARPES 超导材料数据库。</span>
             </button>
-            <button class="magic-toc-item" type="button" data-magic-page="materials">
-              <strong data-i18n="topMenuMaterials">材料</strong>
-              <span data-i18n="magicBookTocMaterials">周期表、元素筛选和材料索引。</span>
+            <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="photonic">
+              <strong data-i18n="magicBookCardPhoton">光子晶体</strong>
+              <span data-i18n="magicBookTocPhoton">光子能带、禁带和结构库。</span>
+              <em data-i18n="magicBookComingSoon">建设中</em>
             </button>
-            <button class="magic-toc-item" type="button" data-magic-page="literature">
-              <strong data-i18n="topMenuLiterature">文献</strong>
-              <span data-i18n="magicBookTocLiterature">论文搜索、图谱和文献库。</span>
+            <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="topological">
+              <strong data-i18n="magicBookCardTopo">拓扑绝缘体</strong>
+              <span data-i18n="magicBookTocTopo">拓扑态、边界态和能带材料。</span>
+              <em data-i18n="magicBookComingSoon">建设中</em>
             </button>
           </div>
           <span class="magic-page-line bottom"></span>
         </div>
         <div class="magic-page right">
-          <span class="magic-page-title" data-i18n="magicBookCatalogRight">工作台</span>
+          <span class="magic-page-title" data-i18n="magicBookCatalogRight">扩展库</span>
           <span class="magic-page-line top"></span>
           <div class="magic-toc-list">
-            <button class="magic-toc-item" type="button" data-magic-page="data">
-              <strong data-i18n="topMenuData">数据</strong>
-              <span data-i18n="magicBookTocData">HDF5 导入、图像浮窗和本地数据。</span>
+            <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="low-dimensional">
+              <strong data-i18n="magicBookCardLowDim">低维材料</strong>
+              <span data-i18n="magicBookTocLowDim">二维、范德华和量子薄膜材料。</span>
+              <em data-i18n="magicBookComingSoon">建设中</em>
             </button>
-            <button class="magic-toc-item" type="button" data-magic-page="model">
-              <strong data-i18n="topMenuModel">模型</strong>
-              <span data-i18n="magicBookTocModel">AI 接口、运行模型和检查接口。</span>
+            <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="magnetic">
+              <strong data-i18n="magicBookCardMagnetic">磁性材料</strong>
+              <span data-i18n="magicBookTocMagnetic">自旋、磁有序和关联电子材料。</span>
+              <em data-i18n="magicBookComingSoon">建设中</em>
             </button>
-            <button class="magic-toc-item" type="button" data-magic-page="report">
-              <strong data-i18n="topMenuReport">报告</strong>
-              <span data-i18n="magicBookTocReport">导出当前筛选和调研报告。</span>
+            <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="bio-info">
+              <strong data-i18n="magicBookCardBioInfo">生物 / 信息材料</strong>
+              <span data-i18n="magicBookTocBioInfo">软物质、生物材料和信息功能材料。</span>
+              <em data-i18n="magicBookComingSoon">建设中</em>
             </button>
           </div>
           <span class="magic-page-line bottom"></span>
@@ -5163,8 +5301,8 @@
         <span class="magic-page-turner" aria-hidden="true"><span data-i18n="magicBookFlipping">正在翻页...</span></span>
         <span class="magic-book-light"></span>
       </div>
-      <button class="magic-primary" id="magicBookOpenBtn" type="button" data-i18n="magicBookOpenCatalog">打开目录</button>
-      <div class="magic-hint" data-i18n="magicBookHint">先打开目录，再点击章节，书页会翻到对应页面。</div>
+      <button class="magic-primary" id="magicBookOpenBtn" type="button" data-i18n="magicBookOpenCatalog">打开第一本书</button>
+      <div class="magic-hint" data-i18n="magicBookHint">先点第一本“物理材料”，打开目录后进入超导材料；其他书先保留为空壳。</div>
     </div>
   </div>
   <!-- 粒子背景 -->
@@ -6009,33 +6147,40 @@
         loginVirtualEyeLabel: "NSRL / ARPES",
         magicBookKicker: "登录成功 · 选择入口",
         magicBookTitle: "材料数据库",
-        magicBookLead: "打开材料魔法书，进入历史、材料、文献、数据、模型和报告工作台。",
-        magicBookChemistry: "化学",
-        magicBookBiology: "生物",
-        magicBookInfo: "信息",
-        magicBookCoverTitle: "ARPES 材料手册",
+        magicBookLead: "先选择材料书，再打开对应材料数据库。",
+        magicBookShelfPhysical: "物理材料",
+        magicBookShelfPhysicalHint: "超导材料入口",
+        magicBookChemistry: "化学材料",
+        magicBookBiology: "生物材料",
+        magicBookInfo: "信息材料",
+        magicBookShelfChemistryHint: "分子、晶体与反应库",
+        magicBookShelfBiologyHint: "软物质与生物界面",
+        magicBookShelfInfoHint: "器件、光电与数据材料",
+        magicBookCoverTitle: "物理材料手册",
         magicBookCoverHint: "点击打开目录",
-        magicBookOpenCatalog: "打开目录",
-        magicBookChoosePage: "选择目录页进入",
+        magicBookOpenCatalog: "打开第一本书",
+        magicBookChoosePage: "进入超导材料",
         magicBookCatalogLeft: "目录",
-        magicBookCatalogRight: "工作台",
-        magicBookTocHistory: "三维材料魔方与超导历史。",
-        magicBookTocMaterials: "周期表、元素筛选和材料索引。",
-        magicBookTocLiterature: "论文搜索、图谱和文献库。",
-        magicBookTocData: "HDF5 导入、图像浮窗和本地数据。",
-        magicBookTocModel: "AI 接口、运行模型和检查接口。",
-        magicBookTocReport: "导出当前筛选和调研报告。",
+        magicBookCatalogRight: "扩展库",
+        magicBookTocSuper: "进入 ARPES 超导材料数据库。",
+        magicBookTocPhoton: "光子能带、禁带和结构库。",
+        magicBookTocTopo: "拓扑态、边界态和能带材料。",
+        magicBookTocLowDim: "二维、范德华和量子薄膜材料。",
+        magicBookTocMagnetic: "自旋、磁有序和关联电子材料。",
+        magicBookTocBioInfo: "软物质、生物材料和信息功能材料。",
+        magicBookComingSoon: "建设中",
+        magicBookShellToast: "这个材料库先作为空壳保留，后续再建立。",
         magicBookFlipping: "正在翻页...",
         magicBookPageLeft: "物理材料",
-        magicBookPageRight: "数据工作台",
+        magicBookPageRight: "扩展材料库",
         magicBookCardSuper: "超导材料",
         magicBookCardPhoton: "光子晶体",
         magicBookCardTopo: "拓扑绝缘体",
-        magicBookCardHistory: "历史魔方",
-        magicBookCardPapers: "文献图谱",
-        magicBookCardModel: "模型接口",
+        magicBookCardLowDim: "低维材料",
+        magicBookCardMagnetic: "磁性材料",
+        magicBookCardBioInfo: "生物 / 信息材料",
         magicBookEnter: "打开魔法书进入主界面",
-        magicBookHint: "先打开目录，再点击章节，书页会翻到对应页面。",
+        magicBookHint: "先点第一本“物理材料”，打开目录后进入超导材料；其他书先保留为空壳。",
         loginFeatureHistory: "历史图",
         loginFeatureHistoryHint: "大事件已合并到 Tc 历史图。",
         loginFeatureCube: "3D 魔方",
@@ -6269,6 +6414,8 @@
         articleShowAllBtn: "显示全部",
         articleShowingStatus: "正在显示 {shown} / {count} 篇文章",
         articleCollapsedStatus: "文章列表已折叠，共 {count} 篇",
+        articlesDeferred: "文献库将在打开文献页时加载。",
+        articlesLoading: "正在加载文献库...",
         articleCollapsedHint: "列表已折叠。可以继续使用搜索、元素筛选和关键词筛选；需要查看卡片时再展开。",
         wosApiEndpointLabel: "API Endpoint",
         wosApiEndpointPlaceholder: "Vercel: /api/wos；GitHub Pages: https://你的项目.vercel.app/api/wos",
@@ -6508,33 +6655,40 @@
         loginVirtualEyeLabel: "NSRL / ARPES",
         magicBookKicker: "Login complete · choose an entrance",
         magicBookTitle: "Materials Database",
-        magicBookLead: "Open the materials spellbook to enter history, materials, papers, data, models, and reports.",
-        magicBookChemistry: "Chemistry",
-        magicBookBiology: "Biology",
-        magicBookInfo: "Information",
-        magicBookCoverTitle: "ARPES Material Book",
+        magicBookLead: "Choose a material book, then open the matching database.",
+        magicBookShelfPhysical: "Physical Materials",
+        magicBookShelfPhysicalHint: "Superconductor entrance",
+        magicBookChemistry: "Chemical Materials",
+        magicBookBiology: "Biomaterials",
+        magicBookInfo: "Information Materials",
+        magicBookShelfChemistryHint: "Molecules, crystals, and reactions",
+        magicBookShelfBiologyHint: "Soft matter and bio interfaces",
+        magicBookShelfInfoHint: "Devices, optoelectronics, and data materials",
+        magicBookCoverTitle: "Physical Materials Book",
         magicBookCoverHint: "Click to open the contents",
-        magicBookOpenCatalog: "Open contents",
-        magicBookChoosePage: "Choose a page",
+        magicBookOpenCatalog: "Open first book",
+        magicBookChoosePage: "Enter superconductors",
         magicBookCatalogLeft: "Contents",
-        magicBookCatalogRight: "Workbench",
-        magicBookTocHistory: "3D material cube and superconductivity history.",
-        magicBookTocMaterials: "Periodic table, element filters, and material index.",
-        magicBookTocLiterature: "Paper search, figure atlas, and literature library.",
-        magicBookTocData: "HDF5 import, figure overlay, and local data.",
-        magicBookTocModel: "AI API, model run, and interface checks.",
-        magicBookTocReport: "Export filters, notes, and research report.",
+        magicBookCatalogRight: "Future Libraries",
+        magicBookTocSuper: "Enter the ARPES superconducting materials database.",
+        magicBookTocPhoton: "Photonic bands, gaps, and structure library.",
+        magicBookTocTopo: "Topological states, boundary states, and band materials.",
+        magicBookTocLowDim: "2D, van der Waals, and quantum thin-film materials.",
+        magicBookTocMagnetic: "Spin, magnetic order, and correlated electron materials.",
+        magicBookTocBioInfo: "Soft matter, biomaterials, and information materials.",
+        magicBookComingSoon: "Coming soon",
+        magicBookShellToast: "This material library is a placeholder for now.",
         magicBookFlipping: "Turning pages...",
         magicBookPageLeft: "Physical Materials",
-        magicBookPageRight: "Data Workbench",
+        magicBookPageRight: "Future Libraries",
         magicBookCardSuper: "Superconductors",
         magicBookCardPhoton: "Photonic crystals",
         magicBookCardTopo: "Topological insulators",
-        magicBookCardHistory: "History cube",
-        magicBookCardPapers: "Paper atlas",
-        magicBookCardModel: "Model API",
+        magicBookCardLowDim: "Low-dimensional materials",
+        magicBookCardMagnetic: "Magnetic materials",
+        magicBookCardBioInfo: "Bio / information materials",
         magicBookEnter: "Open the spellbook",
-        magicBookHint: "Open the contents, then choose a chapter; the book will turn to that page.",
+        magicBookHint: "Click the first Physical Materials book, then enter Superconductors; the other books are placeholders.",
         loginFeatureHistory: "History Chart",
         loginFeatureHistoryHint: "Milestones are merged into the Tc chart.",
         loginFeatureCube: "3D Cube",
@@ -6768,6 +6922,8 @@
         articleShowAllBtn: "Show All",
         articleShowingStatus: "Showing {shown} / {count} articles",
         articleCollapsedStatus: "Article list collapsed, {count} articles total",
+        articlesDeferred: "The literature library loads when you open the Literature page.",
+        articlesLoading: "Loading literature library...",
         articleCollapsedHint: "The list is collapsed. Search, element filters, and keyword filters still work; expand when you need to inspect cards.",
         wosApiEndpointLabel: "API Endpoint",
         wosApiEndpointPlaceholder: "Vercel: /api/wos; GitHub Pages: https://your-project.vercel.app/api/wos",
@@ -7005,8 +7161,8 @@
       renderChatThread();
       if (state.chatTableRows.length) makeChatTable();
       renderChatTable();
-      updateImportMetrics();
-      renderLibrary().catch(() => {});
+      if (articlesLoaded) updateImportMetrics();
+      if (activeAppPage === "data") renderLibrary().catch(() => {});
       // Update static i18n elements
       document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.dataset.i18n;
@@ -7126,6 +7282,7 @@
     const magicBookEnterBtn = $("#magicBookEnterBtn");
     const magicBookOpenBtn = $("#magicBookOpenBtn");
     const magicBookTocItems = $$(".magic-toc-item");
+    const magicLibraryBooks = $$(".magic-tome");
     const signInTab = $("#signInTab");
     const createAccountTab = $("#createAccountTab");
     const loginEmail = $("#loginEmail");
@@ -7186,7 +7343,7 @@
     const chatTableWrap = $("#chatTableWrap");
     let activeAppPage = "module-select";
     let pendingWorkbenchUser = null;
-    let magicBookMode = "cover";
+    let magicBookMode = "library";
     let magicBookTargetPage = "history";
     let compareCount = $("#compareCount");
     const superconductorBtn = $("#superconductorBtn");
@@ -7223,6 +7380,8 @@
     let articleListCollapsed = false;
     let articleListManuallyExpanded = false;
     let articleMetricsDirty = true;
+    let articlesLoaded = false;
+    let articlesLoadingPromise = null;
     let pendingImportText = "";
     let pendingImportFileName = "";
     const sourceBody = $("#sourceBody");
@@ -7455,6 +7614,48 @@
 
     async function loadAllArticles() {
       return mergeArticleRecords(await loadDefaultArticles(), loadStoredImportedArticles());
+    }
+
+    function setArticleDeferredUi(loading = false) {
+      const message = t(loading ? "articlesLoading" : "articlesDeferred");
+      if (articleStatus) articleStatus.textContent = message;
+      if (articleGrid) articleGrid.innerHTML = `<p class="muted">${esc(message)}</p>`;
+      if (articleListControls) articleListControls.style.display = "none";
+      if (articleListStatus) articleListStatus.textContent = message;
+      if (importMetricRecords) importMetricRecords.textContent = loading ? "..." : "0";
+      if (importMetricWos) importMetricWos.textContent = loading ? "..." : "0";
+      if (importMetricFree) importMetricFree.textContent = loading ? "..." : "0";
+      if (importMetricFigures) importMetricFigures.textContent = loading ? "..." : "0";
+    }
+
+    async function ensureArticlesLoaded(options = {}) {
+      if (articlesLoaded) return state.articles || [];
+      if (articlesLoadingPromise) return articlesLoadingPromise;
+      setArticleDeferredUi(true);
+      articlesLoadingPromise = (async () => {
+        state.articles = await loadAllArticles();
+        articlesLoaded = true;
+        articlesLoadingPromise = null;
+        articleMetricsDirty = true;
+        if (options.render !== false) {
+          renderArticles();
+          renderKeywordChips();
+          updateImportMetrics();
+          renderFigureGallery();
+          renderFloatingFigureComparison();
+        }
+        return state.articles;
+      })().catch(error => {
+        articlesLoadingPromise = null;
+        if (articleStatus) articleStatus.textContent = `${t("loadingFailed")}: ${error.message}`;
+        if (articleGrid) articleGrid.innerHTML = `<p class="muted">${esc(t("loadingFailed"))}: ${esc(error.message)}</p>`;
+        throw error;
+      });
+      return articlesLoadingPromise;
+    }
+
+    function pageNeedsArticles(page) {
+      return page === "literature" || page === "report";
     }
 
     // ===== 周期表布局 =====
@@ -8209,6 +8410,7 @@
     }
 
     async function importArticleRecords(parsed, options = {}) {
+      await ensureArticlesLoaded({ render: false });
       const normalized = [];
       const seenInBatch = new Set();
       for (let i = 0; i < parsed.length; i++) {
@@ -8569,6 +8771,8 @@
     resetArticlesBtn.addEventListener("click", async () => {
       localStorage.removeItem(ARTICLE_IMPORT_STORAGE_KEY);
       state.articles = await loadDefaultArticles();
+      articlesLoaded = true;
+      articlesLoadingPromise = null;
       articleListManuallyExpanded = false;
       articleListCollapsed = false;
       articleShowLimit = ARTICLE_PAGE_SIZE;
@@ -8764,8 +8968,7 @@
     async function init() {
       try {
         state.db = await loadJson("data/superconductivity.json");
-        // 尝试加载文章数据：精选记录 + 免费官方 API 元数据
-        state.articles = await loadAllArticles();
+        state.articles = [];
         articleMetricsDirty = true;
         state.ourData = loadOurData();
         state.floatingDataIds = loadFloatingCompareIds();
@@ -8778,13 +8981,12 @@
         renderPeriodicTable();
         applyFilters();
         renderOurData();
-      renderArticles();
-      renderKeywordChips();
-      updateImportMetrics();
-      initLogin();
-      renderModelRegistry();
-      renderToc();
-      showAppPage(activeAppPage, { preserveScroll: true });
+        renderArticles();
+        renderKeywordChips();
+        initLogin();
+        renderModelRegistry();
+        renderToc();
+        showAppPage(activeAppPage, { preserveScroll: true });
         loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       } catch (error) {
         loadStatus.textContent = `${t("loadingFailed")}: ${error.message}`;
@@ -8932,11 +9134,13 @@
     }
 
     function resetMagicBook() {
-      magicBookMode = "cover";
+      magicBookMode = "library";
       magicBookTargetPage = "history";
       if (magicBookScreen) {
         magicBookScreen.classList.remove("is-toc", "is-flipping", "is-opening");
+        magicBookScreen.classList.add("is-library");
       }
+      magicLibraryBooks.forEach(item => item.classList.remove("active"));
       magicBookTocItems.forEach(item => item.classList.remove("active"));
       setMagicBookPrimary("magicBookOpenCatalog");
     }
@@ -8944,8 +9148,9 @@
     function openMagicBookCatalog() {
       if (!magicBookScreen || magicBookMode === "flipping") return;
       magicBookMode = "toc";
-      magicBookScreen.classList.add("is-toc");
-      magicBookScreen.classList.remove("is-flipping", "is-opening");
+      magicBookScreen.classList.add("is-toc", "is-opening");
+      magicBookScreen.classList.remove("is-library", "is-flipping");
+      magicLibraryBooks.forEach(item => item.classList.toggle("active", item.dataset.magicLibrary === "physical"));
       setMagicBookPrimary("magicBookChoosePage");
     }
 
@@ -9067,11 +9272,30 @@
           openMagicBookCatalog();
         }
       });
+      magicLibraryBooks.forEach(item => {
+        item.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (item.dataset.magicLibrary === "physical") {
+            openMagicBookCatalog();
+            return;
+          }
+          magicLibraryBooks.forEach(node => node.classList.remove("active"));
+          item.classList.add("active");
+          showToast(t("magicBookShellToast"));
+        });
+      });
       magicBookTocItems.forEach(item => {
         item.addEventListener("click", event => {
           event.preventDefault();
           event.stopPropagation();
-          enterWorkbenchFromMagicBook(item.dataset.magicPage || "history");
+          if (item.dataset.magicPage) {
+            enterWorkbenchFromMagicBook(item.dataset.magicPage);
+            return;
+          }
+          magicBookTocItems.forEach(node => node.classList.remove("active"));
+          item.classList.add("active");
+          showToast(t("magicBookShellToast"));
         });
       });
       logoutBtn?.addEventListener("click", logoutWorkbench);
@@ -9124,7 +9348,12 @@
       document.querySelectorAll("[data-page-tab]").forEach(tab => {
         tab.classList.toggle("active", tab.dataset.pageTab === page);
       });
-      if (page === "report") makeChatTable();
+      if (pageNeedsArticles(page)) {
+        ensureArticlesLoaded({ render: true }).then(() => {
+          if (page === "report") makeChatTable();
+        }).catch(() => {});
+      }
+      if (page === "data") renderLibrary().catch(() => {});
       if (!options.preserveScroll) {
         const target = page === "module-select"
           ? document.querySelector("#section-module-select")
@@ -9374,6 +9603,10 @@
       if (!question) return;
       addChatMessage("user", question);
       if (chatInput) chatInput.value = "";
+      const intent = detectChatIntent(question);
+      if (["table", "literature", "figure", "report"].includes(intent)) {
+        await ensureArticlesLoaded({ render: true }).catch(() => {});
+      }
       const context = buildChatContext(question);
       const lower = question.toLowerCase();
       if (lower.includes("表") || lower.includes("table")) {
@@ -9534,6 +9767,10 @@
     }
 
     function makeChatTable() {
+      if (!articlesLoaded) {
+        ensureArticlesLoaded({ render: true }).then(() => makeChatTable()).catch(() => {});
+        return;
+      }
       const materials = (state.filtered || []).slice(0, 8);
       const articles = filteredArticles ? filteredArticles() : (state.articles || []);
       state.chatTableRows = materials.map(row => {
@@ -9747,7 +9984,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 `;
     }
 
-    function generateResearchReport() {
+    async function generateResearchReport() {
+      await ensureArticlesLoaded({ render: true }).catch(() => {});
       const data = collectReportData();
       const format = reportFormatSelect?.value || "pdf";
       if (format === "doc") {
@@ -11114,6 +11352,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function renderFigureGallery() {
+      if (!articlesLoaded) {
+        if (figCount) figCount.textContent = "0";
+        if (figShowMoreBtn) figShowMoreBtn.style.display = "none";
+        if (figureGallery) figureGallery.innerHTML = `<div class="card" style="grid-column:1/-1;"><p class="muted">${esc(articlesLoadingPromise ? t("articlesLoading") : t("articlesDeferred"))}</p></div>`;
+        if (floatingFigureDbStatus) floatingFigureDbStatus.textContent = tf("floatingFigureDbStatus", { count: 0 });
+        return;
+      }
       const allFigures = [];
       const term = (searchInput.value || "").trim().toLowerCase();
       const family = familyFilter.value;
@@ -11597,6 +11842,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     // ===== 文章数据渲染 =====
     function renderArticles() {
+      if (!articlesLoaded) {
+        setArticleDeferredUi(!!articlesLoadingPromise);
+        return;
+      }
       const rows = filteredArticles();
       articleStatus.textContent = `${rows.length} / ${state.articles.length} ${t("records")}`;
       if (articleMetricsDirty) updateImportMetrics();
@@ -11637,6 +11886,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function filteredArticles() {
+      if (!articlesLoaded) return [];
       const term = (searchInput.value || "").trim().toLowerCase();
       const selectedElement = state.selectedElement || "";
       return state.articles.filter(article => {
@@ -11658,6 +11908,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function updateImportMetrics() {
+      if (!articlesLoaded) {
+        setArticleDeferredUi(!!articlesLoadingPromise);
+        return;
+      }
       const articles = state.articles || [];
       const wosCount = articles.filter(article => {
         const text = [article.source, article.verification_status, article.wos_uid].join(" ").toLowerCase();
@@ -11677,6 +11931,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function renderKeywordChips() {
       if (!keywordChips) return;
+      if (!articlesLoaded) {
+        keywordChips.innerHTML = "";
+        return;
+      }
       const counts = new Map();
       const add = (value, weight = 1) => {
         const key = String(value || "").trim();
@@ -13755,11 +14013,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     installModelHub();
     librarySearch?.addEventListener("input", renderLibrary);
     librarySearch?.addEventListener("keydown", (e) => { if (e.key === "Enter") renderLibrary(); });
-
-    // 初始化 IndexedDB
-    try {
-      openIDB().then(() => renderLibrary()).catch(() => {});
-    } catch {}
 
     // ===== ML 扩展接口 (预留) =====
     function installModelHub() {
