@@ -4673,6 +4673,35 @@
       padding: 8px 9px;
       background: rgba(8, 13, 20, 0.55);
     }
+    .hdf5-saved-imports {
+      display: grid;
+      gap: 8px;
+    }
+    .hdf5-saved-import {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      background: rgba(8, 13, 20, 0.55);
+    }
+    .hdf5-saved-import strong {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .hdf5-saved-import .muted {
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .hdf5-saved-files {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
     .data-library-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -5985,6 +6014,15 @@
           </div>
           <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,application/x-hdf5,application/octet-stream,application/zip" multiple>
         </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+            <h3 data-i18n="hdf5SavedImportsTitle">💾 已保存上传</h3>
+            <span class="muted" id="hdf5SavedImportsStatus" data-i18n="hdf5SavedImportsEmpty">上传 HDF5 后会自动保存导入记录和预览。</span>
+          </div>
+          <div class="hdf5-saved-imports" id="hdf5SavedImports">
+            <span class="muted" data-i18n="hdf5SavedImportsEmpty">上传 HDF5 后会自动保存导入记录和预览。</span>
+          </div>
+        </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div class="card">
             <h3 data-i18n="hdf5StructureTitle">📂 文件结构</h3>
@@ -6612,6 +6650,11 @@
         hdf5DropTitle: "📁 拖放或点击上传 HDF5 文件",
         hdf5DropHint: "支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据；也可拖入包含 .h5 的 .zip",
         hdf5ChooseBtn: "选择 HDF5 文件",
+        hdf5SavedImportsTitle: "💾 已保存上传",
+        hdf5SavedImportsEmpty: "上传 HDF5 后会自动保存导入记录和预览。",
+        hdf5SavedImportsStatus: "已保存 {count} 个上传记录",
+        hdf5SavedImportFiles: "{count} 个 HDF5 文件",
+        hdf5SavedImportDatasets: "{count} 个数据集",
         hdf5LibraryLoading: "正在加载 HDF5 解析库...",
         hdf5LibraryReady: "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件",
         hdf5LibraryMissing: "HDF5 解析库未加载。请检查网络/CDN，或刷新后重试。",
@@ -7120,6 +7163,11 @@
         hdf5DropTitle: "📁 Drop or click to upload HDF5 files",
         hdf5DropHint: "Supports ARPES-style files with energy/k axes, temperature, photon energy, and metadata; .zip files containing .h5 are also supported",
         hdf5ChooseBtn: "Choose HDF5 Files",
+        hdf5SavedImportsTitle: "💾 Saved Uploads",
+        hdf5SavedImportsEmpty: "HDF5 uploads automatically save import records and previews.",
+        hdf5SavedImportsStatus: "{count} saved upload record(s)",
+        hdf5SavedImportFiles: "{count} HDF5 file(s)",
+        hdf5SavedImportDatasets: "{count} dataset(s)",
         hdf5LibraryLoading: "Loading HDF5 parser...",
         hdf5LibraryReady: "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files",
         hdf5LibraryMissing: "HDF5 parser did not load. Check network/CDN access, or refresh and retry.",
@@ -13214,7 +13262,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     //  使用 jsfive 解析 .h5, IndexedDB 存储, Canvas 绘制能带图
     // ============================================================
     const IDB_NAME = "arpes-data-library";
-    const IDB_VERSION = 1;
+    const IDB_VERSION = 2;
     let idb = null;
 
     // DOM refs for HDF5 section
@@ -13227,6 +13275,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5PreviewCanvas = document.querySelector("#hdf5PreviewCanvas");
     const hdf5PreviewInfo = document.querySelector("#hdf5PreviewInfo");
     const hdf5PreviewHint = document.querySelector("#hdf5PreviewHint");
+    const hdf5SavedImports = document.querySelector("#hdf5SavedImports");
+    const hdf5SavedImportsStatus = document.querySelector("#hdf5SavedImportsStatus");
     const librarySearch = document.querySelector("#librarySearch");
     const dataLibraryGrid = document.querySelector("#dataLibraryGrid");
     const compareSelectedBtn = document.querySelector("#compareSelectedBtn");
@@ -13332,7 +13382,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : (currentLang === "zh" ? `⏳ 解析 ${file.name}...` : `⏳ Parsing ${file.name}...`));
       try {
         const buffer = await file.arrayBuffer();
-        await parseHDF5Buffer(buffer, file.name);
+        await parseHDF5Buffer(buffer, file.name, { addSummaries: true, persistImport: true });
       } catch (e) {
         setHDF5Status(currentLang === "zh" ? `❌ 无法解析 ${file.name}: ${e.message}` : `❌ Cannot parse ${file.name}: ${e.message}`);
       }
@@ -13353,8 +13403,24 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         try { await addDetectedHDF5SummariesToLibrary(filename, detection, h5); }
         catch (error) { console.warn("Could not add HDF5 summaries", error); }
       }
+      if (options.persistImport !== false) {
+        await saveHDF5ImportRecord({
+          id: `h5:${filename}`,
+          kind: "h5",
+          filename,
+          source_archive: options.sourceArchive || "",
+          file_count: 1,
+          dataset_count: detection.allDatasets.length,
+          arpes_count: detection.arpesDatasets.length,
+          size: buffer.byteLength,
+          preview_dataset: preview?.plan?.path || preview?.plan?.name || "",
+          layouts: detection.layouts || [],
+          files: [filename],
+          imported_at: new Date().toISOString()
+        });
+      }
       await yieldToBrowser();
-      return h5;
+      return { h5, detection, preview };
     }
 
     function decodeZipName(bytes, flags) {
@@ -13446,19 +13512,37 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           return;
         }
         let imported = 0;
+        let totalDatasets = 0;
+        let totalArpes = 0;
+        const importedFiles = [];
         for (let i = 0; i < entries.length; i++) {
           const entry = entries[i];
+          const entryName = entry.name.split("/").pop();
           setHDF5Status(tf("hdf5ZipEntryProgress", {
             filename: file.name,
             index: i + 1,
             total: entries.length,
-            entry: entry.name.split("/").pop(),
+            entry: entryName,
             size: formatBytes(entry.uncompressedSize)
           }));
           const buffer = await readZipEntryArrayBuffer(file, entry);
-          await parseHDF5Buffer(buffer, entry.name.split("/").pop(), { addSummaries: true });
+          const parsed = await parseHDF5Buffer(buffer, entryName, { addSummaries: true, persistImport: false, sourceArchive: file.name });
+          totalDatasets += parsed?.detection?.allDatasets?.length || 0;
+          totalArpes += parsed?.detection?.arpesDatasets?.length || 0;
+          importedFiles.push(entryName);
           imported++;
         }
+        await saveHDF5ImportRecord({
+          id: `zip:${file.name}`,
+          kind: "zip",
+          filename: file.name,
+          file_count: imported,
+          dataset_count: totalDatasets,
+          arpes_count: totalArpes,
+          size: file.size || 0,
+          files: importedFiles,
+          imported_at: new Date().toISOString()
+        });
         setHDF5Status(tf("hdf5ZipDone", { filename: file.name, count: imported }));
       } catch (error) {
         setHDF5Status(currentLang === "zh" ? `❌ 无法导入 ${file.name}: ${error.message}` : `❌ Cannot import ${file.name}: ${error.message}`);
@@ -14161,10 +14245,102 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           if (!db.objectStoreNames.contains("datasets")) {
             db.createObjectStore("datasets", { keyPath: "id" });
           }
+          if (!db.objectStoreNames.contains("imports")) {
+            db.createObjectStore("imports", { keyPath: "id" });
+          }
         };
         req.onsuccess = (e) => { idb = e.target.result; resolve(idb); };
         req.onerror = () => reject(req.error);
       });
+    }
+
+    async function saveHDF5ImportRecord(record) {
+      const db = await openIDB();
+      const tx = db.transaction("imports", "readwrite");
+      const store = tx.objectStore("imports");
+      const normalized = {
+        ...record,
+        imported_at: record.imported_at || new Date().toISOString(),
+        files: Array.isArray(record.files) ? record.files : [],
+        layouts: Array.isArray(record.layouts) ? record.layouts : []
+      };
+      await new Promise((resolve, reject) => {
+        const req = store.put(normalized);
+        req.onsuccess = resolve;
+        req.onerror = () => reject(req.error);
+      });
+      renderHDF5ImportHistory().catch(error => console.warn("Could not render HDF5 import history", error));
+    }
+
+    async function renderHDF5ImportHistory() {
+      if (!hdf5SavedImports) return;
+      const db = await openIDB();
+      const tx = db.transaction("imports", "readonly");
+      const records = await new Promise((resolve) => {
+        const req = tx.objectStore("imports").getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => resolve([]);
+      });
+      if (!records.length) {
+        const datasetTx = db.transaction("datasets", "readonly");
+        const datasets = await new Promise((resolve) => {
+          const req = datasetTx.objectStore("datasets").getAll();
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => resolve([]);
+        });
+        const grouped = new Map();
+        for (const row of datasets) {
+          const source = row.source_file || "unknown.h5";
+          if (!grouped.has(source)) {
+            grouped.set(source, {
+              id: `library:${source}`,
+              kind: "h5",
+              filename: source,
+              file_count: 1,
+              dataset_count: 0,
+              arpes_count: 0,
+              size: 0,
+              files: [source],
+              imported_at: row.imported_at || ""
+            });
+          }
+          const group = grouped.get(source);
+          group.dataset_count += 1;
+          if (row.imported_at && String(row.imported_at).localeCompare(String(group.imported_at || "")) > 0) {
+            group.imported_at = row.imported_at;
+          }
+        }
+        records.push(...grouped.values());
+      }
+      records.sort((a, b) => String(b.imported_at || "").localeCompare(String(a.imported_at || "")));
+      if (hdf5SavedImportsStatus) {
+        hdf5SavedImportsStatus.textContent = records.length
+          ? tf("hdf5SavedImportsStatus", { count: records.length })
+          : t("hdf5SavedImportsEmpty");
+      }
+      if (!records.length) {
+        hdf5SavedImports.innerHTML = `<span class="muted">${esc(t("hdf5SavedImportsEmpty"))}</span>`;
+        return;
+      }
+      hdf5SavedImports.innerHTML = records.slice(0, 12).map(record => {
+        const files = (record.files || []).slice(0, 10);
+        const more = Math.max(0, (record.files || []).length - files.length);
+        const fileChips = files.map(name => `<span class="chip">${esc(name)}</span>`).join("")
+          + (more ? `<span class="chip">+${more}</span>` : "");
+        return `<div class="hdf5-saved-import">
+          <div>
+            <strong>${record.kind === "zip" ? "🗜️" : "📊"} ${esc(record.filename || "HDF5")}</strong>
+            <div class="muted">
+              ${esc(tf("hdf5SavedImportFiles", { count: record.file_count || 1 }))} ·
+              ${esc(tf("hdf5SavedImportDatasets", { count: record.dataset_count || 0 }))} ·
+              ${esc(formatBytes(record.size || 0))}
+              ${record.preview_dataset ? `<br>${esc(record.preview_dataset)}` : ""}
+            </div>
+          </div>
+          <span class="muted">${esc(record.imported_at ? new Date(record.imported_at).toLocaleString(currentLang === "zh" ? "zh-CN" : "en-US") : "")}</span>
+          ${fileChips ? `<div class="hdf5-saved-files">${fileChips}</div>` : ""}
+        </div>`;
+      }).join("");
     }
 
     async function addToLibrary(dataset) {
@@ -14264,6 +14440,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     async function renderLibrary() {
+      renderHDF5ImportHistory().catch(error => console.warn("Could not render HDF5 import history", error));
       const db = await openIDB();
       const tx = db.transaction("datasets", "readonly");
       const store = tx.objectStore("datasets");
@@ -14317,10 +14494,17 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     clearLibraryBtn.addEventListener("click", async () => {
       const db = await openIDB();
-      const tx = db.transaction("datasets", "readwrite");
-      await new Promise((resolve) => { tx.objectStore("datasets").clear().onsuccess = resolve; });
+      const tx = db.transaction(["datasets", "imports"], "readwrite");
+      await new Promise((resolve, reject) => {
+        tx.objectStore("datasets").clear();
+        tx.objectStore("imports").clear();
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
+      });
       librarySelection.clear();
       renderLibrary();
+      renderHDF5ImportHistory();
       showToast(t("libraryCleared"));
     });
 
