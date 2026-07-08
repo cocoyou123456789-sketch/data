@@ -4386,23 +4386,24 @@
     .floating-compare.is-minimized .floating-resize-handle { display: none; }
     .floating-figure-lightbox {
       position: fixed;
-      inset: 0;
+      left: min(96px, 5vw);
+      top: min(86px, 7vh);
       z-index: 2400;
-      display: grid;
-      place-items: center;
-      padding: 28px;
-      background: rgba(2, 6, 12, 0.84);
-      backdrop-filter: blur(10px);
-    }
-    .floating-figure-lightbox[hidden] { display: none; }
-    .floating-figure-lightbox-inner {
-      width: min(1180px, 96vw);
-      max-height: 92vh;
+      width: min(1180px, calc(100vw - 32px));
+      height: min(740px, calc(100vh - 32px));
+      min-width: 420px;
+      min-height: 300px;
       border: 1px solid rgba(20,184,166,0.5);
       border-radius: 10px;
       background: rgba(8, 13, 20, 0.96);
-      box-shadow: 0 24px 70px rgba(0,0,0,0.58);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.58), 0 0 28px rgba(20,184,166,0.12);
+      backdrop-filter: blur(10px);
       overflow: hidden;
+    }
+    .floating-figure-lightbox[hidden] { display: none; }
+    .floating-figure-lightbox-inner {
+      width: 100%;
+      height: 100%;
       display: grid;
       grid-template-rows: auto minmax(0, 1fr);
     }
@@ -4415,6 +4416,11 @@
       gap: 12px;
       border-bottom: 1px solid var(--line);
       color: var(--ink);
+      cursor: grab;
+      user-select: none;
+    }
+    .floating-figure-lightbox-head:active {
+      cursor: grabbing;
     }
     .floating-figure-lightbox-head strong {
       min-width: 0;
@@ -4437,7 +4443,7 @@
     }
     .floating-figure-lightbox-img-wrap img {
       max-width: 100%;
-      max-height: calc(92vh - 80px);
+      max-height: 100%;
       display: block;
       object-fit: contain;
     }
@@ -4455,7 +4461,12 @@
       }
       .floating-resize-handle { display: none; }
       .floating-figure-lightbox {
-        padding: 10px;
+        left: 10px !important;
+        top: 10px !important;
+        width: calc(100vw - 20px) !important;
+        height: min(72vh, 620px) !important;
+        min-width: 0;
+        min-height: 0;
       }
       .magic-book-screen {
         padding: 14px;
@@ -6239,7 +6250,7 @@
   </aside>
 
   <div class="floating-figure-lightbox" id="floatingFigureLightbox" hidden>
-    <div class="floating-figure-lightbox-inner" role="dialog" aria-modal="true" aria-labelledby="floatingFigureLightboxTitle">
+    <div class="floating-figure-lightbox-inner" role="dialog" aria-modal="false" aria-labelledby="floatingFigureLightboxTitle">
       <div class="floating-figure-lightbox-head">
         <strong id="floatingFigureLightboxTitle">HDF5 preview</strong>
         <button type="button" id="floatingFigureLightboxClose" aria-label="Close">×</button>
@@ -6248,6 +6259,10 @@
         <img id="floatingFigureLightboxImg" alt="HDF5 preview">
       </div>
     </div>
+    <span class="floating-resize-handle" data-corner="nw" aria-hidden="true"></span>
+    <span class="floating-resize-handle" data-corner="ne" aria-hidden="true"></span>
+    <span class="floating-resize-handle" data-corner="sw" aria-hidden="true"></span>
+    <span class="floating-resize-handle" data-corner="se" aria-hidden="true"></span>
   </div>
 
   <script>
@@ -7394,6 +7409,7 @@
     const FLOATING_COMPARE_POSITION_KEY = "arpes-floating-compare-position-v1";
     const FLOATING_FIGURE_STORAGE_KEY = "arpes-floating-figures-v1";
     const FLOATING_FIGURE_POSITION_KEY = "arpes-floating-figures-position-v1";
+    const FLOATING_IMAGE_WINDOW_POSITION_KEY = "arpes-floating-image-window-position-v1";
     const FLOATING_FIGURE_LIMIT = 20;
     const ARTICLE_IMPORT_STORAGE_KEY = "arpes-imported-articles-v1";
     const ARTICLE_MIN_YEAR = 2016;
@@ -12515,6 +12531,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       floatingFigureLightboxImg.src = src || "";
       floatingFigureLightboxImg.alt = title || "HDF5 preview";
       if (floatingFigureLightboxTitle) floatingFigureLightboxTitle.textContent = title || "HDF5 preview";
+      applyFloatingImageWindowPosition();
       floatingFigureLightbox.hidden = false;
     }
 
@@ -12534,6 +12551,50 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           open();
         });
       });
+    }
+
+    function clampFloatingRect(rect, minWidth = 420, minHeight = 300) {
+      const maxWidth = Math.max(minWidth, window.innerWidth - 16);
+      const maxHeight = Math.max(minHeight, window.innerHeight - 16);
+      const width = Math.max(minWidth, Math.min(rect.width, maxWidth));
+      const height = Math.max(minHeight, Math.min(rect.height, maxHeight));
+      const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8));
+      const top = Math.max(8, Math.min(rect.top, window.innerHeight - height - 8));
+      return { left, top, width, height };
+    }
+
+    function applyFloatingImageWindowPosition() {
+      if (!floatingFigureLightbox || window.matchMedia("(max-width: 720px)").matches) return;
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(FLOATING_IMAGE_WINDOW_POSITION_KEY) || "null"); }
+      catch { saved = null; }
+      const fallback = {
+        width: Math.min(1180, Math.max(620, window.innerWidth * 0.72)),
+        height: Math.min(740, Math.max(420, window.innerHeight * 0.72)),
+        left: Math.max(24, window.innerWidth * 0.08),
+        top: Math.max(24, window.innerHeight * 0.08)
+      };
+      const rect = clampFloatingRect({
+        left: Number.isFinite(saved?.left) ? saved.left : fallback.left,
+        top: Number.isFinite(saved?.top) ? saved.top : fallback.top,
+        width: Number.isFinite(saved?.width) ? saved.width : fallback.width,
+        height: Number.isFinite(saved?.height) ? saved.height : fallback.height
+      });
+      floatingFigureLightbox.style.left = `${rect.left}px`;
+      floatingFigureLightbox.style.top = `${rect.top}px`;
+      floatingFigureLightbox.style.width = `${rect.width}px`;
+      floatingFigureLightbox.style.height = `${rect.height}px`;
+    }
+
+    function persistFloatingImageWindowPosition() {
+      if (!floatingFigureLightbox || floatingFigureLightbox.hidden) return;
+      const rect = floatingFigureLightbox.getBoundingClientRect();
+      localStorage.setItem(FLOATING_IMAGE_WINDOW_POSITION_KEY, JSON.stringify({
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height
+      }));
     }
 
     function gatherFloatingDatabaseFigures(limit = 6, relaxed = false) {
@@ -12894,15 +12955,100 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         handle.addEventListener("pointercancel", stopFloatingFigureResize);
       });
       floatingFigureLightboxClose?.addEventListener("click", closeFloatingFigureLightbox);
-      floatingFigureLightbox?.addEventListener("click", event => {
-        if (event.target === floatingFigureLightbox) closeFloatingFigureLightbox();
+      let draggingImageWindow = false;
+      let imageWindowDragOffset = { x: 0, y: 0 };
+      floatingFigureLightboxTitle?.closest(".floating-figure-lightbox-head")?.addEventListener("pointerdown", event => {
+        if (window.matchMedia("(max-width: 720px)").matches) return;
+        if (event.target.closest("button")) return;
+        draggingImageWindow = true;
+        const rect = floatingFigureLightbox.getBoundingClientRect();
+        imageWindowDragOffset = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+      });
+      floatingFigureLightboxTitle?.closest(".floating-figure-lightbox-head")?.addEventListener("pointermove", event => {
+        if (!draggingImageWindow || !floatingFigureLightbox) return;
+        const rect = floatingFigureLightbox.getBoundingClientRect();
+        const clamped = clampFloatingRect({
+          left: event.clientX - imageWindowDragOffset.x,
+          top: event.clientY - imageWindowDragOffset.y,
+          width: rect.width,
+          height: rect.height
+        });
+        floatingFigureLightbox.style.left = `${clamped.left}px`;
+        floatingFigureLightbox.style.top = `${clamped.top}px`;
+        floatingFigureLightbox.style.width = `${clamped.width}px`;
+        floatingFigureLightbox.style.height = `${clamped.height}px`;
+      });
+      const stopImageWindowDrag = () => {
+        if (!draggingImageWindow) return;
+        draggingImageWindow = false;
+        persistFloatingImageWindowPosition();
+      };
+      floatingFigureLightboxTitle?.closest(".floating-figure-lightbox-head")?.addEventListener("pointerup", stopImageWindowDrag);
+      floatingFigureLightboxTitle?.closest(".floating-figure-lightbox-head")?.addEventListener("pointercancel", stopImageWindowDrag);
+
+      let resizingImageWindow = false;
+      let imageResizeState = null;
+      const startImageWindowResize = (event) => {
+        if (window.matchMedia("(max-width: 720px)").matches) return;
+        if (!floatingFigureLightbox || floatingFigureLightbox.hidden) return;
+        const rect = floatingFigureLightbox.getBoundingClientRect();
+        resizingImageWindow = true;
+        imageResizeState = {
+          corner: event.currentTarget.dataset.corner || "se",
+          startX: event.clientX,
+          startY: event.clientY,
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          width: rect.width,
+          height: rect.height
+        };
+        event.preventDefault();
+        event.stopPropagation();
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+      };
+      const resizeImageWindow = (event) => {
+        if (!resizingImageWindow || !imageResizeState || !floatingFigureLightbox) return;
+        const dx = event.clientX - imageResizeState.startX;
+        const dy = event.clientY - imageResizeState.startY;
+        const west = imageResizeState.corner.includes("w");
+        const north = imageResizeState.corner.includes("n");
+        const width = west ? imageResizeState.width - dx : imageResizeState.width + dx;
+        const height = north ? imageResizeState.height - dy : imageResizeState.height + dy;
+        const clamped = clampFloatingRect({
+          left: west ? imageResizeState.right - width : imageResizeState.left,
+          top: north ? imageResizeState.bottom - height : imageResizeState.top,
+          width,
+          height
+        });
+        floatingFigureLightbox.style.left = `${clamped.left}px`;
+        floatingFigureLightbox.style.top = `${clamped.top}px`;
+        floatingFigureLightbox.style.width = `${clamped.width}px`;
+        floatingFigureLightbox.style.height = `${clamped.height}px`;
+      };
+      const stopImageWindowResize = () => {
+        if (!resizingImageWindow) return;
+        resizingImageWindow = false;
+        imageResizeState = null;
+        persistFloatingImageWindowPosition();
+      };
+      floatingFigureLightbox?.querySelectorAll(".floating-resize-handle").forEach(handle => {
+        handle.addEventListener("pointerdown", startImageWindowResize);
+        handle.addEventListener("pointermove", resizeImageWindow);
+        handle.addEventListener("pointerup", stopImageWindowResize);
+        handle.addEventListener("pointercancel", stopImageWindowResize);
       });
       document.addEventListener("keydown", event => {
         if (event.key === "Escape" && floatingFigureLightbox && !floatingFigureLightbox.hidden) {
           closeFloatingFigureLightbox();
         }
       });
-      window.addEventListener("resize", applyFloatingFigurePosition);
+      window.addEventListener("resize", () => {
+        applyFloatingFigurePosition();
+        applyFloatingImageWindowPosition();
+      });
     }
 
     function exportOurData() {
