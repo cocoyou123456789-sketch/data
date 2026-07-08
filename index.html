@@ -7269,7 +7269,7 @@
     const FLOATING_COMPARE_POSITION_KEY = "arpes-floating-compare-position-v1";
     const FLOATING_FIGURE_STORAGE_KEY = "arpes-floating-figures-v1";
     const FLOATING_FIGURE_POSITION_KEY = "arpes-floating-figures-position-v1";
-    const FLOATING_FIGURE_LIMIT = 8;
+    const FLOATING_FIGURE_LIMIT = 20;
     const ARTICLE_IMPORT_STORAGE_KEY = "arpes-imported-articles-v1";
     const ARTICLE_MIN_YEAR = 2016;
     const ARTICLE_IMPORT_PREVIEW_LIMIT = 60000;
@@ -12048,17 +12048,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function persistFloatingFigures() {
-      try {
-        localStorage.setItem(
-          FLOATING_FIGURE_STORAGE_KEY,
-          JSON.stringify((state.floatingFigures || []).slice(0, FLOATING_FIGURE_LIMIT))
-        );
-      } catch (error) {
-        state.floatingFigures = (state.floatingFigures || []).slice(0, Math.max(1, FLOATING_FIGURE_LIMIT - 3));
+      const figures = (state.floatingFigures || []).slice(0, FLOATING_FIGURE_LIMIT);
+      for (let keep = figures.length; keep >= 1; keep--) {
         try {
-          localStorage.setItem(FLOATING_FIGURE_STORAGE_KEY, JSON.stringify(state.floatingFigures));
-        } catch {
-          console.warn("Could not persist floating figures", error);
+          const kept = figures.slice(0, keep);
+          localStorage.setItem(FLOATING_FIGURE_STORAGE_KEY, JSON.stringify(kept));
+          state.floatingFigures = kept;
+          return;
+        } catch (error) {
+          if (keep === 1) console.warn("Could not persist floating figures", error);
         }
       }
     }
@@ -12514,10 +12512,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (options.toast !== false) showToast(options.auto ? t("floatingFigureAutoToast") : t("floatingFigureAddedToast"));
     }
 
+    function floatingFigureDataUrlFromCanvas(sourceCanvas) {
+      if (!sourceCanvas) return "";
+      const maxWidth = 420;
+      const scale = Math.min(1, maxWidth / Math.max(1, sourceCanvas.width || maxWidth));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round((sourceCanvas.width || maxWidth) * scale));
+      canvas.height = Math.max(1, Math.round((sourceCanvas.height || 240) * scale));
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#06101a";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "medium";
+      ctx.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL("image/jpeg", 0.58);
+    }
+
     function addHDF5PreviewToFloatingFigure(preview, filename) {
       if (!preview || !hdf5PreviewCanvas) return;
       try {
-        const src = hdf5PreviewCanvas.toDataURL("image/jpeg", 0.82);
+        const src = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
+        if (!src) return;
         addFloatingFigureImage({
           title: `${filename || "HDF5"} · ${preview.plan?.name || preview.plan?.path || ""}`,
           src,
