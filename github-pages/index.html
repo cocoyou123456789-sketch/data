@@ -4572,12 +4572,17 @@
     .hdf5-library-thumb {
       width: 100%;
       aspect-ratio: 16 / 9;
+      min-height: 128px;
       display: block;
       object-fit: cover;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #070b10;
       margin-bottom: 8px;
+    }
+    .hdf5-library-fallback {
+      object-fit: initial;
+      overflow: hidden;
     }
     .library-card-title {
       display: flex;
@@ -13804,6 +13809,101 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return tags;
     }
 
+    function hashForPreview(value) {
+      let hash = 2166136261;
+      const text = String(value || "");
+      for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+
+    function seededPreviewUnit(seed, salt) {
+      let value = (seed + Math.imul((salt || 0) + 1, 374761393)) >>> 0;
+      value ^= value << 13;
+      value ^= value >>> 17;
+      value ^= value << 5;
+      return (value >>> 0) / 4294967295;
+    }
+
+    function libraryFallbackThumbnail(record) {
+      const name = record?.name || "HDF5";
+      const shape = (record?.shape || []).map(Number).filter(Number.isFinite);
+      const shapeText = shape.length ? `[${shape.join("x")}]` : "dataset";
+      const source = record?.source_file || "";
+      const key = [name, record?.path, source, shapeText].join("|");
+      const seed = hashForPreview(key);
+      const uid = `libThumb${seed}`;
+      const lower = String(name).toLowerCase();
+      const kind = /cut|core/.test(lower) ? "cut" : "map";
+      const paletteShift = Math.round(seededPreviewUnit(seed, 2) * 24);
+      const gridLines = [72, 144, 216, 288].map(x =>
+        `<path d="M${x} 24V178" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>`
+      ).join("") + [62, 101, 140].map(y =>
+        `<path d="M18 ${y}H342" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>`
+      ).join("");
+      const traces = Array.from({ length: kind === "cut" ? 5 : 7 }, (_, band) => {
+        const points = [];
+        const phase = seededPreviewUnit(seed, band + 3) * Math.PI * 2;
+        const amplitude = 12 + seededPreviewUnit(seed, band + 9) * 22;
+        const baseline = 48 + band * (kind === "cut" ? 24 : 19) + seededPreviewUnit(seed, band + 15) * 16;
+        for (let step = 0; step <= 28; step++) {
+          const x = 22 + step * (316 / 28);
+          const curve = Math.sin(step * 0.42 + phase) * amplitude;
+          const skew = kind === "cut" ? Math.cos(step * 0.18 + band) * 9 : (step - 14) * (band - 3) * 0.22;
+          const y = Math.max(31, Math.min(174, baseline + curve + skew));
+          points.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+        }
+        const opacity = (0.28 + seededPreviewUnit(seed, band + 21) * 0.44).toFixed(2);
+        const width = (1.4 + seededPreviewUnit(seed, band + 27) * 2.2).toFixed(1);
+        return `<polyline points="${points.join(" ")}" fill="none" stroke="rgba(103,232,249,${opacity})" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"/>`;
+      }).join("");
+      const hotSpots = Array.from({ length: kind === "cut" ? 8 : 13 }, (_, index) => {
+        const x = 34 + seededPreviewUnit(seed, index + 33) * 292;
+        const y = 38 + seededPreviewUnit(seed, index + 47) * 126;
+        const rx = 9 + seededPreviewUnit(seed, index + 61) * (kind === "cut" ? 20 : 32);
+        const ry = 5 + seededPreviewUnit(seed, index + 75) * (kind === "cut" ? 13 : 24);
+        const opacity = (0.16 + seededPreviewUnit(seed, index + 89) * 0.34).toFixed(2);
+        return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="rgba(255,209,102,${opacity})"/>`;
+      }).join("");
+      const title = esc(name);
+      const meta = esc(`${shapeText}${source ? ` · ${source}` : ""}`);
+      const previewLabel = currentLang === "zh" ? "结构预览" : "Shape preview";
+      return `<svg class="hdf5-library-thumb hdf5-library-fallback" viewBox="0 0 360 203" role="img" aria-label="${title} ${esc(previewLabel)}" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="${uid}Bg" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="rgb(${5 + paletteShift},12,28)"/>
+            <stop offset="34%" stop-color="#0f3460"/>
+            <stop offset="62%" stop-color="#0f766e"/>
+            <stop offset="100%" stop-color="#f59e0b"/>
+          </linearGradient>
+          <radialGradient id="${uid}Glow" cx="68%" cy="38%" r="62%">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.58)"/>
+            <stop offset="46%" stop-color="rgba(34,211,238,0.2)"/>
+            <stop offset="100%" stop-color="rgba(15,23,42,0)"/>
+          </radialGradient>
+        </defs>
+        <rect width="360" height="203" fill="#060b12"/>
+        <rect x="18" y="24" width="324" height="154" rx="8" fill="url(#${uid}Bg)" opacity="0.92"/>
+        <rect x="18" y="24" width="324" height="154" rx="8" fill="url(#${uid}Glow)"/>
+        ${hotSpots}
+        ${gridLines}
+        ${traces}
+        <rect x="18" y="24" width="324" height="154" rx="8" fill="none" stroke="rgba(148,163,184,0.42)" stroke-width="1.2"/>
+        <rect x="18" y="24" width="324" height="33" rx="8" fill="rgba(3,7,18,0.7)"/>
+        <text x="30" y="46" fill="#e5edf5" font-size="18" font-weight="700" font-family="system-ui, sans-serif">${title}</text>
+        <text x="30" y="195" fill="#94a3b8" font-size="11" font-family="system-ui, sans-serif">${esc(previewLabel)} · ${meta}</text>
+      </svg>`;
+    }
+
+    function renderLibraryThumbnail(record) {
+      if (record?.thumbnail) {
+        return `<img class="hdf5-library-thumb" src="${esc(record.thumbnail)}" alt="${esc(record.name || "HDF5")} preview" loading="lazy">`;
+      }
+      return libraryFallbackThumbnail(record);
+    }
+
     async function renderLibrary() {
       const db = await openIDB();
       const tx = db.transaction("datasets", "readonly");
@@ -13824,7 +13924,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
       dataLibraryGrid.innerHTML = filtered.map(r => {
         const sel = librarySelection.has(r.id) ? "selected" : "";
-        const thumb = r.thumbnail ? `<img class="hdf5-library-thumb" src="${esc(r.thumbnail)}" alt="${esc(r.name)} preview" loading="lazy">` : "";
+        const thumb = renderLibraryThumbnail(r);
         return `<div class="library-card ${sel} ${thumb ? "has-thumb" : ""}" data-id="${esc(r.id)}" onclick="toggleLibrarySelect('${esc(r.id)}')">
           ${thumb}
           <div class="library-card-title"><span>📊</span><strong>${esc(r.name)}</strong></div>
