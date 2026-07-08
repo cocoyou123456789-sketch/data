@@ -4237,10 +4237,17 @@
       left: 18px;
       right: auto;
       width: min(760px, calc(100vw - 28px));
+      height: min(760px, calc(100vh - 36px));
+      min-width: 420px;
+      min-height: 320px;
       max-height: min(760px, calc(100vh - 36px));
+      display: flex;
+      flex-direction: column;
     }
     .floating-figure-panel .floating-compare-body {
-      max-height: calc(min(760px, calc(100vh - 36px)) - 106px);
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: none;
     }
     .floating-figure-drop {
       border: 1px dashed rgba(20,184,166,0.58);
@@ -4290,6 +4297,7 @@
       object-fit: contain;
       background: #06101a;
       border-bottom: 1px solid var(--line);
+      cursor: zoom-in;
     }
     .floating-figure-db-card img {
       background: #f8fafc;
@@ -4339,14 +4347,115 @@
       font-size: 12px;
       text-align: center;
     }
+    .floating-resize-handle {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      z-index: 2;
+      border-color: rgba(20, 184, 166, 0.62);
+      opacity: 0.72;
+    }
+    .floating-resize-handle[data-corner="nw"] {
+      left: 2px;
+      top: 2px;
+      border-left: 2px solid;
+      border-top: 2px solid;
+      cursor: nwse-resize;
+    }
+    .floating-resize-handle[data-corner="ne"] {
+      right: 2px;
+      top: 2px;
+      border-right: 2px solid;
+      border-top: 2px solid;
+      cursor: nesw-resize;
+    }
+    .floating-resize-handle[data-corner="sw"] {
+      left: 2px;
+      bottom: 2px;
+      border-left: 2px solid;
+      border-bottom: 2px solid;
+      cursor: nesw-resize;
+    }
+    .floating-resize-handle[data-corner="se"] {
+      right: 2px;
+      bottom: 2px;
+      border-right: 2px solid;
+      border-bottom: 2px solid;
+      cursor: nwse-resize;
+    }
+    .floating-compare.is-minimized .floating-resize-handle { display: none; }
+    .floating-figure-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 2400;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      background: rgba(2, 6, 12, 0.84);
+      backdrop-filter: blur(10px);
+    }
+    .floating-figure-lightbox[hidden] { display: none; }
+    .floating-figure-lightbox-inner {
+      width: min(1180px, 96vw);
+      max-height: 92vh;
+      border: 1px solid rgba(20,184,166,0.5);
+      border-radius: 10px;
+      background: rgba(8, 13, 20, 0.96);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.58);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .floating-figure-lightbox-head {
+      min-height: 44px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+    }
+    .floating-figure-lightbox-head strong {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .floating-figure-lightbox-head button {
+      min-width: 32px;
+      min-height: 30px;
+      padding: 2px 9px;
+    }
+    .floating-figure-lightbox-img-wrap {
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      padding: 14px;
+      overflow: auto;
+      background: #030711;
+    }
+    .floating-figure-lightbox-img-wrap img {
+      max-width: 100%;
+      max-height: calc(92vh - 80px);
+      display: block;
+      object-fit: contain;
+    }
     @media (max-width: 720px) {
       .floating-compare {
         left: 10px !important;
         right: 10px;
         bottom: 10px;
         top: auto !important;
-        width: auto;
+        width: auto !important;
+        height: auto !important;
+        min-width: 0;
+        min-height: 0;
         max-height: min(560px, calc(100vh - 20px));
+      }
+      .floating-resize-handle { display: none; }
+      .floating-figure-lightbox {
+        padding: 10px;
       }
       .magic-book-screen {
         padding: 14px;
@@ -6123,7 +6232,23 @@
       <button id="floatingFigureOpenFiguresBtn" type="button" data-i18n="floatingFigureOpenFiguresBtn">打开图表库</button>
       <button id="floatingFigureClearBtn" type="button" data-i18n="floatingFigureClearBtn">清空图像</button>
     </div>
+    <span class="floating-resize-handle" data-corner="nw" aria-hidden="true"></span>
+    <span class="floating-resize-handle" data-corner="ne" aria-hidden="true"></span>
+    <span class="floating-resize-handle" data-corner="sw" aria-hidden="true"></span>
+    <span class="floating-resize-handle" data-corner="se" aria-hidden="true"></span>
   </aside>
+
+  <div class="floating-figure-lightbox" id="floatingFigureLightbox" hidden>
+    <div class="floating-figure-lightbox-inner" role="dialog" aria-modal="true" aria-labelledby="floatingFigureLightboxTitle">
+      <div class="floating-figure-lightbox-head">
+        <strong id="floatingFigureLightboxTitle">HDF5 preview</strong>
+        <button type="button" id="floatingFigureLightboxClose" aria-label="Close">×</button>
+      </div>
+      <div class="floating-figure-lightbox-img-wrap">
+        <img id="floatingFigureLightboxImg" alt="HDF5 preview">
+      </div>
+    </div>
+  </div>
 
   <script>
     // ===== 国际化 i18n =====
@@ -7467,6 +7592,10 @@
     const floatingFigureCloseBtn = $("#floatingFigureCloseBtn");
     const floatingFigureClearBtn = $("#floatingFigureClearBtn");
     const floatingFigureOpenFiguresBtn = $("#floatingFigureOpenFiguresBtn");
+    const floatingFigureLightbox = $("#floatingFigureLightbox");
+    const floatingFigureLightboxImg = $("#floatingFigureLightboxImg");
+    const floatingFigureLightboxTitle = $("#floatingFigureLightboxTitle");
+    const floatingFigureLightboxClose = $("#floatingFigureLightboxClose");
     const soundBars = $("#soundBars");
     const particles = $("#particles");
 
@@ -12381,6 +12510,32 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return value.length > 86 ? `${value.slice(0, 84)}...` : value;
     }
 
+    function openFloatingFigureLightbox(src, title) {
+      if (!floatingFigureLightbox || !floatingFigureLightboxImg) return;
+      floatingFigureLightboxImg.src = src || "";
+      floatingFigureLightboxImg.alt = title || "HDF5 preview";
+      if (floatingFigureLightboxTitle) floatingFigureLightboxTitle.textContent = title || "HDF5 preview";
+      floatingFigureLightbox.hidden = false;
+    }
+
+    function closeFloatingFigureLightbox() {
+      if (!floatingFigureLightbox || !floatingFigureLightboxImg) return;
+      floatingFigureLightbox.hidden = true;
+      floatingFigureLightboxImg.removeAttribute("src");
+    }
+
+    function bindFloatingFigurePreviewClicks(root) {
+      root?.querySelectorAll("[data-floating-figure-preview]").forEach(img => {
+        const open = () => openFloatingFigureLightbox(img.getAttribute("src"), img.dataset.previewTitle || img.alt);
+        img.addEventListener("click", open);
+        img.addEventListener("keydown", event => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          open();
+        });
+      });
+    }
+
     function gatherFloatingDatabaseFigures(limit = 6, relaxed = false) {
       const items = [];
       const term = relaxed ? "" : (searchInput?.value || "").trim().toLowerCase();
@@ -12451,7 +12606,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       floatingFigureUserGrid.innerHTML = figures.length
         ? figures.map(item => `
             <div class="floating-figure-card">
-              <img src="${esc(item.src)}" alt="${esc(item.title || "HDF5 preview")}">
+              <img src="${esc(item.src)}" alt="${esc(item.title || "HDF5 preview")}" data-floating-figure-preview data-preview-title="${esc(item.title || "HDF5 preview")}" role="button" tabindex="0">
               <div class="floating-figure-meta">
                 <div class="floating-figure-meta-row">
                   <strong>${esc(floatingFigureTitle(item.title || "HDF5"))}</strong>
@@ -12470,6 +12625,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         ? dbFigures.map(fig => `
             <div class="floating-figure-db-card ${esc(figureTypeClass[fig.normalized_type] || "fig-type-other")}">
               <img src="${esc(fig.image_url)}" alt="${esc(fig.caption || fig.article_title)}"
+                data-floating-figure-preview
+                data-preview-title="${esc(fig.caption || fig.article_title || "Paper figure")}"
+                role="button"
+                tabindex="0"
                 referrerpolicy="no-referrer"
                 loading="lazy"
                 decoding="async"
@@ -12492,6 +12651,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           showToast(t("floatingFigureRemovedToast"));
         });
       });
+      bindFloatingFigurePreviewClicks(floatingFigureUserGrid);
+      bindFloatingFigurePreviewClicks(floatingFigureDbGrid);
       applyFloatingFigurePosition();
     }
 
@@ -12573,6 +12734,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!floatingFigurePanel || window.matchMedia("(max-width: 720px)").matches) return;
       try {
         const pos = JSON.parse(localStorage.getItem(FLOATING_FIGURE_POSITION_KEY) || "{}");
+        const minWidth = 420;
+        const minHeight = 320;
+        const maxWidth = Math.max(minWidth, window.innerWidth - 16);
+        const maxHeight = Math.max(minHeight, window.innerHeight - 16);
+        if (Number.isFinite(pos.width)) {
+          floatingFigurePanel.style.width = `${Math.max(minWidth, Math.min(pos.width, maxWidth))}px`;
+        }
+        if (Number.isFinite(pos.height)) {
+          floatingFigurePanel.style.height = `${Math.max(minHeight, Math.min(pos.height, maxHeight))}px`;
+        }
         if (!Number.isFinite(pos.left) || !Number.isFinite(pos.top)) return;
         const width = floatingFigurePanel.offsetWidth || 760;
         const height = floatingFigurePanel.offsetHeight || 520;
@@ -12588,7 +12759,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function persistFloatingFigurePosition() {
       if (!floatingFigurePanel || floatingFigurePanel.hidden) return;
       const rect = floatingFigurePanel.getBoundingClientRect();
-      localStorage.setItem(FLOATING_FIGURE_POSITION_KEY, JSON.stringify({ left: rect.left, top: rect.top }));
+      localStorage.setItem(FLOATING_FIGURE_POSITION_KEY, JSON.stringify({
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height
+      }));
     }
 
     function initFloatingFigurePanel() {
@@ -12656,6 +12832,76 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       };
       floatingFigureHeader?.addEventListener("pointerup", stopFloatingFigureDrag);
       floatingFigureHeader?.addEventListener("pointercancel", stopFloatingFigureDrag);
+
+      let resizingFigure = false;
+      let resizeState = null;
+      const startFloatingFigureResize = (event) => {
+        if (window.matchMedia("(max-width: 720px)").matches) return;
+        if (!floatingFigurePanel || floatingFigurePanel.classList.contains("is-minimized")) return;
+        const corner = event.currentTarget.dataset.corner || "se";
+        const rect = floatingFigurePanel.getBoundingClientRect();
+        resizingFigure = true;
+        resizeState = {
+          corner,
+          startX: event.clientX,
+          startY: event.clientY,
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          width: rect.width,
+          height: rect.height
+        };
+        event.preventDefault();
+        event.stopPropagation();
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+      };
+      const resizeFloatingFigure = (event) => {
+        if (!resizingFigure || !resizeState || !floatingFigurePanel) return;
+        const minWidth = 420;
+        const minHeight = 320;
+        const maxWidth = Math.max(minWidth, window.innerWidth - 16);
+        const maxHeight = Math.max(minHeight, window.innerHeight - 16);
+        const dx = event.clientX - resizeState.startX;
+        const dy = event.clientY - resizeState.startY;
+        const west = resizeState.corner.includes("w");
+        const north = resizeState.corner.includes("n");
+        let width = west ? resizeState.width - dx : resizeState.width + dx;
+        let height = north ? resizeState.height - dy : resizeState.height + dy;
+        width = Math.max(minWidth, Math.min(width, maxWidth));
+        height = Math.max(minHeight, Math.min(height, maxHeight));
+        let left = west ? resizeState.right - width : resizeState.left;
+        let top = north ? resizeState.bottom - height : resizeState.top;
+        left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
+        top = Math.max(8, Math.min(top, window.innerHeight - height - 8));
+        floatingFigurePanel.style.left = `${left}px`;
+        floatingFigurePanel.style.top = `${top}px`;
+        floatingFigurePanel.style.right = "auto";
+        floatingFigurePanel.style.bottom = "auto";
+        floatingFigurePanel.style.width = `${width}px`;
+        floatingFigurePanel.style.height = `${height}px`;
+      };
+      const stopFloatingFigureResize = () => {
+        if (!resizingFigure) return;
+        resizingFigure = false;
+        resizeState = null;
+        persistFloatingFigurePosition();
+      };
+      floatingFigurePanel?.querySelectorAll(".floating-resize-handle").forEach(handle => {
+        handle.addEventListener("pointerdown", startFloatingFigureResize);
+        handle.addEventListener("pointermove", resizeFloatingFigure);
+        handle.addEventListener("pointerup", stopFloatingFigureResize);
+        handle.addEventListener("pointercancel", stopFloatingFigureResize);
+      });
+      floatingFigureLightboxClose?.addEventListener("click", closeFloatingFigureLightbox);
+      floatingFigureLightbox?.addEventListener("click", event => {
+        if (event.target === floatingFigureLightbox) closeFloatingFigureLightbox();
+      });
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && floatingFigureLightbox && !floatingFigureLightbox.hidden) {
+          closeFloatingFigureLightbox();
+        }
+      });
       window.addEventListener("resize", applyFloatingFigurePosition);
     }
 
