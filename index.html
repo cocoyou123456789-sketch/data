@@ -4716,6 +4716,34 @@
       margin-top: 12px;
       color: var(--muted);
     }
+    .hdf5-reader-helper {
+      display: grid;
+      gap: 6px;
+      max-width: 960px;
+      margin: 14px auto 0;
+      padding: 12px 14px;
+      border: 1px solid rgba(45,212,191,0.22);
+      border-radius: 10px;
+      background: rgba(15,23,42,0.46);
+      color: var(--muted);
+      text-align: left;
+    }
+    .hdf5-reader-helper strong {
+      color: var(--accent-glow);
+      font-size: 13px;
+    }
+    .hdf5-reader-helper code {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(148,163,184,0.22);
+      background: rgba(2,6,23,0.72);
+      color: #dbeafe;
+      font-size: 12px;
+      white-space: nowrap;
+    }
     .hdf5-tree { max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; }
     .hdf5-tree .group { color: #f59e0b; cursor: pointer; }
     .hdf5-tree .dataset { color: var(--accent-glow); cursor: pointer; padding-left: 16px; }
@@ -6138,8 +6166,15 @@
           <p class="muted" data-i18n="hdf5DropHint">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据；也可拖入包含 .h5 的 .zip</p>
           <div class="upload-actions">
             <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 文件</button>
+            <button type="button" id="hdf5PackageChooseBtn" data-i18n="hdf5PackageChooseBtn">导入转换包</button>
+          </div>
+          <div class="hdf5-reader-helper">
+            <strong data-i18n="hdf5ReaderTitle">本地 HDF5 读图程序</strong>
+            <span data-i18n="hdf5ReaderHint">如果浏览器直接预览发花，先用脚本生成预览包，再点“导入转换包”。</span>
+            <code>python3 scripts/hdf5_arpes_preview.py your.h5 --out preview.json --png preview.png</code>
           </div>
           <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,application/x-hdf5,application/octet-stream,application/zip" multiple>
+          <input class="hdf5-native-input" type="file" id="hdf5PackageInput" accept=".json,application/json,image/png,image/jpeg,image/webp" multiple>
         </div>
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
@@ -6795,6 +6830,11 @@
         hdf5DropTitle: "📁 拖放或点击上传 HDF5 文件",
         hdf5DropHint: "支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据；也可拖入包含 .h5 的 .zip",
         hdf5ChooseBtn: "选择 HDF5 文件",
+        hdf5PackageChooseBtn: "导入转换包",
+        hdf5ReaderTitle: "本地 HDF5 读图程序",
+        hdf5ReaderHint: "如果浏览器直接预览发花，先用脚本生成预览包，再点“导入转换包”。",
+        hdf5PreviewPackageLoaded: "已导入清晰预览包",
+        hdf5PreviewPackageInvalid: "这个文件不是有效的 HDF5 预览包",
         hdf5SavedImportsTitle: "💾 已保存上传",
         hdf5SavedImportsEmpty: "上传 HDF5 后会自动保存导入记录和预览。",
         hdf5SavedImportsStatus: "已保存 {count} 个上传记录",
@@ -7328,6 +7368,11 @@
         hdf5DropTitle: "📁 Drop or click to upload HDF5 files",
         hdf5DropHint: "Supports ARPES-style files with energy/k axes, temperature, photon energy, and metadata; .zip files containing .h5 are also supported",
         hdf5ChooseBtn: "Choose HDF5 Files",
+        hdf5PackageChooseBtn: "Import Preview Package",
+        hdf5ReaderTitle: "Local HDF5 reader",
+        hdf5ReaderHint: "If direct browser preview looks noisy, create a preview package with the script, then import it here.",
+        hdf5PreviewPackageLoaded: "Clear preview package imported",
+        hdf5PreviewPackageInvalid: "This file is not a valid HDF5 preview package",
         hdf5SavedImportsTitle: "💾 Saved Uploads",
         hdf5SavedImportsEmpty: "HDF5 uploads automatically save import records and previews.",
         hdf5SavedImportsStatus: "{count} saved upload record(s)",
@@ -13655,7 +13700,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     // DOM refs for HDF5 section
     const hdf5DropZone = document.querySelector("#hdf5DropZone");
     const hdf5ChooseBtn = document.querySelector("#hdf5ChooseBtn");
+    const hdf5PackageChooseBtn = document.querySelector("#hdf5PackageChooseBtn");
     const hdf5FileInput = document.querySelector("#hdf5FileInput");
+    const hdf5PackageInput = document.querySelector("#hdf5PackageInput");
     const hdf5Tree = document.querySelector("#hdf5Tree");
     const hdf5Meta = document.querySelector("#hdf5Meta");
     const hdf5Status = document.querySelector("#hdf5Status");
@@ -13685,6 +13732,30 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function isHDF5ZipFile(file) {
       return /\.zip$/i.test(file.name || "");
+    }
+
+    function isHDF5PreviewPackageFile(file) {
+      const name = file?.name || "";
+      const type = file?.type || "";
+      return /\.json$/i.test(name) || /^image\//i.test(type) || /\.(png|jpe?g|webp)$/i.test(name);
+    }
+
+    function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = event => resolve(String(event.target?.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("Could not read file"));
+        reader.readAsText(file);
+      });
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = event => resolve(String(event.target?.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("Could not read file"));
+        reader.readAsDataURL(file);
+      });
     }
 
     function hdf5Parser() {
@@ -13728,8 +13799,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       e.stopPropagation();
       chooseHDF5Files();
     });
+    hdf5PackageChooseBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!hdf5PackageInput) return;
+      hdf5PackageInput.value = "";
+      hdf5PackageInput.click();
+    });
     hdf5DropZone.addEventListener("click", (e) => {
-      if (e.target.closest("button, input[type='file']")) return;
+      if (e.target.closest("button, input[type='file'], .hdf5-reader-helper")) return;
       chooseHDF5Files();
     });
     hdf5DropZone.addEventListener("dragover", (e) => { e.preventDefault(); hdf5DropZone.classList.add("drag-over"); });
@@ -13737,10 +13814,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     hdf5DropZone.addEventListener("drop", (e) => {
       e.preventDefault();
       hdf5DropZone.classList.remove("drag-over");
-      handleHDF5Files(Array.from(e.dataTransfer.files || []));
+      const files = Array.from(e.dataTransfer.files || []);
+      if (files.some(isHDF5PreviewPackageFile)) handleHDF5PreviewPackageFiles(files);
+      else handleHDF5Files(files);
     });
     hdf5FileInput.addEventListener("change", () => {
       handleHDF5Files(Array.from(hdf5FileInput.files || []));
+    });
+    hdf5PackageInput?.addEventListener("change", () => {
+      handleHDF5PreviewPackageFiles(Array.from(hdf5PackageInput.files || []));
+      hdf5PackageInput.value = "";
     });
     updateHDF5ParserStatus();
 
@@ -14034,9 +14117,31 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             const fullPath = `${path}/${key}`;
             const nameLower = key.toLowerCase();
             if (!item.isGroup) {
-              const record = { path: fullPath, name: key, nameLower, shape: item.shape || [], dtype: item.dtype || "" };
+              const attrs = {};
+              if (item.attrs) {
+                Object.entries(item.attrs).forEach(([attrKey, attrValue]) => {
+                  attrs[attrKey] = Array.isArray(attrValue)
+                    ? attrValue.slice(0, 6).join(", ")
+                    : String(attrValue ?? "");
+                });
+              }
+              const record = {
+                path: fullPath,
+                name: key,
+                nameLower,
+                normalized: normalizeHDF5Name(key),
+                shape: item.shape || [],
+                dtype: item.dtype || "",
+                attrs
+              };
               allDatasets.push(record);
-              if (arpesKeywords.some(kw => nameLower.includes(kw))) arpesDatasets.push(record);
+              const searchable = [
+                nameLower,
+                record.normalized,
+                fullPath.toLowerCase(),
+                Object.entries(attrs).map(([attrKey, attrValue]) => `${attrKey} ${attrValue}`).join(" ").toLowerCase()
+              ].join(" ");
+              if (arpesKeywords.some(kw => searchable.includes(kw))) arpesDatasets.push(record);
             }
             if (item.isGroup) scan(item, fullPath);
           });
@@ -14060,7 +14165,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function detectARPESLayouts(datasets) {
       const byName = new Map();
       for (const dataset of datasets) {
-        if (!byName.has(dataset.nameLower)) byName.set(dataset.nameLower, dataset);
+        const normalized = dataset.normalized || normalizeHDF5Name(dataset.nameLower || dataset.name || "");
+        if (!byName.has(normalized)) byName.set(normalized, dataset);
       }
       const alpha = byName.get("alpha");
       const beta = byName.get("beta");
@@ -14121,20 +14227,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const kind = match[2].toLowerCase();
       const size = Number(match[3] || (kind === "f" ? 4 : 4));
       const littleEndian = endian !== ">" && endian !== "!";
-      const readers = {
-        f4: (view, offset) => view.getFloat32(offset, littleEndian),
-        f8: (view, offset) => view.getFloat64(offset, littleEndian),
+      const makeReaders = useLittleEndian => ({
+        f4: (view, offset) => view.getFloat32(offset, useLittleEndian),
+        f8: (view, offset) => view.getFloat64(offset, useLittleEndian),
         i1: (view, offset) => view.getInt8(offset),
         u1: (view, offset) => view.getUint8(offset),
-        i2: (view, offset) => view.getInt16(offset, littleEndian),
-        u2: (view, offset) => view.getUint16(offset, littleEndian),
-        i4: (view, offset) => view.getInt32(offset, littleEndian),
-        u4: (view, offset) => view.getUint32(offset, littleEndian),
-        i8: (view, offset) => Number(view.getBigInt64(offset, littleEndian)),
-        u8: (view, offset) => Number(view.getBigUint64(offset, littleEndian))
-      };
-      const read = readers[`${kind}${size}`];
-      return read ? { size, read } : null;
+        i2: (view, offset) => view.getInt16(offset, useLittleEndian),
+        u2: (view, offset) => view.getUint16(offset, useLittleEndian),
+        i4: (view, offset) => view.getInt32(offset, useLittleEndian),
+        u4: (view, offset) => view.getUint32(offset, useLittleEndian),
+        i8: (view, offset) => Number(view.getBigInt64(offset, useLittleEndian)),
+        u8: (view, offset) => Number(view.getBigUint64(offset, useLittleEndian))
+      });
+      const read = makeReaders(littleEndian)[`${kind}${size}`];
+      const swappedRead = size > 1 ? makeReaders(!littleEndian)[`${kind}${size}`] : read;
+      return read ? { size, read, swappedRead } : null;
     }
 
     function getUint64LE(view, offset) {
@@ -14157,44 +14264,107 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return { buffer: dataobjects.fh, dataOffset, reader };
     }
 
+    function normalizeHDF5Name(value) {
+      const base = String(value || "")
+        .toLowerCase()
+        .split("/")
+        .filter(Boolean)
+        .pop() || "";
+      return base
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "") || "";
+    }
+
+    function hdf5Tokens(value) {
+      return String(value || "")
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean);
+    }
+
+    function hdf5DatasetSearchText(dataset) {
+      const attrs = Object.entries(dataset?.attrs || {})
+        .map(([key, value]) => `${key} ${value}`)
+        .join(" ");
+      return [dataset?.path, dataset?.name, dataset?.nameLower, dataset?.normalized, attrs].join(" ");
+    }
+
+    function hdf5AxisKind(dataset) {
+      const tokens = new Set(hdf5Tokens(hdf5DatasetSearchText(dataset)));
+      const has = words => words.some(word => tokens.has(word));
+      const text = hdf5DatasetSearchText(dataset).toLowerCase();
+      if (has(["ev", "e", "energy", "energies", "binding", "kinetic", "bindingenergy", "kineticenergy"])) return "energy";
+      if (has(["alpha", "beta", "theta", "phi", "angle", "angles", "emission", "emissionangle"])) return "angle";
+      if (has(["k", "kx", "ky", "kz", "kparallel", "kpar", "momentum", "wavevector"])) return "momentum";
+      if (has(["temp", "temperature", "kelvin", "tc"])) return "temperature";
+      if (text.includes("binding energy") || text.includes("kinetic energy")) return "energy";
+      if (text.includes("k_parallel")) return "momentum";
+      return "axis";
+    }
+
+    function hdf5AxisLabel(axis) {
+      const name = normalizeHDF5Name(axis?.name || axis?.path || "") || `dim ${axis?.dim ?? ""}`;
+      if (axis?.kind === "energy") return /kinetic/.test(name) ? "Kinetic energy (eV)" : "Energy (eV)";
+      if (axis?.kind === "angle") return `${name || "angle"} (deg)`;
+      if (axis?.kind === "momentum") return name || "momentum";
+      if (axis?.kind === "temperature") return "Temperature (K)";
+      return name || "axis";
+    }
+
     function inferHDF5Axes(detection) {
-      const axes = {};
-      const candidates = detection?.allDatasets || [];
-      for (const dataset of candidates) {
-        if ((dataset.shape || []).length !== 1) continue;
-        const name = String(dataset.nameLower || "").replace(/[^a-z0-9]/g, "");
-        if (/^(ev|energy|energies|bindingenergy)$/.test(name)) axes.ev = dataset;
-        else if (/^(alpha|theta|angle|kx|momentum)$/.test(name)) axes.alpha = dataset;
-        else if (/^(beta|phi|ky)$/.test(name)) axes.beta = dataset;
+      const axes = [];
+      for (const dataset of detection?.allDatasets || []) {
+        const shape = (dataset.shape || []).map(Number);
+        if (shape.length !== 1 || shape[0] < 2 || !isNumericHDF5Dtype(dataset.dtype)) continue;
+        const kind = hdf5AxisKind(dataset);
+        const label = hdf5AxisLabel({ ...dataset, kind });
+        let score = 0;
+        const normalized = dataset.normalized || normalizeHDF5Name(dataset.name || dataset.path);
+        if (kind !== "axis") score += 80;
+        if (/^(ev|e|energy|energies|binding_energy|kinetic_energy)$/.test(normalized)) score += 20;
+        if (/^(alpha|beta|theta|phi|kx|ky|k|k_parallel|momentum)$/.test(normalized)) score += 20;
+        if (/axis|axes|scale|dim/.test(dataset.path || "")) score += 5;
+        axes.push({ ...dataset, kind, label, length: shape[0], score });
       }
       return axes;
     }
 
     function axisLength(axis) {
-      return Number(axis?.shape?.[0]) || 0;
+      return Number(axis?.length || axis?.shape?.[0]) || 0;
     }
 
-    function dimMatchingAxis(shape, axis, used = new Set()) {
-      const length = axisLength(axis);
-      if (!length) return null;
-      for (let i = 0; i < shape.length; i++) {
-        if (!used.has(i) && Number(shape[i]) === length) return i;
-      }
-      return null;
+    function bestAxisForLength(axes, length, preferredKinds = []) {
+      const matches = (axes || []).filter(axis => axisLength(axis) === Number(length));
+      if (!matches.length) return null;
+      const preferred = Array.isArray(preferredKinds) ? preferredKinds : [];
+      return matches
+        .map(axis => {
+          let score = Number(axis.score) || 0;
+          const preferredIndex = preferred.indexOf(axis.kind);
+          if (preferredIndex >= 0) score += 120 - preferredIndex * 14;
+          if (axis.kind !== "axis") score += 8;
+          return { axis, score };
+        })
+        .sort((a, b) => b.score - a.score)[0].axis;
     }
 
-    function labelForHDF5Dim(dim, shape, axes) {
-      const length = Number(shape?.[dim]) || 0;
-      if (length && axisLength(axes.ev) === length) return "eV";
-      if (length && axisLength(axes.alpha) === length) return "alpha";
-      if (length && axisLength(axes.beta) === length) return "beta";
-      return `dim ${dim + 1}`;
-    }
-
-    function axisDatasetForHDF5Dim(dim, shape, axes) {
+    function hdf5DimAxis(shape, dim, axes, preferredKinds = []) {
       const length = Number(shape?.[dim]) || 0;
       if (!length) return null;
-      return [axes.ev, axes.alpha, axes.beta].find(axis => axisLength(axis) === length) || null;
+      return bestAxisForLength(axes, length, preferredKinds);
+    }
+
+    function hdf5DimKind(shape, dim, axes, preferredKinds = []) {
+      return hdf5DimAxis(shape, dim, axes, preferredKinds)?.kind || "";
+    }
+
+    function labelForHDF5Dim(dim, shape, axes, preferredKinds = []) {
+      const axis = hdf5DimAxis(shape, dim, axes, preferredKinds);
+      return axis?.label || `dim ${dim + 1}`;
+    }
+
+    function axisDatasetForHDF5Dim(dim, shape, axes, preferredKinds = []) {
+      return hdf5DimAxis(shape, dim, axes, preferredKinds);
     }
 
     function readHDF5AxisValue(h5, axis, index) {
@@ -14223,34 +14393,55 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return { first, last, length };
     }
 
+    function selectHDF5PreviewDims(shape, axes) {
+      const dims = shape.map((_, index) => index);
+      if (shape.length === 2) {
+        const energyDim = dims
+          .map(dim => ({ dim, axis: hdf5DimAxis(shape, dim, axes, ["energy", "axis"]) }))
+          .find(item => item.axis?.kind === "energy")?.dim;
+        const horizontalDim = dims
+          .filter(dim => dim !== energyDim)
+          .map(dim => ({ dim, axis: hdf5DimAxis(shape, dim, axes, ["angle", "momentum", "axis"]) }))
+          .find(item => item.axis && ["angle", "momentum"].includes(item.axis.kind))?.dim;
+        const yDim = energyDim ?? 0;
+        const xDim = horizontalDim ?? dims.find(dim => dim !== yDim);
+        return { xDim, yDim, fixedDim: null, fixedIndex: null };
+      }
+
+      const candidates = [];
+      for (const xDim of dims) {
+        for (const yDim of dims) {
+          if (xDim === yDim) continue;
+          const xAxis = hdf5DimAxis(shape, xDim, axes, ["angle", "momentum", "energy", "axis"]);
+          const yAxis = hdf5DimAxis(shape, yDim, axes, ["energy", "angle", "momentum", "axis"]);
+          const area = Math.max(1, Number(shape[xDim]) * Number(shape[yDim]));
+          let score = Math.log10(area);
+          if (yAxis?.kind === "energy") score += 55;
+          if (xAxis && ["angle", "momentum"].includes(xAxis.kind)) score += 44;
+          if (xAxis?.kind === "energy") score += 16;
+          if (yAxis && ["angle", "momentum"].includes(yAxis.kind)) score += 12;
+          if (Math.min(Number(shape[xDim]), Number(shape[yDim])) >= 16) score += 8;
+          if (xAxis?.path && yAxis?.path && xAxis.path !== yAxis.path) score += 5;
+          candidates.push({ xDim, yDim, score });
+        }
+      }
+      const best = candidates.sort((a, b) => b.score - a.score)[0];
+      const fixedDim = dims.find(dim => dim !== best.xDim && dim !== best.yDim);
+      return {
+        xDim: best.xDim,
+        yDim: best.yDim,
+        fixedDim,
+        fixedIndex: fixedDim == null ? null : Math.floor((Number(shape[fixedDim]) || 1) / 2)
+      };
+    }
+
     function buildHDF5PreviewPlan(h5, datasetInfo, detection) {
       const shape = (datasetInfo?.shape || []).map(Number);
       if (!datasetInfo || shape.length < 2 || shape.length > 3) return null;
       if (!isNumericHDF5Dtype(datasetInfo.dtype)) return null;
       const dataset = getHDF5NodeByPath(h5, datasetInfo.path);
       const axes = inferHDF5Axes(detection);
-      const used = new Set();
-      let xDim = null;
-      let yDim = null;
-      let fixedDim = null;
-      let fixedIndex = null;
-
-      if (shape.length === 2) {
-        yDim = dimMatchingAxis(shape, axes.ev, used);
-        if (yDim != null) used.add(yDim);
-        xDim = dimMatchingAxis(shape, axes.alpha, used);
-        if (xDim == null) xDim = shape.findIndex((_, index) => index !== yDim);
-        if (yDim == null) yDim = xDim === 0 ? 1 : 0;
-      } else if (shape.length === 3) {
-        yDim = dimMatchingAxis(shape, axes.ev, used);
-        if (yDim != null) used.add(yDim);
-        xDim = dimMatchingAxis(shape, axes.alpha, used);
-        if (xDim != null) used.add(xDim);
-        if (yDim == null) yDim = shape.length - 1;
-        if (xDim == null || xDim === yDim) xDim = yDim === 2 ? 1 : 2;
-        fixedDim = [0, 1, 2].find(index => index !== xDim && index !== yDim);
-        fixedIndex = Math.floor((Number(shape[fixedDim]) || 1) / 2);
-      }
+      const { xDim, yDim, fixedDim, fixedIndex } = selectHDF5PreviewDims(shape, axes);
 
       if (xDim == null || yDim == null || xDim === yDim) return null;
       return {
@@ -14264,39 +14455,64 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         yDim,
         fixedDim,
         fixedIndex,
-        xLabel: labelForHDF5Dim(xDim, shape, axes),
-        yLabel: labelForHDF5Dim(yDim, shape, axes),
-        fixedLabel: fixedDim == null ? "" : labelForHDF5Dim(fixedDim, shape, axes),
-        xRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(xDim, shape, axes)),
-        yRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(yDim, shape, axes))
+        xLabel: labelForHDF5Dim(xDim, shape, axes, ["angle", "momentum", "energy", "axis"]),
+        yLabel: labelForHDF5Dim(yDim, shape, axes, ["energy", "angle", "momentum", "axis"]),
+        fixedLabel: fixedDim == null ? "" : labelForHDF5Dim(fixedDim, shape, axes, ["angle", "momentum", "temperature", "axis"]),
+        xRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(xDim, shape, axes, ["angle", "momentum", "energy", "axis"])),
+        yRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(yDim, shape, axes, ["energy", "angle", "momentum", "axis"]))
       };
     }
 
-    function hdf5PreviewCandidates(detection) {
-      const primary = primaryDetectedHDF5Datasets(detection);
+    function hdf5DatasetPreviewScore(dataset, axes) {
+      const shape = (dataset?.shape || []).map(Number);
+      if (shape.length < 2 || shape.length > 3 || !isNumericHDF5Dtype(dataset?.dtype)) return -Infinity;
+      const size = hdf5DatasetSize(shape);
+      if (size < 64) return -Infinity;
+      const text = hdf5DatasetSearchText(dataset).toLowerCase();
+      let score = Math.log10(Math.max(size, 10));
+      [
+        ["fine_cut", 130], ["finecut", 130], ["core_level", 100], ["corelevel", 100],
+        ["quick_map", 92], ["quickmap", 92], ["fine_map", 82], ["finemap", 82],
+        ["cut", 68], ["map", 54], ["spectrum", 44], ["spectra", 44],
+        ["intensity", 38], ["counts", 34], ["data", 28], ["image", 18], ["band", 18]
+      ].forEach(([word, points]) => {
+        if (text.includes(word)) score += points;
+      });
+      const kinds = shape.map((_, dim) => hdf5DimKind(shape, dim, axes, ["energy", "angle", "momentum", "axis"]));
+      if (kinds.includes("energy")) score += 30;
+      if (kinds.some(kind => ["angle", "momentum"].includes(kind))) score += 28;
+      if (kinds.includes("energy") && kinds.some(kind => ["angle", "momentum"].includes(kind))) score += 30;
+      if (shape.length === 2) score += 16;
+      if (shape.length === 3) score += 8;
+      if (/axis|axes|scale|energy|alpha|theta|phi|temperature/.test(text) && Math.min(...shape) <= 4) score -= 80;
+      if (size > 24000000) score -= 8;
+      return score;
+    }
+
+    function rankedHDF5PreviewDatasets(detection) {
+      const axes = inferHDF5Axes(detection);
       const fallback = (detection?.allDatasets || []).filter(dataset => (dataset.shape || []).length >= 2);
       const seen = new Set();
-      const priority = name => {
-        const lower = String(name || "").toLowerCase();
-        if (lower === "fine_cut") return 0;
-        if (lower === "core_level") return 1;
-        if (lower === "quick_map") return 2;
-        if (lower === "fine_map") return 3;
-        return 10;
-      };
-      return [...primary, ...fallback]
+      return fallback
         .filter(dataset => {
           if (seen.has(dataset.path)) return false;
           seen.add(dataset.path);
           return isNumericHDF5Dtype(dataset.dtype);
         })
+        .map(dataset => ({ dataset, score: hdf5DatasetPreviewScore(dataset, axes) }))
+        .filter(item => Number.isFinite(item.score))
         .sort((a, b) => {
-          const shapeA = a.shape || [];
-          const shapeB = b.shape || [];
-          return priority(a.name) - priority(b.name)
+          const shapeA = a.dataset.shape || [];
+          const shapeB = b.dataset.shape || [];
+          return b.score - a.score
             || shapeA.length - shapeB.length
-            || hdf5DatasetSize(shapeA) - hdf5DatasetSize(shapeB);
-        });
+            || hdf5DatasetSize(shapeB) - hdf5DatasetSize(shapeA);
+        })
+        .map(item => item.dataset);
+    }
+
+    function hdf5PreviewCandidates(detection) {
+      return rankedHDF5PreviewDatasets(detection);
     }
 
     function linearHDF5Index(shape, coords) {
@@ -14321,6 +14537,23 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return Number.isFinite(value) && Math.abs(value) < 1e38;
     }
 
+    function hdf5RawSampleQuality(finite, totalCount) {
+      if (!finite?.length || !totalCount) return -Infinity;
+      const absValues = finite.map(value => Math.abs(value)).filter(Number.isFinite).sort((a, b) => a - b);
+      if (!absValues.length) return -Infinity;
+      const percentile = p => absValues[Math.min(absValues.length - 1, Math.floor((absValues.length - 1) * p))];
+      const p50 = percentile(0.50);
+      const p95 = percentile(0.95);
+      const p99 = percentile(0.99);
+      let score = (finite.length / totalCount) * 100;
+      if (p99 < 1e6) score += 90;
+      else if (p99 < 1e12) score += 35;
+      else if (p99 > 1e30) score -= 180;
+      if (p50 > 0 && p95 / Math.max(p50, 1e-30) < 1e6) score += 30;
+      if (p95 === 0 && p99 === 0) score -= 10;
+      return score;
+    }
+
     function sampleHDF5Dataset(plan, options = {}) {
       const maxCols = options.maxCols || 560;
       const maxRows = options.maxRows || 340;
@@ -14329,46 +14562,59 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!xLen || !yLen) throw new Error(t("hdf5PreviewUnavailable"));
       const cols = Math.min(maxCols, xLen);
       const rows = Math.min(maxRows, yLen);
-      const values = new Float32Array(cols * rows);
       const totalSize = hdf5DatasetSize(plan.shape);
-      let contiguous = null;
-      let source = null;
-      let view = null;
-      if (totalSize <= 1400000) {
-        try { source = plan.dataset.value; }
-        catch { source = null; }
-      }
-      if (!source) {
-        contiguous = getContiguousDatasetInfo(plan.dataset);
-        if (contiguous) view = new DataView(contiguous.buffer);
-        else {
-          if (totalSize > 1400000) throw new Error(t("hdf5PreviewLargeChunked"));
-          source = plan.dataset.value;
-        }
-      }
-      if (!source && !contiguous) {
-        source = plan.dataset.value;
-      }
-      const finite = [];
       const coords = new Array(plan.shape.length).fill(0);
       if (plan.fixedDim != null) coords[plan.fixedDim] = plan.fixedIndex;
-      for (let row = 0; row < rows; row++) {
-        const srcY = Math.min(yLen - 1, Math.floor(row * yLen / rows));
-        coords[plan.yDim] = srcY;
-        for (let col = 0; col < cols; col++) {
-          const srcX = Math.min(xLen - 1, Math.floor(col * xLen / cols));
-          coords[plan.xDim] = srcX;
-          const linearIndex = linearHDF5Index(plan.shape, coords);
-          const value = contiguous
-            ? contiguous.reader.read(view, contiguous.dataOffset + linearIndex * contiguous.reader.size)
-            : hdf5SourceValue(source, linearIndex, coords);
-          const outIndex = row * cols + col;
-          values[outIndex] = isRenderableHDF5Value(value) ? value : NaN;
-          if (isRenderableHDF5Value(value)) {
-            finite.push(value);
+
+      const collectValues = (readerConfig) => {
+        const values = new Float32Array(cols * rows);
+        const finite = [];
+        const localCoords = coords.slice();
+        const source = readerConfig.source || null;
+        const contiguous = readerConfig.contiguous || null;
+        const view = readerConfig.view || null;
+        const read = readerConfig.read || null;
+        for (let row = 0; row < rows; row++) {
+          const srcY = Math.min(yLen - 1, Math.floor(row * yLen / rows));
+          localCoords[plan.yDim] = srcY;
+          for (let col = 0; col < cols; col++) {
+            const srcX = Math.min(xLen - 1, Math.floor(col * xLen / cols));
+            localCoords[plan.xDim] = srcX;
+            const linearIndex = linearHDF5Index(plan.shape, localCoords);
+            const value = contiguous
+              ? read(view, contiguous.dataOffset + linearIndex * contiguous.reader.size)
+              : hdf5SourceValue(source, linearIndex, localCoords);
+            const outIndex = row * cols + col;
+            values[outIndex] = isRenderableHDF5Value(value) ? value : NaN;
+            if (isRenderableHDF5Value(value)) finite.push(value);
           }
         }
+        return { values, finite, byteSwapApplied: !!readerConfig.byteSwapApplied };
+      };
+
+      const contiguous = getContiguousDatasetInfo(plan.dataset);
+      let collected = null;
+      if (contiguous) {
+        const view = new DataView(contiguous.buffer);
+        const normal = collectValues({ contiguous, view, read: contiguous.reader.read });
+        const swapped = contiguous.reader.swappedRead
+          ? collectValues({ contiguous, view, read: contiguous.reader.swappedRead, byteSwapApplied: true })
+          : null;
+        collected = swapped && hdf5RawSampleQuality(swapped.finite, swapped.values.length) > hdf5RawSampleQuality(normal.finite, normal.values.length) + 28
+          ? swapped
+          : normal;
+      } else {
+        let source = null;
+        if (totalSize > 1400000) throw new Error(t("hdf5PreviewLargeChunked"));
+        try { source = plan.dataset.value; }
+        catch { source = null; }
+        if (!source) {
+          source = plan.dataset.value;
+        }
+        collected = collectValues({ source });
       }
+      const values = collected.values;
+      const finite = collected.finite;
       if (!finite.length) throw new Error(t("hdf5PreviewUnavailable"));
       finite.sort((a, b) => a - b);
       const q1 = finite[Math.floor((finite.length - 1) * 0.25)];
@@ -14406,7 +14652,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         low,
         high: high > low ? high : max,
         xLen,
-        yLen
+        yLen,
+        byteSwapApplied: collected.byteSwapApplied
       };
     }
 
@@ -14705,9 +14952,127 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         `<div class="metric"><strong>Shape:</strong> [${plan.shape.join("×")}] ${esc(plan.dtype)}</div>`,
         `<div class="metric"><strong>${esc(t("hdf5PreviewAxes"))}:</strong> x=${esc(plan.xLabel)} · y=${esc(plan.yLabel)}</div>`,
         fixed,
+        sample.byteSwapApplied
+          ? `<div class="metric"><strong>Reader:</strong> ${esc(currentLang === "zh" ? "已自动修正 HDF5 字节序" : "automatic HDF5 byte-order correction")}</div>`
+          : "",
         `<div class="metric"><strong>${esc(t("hdf5PreviewResolution"))}:</strong> ${sample.cols}×${sample.rows}</div>`,
         `<div class="metric"><strong>${esc(t("hdf5PreviewRange"))}:</strong> ${sample.low.toExponential(2)} – ${sample.high.toExponential(2)}</div>`
       ].filter(Boolean).join("");
+    }
+
+    function drawExternalHDF5PreviewImage(src, title = "HDF5 preview") {
+      return new Promise((resolve, reject) => {
+        if (!hdf5PreviewCanvas) {
+          resolve(false);
+          return;
+        }
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = hdf5PreviewCanvas;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+          const pad = 10;
+          const maxW = canvas.width - pad * 2;
+          const maxH = canvas.height - pad * 2;
+          const scale = Math.min(maxW / Math.max(1, img.naturalWidth), maxH / Math.max(1, img.naturalHeight));
+          const w = Math.max(1, Math.round(img.naturalWidth * scale));
+          const h = Math.max(1, Math.round(img.naturalHeight * scale));
+          const x = Math.round((canvas.width - w) / 2);
+          const y = Math.round((canvas.height - h) / 2);
+          ctx.drawImage(img, x, y, w, h);
+          if (title && w < canvas.width * 0.62) {
+            ctx.fillStyle = "#1f2937";
+            ctx.font = "14px system-ui, sans-serif";
+            ctx.textAlign = "left";
+            ctx.fillText(title, pad, 22);
+          }
+          resolve(true);
+        };
+        img.onerror = () => reject(new Error("Could not load preview image"));
+        img.src = src;
+      });
+    }
+
+    function hdf5PreviewPackageImage(packageData) {
+      return packageData?.image || packageData?.image_data_url || packageData?.png || packageData?.preview_image || "";
+    }
+
+    function updateHDF5PreviewPackageInfo(packageData, filename) {
+      const title = packageData.name || packageData.dataset || filename || "HDF5";
+      if (hdf5PreviewHint) {
+        const shape = Array.isArray(packageData.shape) ? ` · [${packageData.shape.join("×")}]` : "";
+        hdf5PreviewHint.textContent = `${title}${shape}`;
+      }
+      if (!hdf5PreviewInfo) return;
+      const rows = [
+        `<div class="metric"><strong>${esc(t("hdf5PreviewDataset"))}:</strong> ${esc(packageData.source_file || filename || "HDF5")} · ${esc(packageData.dataset || "")}</div>`,
+        Array.isArray(packageData.shape)
+          ? `<div class="metric"><strong>Shape:</strong> [${packageData.shape.join("×")}] ${esc(packageData.dtype || "")}</div>`
+          : "",
+        `<div class="metric"><strong>${esc(t("hdf5PreviewAxes"))}:</strong> x=${esc(packageData.x_label || "x")} · y=${esc(packageData.y_label || "y")}</div>`,
+        packageData.fixed && Object.keys(packageData.fixed).length
+          ? `<div class="metric"><strong>Slice:</strong> ${esc(Object.entries(packageData.fixed).map(([key, value]) => `${key}=${value}`).join(", "))}</div>`
+          : "",
+        Array.isArray(packageData.intensity_range)
+          ? `<div class="metric"><strong>${esc(t("hdf5PreviewRange"))}:</strong> ${Number(packageData.intensity_range[0]).toExponential(2)} – ${Number(packageData.intensity_range[1]).toExponential(2)}</div>`
+          : "",
+        `<div class="metric"><strong>Reader:</strong> scripts/hdf5_arpes_preview.py</div>`
+      ];
+      hdf5PreviewInfo.innerHTML = rows.filter(Boolean).join("");
+    }
+
+    async function renderHDF5PreviewPackage(packageData, filename) {
+      const src = hdf5PreviewPackageImage(packageData);
+      if (!src || !/^data:image\//i.test(src)) {
+        throw new Error(t("hdf5PreviewPackageInvalid"));
+      }
+      const title = packageData.name || packageData.dataset || filename || "HDF5 preview";
+      await drawExternalHDF5PreviewImage(src, title);
+      updateHDF5PreviewPackageInfo(packageData, filename);
+      const floatingSrc = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas) || src;
+      addFloatingFigureImage({
+        title: `${filename || packageData.source_file || "HDF5"} · ${title}`,
+        src: floatingSrc,
+        source: "hdf5",
+        dataset: packageData.dataset || packageData.name || ""
+      }, { open: true, auto: true });
+      setHDF5Status(t("hdf5PreviewPackageLoaded"));
+      showToast(t("hdf5PreviewPackageLoaded"));
+    }
+
+    async function handleHDF5PreviewPackageFiles(files) {
+      const packageFiles = Array.from(files || []).filter(isHDF5PreviewPackageFile);
+      if (!packageFiles.length) {
+        setHDF5Status(t("hdf5PreviewPackageInvalid"));
+        return;
+      }
+      for (const file of packageFiles) {
+        try {
+          if (/\.json$/i.test(file.name || "") || /json/i.test(file.type || "")) {
+            const text = await readFileAsText(file);
+            const packageData = JSON.parse(text);
+            if (packageData.kind !== "arpes-hdf5-preview-v1" && !hdf5PreviewPackageImage(packageData)) {
+              throw new Error(t("hdf5PreviewPackageInvalid"));
+            }
+            await renderHDF5PreviewPackage(packageData, file.name);
+          } else if (/^image\//i.test(file.type || "") || /\.(png|jpe?g|webp)$/i.test(file.name || "")) {
+            const src = await readFileAsDataUrl(file);
+            await renderHDF5PreviewPackage({
+              kind: "arpes-hdf5-preview-v1",
+              source_file: file.name,
+              name: file.name,
+              dataset: "converted image",
+              image: src
+            }, file.name);
+          }
+        } catch (error) {
+          console.warn("Could not import HDF5 preview package", file.name, error);
+          setHDF5Status(`${t("hdf5PreviewPackageInvalid")}: ${error.message}`);
+        }
+      }
     }
 
     function showHDF5PreviewMessage(message) {
@@ -14776,9 +15141,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function primaryDetectedHDF5Datasets(detection) {
-      const primaryName = /^(quick_map|fine_map|fine_cut|core_level)$/i;
-      const primary = (detection?.allDatasets || []).filter(dataset => primaryName.test(dataset.name));
-      return primary.length ? primary : (detection?.arpesDatasets || []).filter(dataset => (dataset.shape || []).length >= 2);
+      return rankedHDF5PreviewDatasets(detection).slice(0, 6);
     }
 
     async function addDetectedHDF5SummariesToLibrary(filename, detection, h5 = null) {
