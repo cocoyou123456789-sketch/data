@@ -6177,7 +6177,7 @@
             <code>python3 scripts/hdf5_arpes_preview.py your.h5 --out preview.json --png preview.png</code>
           </div>
           <div class="hdf5-reader-helper">
-            <strong data-i18n="hdf5PxtTitle">PXT → H5 一条龙</strong>
+            <strong data-i18n="hdf5PxtTitle">PXT / IBW 直接预览</strong>
             <span data-i18n="hdf5PxtHint">直接把 Igor/Scienta .pxt/.pxp/.ibw 拖到这里；网页会读取 wave、选择主谱图、生成预览并加入本地数据记录。</span>
             <code>Drop .pxt / .pxp / .ibw here for browser-side preview</code>
           </div>
@@ -14976,6 +14976,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return high - (high - low) * (displayIndex / (length - 1));
     }
 
+    function hdf5EnergyAxisNeedsFlip(range) {
+      if (!range || !Number.isFinite(range.first) || !Number.isFinite(range.last)) return false;
+      return range.last > range.first;
+    }
+
+    function hdf5IsEnergyYAxis(plan) {
+      return hdf5IsEnergyAxisLabel(plan?.yLabel);
+    }
+
     function hdf5ClampIndex(value, max) {
       return Math.max(0, Math.min(Math.max(0, max - 1), Math.round(Number(value) || 0)));
     }
@@ -14995,7 +15004,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const base = sample._hdf5DisplayValues;
       const cols = sample.cols;
       const rows = sample.rows;
-      const flipY = hdf5ShouldFlipY(plan);
+      const flipY = hdf5IsEnergyYAxis(plan) ? hdf5EnergyAxisNeedsFlip(plan?.yRange) : hdf5ShouldFlipY(plan);
       if (!flipY) return { values: base, flipY };
       if (sample._hdf5DisplayValuesFlipped) return { values: sample._hdf5DisplayValuesFlipped, flipY };
       const flipped = new Float32Array(base.length);
@@ -15132,7 +15141,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       for (let i = 0; i <= 4; i++) {
         const y = margin.top + plotH * i / 4;
         const displayIndex = Math.round((sample.yLen - 1) * i / 4);
-        const yValue = hdf5IsEnergyAxisLabel(plan.yLabel)
+        const yValue = hdf5IsEnergyYAxis(plan)
           ? hdf5EnergyAxisDisplayValue(plan.yRange, displayIndex, sample.yLen)
           : hdf5AxisValueForDisplay(plan.yRange, displayIndex, sample.yLen, flipY);
         const label = formatHDF5Tick(yValue);
@@ -15195,7 +15204,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const xIndex = hdf5ClampIndex((col / Math.max(1, sample.cols - 1)) * (sample.xLen - 1), sample.xLen);
       const yDisplayIndex = hdf5ClampIndex((row / Math.max(1, sample.rows - 1)) * (sample.yLen - 1), sample.yLen);
       const xValue = hdf5AxisValue(state.plan.xRange, xIndex, sample.xLen);
-      const yValue = hdf5IsEnergyAxisLabel(state.plan.yLabel)
+      const yValue = hdf5IsEnergyYAxis(state.plan)
         ? hdf5EnergyAxisDisplayValue(state.plan.yRange, yDisplayIndex, sample.yLen)
         : hdf5AxisValueForDisplay(state.plan.yRange, yDisplayIndex, sample.yLen, state.layout?.flipY);
       return `x=${formatHDF5Tick(xValue)} · y=${formatHDF5Tick(yValue)}`;
@@ -15208,6 +15217,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function redrawHDF5PreviewSelection(canvas) {
       const state = canvas?.__hdf5PreviewState;
       if (!state) return;
+      if (state.staticPreview) {
+        redrawStaticHDF5PreviewSelection(canvas, state);
+        if (hdf5PreviewHint) hdf5PreviewHint.textContent = `${state.plan.name} · ${hdf5PreviewSelectionSummary(state)}`;
+        return;
+      }
       drawHDF5Heatmap(canvas, state.sample, state.plan, {
         filename: state.filename,
         selection: state.selection
@@ -15238,15 +15252,43 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return setHDF5PreviewSelectionFromEvent(event.currentTarget, event, allowOutside);
     }
 
+    function redrawStaticHDF5PreviewSelection(canvas, state) {
+      if (!canvas || !state?.staticPreview?.image) return;
+      const ctx = canvas.getContext("2d");
+      const image = state.staticPreview.image;
+      const rect = state.staticPreview.rect;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h);
+      const col = hdf5ClampIndex(state.selection?.col ?? canvas.width / 2, state.sample.cols);
+      const row = hdf5ClampIndex(state.selection?.row ?? canvas.height / 2, state.sample.rows);
+      const crossX = rect.x + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * rect.w;
+      const crossY = rect.y + (state.sample.rows <= 1 ? 0 : row / (state.sample.rows - 1)) * rect.h;
+      ctx.strokeStyle = "rgba(45, 212, 191, 0.96)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(crossX, rect.y);
+      ctx.lineTo(crossX, rect.y + rect.h);
+      ctx.moveTo(rect.x, crossY);
+      ctx.lineTo(rect.x + rect.w, crossY);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(45, 212, 191, 1)";
+      ctx.beginPath();
+      ctx.arc(crossX, crossY, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     function bindHDF5PreviewCanvasInteraction() {
       if (!hdf5PreviewCanvas || hdf5PreviewCanvas.dataset.dragBound === "true") return;
       hdf5PreviewCanvas.dataset.dragBound = "true";
       hdf5PreviewCanvas.addEventListener("click", event => {
-        setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, false);
+        setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true);
       });
       hdf5PreviewCanvas.addEventListener("mousedown", event => {
         if (event.button !== 0) return;
-        if (!setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, false)) return;
+        if (!setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) return;
         hdf5PreviewMouseDragging = true;
         event.preventDefault();
       });
@@ -15258,7 +15300,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         hdf5PreviewMouseDragging = false;
       });
       hdf5PreviewCanvas.addEventListener("pointerdown", event => {
-        if (!setHDF5PreviewSelectionFromPointer(event, false)) return;
+        if (event.button != null && event.button !== 0) return;
+        if (!setHDF5PreviewSelectionFromPointer(event, true)) return;
         hdf5PreviewDragPointer = event.pointerId;
         hdf5PreviewCanvas.setPointerCapture?.(event.pointerId);
         event.preventDefault();
@@ -15326,7 +15369,39 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             ctx.textAlign = "left";
             ctx.fillText(title, pad, 22);
           }
-          delete canvas.__hdf5PreviewState;
+          canvas.__hdf5PreviewState = {
+            staticPreview: {
+              image: img,
+              rect: { x, y, w, h }
+            },
+            sample: {
+              cols: Math.max(2, Math.round(w)),
+              rows: Math.max(2, Math.round(h)),
+              xLen: Math.max(2, Math.round(w)),
+              yLen: Math.max(2, Math.round(h)),
+              low: 0,
+              high: 1
+            },
+            plan: {
+              name: title || "HDF5 preview",
+              xRange: { first: 0, last: Math.max(1, Math.round(w)) },
+              yRange: { first: 0, last: Math.max(1, Math.round(h)) },
+              xLabel: "x",
+              yLabel: "y"
+            },
+            filename: title || "",
+            selection: {
+              col: Math.floor(Math.max(2, Math.round(w)) / 2),
+              row: Math.floor(Math.max(2, Math.round(h)) / 2)
+            },
+            layout: {
+              margin: { left: x, top: y },
+              plotW: w,
+              plotH: h,
+              flipY: false
+            }
+          };
+          redrawStaticHDF5PreviewSelection(canvas, canvas.__hdf5PreviewState);
           resolve(true);
         };
         img.onerror = () => reject(new Error("Could not load preview image"));
