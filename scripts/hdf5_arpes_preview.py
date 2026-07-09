@@ -407,6 +407,28 @@ def axis_value(axis_range, index, count):
     return float(start) + (float(end) - float(start)) * index / max(1, count - 1)
 
 
+def is_energy_label(label):
+    text = str(label or "").lower()
+    return "energy" in text or "ev" in text or "e_v" in text
+
+
+def should_flip_y(info):
+    y_range = info.get("y_range")
+    if not is_energy_label(info.get("y_label")) or not y_range:
+        return False
+    try:
+        return float(y_range[1]) > float(y_range[0])
+    except Exception:
+        return False
+
+
+def display_axis_value(axis_range, display_index, count, flip_y=False):
+    source_index = max(0, min(max(0, count - 1), int(round(display_index))))
+    if flip_y:
+        source_index = count - 1 - source_index
+    return axis_value(axis_range, source_index, count)
+
+
 def normalized_profile(values):
     values = np.asarray(values, dtype=float)
     finite = values[np.isfinite(values)]
@@ -424,7 +446,7 @@ def draw_profile(draw, points, color, width=2):
         draw.line(points, fill=color, width=width, joint="curve")
 
 
-def draw_ticks(draw, box, x_range, y_range, x_count, y_count, fonts):
+def draw_ticks(draw, box, x_range, y_range, x_count, y_count, fonts, flip_y=False):
     x0, y0, x1, y1 = box
     black = (30, 30, 30)
     gray = (170, 170, 170)
@@ -442,7 +464,7 @@ def draw_ticks(draw, box, x_range, y_range, x_count, y_count, fonts):
         draw.line([(x0 - 8, y), (x0, y)], fill=black, width=1)
         draw.line([(x1, y), (x1 + 8, y)], fill=black, width=1)
         draw.line([(x0, y), (x1, y)], fill=gray, width=1)
-        y_text = fmt_tick(axis_value(y_range, round((1 - t) * (y_count - 1)), y_count))
+        y_text = fmt_tick(display_axis_value(y_range, round((1 - t) * (y_count - 1)), y_count, flip_y))
         draw.text((x0 - 54, y - 8), y_text, fill=black, font=fonts["small"])
         draw.text((x1 + 12, y - 8), y_text, fill=black, font=fonts["small"])
 
@@ -474,11 +496,13 @@ def render_figure(norm, info, args):
     draw.text((left, 24), info["name"], fill=(20, 20, 20), font=fonts["title"])
     draw.text((left, 52), os.path.basename(info["source_file"]), fill=(82, 82, 82), font=fonts["small"])
 
+    flip_y = should_flip_y(info)
+    plot_norm = norm[::-1, :] if flip_y else norm
     resampling = getattr(getattr(Image, "Resampling", Image), "BICUBIC", Image.BICUBIC)
-    heat = Image.fromarray(hot_rgb(norm), "RGB").resize((plot_w, plot_h), resampling)
+    heat = Image.fromarray(hot_rgb(plot_norm), "RGB").resize((plot_w, plot_h), resampling)
     image.paste(heat, (plot_box[0], plot_box[1]))
 
-    draw_ticks(draw, plot_box, info["x_range"], info["y_range"], norm.shape[1], norm.shape[0], fonts)
+    draw_ticks(draw, plot_box, info["x_range"], info["y_range"], plot_norm.shape[1], plot_norm.shape[0], fonts, flip_y)
 
     cx = int(plot_box[0] + plot_w * 0.5)
     cy = int(plot_box[1] + plot_h * 0.5)
@@ -486,8 +510,8 @@ def render_figure(norm, info, args):
     draw.line([(cx, plot_box[1]), (cx, plot_box[3])], fill=cyan, width=2)
     draw.line([(plot_box[0], cy), (plot_box[2], cy)], fill=cyan, width=2)
 
-    x_profile = normalized_profile(np.nanmean(norm, axis=0))
-    y_profile = normalized_profile(np.nanmean(norm, axis=1))
+    x_profile = normalized_profile(np.nanmean(plot_norm, axis=0))
+    y_profile = normalized_profile(np.nanmean(plot_norm, axis=1))
     top_box = (plot_box[0], top_profile_top, plot_box[2], top_profile_top + top_profile_h)
     right_box = (plot_box[2] + gutter, plot_box[1], plot_box[2] + gutter + right_profile_w, plot_box[3])
 
@@ -517,13 +541,23 @@ def render_figure(norm, info, args):
     return image
 
 
-def package_preview(h5_path, info, image, low, high, args):
+def matrix_u8_payload(norm):
+    matrix = np.clip(np.nan_to_num(norm, nan=0.0, posinf=1.0, neginf=0.0), 0.0, 1.0)
+    matrix_u8 = np.round(matrix * 255.0).astype(np.uint8)
+    return {
+        "display_matrix_shape": [int(matrix_u8.shape[0]), int(matrix_u8.shape[1])],
+        "display_matrix_u8": base64.b64encode(matrix_u8.tobytes(order="C")).decode("ascii"),
+        "display_matrix_order": "row-major-source-y",
+    }
+
+
+def package_preview(h5_path, info, norm, image, low, high, args):
     buffer = io.BytesIO()
     image.save(buffer, format="PNG", optimize=True)
     png_bytes = buffer.getvalue()
     if args.png:
         image.save(args.png, format="PNG", optimize=True)
-    return {
+    package = {
         "kind": "arpes-hdf5-preview-v1",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "source_file": os.path.basename(h5_path),
@@ -539,6 +573,8 @@ def package_preview(h5_path, info, image, low, high, args):
         "intensity_range": [float(low), float(high)],
         "image": "data:image/png;base64," + base64.b64encode(png_bytes).decode("ascii"),
     }
+    package.update(matrix_u8_payload(norm))
+    return package
 
 
 def write_package(package, out_path):
@@ -594,7 +630,7 @@ def build_preview(args):
             "fixed": fixed,
         }
         image = render_figure(norm, render_info, args)
-        package = package_preview(args.h5_file, render_info, image, low, high, args)
+        package = package_preview(args.h5_file, render_info, norm, image, low, high, args)
         write_package(package, args.out)
 
 
@@ -610,7 +646,7 @@ def parse_args(argv):
     parser.add_argument("--y-dim", type=int, help="Dataset dimension to use as vertical axis")
     parser.add_argument("--x-label", help="Override horizontal axis label")
     parser.add_argument("--y-label", help="Override vertical axis label")
-    parser.add_argument("--energy-axis", choices=["x", "y", "auto"], default="x", help="Where to place an energy/eV axis when one is detected")
+    parser.add_argument("--energy-axis", choices=["x", "y", "auto"], default="y", help="Where to place an energy/eV axis when one is detected")
     parser.add_argument("--transpose", action="store_true", help="Transpose the selected 2D slice")
     parser.add_argument("--gamma", type=float, default=0.72, help="Display gamma for contrast")
     parser.add_argument("--smooth", type=int, default=1, help="Small smoothing passes before rendering")
