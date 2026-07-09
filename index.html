@@ -4783,6 +4783,8 @@
       display: block;
       width: 100%;
       height: 100%;
+      cursor: crosshair;
+      touch-action: none;
     }
     .hdf5-preview-info {
       display: flex;
@@ -5401,6 +5403,7 @@
     }
   </style>
 <script src="vendor/jsfive.js"></script>
+<script src="vendor/igor-pxt.js"></script>
 <script>
   window.jsfive = window.jsfive || window.hdf5;
   window.addEventListener("error", event => {
@@ -6157,15 +6160,15 @@
     <!-- ===== HDF5 数据管理 ===== -->
     <section id="section-hdf5" data-app-page-section="data">
       <div class="section-head">
-        <h2 data-i18n="hdf5Title">📊 HDF5 数据管理</h2>
-        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件</span>
+        <h2 data-i18n="hdf5Title">📊 HDF5 / PXT 数据管理</h2>
+        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw 文件</span>
       </div>
       <div class="content">
         <div class="drop-zone" id="hdf5DropZone">
-          <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 文件</strong>
-          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据；也可拖入包含 .h5 的 .zip</p>
+          <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 / PXT 文件</strong>
+          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES HDF5/.zip 和 Igor/Scienta .pxt/.pxp/.ibw 直接预览：自动读取 energy/k 轴、温度、光子能量等元数据</p>
           <div class="upload-actions">
-            <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 文件</button>
+            <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 / PXT 文件</button>
             <button type="button" id="hdf5PackageChooseBtn" data-i18n="hdf5PackageChooseBtn">导入转换包</button>
           </div>
           <div class="hdf5-reader-helper">
@@ -6173,7 +6176,12 @@
             <span data-i18n="hdf5ReaderHint">如果浏览器直接预览发花，先用脚本生成预览包，再点“导入转换包”。</span>
             <code>python3 scripts/hdf5_arpes_preview.py your.h5 --out preview.json --png preview.png</code>
           </div>
-          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,application/x-hdf5,application/octet-stream,application/zip" multiple>
+          <div class="hdf5-reader-helper">
+            <strong data-i18n="hdf5PxtTitle">PXT → H5 一条龙</strong>
+            <span data-i18n="hdf5PxtHint">直接把 Igor/Scienta .pxt/.pxp/.ibw 拖到这里；网页会读取 wave、选择主谱图、生成预览并加入本地数据记录。</span>
+            <code>Drop .pxt / .pxp / .ibw here for browser-side preview</code>
+          </div>
+          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,application/x-hdf5,application/octet-stream,application/zip" multiple>
           <input class="hdf5-native-input" type="file" id="hdf5PackageInput" accept=".json,application/json,image/png,image/jpeg,image/webp" multiple>
         </div>
         <div class="card">
@@ -6825,14 +6833,21 @@
         importBtn: "📤 导入",
         clearBtn: "🗑️ 清空",
         notesTitle: "📌 模板说明",
-        hdf5Title: "📊 HDF5 数据管理",
-        hdf5StatusInitial: "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件",
-        hdf5DropTitle: "📁 拖放或点击上传 HDF5 文件",
-        hdf5DropHint: "支持 ARPES 标准格式：包含 energy/k 轴、温度、光子能量等元数据；也可拖入包含 .h5 的 .zip",
-        hdf5ChooseBtn: "选择 HDF5 文件",
+        hdf5Title: "📊 HDF5 / PXT 数据管理",
+        hdf5StatusInitial: "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw 文件",
+        hdf5DropTitle: "📁 拖放或点击上传 HDF5 / PXT 文件",
+        hdf5DropHint: "支持 ARPES HDF5/.zip 和 Igor/Scienta .pxt/.pxp/.ibw 直接预览：自动读取 energy/k 轴、温度、光子能量等元数据",
+        hdf5ChooseBtn: "选择 HDF5 / PXT 文件",
         hdf5PackageChooseBtn: "导入转换包",
         hdf5ReaderTitle: "本地 HDF5 读图程序",
         hdf5ReaderHint: "如果浏览器直接预览发花，先用脚本生成预览包，再点“导入转换包”。",
+        hdf5PxtTitle: "PXT / IBW 直接预览",
+        hdf5PxtHint: "直接把 Igor/Scienta .pxt/.pxp/.ibw 拖到这里；网页会读取 wave、选择主谱图、生成预览并加入本地数据记录。",
+        hdf5PxtLocalOnly: "正在用浏览器解析 {filename}...",
+        hdf5PxtWorkflowTitle: "PXT / IBW 已直接读取",
+        hdf5PxtWorkflowHint: "已在网页中读取 Igor wave；如果有多个 wave，可在左侧结构列表中点击切换预览。",
+        hdf5PxtReaderMissing: "PXT 解析器没有加载。请刷新页面后重试。",
+        hdf5PxtLoaded: "✅ 已直接读取 {filename}：{count} 个 wave",
         hdf5PreviewPackageLoaded: "已导入清晰预览包",
         hdf5PreviewPackageInvalid: "这个文件不是有效的 HDF5 预览包",
         hdf5SavedImportsTitle: "💾 已保存上传",
@@ -6841,11 +6856,11 @@
         hdf5SavedImportFiles: "{count} 个 HDF5 文件",
         hdf5SavedImportDatasets: "{count} 个数据集",
         hdf5LibraryLoading: "正在加载 HDF5 解析库...",
-        hdf5LibraryReady: "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件",
+        hdf5LibraryReady: "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.hdf5/.hd5/.pxt/.ibw 文件",
         hdf5LibraryMissing: "HDF5 解析库未加载。请检查网络/CDN，或刷新后重试。",
         hdf5NoFileSelected: "未选择文件",
         hdf5SelectedFiles: "已选择 {count} 个文件，开始解析...",
-        hdf5UnsupportedFile: "请选择 .h5、.hdf5、.hd5 或包含 HDF5 的 .zip 文件",
+        hdf5UnsupportedFile: "请选择 .h5、.hdf5、.hd5、.pxt、.pxp、.ibw 或包含 HDF5 的 .zip 文件",
         hdf5LargeFileWarning: "正在解析大文件 {filename}（{size}），请稍等...",
         hdf5ZipScanning: "正在扫描压缩包 {filename}...",
         hdf5ZipNoH5: "{filename} 中没有找到 .h5/.hdf5/.hd5 文件",
@@ -7363,14 +7378,21 @@
         importBtn: "📤 Import",
         clearBtn: "🗑️ Clear",
         notesTitle: "📌 Template Notes",
-        hdf5Title: "📊 HDF5 Data Library",
-        hdf5StatusInitial: "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files",
-        hdf5DropTitle: "📁 Drop or click to upload HDF5 files",
-        hdf5DropHint: "Supports ARPES-style files with energy/k axes, temperature, photon energy, and metadata; .zip files containing .h5 are also supported",
-        hdf5ChooseBtn: "Choose HDF5 Files",
+        hdf5Title: "📊 HDF5 / PXT Data Library",
+        hdf5StatusInitial: "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw files",
+        hdf5DropTitle: "📁 Drop or click to upload HDF5 / PXT files",
+        hdf5DropHint: "Supports ARPES HDF5/.zip and direct Igor/Scienta .pxt/.pxp/.ibw previews with energy/k axes, temperature, photon energy, and metadata",
+        hdf5ChooseBtn: "Choose HDF5 / PXT Files",
         hdf5PackageChooseBtn: "Import Preview Package",
         hdf5ReaderTitle: "Local HDF5 reader",
         hdf5ReaderHint: "If direct browser preview looks noisy, create a preview package with the script, then import it here.",
+        hdf5PxtTitle: "Direct PXT / IBW preview",
+        hdf5PxtHint: "Drop Igor/Scienta .pxt/.pxp/.ibw files here; the page reads waves, chooses the primary spectrum, renders a preview, and saves a local data record.",
+        hdf5PxtLocalOnly: "Parsing {filename} in the browser...",
+        hdf5PxtWorkflowTitle: "PXT / IBW loaded directly",
+        hdf5PxtWorkflowHint: "Igor waves were read in the page. If the file contains multiple waves, click entries in the structure list to switch previews.",
+        hdf5PxtReaderMissing: "The PXT parser did not load. Refresh and try again.",
+        hdf5PxtLoaded: "✅ Directly loaded {filename}: {count} wave(s)",
         hdf5PreviewPackageLoaded: "Clear preview package imported",
         hdf5PreviewPackageInvalid: "This file is not a valid HDF5 preview package",
         hdf5SavedImportsTitle: "💾 Saved Uploads",
@@ -7379,11 +7401,11 @@
         hdf5SavedImportFiles: "{count} HDF5 file(s)",
         hdf5SavedImportDatasets: "{count} dataset(s)",
         hdf5LibraryLoading: "Loading HDF5 parser...",
-        hdf5LibraryReady: "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files",
+        hdf5LibraryReady: "HDF5 and PXT parsers ready. Choose .h5/.hdf5/.hd5/.pxt/.ibw files",
         hdf5LibraryMissing: "HDF5 parser did not load. Check network/CDN access, or refresh and retry.",
         hdf5NoFileSelected: "No file selected",
         hdf5SelectedFiles: "{count} file(s) selected. Parsing...",
-        hdf5UnsupportedFile: "Choose a .h5, .hdf5, .hd5, or .zip file containing HDF5 files",
+        hdf5UnsupportedFile: "Choose a .h5, .hdf5, .hd5, .pxt, .pxp, .ibw, or .zip file containing HDF5 files",
         hdf5LargeFileWarning: "Parsing large file {filename} ({size}); please wait...",
         hdf5ZipScanning: "Scanning archive {filename}...",
         hdf5ZipNoH5: "No .h5/.hdf5/.hd5 files were found in {filename}",
@@ -13719,6 +13741,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let currentH5 = null;
     let currentH5Detection = null;
     let currentH5Path = "";
+    let currentIgorImport = null;
     let librarySelection = new Set();
     window.__hdf5UploadBound = true;
 
@@ -13732,6 +13755,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function isHDF5ZipFile(file) {
       return /\.zip$/i.test(file.name || "");
+    }
+
+    function isPXTWorkflowFile(file) {
+      return /\.(pxt|pxp|ibw)$/i.test(file.name || "");
     }
 
     function isHDF5PreviewPackageFile(file) {
@@ -13828,7 +13855,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     updateHDF5ParserStatus();
 
     async function handleHDF5Files(files) {
-      const validFiles = files.filter(file => isHDF5File(file) || isHDF5ZipFile(file));
+      const validFiles = files.filter(file => isHDF5File(file) || isHDF5ZipFile(file) || isPXTWorkflowFile(file));
       if (!files.length) {
         setHDF5Status(t("hdf5NoFileSelected"));
         return;
@@ -13839,8 +13866,143 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
       setHDF5Status(tf("hdf5SelectedFiles", { count: validFiles.length }));
       for (const file of validFiles) {
-        if (isHDF5ZipFile(file)) await handleHDF5ZipFile(file);
+        if (isPXTWorkflowFile(file)) await handleIgorPXTFile(file);
+        else if (isHDF5ZipFile(file)) await handleHDF5ZipFile(file);
         else await handleHDF5File(file);
+      }
+    }
+
+    function renderIgorTree(parsed) {
+      if (!hdf5Tree) return;
+      const waves = parsed?.waves || [];
+      hdf5Tree.innerHTML = waves.map((wave, index) => {
+        const shape = Array.isArray(wave.shape) && wave.shape.length ? wave.shape.join("×") : "?";
+        const dtype = wave.dtype || (wave.error ? "unreadable" : "numeric");
+        const marker = wave === parsed.primary ? "⭐ " : "";
+        const path = wave.path || `/${wave.name || `wave_${index + 1}`}`;
+        const disabled = wave.error ? " attr" : " dataset";
+        const click = wave.error ? "" : ` onclick="event.stopPropagation();inspectIgorWave(${index})"`;
+        return `<div class="${disabled.trim()}" data-igor-index="${index}"${click}>📊 ${marker}${esc(path)} <span class="muted">[${esc(shape)}] ${esc(dtype)}</span></div>`;
+      }).join("") || `<span class='muted'>${esc(t("emptyFile"))}</span>`;
+    }
+
+    function updateIgorMeta(parsed, wave) {
+      if (!hdf5Meta || !wave) return;
+      const attrs = Object.entries(wave.attrs || {}).slice(0, 12)
+        .map(([key, value]) => `<div>📌 ${esc(key)}: ${esc(String(value))}</div>`)
+        .join("");
+      const dims = (wave.dims || []).map(dim => {
+        const range = dim.coords && dim.coords.length
+          ? `${formatHDF5Tick(Number(dim.coords[0]))} → ${formatHDF5Tick(Number(dim.coords[dim.coords.length - 1]))}`
+          : "";
+        return `<span class="chip">${esc(dim.name || "axis")} ${range ? esc(range) : ""}</span>`;
+      }).join("");
+      hdf5Meta.innerHTML = [
+        `<strong>${esc(t("hdf5PxtWorkflowTitle"))}</strong>`,
+        `<span class="muted">${esc(t("hdf5PxtWorkflowHint"))}</span>`,
+        `<div style="margin-top:10px;"><strong>${esc(wave.path || wave.name || "wave")}</strong></div>`,
+        `<div>${currentLang === "zh" ? "维度" : "Shape"}: [${esc((wave.shape || []).join("×"))}] · ${esc(wave.dtype || "")}</div>`,
+        `<div>${currentLang === "zh" ? "Wave 数量" : "Wave count"}: ${Number(parsed?.waves?.length || 0).toLocaleString()}</div>`,
+        dims ? `<div class="chips" style="margin-top:8px;">${dims}</div>` : "",
+        attrs ? `<div style="margin-top:8px;">${attrs}</div>` : ""
+      ].filter(Boolean).join("<br>");
+    }
+
+    async function saveIgorImportSummary(file, parsed, preview) {
+      try {
+        const db = await openIDB();
+        const thumbnail = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
+        const tx = db.transaction(["datasets", "imports"], "readwrite");
+        const wave = parsed.primary;
+        tx.objectStore("datasets").put({
+          id: `igor-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          name: wave.name || "Igor wave",
+          path: wave.path || `/${wave.name || "wave"}`,
+          shape: wave.shape || [],
+          dtype: wave.dtype || "",
+          attrs: wave.attrs || {},
+          data: null,
+          thumbnail,
+          preview_error: "",
+          source_file: file.name,
+          imported_at: new Date().toISOString(),
+          tags: autoTag(wave.name || file.name, wave.attrs || {})
+        });
+        tx.objectStore("imports").put({
+          id: `igor-import-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          kind: "igor",
+          filename: file.name,
+          file_count: 1,
+          dataset_count: parsed.waves?.length || 1,
+          arpes_count: 1,
+          size: file.size || 0,
+          files: [file.name],
+          layouts: ["Igor PXT/IBW"],
+          imported_at: new Date().toISOString(),
+          primary_path: wave.path || "",
+          preview_dataset: preview?.plan?.path || ""
+        });
+        await new Promise((resolve, reject) => {
+          tx.oncomplete = resolve;
+          tx.onerror = () => reject(tx.error);
+          tx.onabort = () => reject(tx.error);
+        });
+        renderLibrary();
+        renderHDF5ImportHistory().catch(error => console.warn("Could not render Igor import history", error));
+      } catch (error) {
+        console.warn("Could not save Igor import summary", error);
+      }
+    }
+
+    async function renderIgorWavePreview(parsed, wave, filename) {
+      if (!window.IgorPxtReader || !wave?.data) return null;
+      const plan = window.IgorPxtReader.buildPreviewPlan(wave);
+      const dims = window.IgorPxtReader.selectPreviewDims(wave);
+      const sample = window.IgorPxtReader.sampleWave(wave, dims);
+      drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename });
+      updateHDF5PreviewInfo(plan, sample, filename);
+      updateIgorMeta(parsed, wave);
+      return { plan, sample };
+    }
+
+    window.inspectIgorWave = async function(index) {
+      if (!currentIgorImport) return;
+      const wave = currentIgorImport.waves?.[index];
+      if (!wave || wave.error) return;
+      try {
+        const preview = await renderIgorWavePreview(currentIgorImport, wave, currentIgorImport.filename || "Igor file");
+        addHDF5PreviewToFloatingFigure(preview, currentIgorImport.filename || "Igor file");
+      } catch (error) {
+        console.warn("Could not preview Igor wave", wave?.path, error);
+        setHDF5Status(currentLang === "zh" ? `❌ 无法预览 ${wave?.path || ""}: ${error.message}` : `❌ Cannot preview ${wave?.path || ""}: ${error.message}`);
+      }
+    };
+
+    async function handleIgorPXTFile(file) {
+      if (!window.IgorPxtReader?.parseFileBuffer) {
+        setHDF5Status(t("hdf5PxtReaderMissing"));
+        return;
+      }
+      setHDF5Status(tf("hdf5PxtLocalOnly", { filename: file.name }));
+      showHDF5PreviewMessage(tf("hdf5PxtLocalOnly", { filename: file.name }));
+      try {
+        const buffer = await file.arrayBuffer();
+        await yieldToBrowser();
+        const parsed = window.IgorPxtReader.parseFileBuffer(buffer, file.name);
+        currentIgorImport = parsed;
+        currentH5 = null;
+        currentH5Detection = null;
+        currentH5Path = "";
+        renderIgorTree(parsed);
+        const preview = await renderIgorWavePreview(parsed, parsed.primary, file.name);
+        addHDF5PreviewToFloatingFigure(preview, file.name);
+        await saveIgorImportSummary(file, parsed, preview);
+        setHDF5Status(tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 }));
+        showToast(tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 }));
+      } catch (error) {
+        console.warn("Could not import Igor/PXT file", file.name, error);
+        setHDF5Status(currentLang === "zh" ? `❌ 无法读取 ${file.name}: ${error.message}` : `❌ Cannot read ${file.name}: ${error.message}`);
+        showHDF5PreviewMessage(t("hdf5PreviewUnavailable"));
       }
     }
 
@@ -14790,6 +14952,48 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return range.first + (range.last - range.first) * (index / (length - 1));
     }
 
+    function hdf5IsEnergyAxisLabel(label) {
+      const text = String(label || "").toLowerCase();
+      return text.includes("energy") || text.includes("ev") || text.includes("e_v");
+    }
+
+    function hdf5ShouldFlipY(plan) {
+      if (!hdf5IsEnergyAxisLabel(plan?.yLabel)) return false;
+      const first = Number(plan?.yRange?.first);
+      const last = Number(plan?.yRange?.last);
+      return Number.isFinite(first) && Number.isFinite(last) && last > first;
+    }
+
+    function hdf5ClampIndex(value, max) {
+      return Math.max(0, Math.min(Math.max(0, max - 1), Math.round(Number(value) || 0)));
+    }
+
+    function hdf5DisplayToSourceY(displayIndex, length, flipY) {
+      const index = hdf5ClampIndex(displayIndex, length);
+      return flipY ? length - 1 - index : index;
+    }
+
+    function hdf5AxisValueForDisplay(range, displayIndex, length, flipY) {
+      return hdf5AxisValue(range, hdf5DisplayToSourceY(displayIndex, length, flipY), length);
+    }
+
+    function hdf5OrientedDisplayValues(sample, plan) {
+      if (!sample?._hdf5DisplayValues) sample._hdf5DisplayValues = buildHDF5DisplayMatrix(sample);
+      const base = sample._hdf5DisplayValues;
+      const cols = sample.cols;
+      const rows = sample.rows;
+      const flipY = hdf5ShouldFlipY(plan);
+      if (!flipY) return { values: base, flipY };
+      if (sample._hdf5DisplayValuesFlipped) return { values: sample._hdf5DisplayValuesFlipped, flipY };
+      const flipped = new Float32Array(base.length);
+      for (let row = 0; row < rows; row++) {
+        const sourceRow = rows - 1 - row;
+        flipped.set(base.subarray(sourceRow * cols, sourceRow * cols + cols), row * cols);
+      }
+      sample._hdf5DisplayValuesFlipped = flipped;
+      return { values: flipped, flipY };
+    }
+
     function formatHDF5Tick(value) {
       if (!Number.isFinite(value)) return "";
       const abs = Math.abs(value);
@@ -14827,7 +15031,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : { top: 126, right: 150, bottom: 56, left: 72 };
       const plotW = W - margin.left - margin.right;
       const plotH = H - margin.top - margin.bottom;
-      const displayValues = buildHDF5DisplayMatrix(sample);
+      const oriented = hdf5OrientedDisplayValues(sample, plan);
+      const displayValues = oriented.values;
+      const flipY = oriented.flipY;
       ctx.fillStyle = compact ? "#070b10" : "#f8fafc";
       ctx.fillRect(0, 0, W, H);
 
@@ -14860,8 +15066,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
 
       const integratedProfiles = hdf5Profiles(displayValues, sample.cols, sample.rows);
-      const crossCol = profilePeakIndex(integratedProfiles.colProfile, Math.floor(sample.cols * 0.5));
-      const crossRow = profilePeakIndex(integratedProfiles.rowProfile, Math.floor(sample.rows * 0.5));
+      const defaultCol = profilePeakIndex(integratedProfiles.colProfile, Math.floor(sample.cols * 0.5));
+      const defaultRow = profilePeakIndex(integratedProfiles.rowProfile, Math.floor(sample.rows * 0.5));
+      const selection = options.selection || {};
+      const crossCol = hdf5ClampIndex(selection.col ?? defaultCol, sample.cols);
+      const crossRow = hdf5ClampIndex(selection.row ?? defaultRow, sample.rows);
       const { colProfile, rowProfile } = hdf5LineProfiles(displayValues, sample.cols, sample.rows, crossCol, crossRow);
       const crossX = margin.left + (sample.cols <= 1 ? 0 : crossCol / (sample.cols - 1)) * plotW;
       const crossY = margin.top + (sample.rows <= 1 ? 0 : crossRow / (sample.rows - 1)) * plotH;
@@ -14909,8 +15118,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
       for (let i = 0; i <= 4; i++) {
         const y = margin.top + plotH * i / 4;
-        const index = Math.round((sample.yLen - 1) * i / 4);
-        const label = formatHDF5Tick(hdf5AxisValue(plan.yRange, index, sample.yLen));
+        const displayIndex = Math.round((sample.yLen - 1) * i / 4);
+        const label = formatHDF5Tick(hdf5AxisValueForDisplay(plan.yRange, displayIndex, sample.yLen, flipY));
         ctx.beginPath(); ctx.moveTo(margin.left - 5, y); ctx.lineTo(margin.left, y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(rightProfileRect.x, y); ctx.lineTo(rightProfileRect.x + rightProfileRect.w + 5, y); ctx.stroke();
         ctx.textAlign = "right";
@@ -14939,7 +15148,97 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.rotate(-Math.PI / 2);
       ctx.fillText(plan.yLabel, 0, 0);
       ctx.restore();
+
+      canvas.__hdf5PreviewState = {
+        sample,
+        plan,
+        filename: options.filename || "",
+        selection: { col: crossCol, row: crossRow },
+        layout: { margin, plotW, plotH, flipY, topProfileRect, rightProfileRect }
+      };
     }
+
+    function hdf5CanvasPointerToSelection(canvas, event, allowOutside = false) {
+      const state = canvas?.__hdf5PreviewState;
+      if (!state?.layout || !state.sample) return null;
+      const rect = canvas.getBoundingClientRect();
+      const x = (event.clientX - rect.left) * (canvas.width / Math.max(1, rect.width));
+      const y = (event.clientY - rect.top) * (canvas.height / Math.max(1, rect.height));
+      const { margin, plotW, plotH } = state.layout;
+      const outside = x < margin.left || x > margin.left + plotW || y < margin.top || y > margin.top + plotH;
+      if (outside && !allowOutside) return null;
+      const col = hdf5ClampIndex(((x - margin.left) / Math.max(1, plotW)) * (state.sample.cols - 1), state.sample.cols);
+      const row = hdf5ClampIndex(((y - margin.top) / Math.max(1, plotH)) * (state.sample.rows - 1), state.sample.rows);
+      return { col, row };
+    }
+
+    function hdf5PreviewSelectionSummary(state) {
+      if (!state?.sample || !state?.plan || !state?.selection) return "";
+      const sample = state.sample;
+      const { col, row } = state.selection;
+      const xIndex = hdf5ClampIndex((col / Math.max(1, sample.cols - 1)) * (sample.xLen - 1), sample.xLen);
+      const yDisplayIndex = hdf5ClampIndex((row / Math.max(1, sample.rows - 1)) * (sample.yLen - 1), sample.yLen);
+      const xValue = hdf5AxisValue(state.plan.xRange, xIndex, sample.xLen);
+      const yValue = hdf5AxisValueForDisplay(state.plan.yRange, yDisplayIndex, sample.yLen, state.layout?.flipY);
+      return `x=${formatHDF5Tick(xValue)} · y=${formatHDF5Tick(yValue)}`;
+    }
+
+    let hdf5PreviewDragPointer = null;
+    let hdf5PreviewRedrawFrame = 0;
+
+    function redrawHDF5PreviewSelection(canvas) {
+      const state = canvas?.__hdf5PreviewState;
+      if (!state) return;
+      drawHDF5Heatmap(canvas, state.sample, state.plan, {
+        filename: state.filename,
+        selection: state.selection
+      });
+      const updatedState = canvas.__hdf5PreviewState;
+      if (hdf5PreviewHint && updatedState) {
+        hdf5PreviewHint.textContent = `${updatedState.plan.name} · ${hdf5PreviewSelectionSummary(updatedState)}`;
+      }
+    }
+
+    function scheduleHDF5PreviewRedraw(canvas) {
+      if (hdf5PreviewRedrawFrame) return;
+      hdf5PreviewRedrawFrame = requestAnimationFrame(() => {
+        hdf5PreviewRedrawFrame = 0;
+        redrawHDF5PreviewSelection(canvas);
+      });
+    }
+
+    function setHDF5PreviewSelectionFromPointer(event, allowOutside = false) {
+      const canvas = event.currentTarget;
+      const selection = hdf5CanvasPointerToSelection(canvas, event, allowOutside);
+      if (!selection || !canvas.__hdf5PreviewState) return false;
+      canvas.__hdf5PreviewState.selection = selection;
+      scheduleHDF5PreviewRedraw(canvas);
+      return true;
+    }
+
+    function bindHDF5PreviewCanvasInteraction() {
+      if (!hdf5PreviewCanvas || hdf5PreviewCanvas.dataset.dragBound === "true") return;
+      hdf5PreviewCanvas.dataset.dragBound = "true";
+      hdf5PreviewCanvas.addEventListener("pointerdown", event => {
+        if (!setHDF5PreviewSelectionFromPointer(event, false)) return;
+        hdf5PreviewDragPointer = event.pointerId;
+        hdf5PreviewCanvas.setPointerCapture?.(event.pointerId);
+        event.preventDefault();
+      });
+      hdf5PreviewCanvas.addEventListener("pointermove", event => {
+        if (hdf5PreviewDragPointer !== event.pointerId) return;
+        if (setHDF5PreviewSelectionFromPointer(event, true)) event.preventDefault();
+      });
+      const stopDrag = event => {
+        if (hdf5PreviewDragPointer !== event.pointerId) return;
+        hdf5PreviewDragPointer = null;
+        hdf5PreviewCanvas.releasePointerCapture?.(event.pointerId);
+      };
+      hdf5PreviewCanvas.addEventListener("pointerup", stopDrag);
+      hdf5PreviewCanvas.addEventListener("pointercancel", stopDrag);
+    }
+
+    bindHDF5PreviewCanvasInteraction();
 
     function updateHDF5PreviewInfo(plan, sample, filename) {
       if (hdf5PreviewHint) hdf5PreviewHint.textContent = `${plan.name} · ${sample.cols}×${sample.rows}`;
@@ -14989,6 +15288,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             ctx.textAlign = "left";
             ctx.fillText(title, pad, 22);
           }
+          delete canvas.__hdf5PreviewState;
           resolve(true);
         };
         img.onerror = () => reject(new Error("Could not load preview image"));
@@ -14998,6 +15298,78 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function hdf5PreviewPackageImage(packageData) {
       return packageData?.image || packageData?.image_data_url || packageData?.png || packageData?.preview_image || "";
+    }
+
+    function hdf5RangeFromPackage(range, length = 0) {
+      if (Array.isArray(range) && range.length >= 2) {
+        const first = Number(range[0]);
+        const last = Number(range[1]);
+        if (Number.isFinite(first) && Number.isFinite(last)) {
+          return { first, last, length: Number(range[2]) || length || 0 };
+        }
+      }
+      if (range && typeof range === "object") {
+        const first = Number(range.first ?? range.start);
+        const last = Number(range.last ?? range.end);
+        if (Number.isFinite(first) && Number.isFinite(last)) {
+          return { first, last, length: Number(range.length) || length || 0 };
+        }
+      }
+      return null;
+    }
+
+    function hdf5DecodeMatrixU8(packageData) {
+      const shape = packageData?.display_matrix_shape || packageData?.matrix_shape;
+      const encoded = packageData?.display_matrix_u8 || packageData?.matrix_u8;
+      if (!Array.isArray(shape) || shape.length < 2 || !encoded) return null;
+      const rows = Number(shape[0]);
+      const cols = Number(shape[1]);
+      if (!Number.isFinite(rows) || !Number.isFinite(cols) || rows < 2 || cols < 2) return null;
+      const binary = atob(String(encoded));
+      const total = rows * cols;
+      if (binary.length < total) throw new Error(t("hdf5PreviewPackageInvalid"));
+      const displayValues = new Float32Array(total);
+      const values = new Float32Array(total);
+      for (let i = 0; i < total; i++) {
+        const byte = binary.charCodeAt(i) & 255;
+        displayValues[i] = byte / 255;
+        values[i] = byte / 255;
+      }
+      const sample = {
+        values,
+        cols,
+        rows,
+        xLen: cols,
+        yLen: rows,
+        min: 0,
+        max: 1,
+        low: 0,
+        high: 1,
+        byteSwapApplied: false
+      };
+      sample._hdf5DisplayValues = displayValues;
+      return sample;
+    }
+
+    function hdf5PlanFromPackage(packageData, filename, sample) {
+      const title = packageData.name || packageData.dataset || filename || "HDF5 preview";
+      return {
+        h5: null,
+        dataset: null,
+        path: packageData.dataset || title,
+        name: title,
+        dtype: packageData.dtype || "preview",
+        shape: Array.isArray(packageData.shape) ? packageData.shape.map(Number) : [sample.rows, sample.cols],
+        xDim: 1,
+        yDim: 0,
+        fixedDim: null,
+        fixedIndex: null,
+        xLabel: packageData.x_label || "x",
+        yLabel: packageData.y_label || "y",
+        fixedLabel: "",
+        xRange: hdf5RangeFromPackage(packageData.x_range, sample.xLen),
+        yRange: hdf5RangeFromPackage(packageData.y_range, sample.yLen)
+      };
     }
 
     function updateHDF5PreviewPackageInfo(packageData, filename) {
@@ -15030,7 +15402,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         throw new Error(t("hdf5PreviewPackageInvalid"));
       }
       const title = packageData.name || packageData.dataset || filename || "HDF5 preview";
-      await drawExternalHDF5PreviewImage(src, title);
+      const packageSample = hdf5DecodeMatrixU8(packageData);
+      if (packageSample) {
+        const packagePlan = hdf5PlanFromPackage(packageData, filename, packageSample);
+        drawHDF5Heatmap(hdf5PreviewCanvas, packageSample, packagePlan, { filename });
+      } else {
+        await drawExternalHDF5PreviewImage(src, title);
+      }
       updateHDF5PreviewPackageInfo(packageData, filename);
       const floatingSrc = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas) || src;
       addFloatingFigureImage({
@@ -15086,6 +15464,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.font = "18px system-ui, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(message, hdf5PreviewCanvas.width / 2, hdf5PreviewCanvas.height / 2);
+      delete hdf5PreviewCanvas.__hdf5PreviewState;
     }
 
     async function renderAutomaticHDF5Preview(h5, detection, filename) {
@@ -15719,8 +16098,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           if (status) {
             status.textContent = parserReady
               ? ((document.documentElement.lang || "zh").startsWith("zh")
-                ? "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件"
-                : "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files")
+                ? "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw 文件"
+                : "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw files")
               : ((document.documentElement.lang || "zh").startsWith("zh")
                 ? "HDF5 解析库未加载。请刷新页面后重试。"
                 : "HDF5 parser did not load. Refresh and retry.");
@@ -15742,7 +16121,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const escHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
       const parser = () => window.jsfive || window.hdf5;
       const setStatus = message => { status.textContent = message; };
-      const isHDF5File = file => /\.(h5|hdf5|hd5)$/i.test(file.name || "");
+      const isHDF5File = file => /\.(h5|hdf5|hd5|pxt|pxp|ibw)$/i.test(file.name || "");
       const chooseFiles = () => {
         fileInput.value = "";
         fileInput.click();
@@ -15753,7 +16132,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
       function updateStatus() {
         setStatus(parser()
-          ? (zh() ? "HDF5 解析库已就绪，可以选择 .h5/.hdf5/.hd5 文件" : "HDF5 parser ready. Choose .h5/.hdf5/.hd5 files")
+          ? (zh() ? "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw 文件" : "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw files")
           : parserMissing());
       }
 
@@ -15786,7 +16165,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
       async function handleFile(file) {
         if (!isHDF5File(file)) {
-          setStatus(zh() ? "请选择 .h5、.hdf5 或 .hd5 文件" : "Choose a .h5, .hdf5, or .hd5 file");
+          setStatus(zh() ? "请选择 .h5、.hdf5、.pxt、.pxp 或 .ibw 文件" : "Choose a .h5, .hdf5, .pxt, .pxp, or .ibw file");
           return;
         }
         const HDF5 = parser();
