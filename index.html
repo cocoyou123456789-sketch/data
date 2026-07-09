@@ -4778,6 +4778,7 @@
       border-radius: 10px;
       background: #070b10;
       overflow: hidden;
+      position: relative;
     }
     .hdf5-preview-canvas-wrap canvas {
       display: block;
@@ -4785,6 +4786,22 @@
       height: 100%;
       cursor: crosshair;
       touch-action: none;
+    }
+    .hdf5-preview-hit-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      background: transparent;
+    }
+    body.hdf5-preview-dragging,
+    body.hdf5-preview-dragging * {
+      cursor: crosshair !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
     }
     .hdf5-preview-info {
       display: flex;
@@ -6211,6 +6228,7 @@
           <div class="hdf5-preview-layout">
             <div class="hdf5-preview-canvas-wrap">
               <canvas id="hdf5PreviewCanvas" width="960" height="560"></canvas>
+              <div id="hdf5PreviewHitLayer" class="hdf5-preview-hit-layer" aria-label="Drag to move the HDF5 preview crosshair"></div>
             </div>
             <div class="hdf5-preview-info" id="hdf5PreviewInfo">
               <span class="muted" data-i18n="hdf5PreviewEmpty">导入后自动显示可预览的二维谱图或三维切片</span>
@@ -13843,6 +13861,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5Meta = document.querySelector("#hdf5Meta");
     const hdf5Status = document.querySelector("#hdf5Status");
     const hdf5PreviewCanvas = document.querySelector("#hdf5PreviewCanvas");
+    const hdf5PreviewHitLayer = document.querySelector("#hdf5PreviewHitLayer");
     const hdf5PreviewInfo = document.querySelector("#hdf5PreviewInfo");
     const hdf5PreviewHint = document.querySelector("#hdf5PreviewHint");
     const hdf5SavedImports = document.querySelector("#hdf5SavedImports");
@@ -15607,7 +15626,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           row: hdf5ClampIndex(current.row ?? Math.floor(state.sample.rows / 2), state.sample.rows),
           fixed: hdf5ClampIndex(current.fixed ?? state.plan.fixedIndex ?? Math.floor((fixedLen || 1) / 2), fixedLen || 1)
         };
-        if (inRect(mainRect) || (allowOutside && mainRect)) {
+        if (inRect(mainRect)) {
           return {
             ...baseSelection,
             col: mapX(mainRect, state.sample.cols),
@@ -15627,6 +15646,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             ...baseSelection,
             row: mapY(rightRect, state.sample.rows),
             fixed: mapX(rightRect, fixedLen || 1)
+          };
+        }
+        if (allowOutside && mainRect) {
+          return {
+            ...baseSelection,
+            col: mapX(mainRect, state.sample.cols),
+            row: mapY(mainRect, state.sample.rows)
           };
         }
         return null;
@@ -15710,7 +15736,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function setHDF5PreviewSelectionFromPointer(event, allowOutside = false) {
-      return setHDF5PreviewSelectionFromEvent(event.currentTarget, event, allowOutside);
+      return setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, allowOutside);
     }
 
     function redrawStaticHDF5PreviewSelection(canvas, state) {
@@ -15744,40 +15770,43 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function bindHDF5PreviewCanvasInteraction() {
       if (!hdf5PreviewCanvas || hdf5PreviewCanvas.dataset.dragBound === "true") return;
       hdf5PreviewCanvas.dataset.dragBound = "true";
-      hdf5PreviewCanvas.addEventListener("click", event => {
-        setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true);
-      });
-      hdf5PreviewCanvas.addEventListener("mousedown", event => {
-        if (event.button !== 0) return;
+      const interactionSurface = hdf5PreviewHitLayer || hdf5PreviewCanvas;
+      const beginDrag = event => {
+        if (event.button != null && event.button !== 0) return;
         if (!setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) return;
         hdf5PreviewMouseDragging = true;
+        hdf5PreviewDragPointer = event.pointerId ?? "mouse";
+        if (event.pointerId != null) interactionSurface.setPointerCapture?.(event.pointerId);
+        document.body.classList.add("hdf5-preview-dragging");
         event.preventDefault();
-      });
-      window.addEventListener("mousemove", event => {
-        if (!hdf5PreviewMouseDragging) return;
-        if (setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) event.preventDefault();
-      });
-      window.addEventListener("mouseup", () => {
-        hdf5PreviewMouseDragging = false;
-      });
-      hdf5PreviewCanvas.addEventListener("pointerdown", event => {
-        if (event.button != null && event.button !== 0) return;
-        if (!setHDF5PreviewSelectionFromPointer(event, true)) return;
-        hdf5PreviewDragPointer = event.pointerId;
-        hdf5PreviewCanvas.setPointerCapture?.(event.pointerId);
-        event.preventDefault();
-      });
-      hdf5PreviewCanvas.addEventListener("pointermove", event => {
-        if (hdf5PreviewDragPointer !== event.pointerId) return;
-        if (setHDF5PreviewSelectionFromPointer(event, true)) event.preventDefault();
-      });
-      const stopDrag = event => {
-        if (hdf5PreviewDragPointer !== event.pointerId) return;
-        hdf5PreviewDragPointer = null;
-        hdf5PreviewCanvas.releasePointerCapture?.(event.pointerId);
       };
-      hdf5PreviewCanvas.addEventListener("pointerup", stopDrag);
-      hdf5PreviewCanvas.addEventListener("pointercancel", stopDrag);
+      const moveDrag = event => {
+        if (!hdf5PreviewMouseDragging) return;
+        if (hdf5PreviewDragPointer != null && event.pointerId != null && hdf5PreviewDragPointer !== event.pointerId) return;
+        if (setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) event.preventDefault();
+      };
+      const stopDrag = event => {
+        hdf5PreviewMouseDragging = false;
+        hdf5PreviewDragPointer = null;
+        document.body.classList.remove("hdf5-preview-dragging");
+        if (event?.pointerId != null) interactionSurface.releasePointerCapture?.(event.pointerId);
+      };
+      interactionSurface.addEventListener("click", event => {
+        setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true);
+      });
+      if ("PointerEvent" in window) {
+        interactionSurface.addEventListener("pointerdown", beginDrag);
+        interactionSurface.addEventListener("pointermove", moveDrag);
+        interactionSurface.addEventListener("pointerup", stopDrag);
+        interactionSurface.addEventListener("pointercancel", stopDrag);
+      } else {
+        interactionSurface.addEventListener("mousedown", beginDrag);
+        window.addEventListener("mousemove", event => {
+          if (!hdf5PreviewMouseDragging || hdf5PreviewDragPointer !== "mouse") return;
+          if (setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) event.preventDefault();
+        });
+        window.addEventListener("mouseup", stopDrag);
+      }
     }
 
     bindHDF5PreviewCanvasInteraction();
