@@ -14,7 +14,7 @@
     "photon_arpes_notes",
     "verification_status"
   ],
-  "elements": ["B", "C", "N", "O", "F", "P", "S", "Ti", "V", "Cr", "Fe", "Se", "Nb", "Mo", "Te", "W", "I"],
+  "elements": ["B", "C", "N", "O", "F", "P", "S", "Si", "Ti", "V", "Cr", "Fe", "Cu", "Zn", "Se", "Nb", "Mo", "Sn", "Te", "W", "I"],
   "families": [
     {
       "id": "graphene",
@@ -50,6 +50,16 @@
       "id": "mxene",
       "name": "MXenes",
       "description": "2D transition-metal carbides/nitrides with surface terminations; useful for metallic bands, functionalization, and device interfaces."
+    },
+    {
+      "id": "xenes",
+      "name": "Xenes",
+      "description": "Single-element 2D sheets such as silicene and stanene; ARPES focuses on substrate hybridization, spin-orbit coupling, and possible topological bands."
+    },
+    {
+      "id": "2d-frameworks",
+      "name": "2D COF/MOF frameworks",
+      "description": "Designable porous 2D organic and metal-organic frameworks; useful for tunable gaps, catalytic sites, separation, and energy storage."
     }
   ],
   "materials": [
@@ -132,6 +142,22 @@
       "photon_arpes_notes": "Spin-orbit split bands are sensitive to polarization and energy resolution.",
       "verification_status": "2d_seed_reference",
       "source_note": "Representative 2D TMD entry; verify exact layer number and substrate."
+    },
+    {
+      "family": "tmd-semiconductors",
+      "material": "WS2",
+      "display_name": "Monolayer WS2",
+      "elements": ["W", "S"],
+      "synthesized_or_discovered": "monolayer TMD semiconductor",
+      "transition_temperature_K": null,
+      "bandgap_eV": 2.0,
+      "phase_note": "direct-gap monolayer semiconductor",
+      "tc_note": "2D semiconductor seed entry.",
+      "arpes_special_properties": ["K-valley band edge", "spin-orbit split valence band", "strong excitonic effects"],
+      "q_dependent_observables": ["K/Gamma valence offset", "doping-induced band filling", "layer-dependent band shifts"],
+      "photon_arpes_notes": "Polarization and substrate screening affect valley and quasiparticle-gap interpretation.",
+      "verification_status": "2d_seed_reference",
+      "source_note": "Representative TMD entry matching the category comparison table."
     },
     {
       "family": "tmd-semiconductors",
@@ -244,6 +270,70 @@
       "photon_arpes_notes": "Often measured by in-situ MBE + ARPES; substrate phonons and annealing are central variables.",
       "verification_status": "2d_seed_reference",
       "source_note": "Representative 2D superconducting interface; verify exact Tc criterion and sample preparation."
+    },
+    {
+      "family": "xenes",
+      "material": "silicene",
+      "display_name": "Silicene",
+      "elements": ["Si"],
+      "synthesized_or_discovered": "single-element 2D silicon sheet grown on substrates",
+      "transition_temperature_K": null,
+      "bandgap_eV": null,
+      "phase_note": "substrate-stabilized Dirac-like 2D sheet",
+      "tc_note": "Electronic phase depends strongly on substrate and reconstruction.",
+      "arpes_special_properties": ["Dirac-like dispersion candidate", "substrate hybridization", "buckled honeycomb lattice"],
+      "q_dependent_observables": ["K-point-like dispersion", "reconstruction replicas", "substrate-induced band shifts"],
+      "photon_arpes_notes": "ARPES interpretation must separate intrinsic sheet bands from substrate bands.",
+      "verification_status": "2d_seed_reference",
+      "source_note": "Representative Xene entry; verify synthesis substrate, reconstruction, and air stability."
+    },
+    {
+      "family": "xenes",
+      "material": "stanene",
+      "display_name": "Stanene",
+      "elements": ["Sn"],
+      "synthesized_or_discovered": "single-element 2D tin sheet candidate",
+      "transition_temperature_K": null,
+      "bandgap_eV": null,
+      "phase_note": "spin-orbit-coupled Xene / topological candidate",
+      "tc_note": "Seed entry for Xenes and quantum-device exploration.",
+      "arpes_special_properties": ["strong spin-orbit coupling", "topological band candidate", "substrate-sensitive states"],
+      "q_dependent_observables": ["edge/surface-state-like features", "spin-orbit gap", "substrate band hybridization"],
+      "photon_arpes_notes": "Substrate choice and band disentanglement are central for ARPES comparison.",
+      "verification_status": "2d_seed_reference",
+      "source_note": "Representative Xene entry; verify exact structure and topological evidence."
+    },
+    {
+      "family": "2d-frameworks",
+      "material": "2D COF",
+      "display_name": "2D covalent organic framework",
+      "elements": ["C", "N", "O", "B"],
+      "synthesized_or_discovered": "designable porous 2D organic framework",
+      "transition_temperature_K": null,
+      "bandgap_eV": null,
+      "phase_note": "designable-gap porous 2D framework",
+      "tc_note": "Band gap and conductivity depend on linker, topology, and stacking.",
+      "arpes_special_properties": ["designed pi bands", "porous lattice", "stacking-dependent dispersion"],
+      "q_dependent_observables": ["flat-band features", "linker-dependent gap", "layer-stacking dispersion"],
+      "photon_arpes_notes": "Large-area oriented films are preferred for ARPES; powder/framework disorder can wash out momentum structure.",
+      "verification_status": "2d_seed_reference",
+      "source_note": "Representative COF entry; exact electronic structure is design-dependent."
+    },
+    {
+      "family": "2d-frameworks",
+      "material": "2D MOF",
+      "display_name": "2D metal-organic framework",
+      "elements": ["C", "N", "O", "Cu", "Zn"],
+      "synthesized_or_discovered": "metal-node organic framework with tunable 2D sheets",
+      "transition_temperature_K": null,
+      "bandgap_eV": null,
+      "phase_note": "tunable 2D framework for catalysis and storage",
+      "tc_note": "Conductivity and gap depend on metal node, ligand, and stacking.",
+      "arpes_special_properties": ["metal-ligand hybrid bands", "tunable gap", "catalytic active sites"],
+      "q_dependent_observables": ["bandwidth from conjugation", "node/linker hybridization", "stacking-dependent dispersion"],
+      "photon_arpes_notes": "Film crystallinity and orientation determine whether momentum-resolved ARPES is meaningful.",
+      "verification_status": "2d_seed_reference",
+      "source_note": "Representative MOF entry; use as a classification seed rather than a fixed compound."
     }
   ]
 }

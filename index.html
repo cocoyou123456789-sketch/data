@@ -1892,6 +1892,63 @@
       opacity: 0;
     }
 
+    .two-d-category-panel {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+      border: 1px solid rgba(96,208,255,0.22);
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(8,13,20,0.42);
+    }
+
+    .two-d-category-panel[hidden] {
+      display: none !important;
+    }
+
+    .two-d-category-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .two-d-category-head h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 16px;
+    }
+
+    .two-d-category-table {
+      overflow-x: auto;
+    }
+
+    .two-d-category-table table {
+      min-width: 760px;
+    }
+
+    .two-d-category-table th,
+    .two-d-category-table td {
+      vertical-align: top;
+    }
+
+    .category-filter-btn {
+      display: inline-flex;
+      min-height: 0;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 820;
+    }
+
+    .two-d-category-summary {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
     .app-page[hidden] {
       display: none !important;
     }
@@ -5804,6 +5861,27 @@
             <button class="super-button topic-button" id="twoDimensionalBtn" type="button" data-topic="2d" data-i18n="twoDimensionalBtn">▦ 二维材料 2D MATERIALS</button>
           </div>
         </div>
+        <div class="two-d-category-panel" id="twoDCategoryPanel" hidden>
+          <div class="two-d-category-head">
+            <h3 data-i18n="twoDCategoryTitle">常见二维材料对比</h3>
+            <span class="status" data-i18n="twoDCategoryHint">点击类别标签可快速筛选二维材料库。</span>
+          </div>
+          <div class="two-d-category-table">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="twoDCategoryCol">材料类别</th>
+                  <th data-i18n="twoDRepresentativeCol">代表材料</th>
+                  <th data-i18n="twoDBandgapCol">是否有带隙</th>
+                  <th data-i18n="twoDConductivityCol">导电性</th>
+                  <th data-i18n="twoDApplicationCol">典型应用</th>
+                </tr>
+              </thead>
+              <tbody id="twoDCategoryBody"></tbody>
+            </table>
+          </div>
+          <p class="two-d-category-summary" id="twoDCategorySummary" data-i18n="twoDCategorySummary">总体来看，目前研究最广泛、应用前景最成熟的二维材料主要包括石墨烯、过渡金属二硫族化合物、六方氮化硼、黑磷和 MXene。它们在电子器件、光电子、催化、能源存储、柔性电子和量子信息等领域均展现出重要潜力。</p>
+        </div>
         <div class="toolbar">
           <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder">
           <select id="familyFilter" title="材料家族">
@@ -6558,6 +6636,14 @@
         keywordSearchHint: "点击关键词快速筛选文章、图表和材料",
         superconductorBtn: "⚡ 超导 SUPERCONDUCTOR ⚡",
         twoDimensionalBtn: "▦ 二维材料 2D MATERIALS",
+        twoDCategoryTitle: "常见二维材料对比",
+        twoDCategoryHint: "点击类别标签可快速筛选二维材料库。",
+        twoDCategoryCol: "材料类别",
+        twoDRepresentativeCol: "代表材料",
+        twoDBandgapCol: "是否有带隙",
+        twoDConductivityCol: "导电性",
+        twoDApplicationCol: "典型应用",
+        twoDCategorySummary: "总体来看，目前研究最广泛、应用前景最成熟的二维材料主要包括石墨烯、过渡金属二硫族化合物（如 MoS2）、六方氮化硼、黑磷和 MXene。它们在电子器件、光电子、催化、能源存储、柔性电子和量子信息等领域均展现出重要潜力。",
         searchFilterTitle: "🔍 搜索与筛选",
         periodicTitle: "元素周期表",
         periodicStatus: "点击元素筛选材料",
@@ -7083,6 +7169,14 @@
         keywordSearchHint: "Click a keyword to filter articles, figures, and materials",
         superconductorBtn: "⚡ SUPERCONDUCTOR ⚡",
         twoDimensionalBtn: "▦ 2D MATERIALS",
+        twoDCategoryTitle: "Common 2D Materials Comparison",
+        twoDCategoryHint: "Click a category chip to filter the 2D materials library.",
+        twoDCategoryCol: "Category",
+        twoDRepresentativeCol: "Representative materials",
+        twoDBandgapCol: "Band gap",
+        twoDConductivityCol: "Conductivity",
+        twoDApplicationCol: "Typical applications",
+        twoDCategorySummary: "Overall, the most widely studied and more mature 2D material platforms include graphene, transition-metal dichalcogenides such as MoS2, hexagonal boron nitride, black phosphorus, and MXenes. They show major potential in electronics, optoelectronics, catalysis, energy storage, flexible devices, and quantum information.",
         searchFilterTitle: "🔍 Search & Filter",
         periodicTitle: "Periodic Table",
         periodicStatus: "Click an element to filter materials",
@@ -7554,6 +7648,9 @@
     const resetBtn = $("#resetBtn");
     const clearAllBtn = $("#clearAllBtn");
     const compareBtn = $("#compareBtn");
+    const twoDCategoryPanel = $("#twoDCategoryPanel");
+    const twoDCategoryBody = $("#twoDCategoryBody");
+    const twoDCategorySummary = $("#twoDCategorySummary");
     const keywordChips = $("#keywordChips");
     const loginScreen = $("#loginScreen");
     const magicBookScreen = $("#magicBookScreen");
@@ -7760,6 +7857,65 @@
       const year = Number(article?.year);
       return Number.isFinite(year) ? year : null;
     }
+
+    const twoDCategoryRows = [
+      {
+        family: "graphene",
+        category: { zh: "石墨烯", en: "Graphene" },
+        representatives: { zh: "石墨烯", en: "Graphene" },
+        bandgap: { zh: "✗", en: "No" },
+        conductivity: { zh: "极高", en: "Very high" },
+        applications: { zh: "导电、传感、储能", en: "Conductors, sensors, energy storage" }
+      },
+      {
+        family: "tmd-semiconductors",
+        category: { zh: "TMDs", en: "TMDs" },
+        representatives: { zh: "MoS2、WS2", en: "MoS2, WS2" },
+        bandgap: { zh: "✓", en: "Yes" },
+        conductivity: { zh: "中等", en: "Moderate" },
+        applications: { zh: "晶体管、光电子", en: "Transistors, optoelectronics" }
+      },
+      {
+        family: "hbn-insulators",
+        category: { zh: "h-BN", en: "h-BN" },
+        representatives: { zh: "六方氮化硼", en: "Hexagonal boron nitride" },
+        bandgap: { zh: "✓（宽禁带）", en: "Yes, wide gap" },
+        conductivity: { zh: "很低（绝缘）", en: "Very low, insulating" },
+        applications: { zh: "衬底、绝缘层", en: "Substrates, insulating layers" }
+      },
+      {
+        family: "black-phosphorus",
+        category: { zh: "黑磷", en: "Black phosphorus" },
+        representatives: { zh: "磷烯", en: "Phosphorene" },
+        bandgap: { zh: "✓", en: "Yes" },
+        conductivity: { zh: "高", en: "High" },
+        applications: { zh: "红外器件、场效应晶体管", en: "Infrared devices, field-effect transistors" }
+      },
+      {
+        family: "mxene",
+        category: { zh: "MXene", en: "MXene" },
+        representatives: { zh: "Ti3C2Tx", en: "Ti3C2Tx" },
+        bandgap: { zh: "多为无带隙", en: "Mostly gapless" },
+        conductivity: { zh: "很高", en: "Very high" },
+        applications: { zh: "电池、超级电容器", en: "Batteries, supercapacitors" }
+      },
+      {
+        family: "xenes",
+        category: { zh: "Xenes", en: "Xenes" },
+        representatives: { zh: "硅烯、锡烯等", en: "Silicene, stanene, etc." },
+        bandgap: { zh: "多样", en: "Diverse" },
+        conductivity: { zh: "多样", en: "Diverse" },
+        applications: { zh: "新型电子与量子器件", en: "Emerging electronics and quantum devices" }
+      },
+      {
+        family: "2d-frameworks",
+        category: { zh: "COF/MOF", en: "COF/MOF" },
+        representatives: { zh: "二维有机框架", en: "2D organic frameworks" },
+        bandgap: { zh: "可设计", en: "Designable" },
+        conductivity: { zh: "可调", en: "Tunable" },
+        applications: { zh: "分离、催化、储能", en: "Separation, catalysis, energy storage" }
+      }
+    ];
 
     function isRecentArticle(article) {
       const year = articleYear(article);
@@ -9368,6 +9524,7 @@
       if (materialsTitle) materialsTitle.textContent = meta.materialsTitle;
       if (topicMeasureHead) topicMeasureHead.textContent = meta.measureCol;
       if (loadStatus && state.db) loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
+      renderTwoDCategoryPanel();
     }
 
     function topicMeasureValue(row) {
@@ -9377,6 +9534,36 @@
         return row.phase_note || "-";
       }
       return row.transition_temperature_K == null ? "-" : row.transition_temperature_K;
+    }
+
+    function localizedCategoryValue(row, key) {
+      const value = row[key];
+      if (!value || typeof value !== "object") return String(value || "");
+      return value[currentLang] || value.en || value.zh || "";
+    }
+
+    function renderTwoDCategoryPanel() {
+      if (!twoDCategoryPanel || !twoDCategoryBody) return;
+      const active = state.topic === "2d";
+      twoDCategoryPanel.hidden = !active;
+      if (!active) return;
+      twoDCategoryBody.innerHTML = twoDCategoryRows.map(row => `
+        <tr>
+          <td><button class="category-filter-btn" type="button" data-2d-family="${esc(row.family)}">${esc(localizedCategoryValue(row, "category"))}</button></td>
+          <td>${esc(localizedCategoryValue(row, "representatives"))}</td>
+          <td>${esc(localizedCategoryValue(row, "bandgap"))}</td>
+          <td>${esc(localizedCategoryValue(row, "conductivity"))}</td>
+          <td>${esc(localizedCategoryValue(row, "applications"))}</td>
+        </tr>
+      `).join("");
+      twoDCategoryBody.querySelectorAll("[data-2d-family]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          familyFilter.value = btn.getAttribute("data-2d-family") || "";
+          resetArticleListViewForFilter();
+          applyFilters();
+        });
+      });
+      if (twoDCategorySummary) twoDCategorySummary.textContent = t("twoDCategorySummary");
     }
 
     // ===== 渲染函数 =====
