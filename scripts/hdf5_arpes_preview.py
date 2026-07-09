@@ -429,6 +429,15 @@ def display_axis_value(axis_range, display_index, count, flip_y=False):
     return axis_value(axis_range, source_index, count)
 
 
+def hdf5_energy_axis_display_value(axis_range, display_index, count):
+    if not axis_range or count <= 1:
+        return float(display_index)
+    start, end = axis_range
+    high = max(float(start), float(end))
+    low = min(float(start), float(end))
+    return high - (high - low) * display_index / max(1, count - 1)
+
+
 def normalized_profile(values):
     values = np.asarray(values, dtype=float)
     finite = values[np.isfinite(values)]
@@ -446,7 +455,7 @@ def draw_profile(draw, points, color, width=2):
         draw.line(points, fill=color, width=width, joint="curve")
 
 
-def draw_ticks(draw, box, x_range, y_range, x_count, y_count, fonts, flip_y=False):
+def draw_ticks(draw, box, x_range, y_range, x_count, y_count, fonts, flip_y=False, energy_y=False):
     x0, y0, x1, y1 = box
     black = (30, 30, 30)
     gray = (170, 170, 170)
@@ -464,7 +473,13 @@ def draw_ticks(draw, box, x_range, y_range, x_count, y_count, fonts, flip_y=Fals
         draw.line([(x0 - 8, y), (x0, y)], fill=black, width=1)
         draw.line([(x1, y), (x1 + 8, y)], fill=black, width=1)
         draw.line([(x0, y), (x1, y)], fill=gray, width=1)
-        y_text = fmt_tick(display_axis_value(y_range, round((1 - t) * (y_count - 1)), y_count, flip_y))
+        display_index = round((1 - t) * (y_count - 1))
+        y_value = (
+            hdf5_energy_axis_display_value(y_range, display_index, y_count)
+            if energy_y
+            else display_axis_value(y_range, display_index, y_count, flip_y)
+        )
+        y_text = fmt_tick(y_value)
         draw.text((x0 - 54, y - 8), y_text, fill=black, font=fonts["small"])
         draw.text((x1 + 12, y - 8), y_text, fill=black, font=fonts["small"])
 
@@ -502,7 +517,17 @@ def render_figure(norm, info, args):
     heat = Image.fromarray(hot_rgb(plot_norm), "RGB").resize((plot_w, plot_h), resampling)
     image.paste(heat, (plot_box[0], plot_box[1]))
 
-    draw_ticks(draw, plot_box, info["x_range"], info["y_range"], plot_norm.shape[1], plot_norm.shape[0], fonts, flip_y)
+    draw_ticks(
+        draw,
+        plot_box,
+        info["x_range"],
+        info["y_range"],
+        plot_norm.shape[1],
+        plot_norm.shape[0],
+        fonts,
+        flip_y,
+        is_energy_label(info.get("y_label")),
+    )
 
     cx = int(plot_box[0] + plot_w * 0.5)
     cy = int(plot_box[1] + plot_h * 0.5)

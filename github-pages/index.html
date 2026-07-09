@@ -14954,7 +14954,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function hdf5IsEnergyAxisLabel(label) {
       const text = String(label || "").toLowerCase();
-      return text.includes("energy") || text.includes("ev") || text.includes("e_v");
+      return text.includes("energy")
+        || text.includes("ev")
+        || text.includes("e_v")
+        || text.includes("kinetic")
+        || text.includes("binding")
+        || /^e\s*(\[|\(|$)/i.test(text.trim());
     }
 
     function hdf5ShouldFlipY(plan) {
@@ -14962,6 +14967,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const first = Number(plan?.yRange?.first);
       const last = Number(plan?.yRange?.last);
       return Number.isFinite(first) && Number.isFinite(last) && last > first;
+    }
+
+    function hdf5EnergyAxisDisplayValue(range, displayIndex, length) {
+      if (!range || !Number.isFinite(range.first) || !Number.isFinite(range.last) || length <= 1) return displayIndex;
+      const high = Math.max(range.first, range.last);
+      const low = Math.min(range.first, range.last);
+      return high - (high - low) * (displayIndex / (length - 1));
     }
 
     function hdf5ClampIndex(value, max) {
@@ -14974,6 +14986,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function hdf5AxisValueForDisplay(range, displayIndex, length, flipY) {
+      if (range?.forceEnergyAscending) return hdf5EnergyAxisDisplayValue(range, displayIndex, length);
       return hdf5AxisValue(range, hdf5DisplayToSourceY(displayIndex, length, flipY), length);
     }
 
@@ -15119,7 +15132,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       for (let i = 0; i <= 4; i++) {
         const y = margin.top + plotH * i / 4;
         const displayIndex = Math.round((sample.yLen - 1) * i / 4);
-        const label = formatHDF5Tick(hdf5AxisValueForDisplay(plan.yRange, displayIndex, sample.yLen, flipY));
+        const yValue = hdf5IsEnergyAxisLabel(plan.yLabel)
+          ? hdf5EnergyAxisDisplayValue(plan.yRange, displayIndex, sample.yLen)
+          : hdf5AxisValueForDisplay(plan.yRange, displayIndex, sample.yLen, flipY);
+        const label = formatHDF5Tick(yValue);
         ctx.beginPath(); ctx.moveTo(margin.left - 5, y); ctx.lineTo(margin.left, y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(rightProfileRect.x, y); ctx.lineTo(rightProfileRect.x + rightProfileRect.w + 5, y); ctx.stroke();
         ctx.textAlign = "right";
@@ -15179,11 +15195,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const xIndex = hdf5ClampIndex((col / Math.max(1, sample.cols - 1)) * (sample.xLen - 1), sample.xLen);
       const yDisplayIndex = hdf5ClampIndex((row / Math.max(1, sample.rows - 1)) * (sample.yLen - 1), sample.yLen);
       const xValue = hdf5AxisValue(state.plan.xRange, xIndex, sample.xLen);
-      const yValue = hdf5AxisValueForDisplay(state.plan.yRange, yDisplayIndex, sample.yLen, state.layout?.flipY);
+      const yValue = hdf5IsEnergyAxisLabel(state.plan.yLabel)
+        ? hdf5EnergyAxisDisplayValue(state.plan.yRange, yDisplayIndex, sample.yLen)
+        : hdf5AxisValueForDisplay(state.plan.yRange, yDisplayIndex, sample.yLen, state.layout?.flipY);
       return `x=${formatHDF5Tick(xValue)} · y=${formatHDF5Tick(yValue)}`;
     }
 
     let hdf5PreviewDragPointer = null;
+    let hdf5PreviewMouseDragging = false;
     let hdf5PreviewRedrawFrame = 0;
 
     function redrawHDF5PreviewSelection(canvas) {
@@ -15207,8 +15226,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
     }
 
-    function setHDF5PreviewSelectionFromPointer(event, allowOutside = false) {
-      const canvas = event.currentTarget;
+    function setHDF5PreviewSelectionFromEvent(canvas, event, allowOutside = false) {
       const selection = hdf5CanvasPointerToSelection(canvas, event, allowOutside);
       if (!selection || !canvas.__hdf5PreviewState) return false;
       canvas.__hdf5PreviewState.selection = selection;
@@ -15216,9 +15234,29 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return true;
     }
 
+    function setHDF5PreviewSelectionFromPointer(event, allowOutside = false) {
+      return setHDF5PreviewSelectionFromEvent(event.currentTarget, event, allowOutside);
+    }
+
     function bindHDF5PreviewCanvasInteraction() {
       if (!hdf5PreviewCanvas || hdf5PreviewCanvas.dataset.dragBound === "true") return;
       hdf5PreviewCanvas.dataset.dragBound = "true";
+      hdf5PreviewCanvas.addEventListener("click", event => {
+        setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, false);
+      });
+      hdf5PreviewCanvas.addEventListener("mousedown", event => {
+        if (event.button !== 0) return;
+        if (!setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, false)) return;
+        hdf5PreviewMouseDragging = true;
+        event.preventDefault();
+      });
+      window.addEventListener("mousemove", event => {
+        if (!hdf5PreviewMouseDragging) return;
+        if (setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) event.preventDefault();
+      });
+      window.addEventListener("mouseup", () => {
+        hdf5PreviewMouseDragging = false;
+      });
       hdf5PreviewCanvas.addEventListener("pointerdown", event => {
         if (!setHDF5PreviewSelectionFromPointer(event, false)) return;
         hdf5PreviewDragPointer = event.pointerId;
