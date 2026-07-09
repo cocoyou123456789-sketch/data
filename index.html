@@ -6723,6 +6723,7 @@
         figureFilterLabel: "按元素筛选:",
         figureElementChipLabel: "元素分类:",
         figureTypeFilterLabel: "图表类型:",
+        twoDFigureCategoryFilterLabel: "二维材料分类:",
         figureElementAll: "未选择元素，显示全部文章图表",
         figureElementSelected: "当前元素：{element}，仅显示含该元素的文章图表",
         figureClearElement: "清除元素筛选",
@@ -7269,6 +7270,7 @@
         figureFilterLabel: "Element filter:",
         figureElementChipLabel: "Element categories:",
         figureTypeFilterLabel: "Figure type:",
+        twoDFigureCategoryFilterLabel: "2D material category:",
         figureElementAll: "No element selected; showing all article figures",
         figureElementSelected: "Current element: {element}; showing article figures containing it",
         figureClearElement: "Clear element filter",
@@ -7834,6 +7836,7 @@
     const toggleFigureCandidatesBtn = $("#toggleFigureCandidatesBtn");
     const figureElementStatus = $("#figureElementStatus");
     const figureElementChips = $("#figureElementChips");
+    const figureTypeFilters = $("#figureTypeFilters");
     const clearFigureElementBtn = $("#clearFigureElementBtn");
     const sourceCards = $("#sourceCards");
     let figFilterType = "all";
@@ -8288,6 +8291,12 @@
       { id: "Theory comparison", className: "fig-type-theory", color: "#b08bd8", labelKey: "figTypeTheory" },
       { id: "Other", className: "fig-type-other", color: "#8c98a5", labelKey: "" }
     ];
+    const figureFilterButtons = [
+      { figType: "all", labelKey: "figTypeAll" },
+      ...figureTypeDefinitions
+        .filter(item => item.id !== "Other")
+        .map(item => ({ figType: item.id, labelKey: item.labelKey }))
+    ];
     const figureTypeClass = {
       ...Object.fromEntries(figureTypeDefinitions.map(item => [item.id, item.className])),
       "Band dispersion": "fig-type-band",
@@ -8624,6 +8633,9 @@
       if (familyFilter) familyFilter.value = "";
       if (searchInput) searchInput.value = "";
       state.selectedElement = "";
+      figFilterType = "all";
+      figShowLimit = 12;
+      showFigureCandidates = false;
       state.compareSet.clear();
       renderFamilyFilter();
       renderFamilyChips();
@@ -8652,9 +8664,7 @@
       figFilterType = "all";
       figShowLimit = 12;
       showFigureCandidates = false;
-      document.querySelectorAll(".fig-filter-chip").forEach(chip => {
-        chip.classList.toggle("active", chip.dataset.figtype === "all");
-      });
+      renderFigureFilterControls();
       state.compareSet.clear();
       updateCompareUI();
       comparePanel.classList.remove("active");
@@ -9633,6 +9643,7 @@
       if (topicMeasureHead) topicMeasureHead.textContent = meta.measureCol;
       if (loadStatus && state.db) loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       renderTwoDCategoryPanel();
+      renderFigureFilterControls();
     }
 
     function topicMeasureValue(row) {
@@ -12016,11 +12027,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     // ===== 图表类型筛选按钮 =====
     document.querySelectorAll(".fig-filter-chip").forEach(chip => {
       chip.addEventListener("click", () => {
-        document.querySelectorAll(".fig-filter-chip").forEach(c => c.classList.remove("active"));
-        chip.classList.add("active");
-        figFilterType = chip.dataset.figtype;
         figShowLimit = 12;
-        renderFigureGallery();
+        if (state.topic === "2d") {
+          familyFilter.value = chip.dataset.figureCategory || "";
+          figFilterType = "all";
+          resetArticleListViewForFilter();
+          applyFilters();
+        } else {
+          document.querySelectorAll(".fig-filter-chip").forEach(c => c.classList.remove("active"));
+          chip.classList.add("active");
+          figFilterType = chip.dataset.figtype || "all";
+          renderFigureGallery();
+        }
         if (comparePanel.classList.contains("active") && state.compareSet.size) renderComparePanel();
       });
     });
@@ -12092,7 +12110,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             citation_count: article.citation_count || 0
           };
         })
-        .filter(candidate => figFilterType === "all" || candidate.normalized_type === normalizeFigureType(figFilterType))
+        .filter(candidate => activeFigureTypeFilter() === "all" || candidate.normalized_type === normalizeFigureType(activeFigureTypeFilter()))
         .sort((a, b) =>
           Number(b.year || 0) - Number(a.year || 0) ||
           Number(b.citation_count || 0) - Number(a.citation_count || 0) ||
@@ -12125,6 +12143,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function renderFigureGallery() {
+      renderFigureFilterControls();
       if (!articlesLoaded) {
         if (figCount) figCount.textContent = "0";
         if (figShowMoreBtn) figShowMoreBtn.style.display = "none";
@@ -12136,8 +12155,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const term = (searchInput.value || "").trim().toLowerCase();
       const family = familyFilter.value;
       const selectedElement = state.selectedElement || "";
-      const legendEl = $("#figureColorLegend");
-      if (legendEl) legendEl.innerHTML = typeColorLegendHtml();
       if (figureElementStatus) {
         figureElementStatus.textContent = selectedElement
           ? tf("figureElementSelected", { element: selectedElement })
@@ -12163,8 +12180,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const imageUrl = resolveFigureImage(fig, article);
           if (!imageUrl) continue;
           // 图表类型筛选
-          if (figFilterType !== "all") {
-            if (classifyFigureType(fig) !== figFilterType) continue;
+          const activeFigFilter = activeFigureTypeFilter();
+          if (activeFigFilter !== "all") {
+            if (classifyFigureType(fig) !== activeFigFilter) continue;
           }
           const normalizedType = classifyFigureType(fig);
           allFigures.push({
@@ -12200,10 +12218,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
 
       figCount.textContent = totalCandidates
-        ? (term || family || selectedElement || figFilterType !== "all"
+        ? (term || family || selectedElement || activeFigureTypeFilter() !== "all"
           ? tf("filteredFiguresWithCandidates", { figures: totalFigs, candidates: totalCandidates })
           : tf("totalFiguresWithCandidates", { figures: totalFigs, candidates: totalCandidates }))
-        : (term || family || selectedElement || figFilterType !== "all"
+        : (term || family || selectedElement || activeFigureTypeFilter() !== "all"
           ? tf("filteredFigures", { count: totalFigs })
           : tf("totalFigures", { count: totalFigs }));
 
@@ -12469,7 +12487,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         row,
         figures: collectFiguresForMaterial(row)
       }));
-      const wantedType = figFilterType !== "all" ? normalizeFigureType(figFilterType) : "";
+      const wantedType = activeFigureTypeFilter() !== "all" ? normalizeFigureType(activeFigureTypeFilter()) : "";
       const allTypes = uniq(figuresByMaterial.flatMap(item => item.figures.map(fig => classifyFigureType(fig))));
       const typeScores = allTypes.map(type => ({
         type,
@@ -12577,6 +12595,59 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return `<div class="figure-color-legend">
         ${items.map(item => `<span><i style="--legend-color:${figureTypeColor(item.id)}"></i>${esc(figureTypeLabel(item.id))}</span>`).join("")}
       </div>`;
+    }
+
+    function twoDCategoryColor(row) {
+      return stableColorForText(twoDCategoryId(row), datasetCompareColors);
+    }
+
+    function twoDCategoryLegendHtml() {
+      return `<div class="figure-color-legend two-d-category-legend">
+        ${twoDCategoryRows.map(row => `<span><i style="--legend-color:${twoDCategoryColor(row)}"></i>${esc(localizedCategoryValue(row, "category"))}</span>`).join("")}
+      </div>`;
+    }
+
+    function activeFigureTypeFilter() {
+      return state.topic === "2d" ? "all" : figFilterType;
+    }
+
+    function renderFigureFilterControls() {
+      const chips = Array.from(document.querySelectorAll(".fig-filter-chip"));
+      const label = figureTypeFilters?.querySelector('[data-i18n="figureTypeFilterLabel"]');
+      const legendEl = $("#figureColorLegend");
+      if (!chips.length) return;
+
+      if (state.topic === "2d") {
+        const entries = [
+          { id: "", label: t("figTypeAll") },
+          ...twoDCategoryRows.map(row => ({ id: twoDCategoryId(row), label: localizedCategoryValue(row, "category") }))
+        ];
+        if (label) label.textContent = t("twoDFigureCategoryFilterLabel");
+        chips.forEach((chip, index) => {
+          const entry = entries[index];
+          chip.hidden = !entry;
+          if (!entry) return;
+          chip.textContent = entry.label;
+          chip.dataset.figureCategory = entry.id;
+          delete chip.dataset.figtype;
+          chip.classList.toggle("active", (familyFilter?.value || "") === entry.id);
+        });
+        if (legendEl) legendEl.innerHTML = twoDCategoryLegendHtml();
+        figFilterType = "all";
+        return;
+      }
+
+      if (label) label.textContent = t("figureTypeFilterLabel");
+      chips.forEach((chip, index) => {
+        const entry = figureFilterButtons[index];
+        chip.hidden = !entry;
+        if (!entry) return;
+        chip.textContent = t(entry.labelKey);
+        chip.dataset.figtype = entry.figType;
+        delete chip.dataset.figureCategory;
+        chip.classList.toggle("active", figFilterType === entry.figType);
+      });
+      if (legendEl) legendEl.innerHTML = typeColorLegendHtml();
     }
 
     function stableColorForText(value, palette = datasetCompareColors) {
@@ -13240,7 +13311,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const imageUrl = resolveFigureImage(fig, article);
           if (!imageUrl) continue;
           const normalizedType = classifyFigureType(fig);
-          if (figFilterType !== "all" && normalizedType !== normalizeFigureType(figFilterType)) continue;
+          if (activeFigureTypeFilter() !== "all" && normalizedType !== normalizeFigureType(activeFigureTypeFilter())) continue;
           items.push({
             ...fig,
             normalized_type: normalizedType,
