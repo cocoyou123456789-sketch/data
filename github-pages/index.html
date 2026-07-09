@@ -1393,6 +1393,32 @@
       box-shadow: none;
     }
 
+    .topic-switch-bar {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(180px, 1fr));
+      gap: 1px;
+      border-bottom: 1px solid rgba(96,208,255,0.22);
+      background: rgba(96,208,255,0.16);
+    }
+
+    .topic-switch-btn {
+      min-height: 46px;
+      border: 0;
+      border-radius: 0;
+      background: #182435;
+      color: rgba(226,239,255,0.82);
+      font-size: 14px;
+      font-weight: 820;
+    }
+
+    .topic-switch-btn:hover,
+    .topic-switch-btn.active {
+      background: #0f766e;
+      color: #ffffff;
+      box-shadow: none;
+      transform: none;
+    }
+
     .module-select-page {
       grid-column: 1;
     }
@@ -1848,6 +1874,22 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+    }
+
+    .topic-button {
+      min-width: 210px;
+    }
+
+    .topic-button:not(.active) {
+      border-color: rgba(96,208,255,0.22);
+      background: #172233;
+      color: rgba(226,239,255,0.88);
+      box-shadow: none;
+    }
+
+    .topic-button:not(.active)::before,
+    .topic-button:not(.active)::after {
+      opacity: 0;
     }
 
     .app-page[hidden] {
@@ -5419,7 +5461,7 @@
           <span class="magic-page-title" data-i18n="magicBookCatalogLeft">目录</span>
           <span class="magic-page-line top"></span>
           <div class="magic-toc-list">
-            <button class="magic-toc-item" type="button" data-magic-page="history">
+            <button class="magic-toc-item" type="button" data-magic-topic="sc" data-magic-page="history">
               <strong data-i18n="magicBookCardSuper">超导材料</strong>
               <span data-i18n="magicBookTocSuper">进入 ARPES 超导材料数据库。</span>
             </button>
@@ -5440,10 +5482,9 @@
           <span class="magic-page-title" data-i18n="magicBookCatalogRight">扩展库</span>
           <span class="magic-page-line top"></span>
           <div class="magic-toc-list">
-            <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="low-dimensional">
-              <strong data-i18n="magicBookCardLowDim">低维材料</strong>
+            <button class="magic-toc-item" type="button" data-magic-topic="2d" data-magic-page="materials">
+              <strong data-i18n="magicBookCardLowDim">二维材料</strong>
               <span data-i18n="magicBookTocLowDim">二维、范德华和量子薄膜材料。</span>
-              <em data-i18n="magicBookComingSoon">建设中</em>
             </button>
             <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="magnetic">
               <strong data-i18n="magicBookCardMagnetic">磁性材料</strong>
@@ -5502,6 +5543,11 @@
       <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">📦 GitHub</a>
     </div>
   </header>
+
+  <nav class="topic-switch-bar" aria-label="Knowledge topic">
+    <button class="topic-switch-btn active" type="button" data-topic="sc" data-i18n="topicSuperInterface">⚡ 超导界面</button>
+    <button class="topic-switch-btn" type="button" data-topic="2d" data-i18n="topicTwoDInterface">▦ 二维材料界面</button>
+  </nav>
 
   <nav class="top-menu-bar" aria-label="Main navigation">
     <button class="top-menu-btn active" type="button" data-page-tab="history" data-i18n="topMenuHome">历史</button>
@@ -5752,7 +5798,10 @@
       <div class="content">
         <div class="topic-tabs">
           <div class="super-button-wrap">
-            <button class="super-button" id="superconductorBtn">⚡ SUPERCONDUCTOR ⚡</button>
+            <button class="super-button topic-button active" id="superconductorBtn" type="button" data-topic="sc" data-i18n="superconductorBtn">⚡ SUPERCONDUCTOR ⚡</button>
+          </div>
+          <div class="super-button-wrap">
+            <button class="super-button topic-button" id="twoDimensionalBtn" type="button" data-topic="2d" data-i18n="twoDimensionalBtn">▦ 二维材料 2D MATERIALS</button>
           </div>
         </div>
         <div class="toolbar">
@@ -5869,7 +5918,7 @@
                 <th data-i18n="materialCol">材料</th>
                 <th data-i18n="elementsCol">元素</th>
                 <th data-i18n="discoveredCol">发现年份</th>
-                <th data-i18n="tcCol">Tc (K)</th>
+                <th id="topicMeasureHead" data-i18n="tcCol">Tc (K)</th>
                 <th data-i18n="arpesCol">ARPES 特性</th>
                 <th data-i18n="qCol">q-dependent</th>
                 <th data-i18n="photonCol">光子/ARPES 备注</th>
@@ -6365,11 +6414,11 @@
         magicBookCardSuper: "超导材料",
         magicBookCardPhoton: "光子晶体",
         magicBookCardTopo: "拓扑绝缘体",
-        magicBookCardLowDim: "低维材料",
+        magicBookCardLowDim: "二维材料",
         magicBookCardMagnetic: "磁性材料",
         magicBookCardBioInfo: "生物 / 信息材料",
         magicBookEnter: "打开魔法书进入主界面",
-        magicBookHint: "先点第一本“物理材料”，打开目录后进入超导材料；其他书先保留为空壳。",
+        magicBookHint: "打开“物理材料”目录后，可以进入超导材料界面，也可以进入二维材料界面。",
         loginFeatureHistory: "历史图",
         loginFeatureHistoryHint: "大事件已合并到 Tc 历史图。",
         loginFeatureCube: "3D 魔方",
@@ -6394,6 +6443,8 @@
         topMenuData: "数据",
         topMenuModel: "模型",
         topMenuReport: "报告",
+        topicSuperInterface: "⚡ 超导界面",
+        topicTwoDInterface: "▦ 二维材料界面",
         flowCube: "流",
         flowHistory: "历史",
         flowMaterialIndex: "材料索引",
@@ -6495,6 +6546,7 @@
         tocNotes: "模板说明",
         loading: "加载中...",
         searchPlaceholder: "搜索：上海、北京、NSRRC、arXiv、Cu、Ni、铜氧化物、铁基超导...",
+        twoDSearchPlaceholder: "搜索：graphene、MoS2、WSe2、黑磷、MXene、范德华、monolayer...",
         allFamilies: "全部家族",
         allRegions: "全部地区",
         allTypes: "全部类型",
@@ -6505,13 +6557,17 @@
         keywordSearchTitle: "🏷️ 搜索关键词",
         keywordSearchHint: "点击关键词快速筛选文章、图表和材料",
         superconductorBtn: "⚡ 超导 SUPERCONDUCTOR ⚡",
+        twoDimensionalBtn: "▦ 二维材料 2D MATERIALS",
         searchFilterTitle: "🔍 搜索与筛选",
         periodicTitle: "元素周期表",
         periodicStatus: "点击元素筛选材料",
+        twoDPeriodicTitle: "二维材料元素图谱",
         selectElement: "👆 选择一个元素",
         selectElementHint: "点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。",
+        twoDSelectElementHint: "点击绿色元素查看相关二维材料、范德华家族、能带/谷/层数线索。灰色元素暂无二维材料种子数据。",
         familyTitle: "🧬 材料家族",
         familyHint: "点击标签快速筛选。当前以超导为主题。",
+        twoDFamilyHint: "点击标签快速筛选。当前以二维材料、范德华层状材料和量子薄膜为主题。",
         overviewTitle: "📸 直观对比：文章图表",
         overviewStatus: "从论文提取图表 — 不同材料/技术并排对比",
         figureGalleryTitle: "📊 论文图表对比",
@@ -6549,6 +6605,8 @@
         rowsLabel: "行",
         milestonesTitle: "超导历史",
         milestonesHint: "点击节点查看详情",
+        twoDHistoryTitle: "二维材料界面",
+        twoDHistoryHint: "二维、范德华和量子薄膜材料的材料入口。",
         historyPointTitle: "点击图上的点",
         historyPointHint: "选择一个材料点，查看它在超导历史中的简单介绍。",
         historyFigureCaption: "历史 Tc 记录图：从低温常规超导到铜氧化物、铁基、MgB2 和高压氢化物体系的临界温度演化。",
@@ -6569,6 +6627,7 @@
         sourceTitle: "💡 光源 / 档案目录",
         sourceStatus: "优先使用 DOI、出版商页面、arXiv 和 WoS 导出等文献来源",
         materialsTitle: "🧪 超导材料表",
+        twoDMaterialsTitle: "🧪 二维材料表",
         materialsStatus: "等待中",
         detailTitle: "📋 材料详情",
         detailHint: "点击材料表中的一行查看详情。",
@@ -6734,11 +6793,13 @@
         families: "家族",
         elements: "元素",
         maxTc: "最高 Tc",
+        maxGap: "最大带隙",
         familyCol: "家族",
         materialCol: "材料",
         elementsCol: "元素",
         discoveredCol: "发现年份",
         tcCol: "Tc (K)",
+        twoDMeasureCol: "带隙 / 相",
         arpesCol: "ARPES 特性",
         qCol: "q-dependent",
         photonCol: "光子/ARPES 备注",
@@ -6878,11 +6939,11 @@
         magicBookCardSuper: "Superconductors",
         magicBookCardPhoton: "Photonic crystals",
         magicBookCardTopo: "Topological insulators",
-        magicBookCardLowDim: "Low-dimensional materials",
+        magicBookCardLowDim: "2D materials",
         magicBookCardMagnetic: "Magnetic materials",
         magicBookCardBioInfo: "Bio / information materials",
         magicBookEnter: "Open the spellbook",
-        magicBookHint: "Click the first Physical Materials book, then enter Superconductors; the other books are placeholders.",
+        magicBookHint: "Open the Physical Materials contents, then enter either the superconductivity interface or the 2D materials interface.",
         loginFeatureHistory: "History Chart",
         loginFeatureHistoryHint: "Milestones are merged into the Tc chart.",
         loginFeatureCube: "3D Cube",
@@ -6907,6 +6968,8 @@
         topMenuData: "Data",
         topMenuModel: "Model",
         topMenuReport: "Report",
+        topicSuperInterface: "⚡ Superconductivity Interface",
+        topicTwoDInterface: "▦ 2D Materials Interface",
         flowCube: "Flow",
         flowHistory: "History",
         flowMaterialIndex: "Material Index",
@@ -7008,6 +7071,7 @@
         tocNotes: "Template Notes",
         loading: "Loading...",
         searchPlaceholder: "Search: Shanghai, Beijing, NSRRC, arXiv, Cu, Ni, cuprate, iron-based...",
+        twoDSearchPlaceholder: "Search: graphene, MoS2, WSe2, black phosphorus, MXene, van der Waals, monolayer...",
         allFamilies: "All Families",
         allRegions: "All Regions",
         allTypes: "All Types",
@@ -7018,13 +7082,17 @@
         keywordSearchTitle: "🏷️ Search Keywords",
         keywordSearchHint: "Click a keyword to filter articles, figures, and materials",
         superconductorBtn: "⚡ SUPERCONDUCTOR ⚡",
+        twoDimensionalBtn: "▦ 2D MATERIALS",
         searchFilterTitle: "🔍 Search & Filter",
         periodicTitle: "Periodic Table",
         periodicStatus: "Click an element to filter materials",
+        twoDPeriodicTitle: "2D Materials Element Map",
         selectElement: "👆 Select an Element",
         selectElementHint: "Click a green element to see material families and ARPES properties. Grey = no data yet.",
+        twoDSelectElementHint: "Click a green element to inspect related 2D materials, van der Waals families, band/valley/layer clues. Grey = no 2D seed data yet.",
         familyTitle: "🧬 Material Families",
         familyHint: "Click a chip to filter. Current topic: superconductivity.",
+        twoDFamilyHint: "Click a chip to filter. Current topic: 2D materials, van der Waals layers, and quantum thin films.",
         overviewTitle: "📸 Overview: Article Figure Comparison",
         overviewStatus: "Figures from papers — side-by-side comparison across materials/techniques",
         figureGalleryTitle: "📊 Figure Comparison Gallery",
@@ -7062,6 +7130,8 @@
         rowsLabel: "Rows",
         milestonesTitle: "Superconductivity History",
         milestonesHint: "Click a point for details",
+        twoDHistoryTitle: "2D Materials Interface",
+        twoDHistoryHint: "Entry point for 2D, van der Waals, and quantum thin-film materials.",
         historyPointTitle: "Click a point on the chart",
         historyPointHint: "Select a material point to see a short historical note.",
         historyFigureCaption: "Historical Tc record chart: evolution from low-temperature conventional superconductors to cuprates, iron-based systems, MgB2, and high-pressure hydrides.",
@@ -7082,6 +7152,7 @@
         sourceTitle: "💡 Light Source & Archive Directory",
         sourceStatus: "Prefer literature sources such as DOI, publisher pages, arXiv, and WoS exports",
         materialsTitle: "🧪 Superconducting Materials",
+        twoDMaterialsTitle: "🧪 2D Materials",
         materialsStatus: "Waiting",
         detailTitle: "📋 Material Details",
         detailHint: "Click a row in the materials table for details.",
@@ -7247,11 +7318,13 @@
         families: "Families",
         elements: "Elements",
         maxTc: "Max Tc",
+        maxGap: "Max gap",
         familyCol: "Family",
         materialCol: "Material",
         elementsCol: "Elements",
         discoveredCol: "Discovered",
         tcCol: "Tc (K)",
+        twoDMeasureCol: "Band gap / phase",
         arpesCol: "ARPES Props",
         qCol: "q-dependent",
         photonCol: "Photon Notes",
@@ -7403,9 +7476,11 @@
         setMagicBookPrimary(magicBookMode === "toc" ? "magicBookChoosePage" : "magicBookOpenCatalog");
       }
       showAppPage(activeAppPage, { preserveScroll: true });
+      updateTopicUI();
       if (loginBtn && createAccountTab?.classList.contains("active")) loginBtn.textContent = t("createAccountBtn");
       // Update section headings, buttons, etc.
-      document.querySelector("#superconductorBtn").innerHTML = t("superconductorBtn");
+      if (superconductorBtn) superconductorBtn.innerHTML = t("superconductorBtn");
+      if (twoDimensionalBtn) twoDimensionalBtn.innerHTML = t("twoDimensionalBtn");
       document.querySelector("#searchBtn").innerHTML = t("searchBtn");
       document.querySelector("#resetBtn").innerHTML = t("resetBtn");
       document.querySelector("#clearAllBtn").innerHTML = t("clearAllBtn");
@@ -7420,7 +7495,7 @@
         renderFamilyFilter();
         renderSourceFilters();
       }
-      loadStatus.textContent = `${state.db ? state.db.materials.length : 0} ${t("seedMaterials")}`;
+      updateTopicUI();
     }
 
     function setLeadingText(el, text) {
@@ -7440,6 +7515,7 @@
     // ===== 全局状态 =====
     const state = {
       db: null,
+      topicDbs: {},
       articles: [],
       selectedElement: "",
       filtered: [],
@@ -7481,6 +7557,7 @@
     const keywordChips = $("#keywordChips");
     const loginScreen = $("#loginScreen");
     const magicBookScreen = $("#magicBookScreen");
+    const magicBookPanel = $("#magicBookPanel");
     const magicBookEnterBtn = $("#magicBookEnterBtn");
     const magicBookOpenBtn = $("#magicBookOpenBtn");
     const magicBookTocItems = $$(".magic-toc-item");
@@ -7548,7 +7625,10 @@
     let magicBookMode = "library";
     let magicBookTargetPage = "history";
     let compareCount = $("#compareCount");
+    const topicButtons = $$("[data-topic]");
     const superconductorBtn = $("#superconductorBtn");
+    const twoDimensionalBtn = $("#twoDimensionalBtn");
+    const topicMeasureHead = $("#topicMeasureHead");
     const loadStatus = $("#loadStatus");
     const metrics = $("#metrics");
     const periodicTable = $("#periodicTable");
@@ -8262,18 +8342,29 @@
         sendChatMessage();
       });
     });
-    superconductorBtn?.addEventListener("mousedown", event => event.preventDefault());
-    superconductorBtn?.addEventListener("click", event => {
-      event.preventDefault();
-      setTopic("sc", { dance: true, preserveScroll: true });
+    topicButtons.forEach(btn => {
+      btn.addEventListener("mousedown", event => event.preventDefault());
+      btn.addEventListener("click", event => {
+        event.preventDefault();
+        setTopic(btn.dataset.topic || "sc", { dance: btn.dataset.topic === "sc", preserveScroll: true });
+        if (activeAppPage === "history" && btn.dataset.topic === "2d") showAppPage("materials");
+      });
     });
     function setTopic(topic, options = {}) {
       const scrollX = window.scrollX;
       const scrollY = window.scrollY;
-      state.topic = topic;
-      familyFilter.value = "";
-      searchInput.value = "";
+      const nextTopic = state.topicDbs[topic] ? topic : "sc";
+      if (!state.topicDbs[nextTopic]) return;
+      state.topic = nextTopic;
+      state.db = state.topicDbs[nextTopic] || state.db;
+      if (familyFilter) familyFilter.value = "";
+      if (searchInput) searchInput.value = "";
       state.selectedElement = "";
+      state.compareSet.clear();
+      renderFamilyFilter();
+      renderFamilyChips();
+      renderPeriodicTable();
+      updateTopicUI();
       applyFilters();
       renderToc();
       if (options.dance) {
@@ -9173,7 +9264,11 @@
     // ===== 初始化 =====
     async function init() {
       try {
-        state.db = await loadJson("data/superconductivity.json");
+        state.topicDbs = {
+          sc: await loadJson("data/superconductivity.json"),
+          "2d": await loadJson("data/two_dimensional_materials.json")
+        };
+        state.db = state.topicDbs[state.topic] || state.topicDbs.sc;
         state.articles = [];
         articleMetricsDirty = true;
         state.ourData = loadOurData();
@@ -9185,6 +9280,7 @@
         renderSourceFilters();
         renderFamilyChips();
         renderPeriodicTable();
+        updateTopicUI();
         applyFilters();
         renderOurData();
         renderArticles();
@@ -9216,12 +9312,79 @@
       throw new Error(`Cannot load ${path}${lastError ? ` (${lastError.message})` : ""}`);
     }
 
+    function activeTopicMeta() {
+      const twoD = state.topic === "2d";
+      return twoD
+        ? {
+            id: "2d",
+            label: t("topicTwoDInterface"),
+            searchPlaceholder: t("twoDSearchPlaceholder"),
+            historyTitle: t("twoDHistoryTitle"),
+            historyHint: t("twoDHistoryHint"),
+            periodicTitle: t("twoDPeriodicTitle"),
+            selectHint: t("twoDSelectElementHint"),
+            familyHint: t("twoDFamilyHint"),
+            materialsTitle: t("twoDMaterialsTitle"),
+            measureCol: t("twoDMeasureCol"),
+            maxMetric: t("maxGap")
+          }
+        : {
+            id: "sc",
+            label: t("topicSuperInterface"),
+            searchPlaceholder: t("searchPlaceholder"),
+            historyTitle: t("milestonesTitle"),
+            historyHint: t("milestonesHint"),
+            periodicTitle: t("periodicTitle"),
+            selectHint: t("selectElementHint"),
+            familyHint: t("familyHint"),
+            materialsTitle: t("materialsTitle"),
+            measureCol: t("tcCol"),
+            maxMetric: t("maxTc")
+          };
+    }
+
+    function updateTopicUI() {
+      const meta = activeTopicMeta();
+      topicButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.topic === state.topic);
+      });
+      if (searchInput) searchInput.placeholder = meta.searchPlaceholder;
+      if (chatInput) {
+        chatInput.placeholder = state.topic === "2d"
+          ? (currentLang === "zh" ? "问一个 ARPES/二维材料问题，或让对话框生成表格..." : "Ask an ARPES/2D-materials question, or ask the Chat platform to make a table...")
+          : t("chatInputPlaceholder");
+      }
+      const historyTitle = document.querySelector('[data-i18n="milestonesTitle"]');
+      const historyHint = document.querySelector('[data-i18n="milestonesHint"]');
+      const periodicTitle = document.querySelector('[data-i18n="periodicTitle"]');
+      const selectHint = document.querySelector('[data-i18n="selectElementHint"]');
+      const familyHint = document.querySelector('[data-i18n="familyHint"]');
+      const materialsTitle = document.querySelector('[data-i18n="materialsTitle"]');
+      if (historyTitle) historyTitle.textContent = meta.historyTitle;
+      if (historyHint) historyHint.textContent = meta.historyHint;
+      if (periodicTitle) periodicTitle.textContent = meta.periodicTitle;
+      if (selectHint) selectHint.textContent = meta.selectHint;
+      if (familyHint) familyHint.textContent = meta.familyHint;
+      if (materialsTitle) materialsTitle.textContent = meta.materialsTitle;
+      if (topicMeasureHead) topicMeasureHead.textContent = meta.measureCol;
+      if (loadStatus && state.db) loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
+    }
+
+    function topicMeasureValue(row) {
+      if (state.topic === "2d") {
+        if (row.bandgap_eV === 0) return row.phase_note || "0 eV";
+        if (row.bandgap_eV != null) return `${row.bandgap_eV} eV`;
+        return row.phase_note || "-";
+      }
+      return row.transition_temperature_K == null ? "-" : row.transition_temperature_K;
+    }
+
     // ===== 渲染函数 =====
     function renderFamilyFilter() {
       const selected = familyFilter.value;
       familyFilter.innerHTML = `<option value="">${esc(t("allFamilies"))}</option>` +
         state.db.families.map(f => `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join("");
-      familyFilter.value = selected;
+      familyFilter.value = state.db.families.some(f => f.id === selected) ? selected : "";
     }
 
     function renderSourceFilters() {
@@ -9249,7 +9412,10 @@
     }
 
     function renderPeriodicTable() {
-      const available = new Set(curatedArticles().flatMap(article => article.elements || []));
+      const available = new Set([
+        ...(state.db?.elements || []),
+        ...curatedArticles().flatMap(article => article.elements || [])
+      ]);
       const callout = `<div class="periodic-callout">${esc(t("periodicStatus"))}</div>`;
       periodicTable.innerHTML = callout + periodicLayout.map(([sym, col, row], i) => {
         const meta = elementMeta[sym] || [sym, ""];
@@ -9358,6 +9524,27 @@
       magicBookScreen.classList.remove("is-library", "is-flipping");
       magicLibraryBooks.forEach(item => item.classList.toggle("active", item.dataset.magicLibrary === "physical"));
       setMagicBookPrimary("magicBookChoosePage");
+    }
+
+    function handleMagicBookTocItem(item) {
+      if (!item) return;
+      if (item.dataset.magicPage) {
+        if (item.dataset.magicTopic) setTopic(item.dataset.magicTopic, { preserveScroll: true });
+        enterWorkbenchFromMagicBook(item.dataset.magicPage);
+        return;
+      }
+      magicBookTocItems.forEach(node => node.classList.remove("active"));
+      item.classList.add("active");
+      showToast(t("magicBookShellToast"));
+    }
+
+    function magicTocItemAtPoint(x, y) {
+      return [...magicBookTocItems].find(item => {
+        const rect = item.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0
+          && x >= rect.left && x <= rect.right
+          && y >= rect.top && y <= rect.bottom;
+      });
     }
 
     function initLogin() {
@@ -9473,6 +9660,7 @@
       magicBookEnterBtn?.addEventListener("click", openMagicBookCatalog);
       magicBookOpenBtn?.addEventListener("click", () => {
         if (magicBookMode === "toc") {
+          setTopic("sc", { preserveScroll: true });
           enterWorkbenchFromMagicBook("history");
         } else {
           openMagicBookCatalog();
@@ -9495,14 +9683,15 @@
         item.addEventListener("click", event => {
           event.preventDefault();
           event.stopPropagation();
-          if (item.dataset.magicPage) {
-            enterWorkbenchFromMagicBook(item.dataset.magicPage);
-            return;
-          }
-          magicBookTocItems.forEach(node => node.classList.remove("active"));
-          item.classList.add("active");
-          showToast(t("magicBookShellToast"));
+          handleMagicBookTocItem(item);
         });
+      });
+      magicBookPanel?.addEventListener("click", event => {
+        if (magicBookMode !== "toc") return;
+        const item = magicTocItemAtPoint(event.clientX, event.clientY);
+        if (!item) return;
+        event.preventDefault();
+        handleMagicBookTocItem(item);
       });
       logoutBtn?.addEventListener("click", logoutWorkbench);
       [loginEmail, loginPassword, confirmPassword, loginName, loginGroup].forEach(input => {
@@ -10242,19 +10431,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const family = familyFilter.value;
       const region = regionFilter.value;
       const sourceType = sourceTypeFilter.value;
-      const topic = "sc";
 
-      state.filtered = state.db.materials.filter(row => {
-        const elemOk = !state.selectedElement || row.elements.includes(state.selectedElement);
+      state.filtered = (state.db?.materials || []).filter(row => {
+        const elemOk = !state.selectedElement || (row.elements || []).includes(state.selectedElement);
         const famOk = !family || row.family === family;
         const text = [
           row.family, row.material, row.display_name, row.synthesized_or_discovered, row.tc_note,
+          row.phase_note, row.bandgap_eV,
           ...(row.elements || []), ...(row.arpes_special_properties || []),
           ...(row.q_dependent_observables || []), row.photon_arpes_notes, row.source_note
         ].join(" ").toLowerCase();
         const termOk = !expandedTerm || text.includes(expandedTerm);
-        const topicOk = topic === "sc";
-        return elemOk && famOk && termOk && topicOk;
+        return elemOk && famOk && termOk;
       });
 
       updateSelectedElement();
@@ -10271,10 +10459,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function updateSelectedElement() {
       if (!state.selectedElement) {
-        elementPanel.innerHTML = `<h3>${t("selectElement")}</h3><p class="muted">绿色元素现在只来自 curated 真实 ARPES 论文图，不再由 seed 模板点亮。${t("selectElementHint")}</p>`;
+        elementPanel.innerHTML = `<h3>${t("selectElement")}</h3><p class="muted">${esc(activeTopicMeta().selectHint)}</p>`;
         return;
       }
-      const rows = state.db.materials.filter(r => r.elements.includes(state.selectedElement));
+      const rows = (state.db?.materials || []).filter(r => (r.elements || []).includes(state.selectedElement));
       const families = uniq(rows.map(r => familyName(r.family)));
       const mats = rows.map(r => r.display_name || r.material);
       const articleRows = curatedArticles().filter(article => articleMatchesElement(article, state.selectedElement));
@@ -10303,10 +10491,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : (currentLang === "zh" ? "目前相关图表记录还少，可通过后续数据整理补充。" : "Related figure records are still sparse and can be expanded later.");
       const role = rows.length
         ? (currentLang === "zh"
-          ? `${symbol} 出现在 ${rows.length} 个种子材料条目中，主要关联 ${familyList || "若干超导材料家族"}，例如 ${materialList || "待补充材料"}。`
-          : `${symbol} appears in ${rows.length} seed material rows, mainly linked to ${familyList || "several superconducting families"}, such as ${materialList || "materials to be added"}.`)
+          ? `${symbol} 出现在 ${rows.length} 个种子材料条目中，主要关联 ${familyList || (state.topic === "2d" ? "若干二维材料家族" : "若干超导材料家族")}，例如 ${materialList || "待补充材料"}。`
+          : `${symbol} appears in ${rows.length} seed material rows, mainly linked to ${familyList || (state.topic === "2d" ? "several 2D-material families" : "several superconducting families")}, such as ${materialList || "materials to be added"}.`)
         : (currentLang === "zh"
-          ? `${symbol} 暂无种子材料条目，但可以作为后续材料库和实验数据补充的候选元素。`
+          ? `${symbol} 暂无当前主题的种子材料条目，但可以作为后续材料库和实验数据补充的候选元素。`
           : `${symbol} has no seed material row yet, but can be used as a candidate element for future material-library and experimental-data expansion.`);
       return `${role} ${articleText}`;
     }
@@ -10318,9 +10506,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         .sort((a, b) => Number(b.transition_temperature_K || 0) - Number(a.transition_temperature_K || 0))
         .slice(0, 5)
         .map(row => row.display_name || row.material);
-      const tcValues = rows.map(row => Number(row.transition_temperature_K)).filter(Number.isFinite);
-      const tcRange = tcValues.length
-        ? `${Math.min(...tcValues)}-${Math.max(...tcValues)} K`
+      const measureValues = rows.map(row => Number(state.topic === "2d" ? row.bandgap_eV : row.transition_temperature_K)).filter(Number.isFinite);
+      const measureRange = measureValues.length
+        ? `${Math.min(...measureValues)}-${Math.max(...measureValues)} ${state.topic === "2d" ? "eV" : "K"}`
         : (currentLang === "zh" ? "待补充" : "pending");
       const arpesTerms = uniq(rows.flatMap(row => [
         ...(row.arpes_special_properties || []),
@@ -10341,8 +10529,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           value: materials.join(", ") || symbol
         },
         {
-          label: currentLang === "zh" ? "Tc 范围" : "Tc range",
-          value: tcRange
+          label: state.topic === "2d"
+            ? (currentLang === "zh" ? "带隙 / 相范围" : "Gap / phase range")
+            : (currentLang === "zh" ? "Tc 范围" : "Tc range"),
+          value: measureRange
         },
         {
           label: currentLang === "zh" ? "ARPES 关注点" : "ARPES focus",
@@ -10381,8 +10571,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           ${crucibleVisualHtml()}
           <div class="crucible-body">
             <p class="muted">${currentLang === "zh"
-              ? "选择周期表中的绿色元素后，坩埚会根据元素、材料家族、Tc 和文献密度给出下一步探索建议。"
-              : "Select a green element; the crucible combines element, family, Tc, and article density into a next-step exploration hint."}</p>
+              ? (state.topic === "2d" ? "选择周期表中的绿色元素后，坩埚会根据元素、二维材料家族、带隙/相和文献密度给出下一步探索建议。" : "选择周期表中的绿色元素后，坩埚会根据元素、材料家族、Tc 和文献密度给出下一步探索建议。")
+              : (state.topic === "2d" ? "Select a green element; the crucible combines element, 2D-material family, gap/phase context, and article density into a next-step exploration hint." : "Select a green element; the crucible combines element, family, Tc, and article density into a next-step exploration hint.")}</p>
           </div>
         `;
       $("#runCrucibleBtn")?.addEventListener("click", () => {
@@ -10399,8 +10589,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           <div class="element-history-panel">
             <h3>${currentLang === "zh" ? "元素相关总结" : "Element Summary"}</h3>
             <p class="muted">${currentLang === "zh"
-              ? "选择周期表中的绿色元素后，这里会汇总它在超导材料中的角色、代表体系、Tc 范围和 ARPES 关注点。"
-              : "Select a green element to summarize its superconducting-material role, representative systems, Tc range, and ARPES focus."}</p>
+              ? (state.topic === "2d" ? "选择周期表中的绿色元素后，这里会汇总它在二维材料中的角色、代表体系、带隙/相和 ARPES 关注点。" : "选择周期表中的绿色元素后，这里会汇总它在超导材料中的角色、代表体系、Tc 范围和 ARPES 关注点。")
+              : (state.topic === "2d" ? "Select a green element to summarize its 2D-material role, representative systems, gap/phase context, and ARPES focus." : "Select a green element to summarize its superconducting-material role, representative systems, Tc range, and ARPES focus.")}</p>
           </div>
         `;
         return;
@@ -10479,29 +10669,34 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function predictElementPotential(symbol, rows, articleRows) {
       const maxTc = Math.max(0, ...rows.map(row => Number(row.transition_temperature_K || row.tc_K || 0)).filter(Number.isFinite));
+      const maxGap = Math.max(0, ...rows.map(row => Number(row.bandgap_eV || 0)).filter(Number.isFinite));
       const familyCount = uniq(rows.map(row => row.family)).length;
       const arpesTerms = rows.flatMap(row => [...(row.arpes_special_properties || []), ...(row.q_dependent_observables || [])]);
       const termText = arpesTerms.join(" ").toLowerCase();
-      const keywordBoost = ["topological", "weyl", "dirac", "gap", "pseudogap", "nematic", "surface", "phonon"]
+      const keywordBoost = ["topological", "weyl", "dirac", "gap", "pseudogap", "nematic", "surface", "phonon", "valley", "moire", "cdw"]
         .filter(word => termText.includes(word)).length;
-      const score = Math.min(100, Math.round(18 + Math.min(articleRows.length, 12) * 4 + Math.min(rows.length, 8) * 4 + familyCount * 6 + Math.min(maxTc, 120) * 0.18 + keywordBoost * 5));
-      const topRows = [...rows].sort((a, b) => Number(b.transition_temperature_K || 0) - Number(a.transition_temperature_K || 0)).slice(0, 3);
+      const propertyBoost = state.topic === "2d" ? Math.min(maxGap, 6) * 4 : Math.min(maxTc, 120) * 0.18;
+      const score = Math.min(100, Math.round(18 + Math.min(articleRows.length, 12) * 4 + Math.min(rows.length, 8) * 4 + familyCount * 6 + propertyBoost + keywordBoost * 5));
+      const sortKey = row => state.topic === "2d" ? Number(row.bandgap_eV || row.transition_temperature_K || 0) : Number(row.transition_temperature_K || 0);
+      const topRows = [...rows].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, 3);
       const families = uniq(rows.map(row => familyName(row.family))).slice(0, 3);
       const tags = [
-        `${currentLang === "zh" ? "最高 Tc" : "Max Tc"} ${maxTc ? `${maxTc} K` : "-"}`,
+        state.topic === "2d"
+          ? `${currentLang === "zh" ? "最大带隙" : "Max gap"} ${maxGap ? `${maxGap} eV` : "-"}`
+          : `${currentLang === "zh" ? "最高 Tc" : "Max Tc"} ${maxTc ? `${maxTc} K` : "-"}`,
         `${articleRows.length} ${currentLang === "zh" ? "论文" : "papers"}`,
         ...(families.length ? families : [currentLang === "zh" ? "待建家族" : "family pending"])
       ];
       const materialLine = topRows.map(row => row.display_name || row.material).join(", ") || symbol;
       const summary = currentLang === "zh"
-        ? `${symbol} 的当前优势在 ${materialLine}；可优先围绕 ${families.join(" / ") || "新材料家族"} 做配方和 ARPES 可观测量筛选。`
-        : `${symbol}'s current lead is ${materialLine}; prioritize family-aware composition screening and ARPES observables.`;
+        ? `${symbol} 的当前优势在 ${materialLine}；可优先围绕 ${families.join(" / ") || "新材料家族"} 做${state.topic === "2d" ? "层数、相、带隙和 ARPES 可观测量" : "配方和 ARPES 可观测量"}筛选。`
+        : `${symbol}'s current lead is ${materialLine}; prioritize ${state.topic === "2d" ? "layer, phase, gap, and ARPES-observable" : "family-aware composition and ARPES-observable"} screening.`;
       const advice = currentLang === "zh"
-        ? `建议先比较 ${materialLine} 的 gap、Fermi surface、surface state 或 q-dependent 线索，再决定是否导入更多 ${symbol} 相关论文。`
-        : `First compare gap, Fermi-surface, surface-state, or q-dependent clues for ${materialLine}, then decide whether to import more ${symbol}-related papers.`;
+        ? `建议先比较 ${materialLine} 的 ${state.topic === "2d" ? "band gap、valley、moire、CDW 或层数依赖" : "gap、Fermi surface、surface state 或 q-dependent"} 线索，再决定是否导入更多 ${symbol} 相关论文。`
+        : `First compare ${state.topic === "2d" ? "band-gap, valley, moire, CDW, or layer-dependent" : "gap, Fermi-surface, surface-state, or q-dependent"} clues for ${materialLine}, then decide whether to import more ${symbol}-related papers.`;
       const nextStep = currentLang === "zh"
-        ? `坩埚建议：把 ${symbol} 与当前高频共现元素交叉筛选，优先找有真实图、可追 DOI、且 Tc/能隙/表面态信息完整的材料。`
-        : `Crucible says: cross-filter ${symbol} with frequent co-elements, prioritizing materials with real figures, traceable DOI links, and complete Tc/gap/surface-state context.`;
+        ? `坩埚建议：把 ${symbol} 与当前高频共现元素交叉筛选，优先找有真实图、可追 DOI、且${state.topic === "2d" ? "带隙/相/层数/界面信息" : "Tc/能隙/表面态信息"}完整的材料。`
+        : `Crucible says: cross-filter ${symbol} with frequent co-elements, prioritizing materials with real figures, traceable DOI links, and complete ${state.topic === "2d" ? "gap/phase/layer/interface" : "Tc/gap/surface-state"} context.`;
       return { score, tags, summary, advice, nextStep };
     }
 
@@ -10514,13 +10709,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function renderMetrics() {
       const tcs = state.filtered.map(r => r.transition_temperature_K).filter(v => typeof v === "number");
       const maxTc = tcs.length ? Math.max(...tcs) : null;
+      const gaps = state.filtered.map(r => Number(r.bandgap_eV)).filter(Number.isFinite);
+      const maxGap = gaps.length ? Math.max(...gaps) : null;
       const families = uniq(state.filtered.map(r => r.family));
       const elements = uniq(state.filtered.flatMap(r => r.elements));
+      const maxMetricValue = state.topic === "2d"
+        ? (maxGap === null ? "-" : `${maxGap} eV`)
+        : (maxTc === null ? "-" : `${maxTc} K`);
       metrics.innerHTML = [
         met(`${t("materials")}`, String(state.filtered.length)),
         met(`${t("families")}`, String(families.length)),
         met(`${t("elements")}`, String(elements.length)),
-        met(`${t("maxTc")}`, maxTc === null ? "-" : `${maxTc} K`)
+        met(`${activeTopicMeta().maxMetric}`, maxMetricValue)
       ].join("");
     }
 
@@ -11832,7 +12032,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           <td><strong>${esc(row.display_name || row.material)}</strong><br><span class="muted">${esc(row.material)}</span></td>
           <td>${chipsHtml(row.elements, "trusted")}</td>
           <td>${esc(row.synthesized_or_discovered)}</td>
-          <td>${esc(row.transition_temperature_K)}<br><span class="muted">${esc(row.tc_note || "")}</span></td>
+          <td>${esc(topicMeasureValue(row))}<br><span class="muted">${esc(row.tc_note || row.phase_note || "")}</span></td>
           <td>${listHtml(row.arpes_special_properties)}</td>
           <td>${listHtml(row.q_dependent_observables)}</td>
           <td>${esc(row.photon_arpes_notes)}</td>
@@ -11878,7 +12078,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         <div class="metric-grid">
           ${met(t("materialCol"), row.display_name || row.material)}
           ${met(t("familyCol"), familyName(row.family))}
-          ${met("Tc", `${row.transition_temperature_K} K`)}
+          ${met(activeTopicMeta().measureCol, topicMeasureValue(row))}
           ${met(t("statusCol"), row.verification_status)}
         </div>
         <div class="card">
@@ -13804,6 +14004,38 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return `dim ${dim + 1}`;
     }
 
+    function axisDatasetForHDF5Dim(dim, shape, axes) {
+      const length = Number(shape?.[dim]) || 0;
+      if (!length) return null;
+      return [axes.ev, axes.alpha, axes.beta].find(axis => axisLength(axis) === length) || null;
+    }
+
+    function readHDF5AxisValue(h5, axis, index) {
+      if (!h5 || !axis || index == null) return null;
+      try {
+        const node = getHDF5NodeByPath(h5, axis.path);
+        const contiguous = getContiguousDatasetInfo(node);
+        if (contiguous) {
+          const view = new DataView(contiguous.buffer);
+          return contiguous.reader.read(view, contiguous.dataOffset + index * contiguous.reader.size);
+        }
+        const source = node?.value;
+        const value = source?.[index];
+        return Number.isFinite(Number(value)) ? Number(value) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function readHDF5AxisRange(h5, axis) {
+      const length = axisLength(axis);
+      if (!length) return null;
+      const first = readHDF5AxisValue(h5, axis, 0);
+      const last = readHDF5AxisValue(h5, axis, length - 1);
+      if (!Number.isFinite(first) || !Number.isFinite(last)) return null;
+      return { first, last, length };
+    }
+
     function buildHDF5PreviewPlan(h5, datasetInfo, detection) {
       const shape = (datasetInfo?.shape || []).map(Number);
       if (!datasetInfo || shape.length < 2 || shape.length > 3) return null;
@@ -13847,7 +14079,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         fixedIndex,
         xLabel: labelForHDF5Dim(xDim, shape, axes),
         yLabel: labelForHDF5Dim(yDim, shape, axes),
-        fixedLabel: fixedDim == null ? "" : labelForHDF5Dim(fixedDim, shape, axes)
+        fixedLabel: fixedDim == null ? "" : labelForHDF5Dim(fixedDim, shape, axes),
+        xRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(xDim, shape, axes)),
+        yRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(yDim, shape, axes))
       };
     }
 
@@ -13884,6 +14118,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return index;
     }
 
+    function hdf5SourceValue(source, linearIndex, coords) {
+      if (!source) return NaN;
+      const flatValue = source[linearIndex];
+      if (flatValue != null && typeof flatValue !== "object") return Number(flatValue);
+      let cursor = source;
+      for (const coord of coords) {
+        if (cursor == null) return NaN;
+        cursor = cursor[coord];
+      }
+      return Number(cursor);
+    }
+
     function isRenderableHDF5Value(value) {
       return Number.isFinite(value) && Math.abs(value) < 1e38;
     }
@@ -13897,14 +14143,23 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const cols = Math.min(maxCols, xLen);
       const rows = Math.min(maxRows, yLen);
       const values = new Float32Array(cols * rows);
-      const contiguous = getContiguousDatasetInfo(plan.dataset);
       const totalSize = hdf5DatasetSize(plan.shape);
+      let contiguous = null;
       let source = null;
       let view = null;
-      if (contiguous) {
-        view = new DataView(contiguous.buffer);
-      } else {
-        if (totalSize > 1400000) throw new Error(t("hdf5PreviewLargeChunked"));
+      if (totalSize <= 1400000) {
+        try { source = plan.dataset.value; }
+        catch { source = null; }
+      }
+      if (!source) {
+        contiguous = getContiguousDatasetInfo(plan.dataset);
+        if (contiguous) view = new DataView(contiguous.buffer);
+        else {
+          if (totalSize > 1400000) throw new Error(t("hdf5PreviewLargeChunked"));
+          source = plan.dataset.value;
+        }
+      }
+      if (!source && !contiguous) {
         source = plan.dataset.value;
       }
       const finite = [];
@@ -13919,7 +14174,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const linearIndex = linearHDF5Index(plan.shape, coords);
           const value = contiguous
             ? contiguous.reader.read(view, contiguous.dataOffset + linearIndex * contiguous.reader.size)
-            : Number(source[linearIndex]);
+            : hdf5SourceValue(source, linearIndex, coords);
           const outIndex = row * cols + col;
           values[outIndex] = isRenderableHDF5Value(value) ? value : NaN;
           if (isRenderableHDF5Value(value)) {
@@ -13970,12 +14225,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function heatmapColor(value) {
       const stops = [
-        [0.00, [5, 12, 26]],
-        [0.18, [39, 68, 145]],
-        [0.38, [0, 188, 212]],
-        [0.58, [104, 211, 145]],
-        [0.78, [255, 209, 102]],
-        [1.00, [239, 68, 68]]
+        [0.00, [8, 8, 10]],
+        [0.16, [34, 12, 16]],
+        [0.34, [102, 14, 18]],
+        [0.56, [205, 34, 24]],
+        [0.76, [255, 132, 28]],
+        [0.91, [255, 220, 95]],
+        [1.00, [255, 255, 238]]
       ];
       const tValue = Math.max(0, Math.min(1, Number(value) || 0));
       for (let i = 1; i < stops.length; i++) {
@@ -13993,6 +14249,139 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return stops[stops.length - 1][1];
     }
 
+    function hdf5DisplayValue(value, sample) {
+      if (!Number.isFinite(value)) return NaN;
+      const range = Math.max(1e-12, sample.high - sample.low);
+      const normalized = Math.max(0, Math.min(1, (value - sample.low) / range));
+      return Math.pow(normalized, 0.62);
+    }
+
+    function buildHDF5DisplayMatrix(sample) {
+      const { cols, rows, values } = sample;
+      const normalized = new Float32Array(cols * rows);
+      for (let i = 0; i < values.length; i++) {
+        const value = hdf5DisplayValue(values[i], sample);
+        normalized[i] = Number.isFinite(value) ? value : NaN;
+      }
+      const smoothed = new Float32Array(cols * rows);
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          let sum = 0;
+          let weight = 0;
+          for (let dy = -1; dy <= 1; dy++) {
+            const yy = y + dy;
+            if (yy < 0 || yy >= rows) continue;
+            for (let dx = -1; dx <= 1; dx++) {
+              const xx = x + dx;
+              if (xx < 0 || xx >= cols) continue;
+              const value = normalized[yy * cols + xx];
+              if (!Number.isFinite(value)) continue;
+              const w = dx === 0 && dy === 0 ? 4 : (dx === 0 || dy === 0 ? 2 : 1);
+              sum += value * w;
+              weight += w;
+            }
+          }
+          smoothed[y * cols + x] = weight ? sum / weight : NaN;
+        }
+      }
+      return smoothed;
+    }
+
+    function normalizeProfile(profile) {
+      const finite = Array.from(profile).filter(Number.isFinite);
+      if (!finite.length) return profile;
+      finite.sort((a, b) => a - b);
+      const low = finite[Math.floor((finite.length - 1) * 0.02)];
+      const high = finite[Math.floor((finite.length - 1) * 0.98)];
+      const range = Math.max(1e-9, high - low);
+      for (let i = 0; i < profile.length; i++) {
+        profile[i] = Number.isFinite(profile[i])
+          ? Math.max(0, Math.min(1, (profile[i] - low) / range))
+          : 0;
+      }
+      return profile;
+    }
+
+    function hdf5Profiles(displayValues, cols, rows) {
+      const colProfile = new Float32Array(cols);
+      const rowProfile = new Float32Array(rows);
+      for (let y = 0; y < rows; y++) {
+        let rowSum = 0;
+        let rowCount = 0;
+        for (let x = 0; x < cols; x++) {
+          const value = displayValues[y * cols + x];
+          if (!Number.isFinite(value)) continue;
+          colProfile[x] += value;
+          rowSum += value;
+          rowCount++;
+        }
+        rowProfile[y] = rowCount ? rowSum / rowCount : 0;
+      }
+      for (let x = 0; x < cols; x++) colProfile[x] /= Math.max(1, rows);
+      return {
+        colProfile: normalizeProfile(colProfile),
+        rowProfile: normalizeProfile(rowProfile)
+      };
+    }
+
+    function hdf5LineProfiles(displayValues, cols, rows, crossCol, crossRow) {
+      const colProfile = new Float32Array(cols);
+      const rowProfile = new Float32Array(rows);
+      const y = Math.max(0, Math.min(rows - 1, crossRow));
+      const x = Math.max(0, Math.min(cols - 1, crossCol));
+      for (let col = 0; col < cols; col++) colProfile[col] = displayValues[y * cols + col];
+      for (let row = 0; row < rows; row++) rowProfile[row] = displayValues[row * cols + x];
+      return {
+        colProfile: normalizeProfile(colProfile),
+        rowProfile: normalizeProfile(rowProfile)
+      };
+    }
+
+    function profilePeakIndex(profile, fallback) {
+      const start = Math.floor(profile.length * 0.08);
+      const end = Math.max(start + 1, Math.ceil(profile.length * 0.92));
+      let best = fallback;
+      let bestValue = -Infinity;
+      for (let i = start; i < end; i++) {
+        if (Number.isFinite(profile[i]) && profile[i] > bestValue) {
+          best = i;
+          bestValue = profile[i];
+        }
+      }
+      return Number.isFinite(bestValue) ? best : fallback;
+    }
+
+    function hdf5AxisValue(range, index, length) {
+      if (!range || !Number.isFinite(range.first) || !Number.isFinite(range.last) || length <= 1) return index;
+      return range.first + (range.last - range.first) * (index / (length - 1));
+    }
+
+    function formatHDF5Tick(value) {
+      if (!Number.isFinite(value)) return "";
+      const abs = Math.abs(value);
+      if (abs >= 1000 || (abs > 0 && abs < 0.01)) return value.toExponential(1);
+      if (abs >= 100) return value.toFixed(0);
+      if (abs >= 10) return value.toFixed(1);
+      return value.toFixed(2).replace(/\.?0+$/, "");
+    }
+
+    function drawProfilePath(ctx, profile, rect, orientation = "top") {
+      ctx.beginPath();
+      for (let i = 0; i < profile.length; i++) {
+        const tPos = profile.length <= 1 ? 0 : i / (profile.length - 1);
+        const value = Math.max(0, Math.min(1, profile[i] || 0));
+        const x = orientation === "right"
+          ? rect.x + value * rect.w
+          : rect.x + tPos * rect.w;
+        const y = orientation === "right"
+          ? rect.y + tPos * rect.h
+          : rect.y + rect.h - value * rect.h;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
     function drawHDF5Heatmap(canvas, sample, plan, options = {}) {
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -14001,11 +14390,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const compact = !!options.compact;
       const margin = compact
         ? { top: 16, right: 10, bottom: 12, left: 10 }
-        : { top: 50, right: 88, bottom: 58, left: 72 };
+        : { top: 126, right: 150, bottom: 56, left: 72 };
       const plotW = W - margin.left - margin.right;
       const plotH = H - margin.top - margin.bottom;
-      const range = Math.max(1e-12, sample.high - sample.low);
-      ctx.fillStyle = "#070b10";
+      const displayValues = buildHDF5DisplayMatrix(sample);
+      ctx.fillStyle = compact ? "#070b10" : "#f8fafc";
       ctx.fillRect(0, 0, W, H);
 
       const imageCanvas = document.createElement("canvas");
@@ -14013,18 +14402,17 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       imageCanvas.height = sample.rows;
       const imageCtx = imageCanvas.getContext("2d");
       const image = imageCtx.createImageData(sample.cols, sample.rows);
-      for (let i = 0; i < sample.values.length; i++) {
-        const value = sample.values[i];
-        const normalized = Number.isFinite(value) ? (value - sample.low) / range : 0;
+      for (let i = 0; i < displayValues.length; i++) {
+        const normalized = displayValues[i];
         const [r, g, b] = heatmapColor(normalized);
         const offset = i * 4;
         image.data[offset] = r;
         image.data[offset + 1] = g;
         image.data[offset + 2] = b;
-        image.data[offset + 3] = Number.isFinite(value) ? 255 : 0;
+        image.data[offset + 3] = Number.isFinite(normalized) ? 255 : 0;
       }
       imageCtx.putImageData(image, 0, 0);
-      ctx.imageSmoothingEnabled = false;
+      ctx.imageSmoothingEnabled = true;
       ctx.drawImage(imageCanvas, margin.left, margin.top, plotW, plotH);
 
       if (compact) {
@@ -14037,57 +14425,86 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         return;
       }
 
-      ctx.strokeStyle = "#243244";
+      const integratedProfiles = hdf5Profiles(displayValues, sample.cols, sample.rows);
+      const crossCol = profilePeakIndex(integratedProfiles.colProfile, Math.floor(sample.cols * 0.5));
+      const crossRow = profilePeakIndex(integratedProfiles.rowProfile, Math.floor(sample.rows * 0.5));
+      const { colProfile, rowProfile } = hdf5LineProfiles(displayValues, sample.cols, sample.rows, crossCol, crossRow);
+      const crossX = margin.left + (sample.cols <= 1 ? 0 : crossCol / (sample.cols - 1)) * plotW;
+      const crossY = margin.top + (sample.rows <= 1 ? 0 : crossRow / (sample.rows - 1)) * plotH;
+      const topProfileRect = { x: margin.left, y: 50, w: plotW, h: 52 };
+      const rightProfileRect = { x: margin.left + plotW + 28, y: margin.top, w: 82, h: plotH };
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(topProfileRect.x, topProfileRect.y, topProfileRect.w, topProfileRect.h);
+      ctx.fillRect(rightProfileRect.x, rightProfileRect.y, rightProfileRect.w, rightProfileRect.h);
+      ctx.strokeStyle = "#111827";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(topProfileRect.x, topProfileRect.y, topProfileRect.w, topProfileRect.h);
+      ctx.strokeRect(rightProfileRect.x, rightProfileRect.y, rightProfileRect.w, rightProfileRect.h);
+
+      ctx.strokeStyle = "#d21f3c";
+      ctx.lineWidth = 2;
+      drawProfilePath(ctx, colProfile, topProfileRect, "top");
+      drawProfilePath(ctx, rowProfile, rightProfileRect, "right");
+
+      ctx.strokeStyle = "#111827";
       ctx.lineWidth = 1.5;
       ctx.strokeRect(margin.left, margin.top, plotW, plotH);
-      ctx.fillStyle = "#e5edf5";
+      ctx.fillStyle = "#111827";
       ctx.font = "bold 17px system-ui, sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText(plan.name || "HDF5", margin.left, 28);
-      ctx.fillStyle = "#9fb0c2";
+      ctx.textAlign = "center";
+      ctx.fillText(plan.name || "HDF5", margin.left + plotW / 2, 24);
+      ctx.fillStyle = "#4b5563";
       ctx.font = "12px system-ui, sans-serif";
-      ctx.fillText((options.filename || "") + (plan.fixedDim != null ? ` · ${t("hdf5PreviewSlice")}` : ""), margin.left, 45);
+      ctx.textAlign = "left";
+      ctx.fillText((options.filename || "") + (plan.fixedDim != null ? ` · ${t("hdf5PreviewSlice")}` : ""), margin.left, 42);
 
-      ctx.strokeStyle = "rgba(255,255,255,0.18)";
+      ctx.strokeStyle = "#111827";
       ctx.lineWidth = 1;
-      ctx.fillStyle = "#9fb0c2";
+      ctx.fillStyle = "#374151";
       ctx.font = "12px system-ui, sans-serif";
       ctx.textAlign = "center";
       for (let i = 0; i <= 4; i++) {
         const x = margin.left + plotW * i / 4;
+        const index = Math.round((sample.xLen - 1) * i / 4);
+        const label = formatHDF5Tick(hdf5AxisValue(plan.xRange, index, sample.xLen));
         ctx.beginPath(); ctx.moveTo(x, margin.top + plotH); ctx.lineTo(x, margin.top + plotH + 5); ctx.stroke();
-        ctx.fillText(String(Math.round(sample.xLen * i / 4)), x, H - 34);
+        ctx.beginPath(); ctx.moveTo(x, topProfileRect.y + topProfileRect.h); ctx.lineTo(x, topProfileRect.y + topProfileRect.h + 5); ctx.stroke();
+        ctx.fillText(label, x, H - 34);
+        ctx.fillText(label, x, topProfileRect.y - 8);
       }
       for (let i = 0; i <= 4; i++) {
         const y = margin.top + plotH * i / 4;
+        const index = Math.round((sample.yLen - 1) * i / 4);
+        const label = formatHDF5Tick(hdf5AxisValue(plan.yRange, index, sample.yLen));
         ctx.beginPath(); ctx.moveTo(margin.left - 5, y); ctx.lineTo(margin.left, y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(rightProfileRect.x, y); ctx.lineTo(rightProfileRect.x + rightProfileRect.w + 5, y); ctx.stroke();
         ctx.textAlign = "right";
-        ctx.fillText(String(Math.round(sample.yLen * i / 4)), margin.left - 10, y + 4);
+        ctx.fillText(label, margin.left - 10, y + 4);
+        ctx.textAlign = "left";
+        ctx.fillText(label, rightProfileRect.x + rightProfileRect.w + 10, y + 4);
       }
+
+      ctx.strokeStyle = "rgba(45, 212, 191, 0.92)";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(crossX, margin.top);
+      ctx.lineTo(crossX, margin.top + plotH);
+      ctx.moveTo(margin.left, crossY);
+      ctx.lineTo(margin.left + plotW, crossY);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(45, 212, 191, 0.96)";
+      ctx.beginPath();
+      ctx.arc(crossX, crossY, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.textAlign = "center";
       ctx.fillText(plan.xLabel, margin.left + plotW / 2, H - 12);
       ctx.save();
-      ctx.translate(20, margin.top + plotH / 2);
+      ctx.translate(22, margin.top + plotH / 2);
       ctx.rotate(-Math.PI / 2);
       ctx.fillText(plan.yLabel, 0, 0);
       ctx.restore();
-
-      const barX = margin.left + plotW + 26;
-      const barY = margin.top;
-      const barW = 16;
-      const barH = plotH;
-      for (let y = 0; y < barH; y++) {
-        const [r, g, b] = heatmapColor(1 - y / Math.max(1, barH - 1));
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
-        ctx.fillRect(barX, barY + y, barW, 1);
-      }
-      ctx.strokeStyle = "#243244";
-      ctx.strokeRect(barX, barY, barW, barH);
-      ctx.fillStyle = "#9fb0c2";
-      ctx.font = "11px system-ui, sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText(sample.high.toExponential(2), barX + 24, barY + 8);
-      ctx.fillText(sample.low.toExponential(2), barX + 24, barY + barH);
     }
 
     function updateHDF5PreviewInfo(plan, sample, filename) {
