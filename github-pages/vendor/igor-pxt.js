@@ -423,7 +423,7 @@
       }
     }
     const scale = qualityFilteredScale(values);
-    return {
+    const sampled = {
       values,
       cols,
       rows,
@@ -435,6 +435,9 @@
       yLen,
       byteSwapApplied: false
     };
+    sampled.readValue = coords => wave.data[fortranIndex(wave.shape, coords)];
+    sampled.sourceShape = wave.shape.slice();
+    return sampled;
   }
 
   function axisRange(wave, dimIndex) {
@@ -458,7 +461,8 @@
       xLabel: axisLabel(wave.dims?.[dims.xDim]),
       yLabel: dims.yDim === dims.xDim ? "Intensity" : axisLabel(wave.dims?.[dims.yDim]),
       xRange: axisRange(wave, dims.xDim),
-      yRange: dims.yDim === dims.xDim ? { first: 0, last: 1 } : axisRange(wave, dims.yDim)
+      yRange: dims.yDim === dims.xDim ? { first: 0, last: 1 } : axisRange(wave, dims.yDim),
+      fixedRange: dims.fixedDim == null ? null : axisRange(wave, dims.fixedDim)
     };
   }
 

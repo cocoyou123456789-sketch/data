@@ -5895,7 +5895,7 @@
         <div class="two-d-category-panel" id="twoDCategoryPanel" hidden>
           <div class="two-d-category-head">
             <h3 data-i18n="twoDCategoryTitle">常见二维材料对比</h3>
-            <span class="status" data-i18n="twoDCategoryHint">点击类别标签可快速筛选二维材料库。</span>
+            <span class="status" data-i18n="twoDCategoryHint">点击类别标签可筛选二维材料文献和材料库。</span>
           </div>
           <div class="two-d-category-table">
             <table>
@@ -5911,7 +5911,7 @@
               <tbody id="twoDCategoryBody"></tbody>
             </table>
           </div>
-          <p class="two-d-category-summary" id="twoDCategorySummary" data-i18n="twoDCategorySummary">总体来看，目前研究最广泛、应用前景最成熟的二维材料主要包括石墨烯、过渡金属二硫族化合物、六方氮化硼、黑磷和 MXene。它们在电子器件、光电子、催化、能源存储、柔性电子和量子信息等领域均展现出重要潜力。</p>
+          <p class="two-d-category-summary" id="twoDCategorySummary" data-i18n="twoDCategorySummary">总体来看，目前研究最广泛、应用前景最成熟的二维材料主要包括石墨烯、过渡金属二硫族化合物（如 MoS₂）、六方氮化硼、黑磷和 MXene。它们在电子器件、光电子、催化、能源存储、柔性电子和量子信息等领域均展现出重要潜力。</p>
         </div>
         <div class="toolbar">
           <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder">
@@ -6669,6 +6669,7 @@
         searchPlaceholder: "搜索：上海、北京、NSRRC、arXiv、Cu、Ni、铜氧化物、铁基超导...",
         twoDSearchPlaceholder: "搜索：graphene、MoS2、WSe2、黑磷、MXene、范德华、monolayer...",
         allFamilies: "全部家族",
+        allTwoDCategories: "全部二维材料类别",
         allRegions: "全部地区",
         allTypes: "全部类型",
         searchBtn: "🔍 搜索",
@@ -6680,13 +6681,13 @@
         superconductorBtn: "⚡ 超导 SUPERCONDUCTOR ⚡",
         twoDimensionalBtn: "▦ 二维材料 2D MATERIALS",
         twoDCategoryTitle: "常见二维材料对比",
-        twoDCategoryHint: "点击类别标签可快速筛选二维材料库。",
+        twoDCategoryHint: "点击类别标签可筛选二维材料文献和材料库。",
         twoDCategoryCol: "材料类别",
         twoDRepresentativeCol: "代表材料",
         twoDBandgapCol: "是否有带隙",
         twoDConductivityCol: "导电性",
         twoDApplicationCol: "典型应用",
-        twoDCategorySummary: "总体来看，目前研究最广泛、应用前景最成熟的二维材料主要包括石墨烯、过渡金属二硫族化合物（如 MoS2）、六方氮化硼、黑磷和 MXene。它们在电子器件、光电子、催化、能源存储、柔性电子和量子信息等领域均展现出重要潜力。",
+        twoDCategorySummary: "总体来看，目前研究最广泛、应用前景最成熟的二维材料主要包括石墨烯、过渡金属二硫族化合物（如 MoS₂）、六方氮化硼、黑磷和 MXene。它们在电子器件、光电子、催化、能源存储、柔性电子和量子信息等领域均展现出重要潜力。",
         searchFilterTitle: "🔍 搜索与筛选",
         periodicTitle: "元素周期表",
         periodicStatus: "点击元素筛选材料",
@@ -7214,6 +7215,7 @@
         searchPlaceholder: "Search: Shanghai, Beijing, NSRRC, arXiv, Cu, Ni, cuprate, iron-based...",
         twoDSearchPlaceholder: "Search: graphene, MoS2, WSe2, black phosphorus, MXene, van der Waals, monolayer...",
         allFamilies: "All Families",
+        allTwoDCategories: "All 2D material categories",
         allRegions: "All Regions",
         allTypes: "All Types",
         searchBtn: "🔍 Search",
@@ -7225,7 +7227,7 @@
         superconductorBtn: "⚡ SUPERCONDUCTOR ⚡",
         twoDimensionalBtn: "▦ 2D MATERIALS",
         twoDCategoryTitle: "Common 2D Materials Comparison",
-        twoDCategoryHint: "Click a category chip to filter the 2D materials library.",
+        twoDCategoryHint: "Click a category chip to filter 2D-material literature and the materials library.",
         twoDCategoryCol: "Category",
         twoDRepresentativeCol: "Representative materials",
         twoDBandgapCol: "Band gap",
@@ -7927,60 +7929,81 @@
 
     const twoDCategoryRows = [
       {
+        id: "graphene",
         family: "graphene",
+        families: ["graphene"],
         category: { zh: "石墨烯", en: "Graphene" },
         representatives: { zh: "石墨烯", en: "Graphene" },
         bandgap: { zh: "✗", en: "No" },
         conductivity: { zh: "极高", en: "Very high" },
-        applications: { zh: "导电、传感、储能", en: "Conductors, sensors, energy storage" }
+        applications: { zh: "导电、传感、储能", en: "Conductors, sensors, energy storage" },
+        searchTerms: ["graphene", "twisted bilayer graphene", "石墨烯"]
       },
       {
+        id: "tmds",
         family: "tmd-semiconductors",
+        families: ["tmd-semiconductors", "tmd-metallic"],
         category: { zh: "TMDs", en: "TMDs" },
-        representatives: { zh: "MoS2、WS2", en: "MoS2, WS2" },
+        representatives: { zh: "MoS₂、WS₂", en: "MoS₂, WS₂" },
         bandgap: { zh: "✓", en: "Yes" },
         conductivity: { zh: "中等", en: "Moderate" },
-        applications: { zh: "晶体管、光电子", en: "Transistors, optoelectronics" }
+        applications: { zh: "晶体管、光电子", en: "Transistors, optoelectronics" },
+        searchTerms: ["TMD", "TMDs", "transition metal dichalcogenide", "dichalcogenide", "MoS2", "MoS₂", "WS2", "WS₂", "WSe2", "MoTe2", "NbSe2", "TaS2"]
       },
       {
+        id: "hbn",
         family: "hbn-insulators",
+        families: ["hbn-insulators"],
         category: { zh: "h-BN", en: "h-BN" },
         representatives: { zh: "六方氮化硼", en: "Hexagonal boron nitride" },
         bandgap: { zh: "✓（宽禁带）", en: "Yes, wide gap" },
         conductivity: { zh: "很低（绝缘）", en: "Very low, insulating" },
-        applications: { zh: "衬底、绝缘层", en: "Substrates, insulating layers" }
+        applications: { zh: "衬底、绝缘层", en: "Substrates, insulating layers" },
+        searchTerms: ["h-BN", "hBN", "hexagonal boron nitride", "boron nitride", "六方氮化硼"]
       },
       {
+        id: "black-phosphorus",
         family: "black-phosphorus",
+        families: ["black-phosphorus"],
         category: { zh: "黑磷", en: "Black phosphorus" },
         representatives: { zh: "磷烯", en: "Phosphorene" },
         bandgap: { zh: "✓", en: "Yes" },
         conductivity: { zh: "高", en: "High" },
-        applications: { zh: "红外器件、场效应晶体管", en: "Infrared devices, field-effect transistors" }
+        applications: { zh: "红外器件、场效应晶体管", en: "Infrared devices, field-effect transistors" },
+        searchTerms: ["black phosphorus", "phosphorene", "黑磷", "磷烯"]
       },
       {
+        id: "mxene",
         family: "mxene",
+        families: ["mxene"],
         category: { zh: "MXene", en: "MXene" },
-        representatives: { zh: "Ti3C2Tx", en: "Ti3C2Tx" },
+        representatives: { zh: "Ti₃C₂Tₓ", en: "Ti₃C₂Tₓ" },
         bandgap: { zh: "多为无带隙", en: "Mostly gapless" },
         conductivity: { zh: "很高", en: "Very high" },
-        applications: { zh: "电池、超级电容器", en: "Batteries, supercapacitors" }
+        applications: { zh: "电池、超级电容器", en: "Batteries, supercapacitors" },
+        searchTerms: ["MXene", "Ti3C2Tx", "Ti₃C₂Tₓ", "Ti3C2", "MXenes"]
       },
       {
+        id: "xenes",
         family: "xenes",
+        families: ["xenes"],
         category: { zh: "Xenes", en: "Xenes" },
         representatives: { zh: "硅烯、锡烯等", en: "Silicene, stanene, etc." },
         bandgap: { zh: "多样", en: "Diverse" },
         conductivity: { zh: "多样", en: "Diverse" },
-        applications: { zh: "新型电子与量子器件", en: "Emerging electronics and quantum devices" }
+        applications: { zh: "新型电子与量子器件", en: "Emerging electronics and quantum devices" },
+        searchTerms: ["xene", "xenes", "silicene", "stanene", "硅烯", "锡烯"]
       },
       {
+        id: "cof-mof",
         family: "2d-frameworks",
+        families: ["2d-frameworks"],
         category: { zh: "COF/MOF", en: "COF/MOF" },
         representatives: { zh: "二维有机框架", en: "2D organic frameworks" },
         bandgap: { zh: "可设计", en: "Designable" },
         conductivity: { zh: "可调", en: "Tunable" },
-        applications: { zh: "分离、催化、储能", en: "Separation, catalysis, energy storage" }
+        applications: { zh: "分离、催化、储能", en: "Separation, catalysis, energy storage" },
+        searchTerms: ["COF", "MOF", "2D COF", "2D MOF", "covalent organic framework", "metal-organic framework", "二维有机框架"]
       }
     ];
 
@@ -9609,6 +9632,43 @@
       return value[currentLang] || value.en || value.zh || "";
     }
 
+    function twoDCategoryId(row) {
+      return row?.id || row?.family || "";
+    }
+
+    function twoDCategoryFamilies(row) {
+      return (Array.isArray(row?.families) && row.families.length)
+        ? row.families
+        : [row?.family].filter(Boolean);
+    }
+
+    function twoDCategoryById(id) {
+      return twoDCategoryRows.find(row => twoDCategoryId(row) === id) || null;
+    }
+
+    function twoDCategoryForFamily(familyId) {
+      return twoDCategoryRows.find(row => twoDCategoryFamilies(row).includes(familyId)) || null;
+    }
+
+    function rowMatchesFamilySelection(row, selection) {
+      if (!selection) return true;
+      if (state.topic === "2d") {
+        const category = twoDCategoryById(selection);
+        if (category) return twoDCategoryFamilies(category).includes(row.family);
+      }
+      return row.family === selection;
+    }
+
+    function topicFamilyOptions() {
+      if (state.topic === "2d") {
+        return twoDCategoryRows.map(row => ({
+          id: twoDCategoryId(row),
+          name: localizedCategoryValue(row, "category")
+        }));
+      }
+      return (state.db?.families || []).map(f => ({ id: f.id, name: f.name }));
+    }
+
     function renderTwoDCategoryPanel() {
       if (!twoDCategoryPanel || !twoDCategoryBody) return;
       const active = state.topic === "2d";
@@ -9616,16 +9676,16 @@
       if (!active) return;
       twoDCategoryBody.innerHTML = twoDCategoryRows.map(row => `
         <tr>
-          <td><button class="category-filter-btn" type="button" data-2d-family="${esc(row.family)}">${esc(localizedCategoryValue(row, "category"))}</button></td>
+          <td><button class="category-filter-btn" type="button" data-2d-category="${esc(twoDCategoryId(row))}">${esc(localizedCategoryValue(row, "category"))}</button></td>
           <td>${esc(localizedCategoryValue(row, "representatives"))}</td>
           <td>${esc(localizedCategoryValue(row, "bandgap"))}</td>
           <td>${esc(localizedCategoryValue(row, "conductivity"))}</td>
           <td>${esc(localizedCategoryValue(row, "applications"))}</td>
         </tr>
       `).join("");
-      twoDCategoryBody.querySelectorAll("[data-2d-family]").forEach(btn => {
+      twoDCategoryBody.querySelectorAll("[data-2d-category]").forEach(btn => {
         btn.addEventListener("click", () => {
-          familyFilter.value = btn.getAttribute("data-2d-family") || "";
+          familyFilter.value = btn.getAttribute("data-2d-category") || "";
           resetArticleListViewForFilter();
           applyFilters();
         });
@@ -9636,9 +9696,17 @@
     // ===== 渲染函数 =====
     function renderFamilyFilter() {
       const selected = familyFilter.value;
-      familyFilter.innerHTML = `<option value="">${esc(t("allFamilies"))}</option>` +
-        state.db.families.map(f => `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join("");
-      familyFilter.value = state.db.families.some(f => f.id === selected) ? selected : "";
+      const options = topicFamilyOptions();
+      const allLabel = state.topic === "2d" ? t("allTwoDCategories") : t("allFamilies");
+      familyFilter.innerHTML = `<option value="">${esc(allLabel)}</option>` +
+        options.map(f => `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join("");
+      if (options.some(f => f.id === selected)) {
+        familyFilter.value = selected;
+      } else if (state.topic === "2d" && twoDCategoryForFamily(selected)) {
+        familyFilter.value = twoDCategoryId(twoDCategoryForFamily(selected));
+      } else {
+        familyFilter.value = "";
+      }
     }
 
     function renderSourceFilters() {
@@ -9655,7 +9723,7 @@
     }
 
     function renderFamilyChips() {
-      familyChips.innerHTML = state.db.families
+      familyChips.innerHTML = topicFamilyOptions()
         .map(f => `<button data-family="${esc(f.id)}">${esc(f.name)}</button>`).join("");
       familyChips.querySelectorAll("button").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -10688,7 +10756,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
       state.filtered = (state.db?.materials || []).filter(row => {
         const elemOk = !state.selectedElement || (row.elements || []).includes(state.selectedElement);
-        const famOk = !family || row.family === family;
+        const famOk = rowMatchesFamilySelection(row, family);
         const text = [
           row.family, row.material, row.display_name, row.synthesized_or_discovered, row.tc_note,
           row.phase_note, row.bandgap_eV,
@@ -11980,13 +12048,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         ...(article.keywords || []), ...(article.techniques || []), ...(article.properties || [])
       ].join(" ").toLowerCase();
       if (term && !articleText.includes(term)) return false;
-      if (family) {
-        const matchesFamily = (article.materials || []).some(m => {
-          const dbMat = state.db.materials.find(r => r.material === m || r.display_name === m);
-          return dbMat && dbMat.family === family;
-        });
-        if (!matchesFamily) return false;
-      }
+      if (!articleMatchesFamilySelection(article, family)) return false;
       return true;
     }
 
@@ -12076,14 +12138,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
         // 搜索词匹配（搜索时只显示匹配的图表）
         if (term && !articleText.includes(term)) continue;
-        // 家族匹配
-        if (family) {
-          const matchesFamily = (article.materials || []).some(m => {
-            const dbMat = state.db.materials.find(r => r.material === m || r.display_name === m);
-            return dbMat && dbMat.family === family;
-          });
-          if (!matchesFamily) continue;
-        }
+        // 家族 / 二维材料分类匹配
+        if (!articleMatchesFamilySelection(article, family)) continue;
 
         for (const fig of article.figures) {
           const imageUrl = resolveFigureImage(fig, article);
@@ -12512,8 +12568,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return palette[Math.abs(hash) % palette.length];
     }
 
+    const SUBSCRIPT_DIGITS = {
+      "₀": "0", "₁": "1", "₂": "2", "₃": "3", "₄": "4",
+      "₅": "5", "₆": "6", "₇": "7", "₈": "8", "₉": "9",
+      "ₓ": "x"
+    };
+
+    function normalizeFormulaText(value) {
+      return String(value || "").replace(/[₀₁₂₃₄₅₆₇₈₉ₓ]/g, ch => SUBSCRIPT_DIGITS[ch] || ch);
+    }
+
     function normalizeMaterialName(value) {
-      return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      return normalizeFormulaText(value).toLowerCase().replace(/[^a-z0-9]/g, "");
     }
 
     function materialAliases(row) {
@@ -12531,6 +12597,39 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (!(row.elements || []).includes(element)) return false;
         return [...materialAliases(row)].some(alias => articleMaterials.has(alias));
       });
+    }
+
+    function articleMatchesFamilySelection(article, selection) {
+      if (!selection) return true;
+      const articleMaterials = new Set((article.materials || []).map(normalizeMaterialName));
+      const normalizedArticleText = normalizeMaterialName(articleSearchText(article));
+      const category = state.topic === "2d" ? twoDCategoryById(selection) : null;
+
+      if (category) {
+        const categoryTerms = [
+          category.category?.zh,
+          category.category?.en,
+          category.representatives?.zh,
+          category.representatives?.en,
+          ...(category.searchTerms || [])
+        ]
+          .flatMap(value => String(value || "").split(/[、,，;；/|]/))
+          .map(value => normalizeMaterialName(value.trim()))
+          .filter(Boolean);
+        if (categoryTerms.some(term => normalizedArticleText.includes(term))) return true;
+      }
+
+      return (state.db?.materials || []).some(row => {
+        if (!rowMatchesFamilySelection(row, selection)) return false;
+        return [...materialAliases(row)].some(alias => articleMaterials.has(alias));
+      });
+    }
+
+    function articleTwoDCategoryLabels(article) {
+      if (state.topic !== "2d") return [];
+      return twoDCategoryRows
+        .filter(row => articleMatchesFamilySelection(article, twoDCategoryId(row)))
+        .map(row => localizedCategoryValue(row, "category"));
     }
 
     // ===== 文章数据渲染 =====
@@ -12572,6 +12671,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           <div class="meta">📅 ${esc(a.year)} · ${esc(a.source)} · ${esc(a.verification_status)}</div>
           <div class="meta">🔬 ${t("techniqueLabel")}: ${esc((a.techniques || []).join(", "))}</div>
           <div class="meta">🧪 ${t("materialLabel")}: ${esc((a.materials || []).join(", "))} | ${t("elementLabel")}: ${esc((a.elements || []).join(", "))}</div>
+          ${state.topic === "2d" ? `<div class="meta">▦ ${esc(t("twoDCategoryCol"))}: ${esc(articleTwoDCategoryLabels(a).join(", ") || "-")}</div>` : ""}
           <div class="meta">🏷️ ${t("keywordLabel")}: ${esc((a.keywords || []).join(", "))}</div>
           ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noreferrer" class="chip good" style="font-size:11px;">${t("viewPaperChip")}</a>` : ""}
         </div>
@@ -12582,10 +12682,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!articlesLoaded) return [];
       const term = (searchInput.value || "").trim().toLowerCase();
       const selectedElement = state.selectedElement || "";
+      const family = familyFilter.value;
       return state.articles.filter(article => {
         const termOk = !term || articleSearchText(article).includes(term);
         const elementOk = !selectedElement || articleMatchesElement(article, selectedElement);
-        return termOk && elementOk;
+        const familyOk = articleMatchesFamilySelection(article, family);
+        return termOk && elementOk && familyOk;
       });
     }
 
@@ -13115,13 +13217,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           ...(article.techniques || [])
         ].join(" ").toLowerCase();
         if (term && !articleText.includes(term)) continue;
-        if (family) {
-          const matchesFamily = (article.materials || []).some(material => {
-            const dbMat = state.db?.materials?.find(row => row.material === material || row.display_name === material);
-            return dbMat && dbMat.family === family;
-          });
-          if (!matchesFamily) continue;
-        }
+        if (!articleMatchesFamilySelection(article, family)) continue;
         for (const fig of article.figures || []) {
           const imageUrl = resolveFigureImage(fig, article);
           if (!imageUrl) continue;
@@ -13625,7 +13721,25 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       Nickelates: "镍基",
       "Transition-metal dichalcogenides": "过渡金属硫族化物",
       "Heavy fermion": "重费米子",
-      "Hydrides / high pressure": "高压氢化物"
+      "Hydrides / high pressure": "高压氢化物",
+      graphene: "石墨烯",
+      "Graphene / carbon layers": "石墨烯",
+      "tmd-semiconductors": "TMDs",
+      "tmd-metallic": "TMDs",
+      "TMD semiconductors": "TMDs",
+      "Metallic / CDW TMDs": "TMDs",
+      "hbn-insulators": "h-BN",
+      "2D insulators / h-BN": "h-BN",
+      "black-phosphorus": "黑磷",
+      "Black phosphorus / phosphorene": "黑磷",
+      mxene: "MXene",
+      MXenes: "MXene",
+      xenes: "Xenes",
+      Xenes: "Xenes",
+      "2d-frameworks": "COF/MOF",
+      "2D COF/MOF frameworks": "COF/MOF",
+      "2d-magnets": "二维磁体",
+      "2D magnets": "二维磁体"
     };
 
     const ZH_ARPES_TERMS = {
@@ -14621,7 +14735,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         yLabel: labelForHDF5Dim(yDim, shape, axes, ["energy", "angle", "momentum", "axis"]),
         fixedLabel: fixedDim == null ? "" : labelForHDF5Dim(fixedDim, shape, axes, ["angle", "momentum", "temperature", "axis"]),
         xRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(xDim, shape, axes, ["angle", "momentum", "energy", "axis"])),
-        yRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(yDim, shape, axes, ["energy", "angle", "momentum", "axis"]))
+        yRange: readHDF5AxisRange(h5, axisDatasetForHDF5Dim(yDim, shape, axes, ["energy", "angle", "momentum", "axis"])),
+        fixedRange: fixedDim == null ? null : readHDF5AxisRange(h5, axisDatasetForHDF5Dim(fixedDim, shape, axes, ["energy", "angle", "momentum", "temperature", "axis"]))
       };
     }
 
@@ -14719,14 +14834,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function sampleHDF5Dataset(plan, options = {}) {
       const maxCols = options.maxCols || 560;
       const maxRows = options.maxRows || 340;
-      const xLen = Number(plan.shape[plan.xDim]) || 0;
-      const yLen = Number(plan.shape[plan.yDim]) || 0;
+      const xDim = options.xDim ?? plan.xDim;
+      const yDim = options.yDim ?? plan.yDim;
+      const xLen = Number(plan.shape[xDim]) || 0;
+      const yLen = Number(plan.shape[yDim]) || 0;
       if (!xLen || !yLen) throw new Error(t("hdf5PreviewUnavailable"));
       const cols = Math.min(maxCols, xLen);
       const rows = Math.min(maxRows, yLen);
       const totalSize = hdf5DatasetSize(plan.shape);
       const coords = new Array(plan.shape.length).fill(0);
       if (plan.fixedDim != null) coords[plan.fixedDim] = plan.fixedIndex;
+      if (options.fixedCoords) {
+        Object.entries(options.fixedCoords).forEach(([dim, value]) => {
+          coords[Number(dim)] = hdf5ClampIndex(value, plan.shape[Number(dim)] || 1);
+        });
+      }
 
       const collectValues = (readerConfig) => {
         const values = new Float32Array(cols * rows);
@@ -14738,10 +14860,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const read = readerConfig.read || null;
         for (let row = 0; row < rows; row++) {
           const srcY = Math.min(yLen - 1, Math.floor(row * yLen / rows));
-          localCoords[plan.yDim] = srcY;
+          localCoords[yDim] = srcY;
           for (let col = 0; col < cols; col++) {
             const srcX = Math.min(xLen - 1, Math.floor(col * xLen / cols));
-            localCoords[plan.xDim] = srcX;
+            localCoords[xDim] = srcX;
             const linearIndex = linearHDF5Index(plan.shape, localCoords);
             const value = contiguous
               ? read(view, contiguous.dataOffset + linearIndex * contiguous.reader.size)
@@ -14756,6 +14878,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
       const contiguous = getContiguousDatasetInfo(plan.dataset);
       let collected = null;
+      let valueReader = null;
       if (contiguous) {
         const view = new DataView(contiguous.buffer);
         const normal = collectValues({ contiguous, view, read: contiguous.reader.read });
@@ -14765,6 +14888,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         collected = swapped && hdf5RawSampleQuality(swapped.finite, swapped.values.length) > hdf5RawSampleQuality(normal.finite, normal.values.length) + 28
           ? swapped
           : normal;
+        const read = collected.byteSwapApplied && contiguous.reader.swappedRead ? contiguous.reader.swappedRead : contiguous.reader.read;
+        valueReader = localCoords => {
+          const linearIndex = linearHDF5Index(plan.shape, localCoords);
+          return read(view, contiguous.dataOffset + linearIndex * contiguous.reader.size);
+        };
       } else {
         let source = null;
         if (totalSize > 1400000) throw new Error(t("hdf5PreviewLargeChunked"));
@@ -14774,6 +14902,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           source = plan.dataset.value;
         }
         collected = collectValues({ source });
+        valueReader = localCoords => {
+          const linearIndex = linearHDF5Index(plan.shape, localCoords);
+          return hdf5SourceValue(source, linearIndex, localCoords);
+        };
       }
       const values = collected.values;
       const finite = collected.finite;
@@ -14805,7 +14937,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
       const low = scaleValues[Math.floor((scaleValues.length - 1) * 0.02)];
       const high = scaleValues[Math.floor((scaleValues.length - 1) * 0.98)];
-      return {
+      const sampled = {
         values,
         cols,
         rows,
@@ -14817,6 +14949,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         yLen,
         byteSwapApplied: collected.byteSwapApplied
       };
+      sampled.readValue = localCoords => {
+        const value = valueReader(localCoords.map((coord, dim) => hdf5ClampIndex(coord, plan.shape[dim] || 1)));
+        return isRenderableHDF5Value(value) ? Number(value) : NaN;
+      };
+      sampled.sourceShape = plan.shape.slice();
+      sampled.sourceXDim = xDim;
+      sampled.sourceYDim = yDim;
+      return sampled;
     }
 
     function heatmapColor(value) {
@@ -14994,6 +15134,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return flipY ? length - 1 - index : index;
     }
 
+    function hdf5SourceToDisplayIndex(sourceIndex, length, flipAxis = false) {
+      const index = hdf5ClampIndex(sourceIndex, length);
+      return flipAxis ? Math.max(0, length - 1) - index : index;
+    }
+
     function hdf5AxisValueForDisplay(range, displayIndex, length, flipY) {
       if (range?.forceEnergyAscending) return hdf5EnergyAxisDisplayValue(range, displayIndex, length);
       return hdf5AxisValue(range, hdf5DisplayToSourceY(displayIndex, length, flipY), length);
@@ -15042,8 +15187,270 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.stroke();
     }
 
+    function hdf5PlanDimLabel(plan, dim) {
+      if (dim === plan.xDim) return plan.xLabel || `dim ${dim + 1}`;
+      if (dim === plan.yDim) return plan.yLabel || `dim ${dim + 1}`;
+      if (dim === plan.fixedDim) return plan.fixedLabel || `dim ${dim + 1}`;
+      return `dim ${dim + 1}`;
+    }
+
+    function hdf5PlanDimRange(plan, dim) {
+      if (dim === plan.xDim) return plan.xRange;
+      if (dim === plan.yDim) return plan.yRange;
+      if (dim === plan.fixedDim) return plan.fixedRange;
+      return null;
+    }
+
+    function hdf5PanelPlan(plan, xDim, yDim, nameSuffix = "") {
+      return {
+        ...plan,
+        name: nameSuffix ? `${plan.name || "dataset"} ${nameSuffix}` : plan.name,
+        xDim,
+        yDim,
+        xLabel: hdf5PlanDimLabel(plan, xDim),
+        yLabel: hdf5PlanDimLabel(plan, yDim),
+        xRange: hdf5PlanDimRange(plan, xDim),
+        yRange: hdf5PlanDimRange(plan, yDim)
+      };
+    }
+
+    function hdf5SampleFromReader(sourceSample, plan, xDim, yDim, fixedCoords = {}, options = {}) {
+      if (!sourceSample?.readValue) return null;
+      const shape = (plan.shape || []).map(Number);
+      const xLen = Number(shape[xDim]) || 0;
+      const yLen = Number(shape[yDim]) || 0;
+      if (!xLen || !yLen) return null;
+      const cols = Math.min(options.maxCols || sourceSample.cols || 420, xLen);
+      const rows = Math.min(options.maxRows || sourceSample.rows || 280, yLen);
+      const coords = new Array(shape.length).fill(0);
+      Object.entries(fixedCoords || {}).forEach(([dim, value]) => {
+        coords[Number(dim)] = hdf5ClampIndex(value, shape[Number(dim)] || 1);
+      });
+      const values = new Float32Array(cols * rows);
+      for (let row = 0; row < rows; row++) {
+        const srcY = Math.min(yLen - 1, Math.floor(row * yLen / rows));
+        coords[yDim] = srcY;
+        for (let col = 0; col < cols; col++) {
+          const srcX = Math.min(xLen - 1, Math.floor(col * xLen / cols));
+          coords[xDim] = srcX;
+          const value = sourceSample.readValue(coords);
+          values[row * cols + col] = isRenderableHDF5Value(value) ? Number(value) : NaN;
+        }
+      }
+      return {
+        values,
+        cols,
+        rows,
+        min: sourceSample.min,
+        max: sourceSample.max,
+        low: options.low ?? sourceSample.low,
+        high: options.high ?? sourceSample.high,
+        xLen,
+        yLen,
+        byteSwapApplied: sourceSample.byteSwapApplied,
+        readValue: sourceSample.readValue,
+        sourceShape: shape,
+        sourceXDim: xDim,
+        sourceYDim: yDim
+      };
+    }
+
+    function drawHDF5PanelImage(ctx, panelSample, panelPlan, rect) {
+      const { values } = hdf5OrientedDisplayValues(panelSample, panelPlan);
+      const imageCanvas = document.createElement("canvas");
+      imageCanvas.width = panelSample.cols;
+      imageCanvas.height = panelSample.rows;
+      const imageCtx = imageCanvas.getContext("2d");
+      const image = imageCtx.createImageData(panelSample.cols, panelSample.rows);
+      for (let i = 0; i < values.length; i++) {
+        const [r, g, b] = heatmapColor(values[i]);
+        const offset = i * 4;
+        image.data[offset] = r;
+        image.data[offset + 1] = g;
+        image.data[offset + 2] = b;
+        image.data[offset + 3] = Number.isFinite(values[i]) ? 255 : 0;
+      }
+      imageCtx.putImageData(image, 0, 0);
+      ctx.drawImage(imageCanvas, rect.x, rect.y, rect.w, rect.h);
+      ctx.strokeStyle = "#111827";
+      ctx.lineWidth = 1.4;
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      return values;
+    }
+
+    function drawHDF5PanelTicks(ctx, rect, sample, panelPlan, options = {}) {
+      const xTicks = options.xTicks ?? true;
+      const yTicks = options.yTicks ?? true;
+      ctx.strokeStyle = "#111827";
+      ctx.fillStyle = "#374151";
+      ctx.font = "11px system-ui, sans-serif";
+      if (xTicks) {
+        ctx.textAlign = "center";
+        for (let i = 0; i <= 2; i++) {
+          const x = rect.x + rect.w * i / 2;
+          const index = Math.round((sample.xLen - 1) * i / 2);
+          const label = formatHDF5Tick(hdf5AxisValue(panelPlan.xRange, index, sample.xLen));
+          ctx.beginPath(); ctx.moveTo(x, rect.y + rect.h); ctx.lineTo(x, rect.y + rect.h + 4); ctx.stroke();
+          ctx.fillText(label, x, rect.y + rect.h + 15);
+        }
+      }
+      if (yTicks) {
+        ctx.textAlign = options.yRight ? "left" : "right";
+        for (let i = 0; i <= 2; i++) {
+          const y = rect.y + rect.h * i / 2;
+          const displayIndex = Math.round((sample.yLen - 1) * i / 2);
+          const flipY = hdf5IsEnergyAxisLabel(panelPlan.yLabel) ? hdf5EnergyAxisNeedsFlip(panelPlan.yRange) : hdf5ShouldFlipY(panelPlan);
+          const label = formatHDF5Tick(hdf5AxisValueForDisplay(panelPlan.yRange, displayIndex, sample.yLen, flipY));
+          const tickX = options.yRight ? rect.x + rect.w : rect.x;
+          ctx.beginPath(); ctx.moveTo(tickX, y); ctx.lineTo(tickX + (options.yRight ? 4 : -4), y); ctx.stroke();
+          ctx.fillText(label, tickX + (options.yRight ? 8 : -8), y + 4);
+        }
+      }
+    }
+
+    function drawHDF5SlicerHeatmap(canvas, sourceSample, plan, options = {}) {
+      const fixedDim = plan.fixedDim;
+      if (fixedDim == null || !sourceSample?.readValue) return false;
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width;
+      const H = canvas.height;
+      const shape = (plan.shape || []).map(Number);
+      const baseSelection = options.selection || {};
+      const fixed = hdf5ClampIndex(baseSelection.fixed ?? plan.fixedIndex ?? Math.floor((shape[fixedDim] || 1) / 2), shape[fixedDim] || 1);
+      const initialMain = hdf5SampleFromReader(sourceSample, plan, plan.xDim, plan.yDim, { [fixedDim]: fixed }, {
+        maxCols: 430,
+        maxRows: 285,
+        low: sourceSample.low,
+        high: sourceSample.high
+      });
+      if (!initialMain) return false;
+      const mainPanelPlan = hdf5PanelPlan(plan, plan.xDim, plan.yDim);
+      const mainOriented = hdf5OrientedDisplayValues(initialMain, mainPanelPlan);
+      const defaultProfiles = hdf5Profiles(mainOriented.values, initialMain.cols, initialMain.rows);
+      const col = hdf5ClampIndex(baseSelection.col ?? profilePeakIndex(defaultProfiles.colProfile, Math.floor(initialMain.cols / 2)), initialMain.cols);
+      const row = hdf5ClampIndex(baseSelection.row ?? profilePeakIndex(defaultProfiles.rowProfile, Math.floor(initialMain.rows / 2)), initialMain.rows);
+      const sourceX = hdf5ClampIndex((col / Math.max(1, initialMain.cols - 1)) * (initialMain.xLen - 1), initialMain.xLen);
+      const yDisplayIndex = hdf5ClampIndex((row / Math.max(1, initialMain.rows - 1)) * (initialMain.yLen - 1), initialMain.yLen);
+      const sourceY = hdf5DisplayToSourceY(yDisplayIndex, initialMain.yLen, mainOriented.flipY);
+      const topSample = hdf5SampleFromReader(sourceSample, plan, plan.xDim, fixedDim, { [plan.yDim]: sourceY }, {
+        maxCols: 430,
+        maxRows: 112,
+        low: sourceSample.low,
+        high: sourceSample.high
+      });
+      const rightSample = hdf5SampleFromReader(sourceSample, plan, fixedDim, plan.yDim, { [plan.xDim]: sourceX }, {
+        maxCols: 285,
+        maxRows: 285,
+        low: sourceSample.low,
+        high: sourceSample.high
+      });
+      if (!topSample || !rightSample) return false;
+
+      const topPlan = hdf5PanelPlan(plan, plan.xDim, fixedDim, "x-z");
+      const rightPlan = hdf5PanelPlan(plan, fixedDim, plan.yDim, "z-y");
+      const topOriented = hdf5OrientedDisplayValues(topSample, topPlan);
+      const rightOriented = hdf5OrientedDisplayValues(rightSample, rightPlan);
+      const topProfileRect = { x: 72, y: 42, w: 430, h: 42 };
+      const topRect = { x: 72, y: 92, w: 430, h: 106 };
+      const mainRect = { x: 72, y: 222, w: 430, h: 282 };
+      const rightRect = { x: 520, y: 222, w: 285, h: 282 };
+      const rightProfileRect = { x: 823, y: 222, w: 76, h: 282 };
+      const fixedFlipTop = topOriented.flipY;
+      const fixedDisplayTop = hdf5SourceToDisplayIndex(fixed, topSample.yLen, fixedFlipTop);
+      const fixedColRight = hdf5ClampIndex((fixed / Math.max(1, rightSample.xLen - 1)) * (rightSample.cols - 1), rightSample.cols);
+      const fixedRowTop = hdf5ClampIndex((fixedDisplayTop / Math.max(1, topSample.yLen - 1)) * (topSample.rows - 1), topSample.rows);
+      const mainX = mainRect.x + (initialMain.cols <= 1 ? 0 : col / (initialMain.cols - 1)) * mainRect.w;
+      const mainY = mainRect.y + (initialMain.rows <= 1 ? 0 : row / (initialMain.rows - 1)) * mainRect.h;
+      const topX = topRect.x + (topSample.cols <= 1 ? 0 : col / (initialMain.cols - 1)) * topRect.w;
+      const topY = topRect.y + (topSample.rows <= 1 ? 0 : fixedRowTop / (topSample.rows - 1)) * topRect.h;
+      const rightX = rightRect.x + (rightSample.cols <= 1 ? 0 : fixedColRight / (rightSample.cols - 1)) * rightRect.w;
+      const rightY = rightRect.y + (rightSample.rows <= 1 ? 0 : row / (initialMain.rows - 1)) * rightRect.h;
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.fillRect(0, 0, W, H);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      const topValues = drawHDF5PanelImage(ctx, topSample, topPlan, topRect);
+      const mainValues = drawHDF5PanelImage(ctx, initialMain, mainPanelPlan, mainRect);
+      const rightValues = drawHDF5PanelImage(ctx, rightSample, rightPlan, rightRect);
+      const profiles = hdf5LineProfiles(mainValues, initialMain.cols, initialMain.rows, col, row);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(topProfileRect.x, topProfileRect.y, topProfileRect.w, topProfileRect.h);
+      ctx.fillRect(rightProfileRect.x, rightProfileRect.y, rightProfileRect.w, rightProfileRect.h);
+      ctx.strokeStyle = "#111827";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(topProfileRect.x, topProfileRect.y, topProfileRect.w, topProfileRect.h);
+      ctx.strokeRect(rightProfileRect.x, rightProfileRect.y, rightProfileRect.w, rightProfileRect.h);
+      ctx.strokeStyle = "#d21f3c";
+      ctx.lineWidth = 2;
+      drawProfilePath(ctx, profiles.colProfile, topProfileRect, "top");
+      drawProfilePath(ctx, profiles.rowProfile, rightProfileRect, "right");
+
+      ctx.strokeStyle = "rgba(45, 212, 191, 0.95)";
+      ctx.lineWidth = 1.4;
+      [[mainRect, mainX, mainY], [topRect, topX, topY], [rightRect, rightX, rightY]].forEach(([rect, x, y]) => {
+        ctx.beginPath();
+        ctx.moveTo(x, rect.y);
+        ctx.lineTo(x, rect.y + rect.h);
+        ctx.moveTo(rect.x, y);
+        ctx.lineTo(rect.x + rect.w, y);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(45, 212, 191, 0.96)";
+        ctx.beginPath();
+        ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      drawHDF5PanelTicks(ctx, mainRect, initialMain, mainPanelPlan, { xTicks: true, yTicks: true });
+      drawHDF5PanelTicks(ctx, topRect, topSample, topPlan, { xTicks: false, yTicks: true });
+      drawHDF5PanelTicks(ctx, rightRect, rightSample, rightPlan, { xTicks: true, yTicks: false });
+      ctx.fillStyle = "#111827";
+      ctx.font = "bold 16px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(plan.name || "ImageTool", mainRect.x + mainRect.w / 2, 23);
+      ctx.fillStyle = "#4b5563";
+      ctx.font = "12px system-ui, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(`${options.filename || ""} · erlab-style slicer`, mainRect.x, 38);
+      ctx.textAlign = "center";
+      ctx.fillText(mainPanelPlan.xLabel, mainRect.x + mainRect.w / 2, H - 14);
+      ctx.fillText(topPlan.xLabel, topRect.x + topRect.w / 2, topRect.y - 8);
+      ctx.fillText(rightPlan.xLabel, rightRect.x + rightRect.w / 2, rightRect.y + rightRect.h + 32);
+      ctx.save();
+      ctx.translate(24, mainRect.y + mainRect.h / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText(mainPanelPlan.yLabel, 0, 0);
+      ctx.restore();
+      ctx.save();
+      ctx.translate(rightRect.x + rightRect.w + 22, rightRect.y + rightRect.h / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText(rightPlan.yLabel, 0, 0);
+      ctx.restore();
+
+      canvas.__hdf5PreviewState = {
+        sample: initialMain,
+        plan,
+        filename: options.filename || "",
+        selection: { col, row, fixed },
+        layout: {
+          erlabStyle: true,
+          mainRect,
+          topRect,
+          rightRect,
+          topProfileRect,
+          rightProfileRect,
+          fixedDim,
+          fixedLen: shape[fixedDim] || 1,
+          fixedFlipTop,
+          flipY: mainOriented.flipY
+        }
+      };
+      return true;
+    }
+
     function drawHDF5Heatmap(canvas, sample, plan, options = {}) {
       if (!canvas) return;
+      if (!options.compact && drawHDF5SlicerHeatmap(canvas, sample, plan, options)) return;
       const ctx = canvas.getContext("2d");
       const W = canvas.width;
       const H = canvas.height;
@@ -15189,6 +15596,41 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const rect = canvas.getBoundingClientRect();
       const x = (event.clientX - rect.left) * (canvas.width / Math.max(1, rect.width));
       const y = (event.clientY - rect.top) * (canvas.height / Math.max(1, rect.height));
+      if (state.layout.erlabStyle) {
+        const { mainRect, topRect, rightRect, fixedLen, fixedFlipTop } = state.layout;
+        const current = state.selection || {};
+        const inRect = area => area && x >= area.x && x <= area.x + area.w && y >= area.y && y <= area.y + area.h;
+        const mapX = (area, len) => hdf5ClampIndex(((x - area.x) / Math.max(1, area.w)) * (len - 1), len);
+        const mapY = (area, len) => hdf5ClampIndex(((y - area.y) / Math.max(1, area.h)) * (len - 1), len);
+        const baseSelection = {
+          col: hdf5ClampIndex(current.col ?? Math.floor(state.sample.cols / 2), state.sample.cols),
+          row: hdf5ClampIndex(current.row ?? Math.floor(state.sample.rows / 2), state.sample.rows),
+          fixed: hdf5ClampIndex(current.fixed ?? state.plan.fixedIndex ?? Math.floor((fixedLen || 1) / 2), fixedLen || 1)
+        };
+        if (inRect(mainRect) || (allowOutside && mainRect)) {
+          return {
+            ...baseSelection,
+            col: mapX(mainRect, state.sample.cols),
+            row: mapY(mainRect, state.sample.rows)
+          };
+        }
+        if (inRect(topRect)) {
+          const fixedDisplay = mapY(topRect, fixedLen || 1);
+          return {
+            ...baseSelection,
+            col: mapX(topRect, state.sample.cols),
+            fixed: hdf5SourceToDisplayIndex(fixedDisplay, fixedLen || 1, fixedFlipTop)
+          };
+        }
+        if (inRect(rightRect)) {
+          return {
+            ...baseSelection,
+            row: mapY(rightRect, state.sample.rows),
+            fixed: mapX(rightRect, fixedLen || 1)
+          };
+        }
+        return null;
+      }
       const { margin, plotW, plotH } = state.layout;
       const outside = x < margin.left || x > margin.left + plotW || y < margin.top || y > margin.top + plotH;
       if (outside && !allowOutside) return null;
@@ -15207,7 +15649,26 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const yValue = hdf5IsEnergyYAxis(state.plan)
         ? hdf5EnergyAxisDisplayValue(state.plan.yRange, yDisplayIndex, sample.yLen)
         : hdf5AxisValueForDisplay(state.plan.yRange, yDisplayIndex, sample.yLen, state.layout?.flipY);
-      return `x=${formatHDF5Tick(xValue)} · y=${formatHDF5Tick(yValue)}`;
+      const parts = [`x=${formatHDF5Tick(xValue)}`, `y=${formatHDF5Tick(yValue)}`];
+      if (state.plan.fixedDim != null) {
+        const fixedLen = Number(state.plan.shape?.[state.plan.fixedDim]) || state.layout?.fixedLen || 1;
+        const fixed = hdf5ClampIndex(state.selection.fixed ?? state.plan.fixedIndex ?? Math.floor(fixedLen / 2), fixedLen);
+        const fixedLabel = state.plan.fixedLabel || `dim ${state.plan.fixedDim + 1}`;
+        const fixedValue = hdf5AxisValue(state.plan.fixedRange, fixed, fixedLen);
+        parts.push(`${fixedLabel}=${formatHDF5Tick(fixedValue)}`);
+      }
+      if (sample.readValue && Array.isArray(state.plan.shape)) {
+        const coords = new Array(state.plan.shape.length).fill(0);
+        coords[state.plan.xDim] = xIndex;
+        coords[state.plan.yDim] = hdf5DisplayToSourceY(yDisplayIndex, sample.yLen, state.layout?.flipY);
+        if (state.plan.fixedDim != null) {
+          const fixedLen = Number(state.plan.shape[state.plan.fixedDim]) || state.layout?.fixedLen || 1;
+          coords[state.plan.fixedDim] = hdf5ClampIndex(state.selection.fixed ?? state.plan.fixedIndex ?? Math.floor(fixedLen / 2), fixedLen);
+        }
+        const value = sample.readValue(coords);
+        if (isRenderableHDF5Value(value)) parts.push(`I=${formatHDF5Tick(Number(value))}`);
+      }
+      return parts.join(" · ");
     }
 
     let hdf5PreviewDragPointer = null;
