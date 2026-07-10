@@ -4787,10 +4787,21 @@
       cursor: crosshair;
       touch-action: none;
     }
-    .hdf5-preview-hit-layer {
+    .hdf5-preview-canvas-wrap canvas#hdf5PreviewCanvas {
+      position: relative;
+      z-index: 1;
+    }
+    .hdf5-preview-overlay {
       position: absolute;
       inset: 0;
       z-index: 2;
+      pointer-events: none;
+      background: transparent;
+    }
+    .hdf5-preview-hit-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
       cursor: crosshair;
       touch-action: none;
       user-select: none;
@@ -6228,6 +6239,7 @@
           <div class="hdf5-preview-layout">
             <div class="hdf5-preview-canvas-wrap">
               <canvas id="hdf5PreviewCanvas" width="960" height="560"></canvas>
+              <canvas id="hdf5PreviewOverlay" class="hdf5-preview-overlay" width="960" height="560"></canvas>
               <div id="hdf5PreviewHitLayer" class="hdf5-preview-hit-layer" aria-label="Drag to move the HDF5 preview crosshair"></div>
             </div>
             <div class="hdf5-preview-info" id="hdf5PreviewInfo">
@@ -13932,6 +13944,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5Meta = document.querySelector("#hdf5Meta");
     const hdf5Status = document.querySelector("#hdf5Status");
     const hdf5PreviewCanvas = document.querySelector("#hdf5PreviewCanvas");
+    const hdf5PreviewOverlay = document.querySelector("#hdf5PreviewOverlay");
     const hdf5PreviewHitLayer = document.querySelector("#hdf5PreviewHitLayer");
     const hdf5PreviewInfo = document.querySelector("#hdf5PreviewInfo");
     const hdf5PreviewHint = document.querySelector("#hdf5PreviewHint");
@@ -15277,6 +15290,136 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.stroke();
     }
 
+    function syncHDF5PreviewOverlay(canvas) {
+      if (!canvas || !hdf5PreviewOverlay) return null;
+      if (canvas !== hdf5PreviewCanvas) return null;
+      if (hdf5PreviewOverlay.width !== canvas.width) hdf5PreviewOverlay.width = canvas.width;
+      if (hdf5PreviewOverlay.height !== canvas.height) hdf5PreviewOverlay.height = canvas.height;
+      return hdf5PreviewOverlay;
+    }
+
+    function clearHDF5PreviewOverlay(canvas = hdf5PreviewCanvas) {
+      const overlay = syncHDF5PreviewOverlay(canvas);
+      if (!overlay) return;
+      overlay.getContext("2d").clearRect(0, 0, overlay.width, overlay.height);
+    }
+
+    function drawHDF5OverlayCrosshair(ctx, rect, x, y, radius = 3.5) {
+      if (!rect || !Number.isFinite(x) || !Number.isFinite(y)) return;
+      ctx.save();
+      ctx.strokeStyle = "rgba(45, 212, 191, 0.98)";
+      ctx.lineWidth = 1.6;
+      ctx.shadowColor = "rgba(45, 212, 191, 0.35)";
+      ctx.shadowBlur = 3;
+      ctx.beginPath();
+      ctx.moveTo(x, rect.y);
+      ctx.lineTo(x, rect.y + rect.h);
+      ctx.moveTo(rect.x, y);
+      ctx.lineTo(rect.x + rect.w, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(45, 212, 191, 1)";
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawHDF5OverlayProfileGuide(ctx, rect, x, y, mode = "vertical") {
+      if (!rect || !Number.isFinite(x) || !Number.isFinite(y)) return;
+      ctx.save();
+      ctx.strokeStyle = "rgba(45, 212, 191, 0.98)";
+      ctx.lineWidth = 1.5;
+      ctx.shadowColor = "rgba(45, 212, 191, 0.25)";
+      ctx.shadowBlur = 3;
+      ctx.beginPath();
+      if (mode === "horizontal") {
+        ctx.moveTo(rect.x, y);
+        ctx.lineTo(rect.x + rect.w, y);
+      } else {
+        ctx.moveTo(x, rect.y);
+        ctx.lineTo(x, rect.y + rect.h);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "rgba(45, 212, 191, 1)";
+      ctx.beginPath();
+      ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawHDF5PreviewOverlay(canvas, state = canvas?.__hdf5PreviewState) {
+      if (!canvas || !state) return false;
+      const overlay = syncHDF5PreviewOverlay(canvas);
+      if (!overlay) return false;
+      const ctx = overlay.getContext("2d");
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+      if (state.staticPreview) {
+        const rect = state.staticPreview.rect;
+        const col = hdf5ClampIndex(state.selection?.col ?? state.sample.cols / 2, state.sample.cols);
+        const row = hdf5ClampIndex(state.selection?.row ?? state.sample.rows / 2, state.sample.rows);
+        const x = rect.x + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * rect.w;
+        const y = rect.y + (state.sample.rows <= 1 ? 0 : row / (state.sample.rows - 1)) * rect.h;
+        drawHDF5OverlayCrosshair(ctx, rect, x, y, 4.5);
+        return true;
+      }
+
+      if (state.layout?.erlabStyle) {
+        const layout = state.layout;
+        const selection = state.selection || {};
+        const col = hdf5ClampIndex(selection.col ?? Math.floor(state.sample.cols / 2), state.sample.cols);
+        const row = hdf5ClampIndex(selection.row ?? Math.floor(state.sample.rows / 2), state.sample.rows);
+        const fixedLen = Number(layout.fixedLen) || 1;
+        const fixed = hdf5ClampIndex(selection.fixed ?? state.plan.fixedIndex ?? Math.floor(fixedLen / 2), fixedLen);
+        const mainRect = layout.mainRect;
+        const topRect = layout.topRect;
+        const rightRect = layout.rightRect;
+        const topProfileRect = layout.topProfileRect;
+        const rightProfileRect = layout.rightProfileRect;
+        const mainX = mainRect.x + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * mainRect.w;
+        const mainY = mainRect.y + (state.sample.rows <= 1 ? 0 : row / (state.sample.rows - 1)) * mainRect.h;
+        drawHDF5OverlayCrosshair(ctx, mainRect, mainX, mainY);
+
+        if (topRect && rightRect) {
+          const topRows = Number(layout.topRows) || fixedLen;
+          const topYLen = Number(layout.topYLen) || fixedLen;
+          const rightCols = Number(layout.rightCols) || fixedLen;
+          const rightXLen = Number(layout.rightXLen) || fixedLen;
+          const fixedDisplayTop = hdf5SourceToDisplayIndex(fixed, topYLen, layout.fixedFlipTop);
+          const fixedRowTop = hdf5ClampIndex((fixedDisplayTop / Math.max(1, topYLen - 1)) * (topRows - 1), topRows);
+          const fixedColRight = hdf5ClampIndex((fixed / Math.max(1, rightXLen - 1)) * (rightCols - 1), rightCols);
+          const topX = topRect.x + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * topRect.w;
+          const topY = topRect.y + (topRows <= 1 ? 0 : fixedRowTop / (topRows - 1)) * topRect.h;
+          const rightX = rightRect.x + (rightCols <= 1 ? 0 : fixedColRight / (rightCols - 1)) * rightRect.w;
+          const rightY = rightRect.y + (state.sample.rows <= 1 ? 0 : row / (state.sample.rows - 1)) * rightRect.h;
+          drawHDF5OverlayCrosshair(ctx, topRect, topX, topY);
+          drawHDF5OverlayCrosshair(ctx, rightRect, rightX, rightY);
+        }
+        if (topProfileRect) {
+          drawHDF5OverlayProfileGuide(ctx, topProfileRect, mainX, topProfileRect.y + topProfileRect.h / 2, "vertical");
+        }
+        if (rightProfileRect) {
+          drawHDF5OverlayProfileGuide(ctx, rightProfileRect, rightProfileRect.x + rightProfileRect.w / 2, mainY, "horizontal");
+        }
+        return true;
+      }
+
+      const { margin, plotW, plotH } = state.layout || {};
+      if (!margin || !plotW || !plotH) return false;
+      const col = hdf5ClampIndex(state.selection?.col ?? state.sample.cols / 2, state.sample.cols);
+      const row = hdf5ClampIndex(state.selection?.row ?? state.sample.rows / 2, state.sample.rows);
+      const x = margin.left + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * plotW;
+      const y = margin.top + (state.sample.rows <= 1 ? 0 : row / (state.sample.rows - 1)) * plotH;
+      drawHDF5OverlayCrosshair(ctx, { x: margin.left, y: margin.top, w: plotW, h: plotH }, x, y);
+      if (state.layout.topProfileRect) {
+        drawHDF5OverlayProfileGuide(ctx, state.layout.topProfileRect, x, state.layout.topProfileRect.y + state.layout.topProfileRect.h / 2, "vertical");
+      }
+      if (state.layout.rightProfileRect) {
+        drawHDF5OverlayProfileGuide(ctx, state.layout.rightProfileRect, state.layout.rightProfileRect.x + state.layout.rightProfileRect.w / 2, y, "horizontal");
+      }
+      return true;
+    }
+
     function hdf5PlanDimLabel(plan, dim) {
       if (dim === plan.xDim) return plan.xLabel || `dim ${dim + 1}`;
       if (dim === plan.yDim) return plan.yLabel || `dim ${dim + 1}`;
@@ -15476,21 +15619,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       drawProfilePath(ctx, profiles.colProfile, topProfileRect, "top");
       drawProfilePath(ctx, profiles.rowProfile, rightProfileRect, "right");
 
-      ctx.strokeStyle = "rgba(45, 212, 191, 0.95)";
-      ctx.lineWidth = 1.4;
-      [[mainRect, mainX, mainY], [topRect, topX, topY], [rightRect, rightX, rightY]].forEach(([rect, x, y]) => {
-        ctx.beginPath();
-        ctx.moveTo(x, rect.y);
-        ctx.lineTo(x, rect.y + rect.h);
-        ctx.moveTo(rect.x, y);
-        ctx.lineTo(rect.x + rect.w, y);
-        ctx.stroke();
-        ctx.fillStyle = "rgba(45, 212, 191, 0.96)";
-        ctx.beginPath();
-        ctx.arc(x, y, 3.5, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
       drawHDF5PanelTicks(ctx, mainRect, initialMain, mainPanelPlan, { xTicks: true, yTicks: true });
       drawHDF5PanelTicks(ctx, topRect, topSample, topPlan, { xTicks: false, yTicks: true });
       drawHDF5PanelTicks(ctx, rightRect, rightSample, rightPlan, { xTicks: true, yTicks: false });
@@ -15532,9 +15660,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           fixedDim,
           fixedLen: shape[fixedDim] || 1,
           fixedFlipTop,
+          topRows: topSample.rows,
+          topYLen: topSample.yLen,
+          rightCols: rightSample.cols,
+          rightXLen: rightSample.xLen,
           flipY: mainOriented.flipY
         }
       };
+      drawHDF5PreviewOverlay(canvas, canvas.__hdf5PreviewState);
       return true;
     }
 
@@ -15591,8 +15724,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const crossCol = hdf5ClampIndex(selection.col ?? defaultCol, sample.cols);
       const crossRow = hdf5ClampIndex(selection.row ?? defaultRow, sample.rows);
       const { colProfile, rowProfile } = hdf5LineProfiles(displayValues, sample.cols, sample.rows, crossCol, crossRow);
-      const crossX = margin.left + (sample.cols <= 1 ? 0 : crossCol / (sample.cols - 1)) * plotW;
-      const crossY = margin.top + (sample.rows <= 1 ? 0 : crossRow / (sample.rows - 1)) * plotH;
       const topProfileRect = { x: margin.left, y: 50, w: plotW, h: 52 };
       const rightProfileRect = { x: margin.left + plotW + 28, y: margin.top, w: 82, h: plotH };
 
@@ -15650,19 +15781,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         ctx.fillText(label, rightProfileRect.x + rightProfileRect.w + 10, y + 4);
       }
 
-      ctx.strokeStyle = "rgba(45, 212, 191, 0.92)";
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.moveTo(crossX, margin.top);
-      ctx.lineTo(crossX, margin.top + plotH);
-      ctx.moveTo(margin.left, crossY);
-      ctx.lineTo(margin.left + plotW, crossY);
-      ctx.stroke();
-      ctx.fillStyle = "rgba(45, 212, 191, 0.96)";
-      ctx.beginPath();
-      ctx.arc(crossX, crossY, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-
       ctx.textAlign = "center";
       ctx.fillText(plan.xLabel, margin.left + plotW / 2, H - 12);
       ctx.save();
@@ -15678,33 +15796,69 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         selection: { col: crossCol, row: crossRow },
         layout: { margin, plotW, plotH, flipY, topProfileRect, rightProfileRect }
       };
+      drawHDF5PreviewOverlay(canvas, canvas.__hdf5PreviewState);
     }
 
-    function hdf5CanvasPointerToSelection(canvas, event, allowOutside = false) {
+    function hdf5CanvasPointerPoint(canvas, event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * (canvas.width / Math.max(1, rect.width)),
+        y: (event.clientY - rect.top) * (canvas.height / Math.max(1, rect.height))
+      };
+    }
+
+    function hdf5RectContains(area, point) {
+      return !!area && point.x >= area.x && point.x <= area.x + area.w && point.y >= area.y && point.y <= area.y + area.h;
+    }
+
+    function hdf5PreviewPointerZone(canvas, event) {
+      const state = canvas?.__hdf5PreviewState;
+      if (!state?.layout || !state.sample) return "";
+      const point = hdf5CanvasPointerPoint(canvas, event);
+      if (state.layout.erlabStyle) {
+        const { mainRect, topRect, rightRect, topProfileRect, rightProfileRect } = state.layout;
+        const zones = [
+          ["main", mainRect],
+          ["top", topRect],
+          ["right", rightRect],
+          ["topProfile", topProfileRect],
+          ["rightProfile", rightProfileRect]
+        ];
+        return zones.find(([, area]) => hdf5RectContains(area, point))?.[0] || "";
+      }
+      const { margin, plotW, plotH, topProfileRect, rightProfileRect } = state.layout;
+      const mainRect = margin ? { x: margin.left, y: margin.top, w: plotW, h: plotH } : state.staticPreview?.rect;
+      const zones = [
+        ["main", mainRect],
+        ["topProfile", topProfileRect],
+        ["rightProfile", rightProfileRect]
+      ];
+      return zones.find(([, area]) => hdf5RectContains(area, point))?.[0] || "";
+    }
+
+    function hdf5CanvasPointerToSelection(canvas, event, allowOutside = false, preferredZone = "") {
       const state = canvas?.__hdf5PreviewState;
       if (!state?.layout || !state.sample) return null;
-      const rect = canvas.getBoundingClientRect();
-      const x = (event.clientX - rect.left) * (canvas.width / Math.max(1, rect.width));
-      const y = (event.clientY - rect.top) * (canvas.height / Math.max(1, rect.height));
+      const { x, y } = hdf5CanvasPointerPoint(canvas, event);
+      const mapX = (area, len) => hdf5ClampIndex(((x - area.x) / Math.max(1, area.w)) * (len - 1), len);
+      const mapY = (area, len) => hdf5ClampIndex(((y - area.y) / Math.max(1, area.h)) * (len - 1), len);
       if (state.layout.erlabStyle) {
-        const { mainRect, topRect, rightRect, fixedLen, fixedFlipTop } = state.layout;
+        const { mainRect, topRect, rightRect, topProfileRect, rightProfileRect, fixedLen, fixedFlipTop } = state.layout;
         const current = state.selection || {};
-        const inRect = area => area && x >= area.x && x <= area.x + area.w && y >= area.y && y <= area.y + area.h;
-        const mapX = (area, len) => hdf5ClampIndex(((x - area.x) / Math.max(1, area.w)) * (len - 1), len);
-        const mapY = (area, len) => hdf5ClampIndex(((y - area.y) / Math.max(1, area.h)) * (len - 1), len);
         const baseSelection = {
           col: hdf5ClampIndex(current.col ?? Math.floor(state.sample.cols / 2), state.sample.cols),
           row: hdf5ClampIndex(current.row ?? Math.floor(state.sample.rows / 2), state.sample.rows),
           fixed: hdf5ClampIndex(current.fixed ?? state.plan.fixedIndex ?? Math.floor((fixedLen || 1) / 2), fixedLen || 1)
         };
-        if (inRect(mainRect)) {
+        const zone = preferredZone || hdf5PreviewPointerZone(canvas, event) || (allowOutside ? "main" : "");
+        if (zone === "main" && mainRect) {
           return {
             ...baseSelection,
             col: mapX(mainRect, state.sample.cols),
             row: mapY(mainRect, state.sample.rows)
           };
         }
-        if (inRect(topRect)) {
+        if (zone === "top" && topRect) {
           const fixedDisplay = mapY(topRect, fixedLen || 1);
           return {
             ...baseSelection,
@@ -15712,28 +15866,48 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             fixed: hdf5SourceToDisplayIndex(fixedDisplay, fixedLen || 1, fixedFlipTop)
           };
         }
-        if (inRect(rightRect)) {
+        if (zone === "right" && rightRect) {
           return {
             ...baseSelection,
             row: mapY(rightRect, state.sample.rows),
             fixed: mapX(rightRect, fixedLen || 1)
           };
         }
-        if (allowOutside && mainRect) {
+        if (zone === "topProfile" && topProfileRect) {
           return {
             ...baseSelection,
-            col: mapX(mainRect, state.sample.cols),
-            row: mapY(mainRect, state.sample.rows)
+            col: mapX(topProfileRect, state.sample.cols)
+          };
+        }
+        if (zone === "rightProfile" && rightProfileRect) {
+          return {
+            ...baseSelection,
+            row: mapY(rightProfileRect, state.sample.rows)
           };
         }
         return null;
       }
-      const { margin, plotW, plotH } = state.layout;
-      const outside = x < margin.left || x > margin.left + plotW || y < margin.top || y > margin.top + plotH;
-      if (outside && !allowOutside) return null;
-      const col = hdf5ClampIndex(((x - margin.left) / Math.max(1, plotW)) * (state.sample.cols - 1), state.sample.cols);
-      const row = hdf5ClampIndex(((y - margin.top) / Math.max(1, plotH)) * (state.sample.rows - 1), state.sample.rows);
-      return { col, row };
+      const { margin, plotW, plotH, topProfileRect, rightProfileRect } = state.layout;
+      const mainRect = margin ? { x: margin.left, y: margin.top, w: plotW, h: plotH } : state.staticPreview?.rect;
+      const current = state.selection || {};
+      const baseSelection = {
+        col: hdf5ClampIndex(current.col ?? Math.floor(state.sample.cols / 2), state.sample.cols),
+        row: hdf5ClampIndex(current.row ?? Math.floor(state.sample.rows / 2), state.sample.rows)
+      };
+      const zone = preferredZone || hdf5PreviewPointerZone(canvas, event) || (allowOutside ? "main" : "");
+      if (zone === "main" && mainRect) {
+        return {
+          col: mapX(mainRect, state.sample.cols),
+          row: mapY(mainRect, state.sample.rows)
+        };
+      }
+      if (zone === "topProfile" && topProfileRect) {
+        return { ...baseSelection, col: mapX(topProfileRect, state.sample.cols) };
+      }
+      if (zone === "rightProfile" && rightProfileRect) {
+        return { ...baseSelection, row: mapY(rightProfileRect, state.sample.rows) };
+      }
+      return null;
     }
 
     function hdf5PreviewSelectionSummary(state) {
@@ -15770,6 +15944,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     let hdf5PreviewDragPointer = null;
     let hdf5PreviewMouseDragging = false;
+    let hdf5PreviewDragZone = "";
     let hdf5PreviewRedrawFrame = 0;
 
     function redrawHDF5PreviewSelection(canvas) {
@@ -15798,16 +15973,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
     }
 
-    function setHDF5PreviewSelectionFromEvent(canvas, event, allowOutside = false) {
-      const selection = hdf5CanvasPointerToSelection(canvas, event, allowOutside);
+    function updateHDF5PreviewHintFromState(state) {
+      if (hdf5PreviewHint && state) {
+        hdf5PreviewHint.textContent = `${state.plan.name} · ${hdf5PreviewSelectionSummary(state)}`;
+      }
+    }
+
+    function setHDF5PreviewSelectionFromEvent(canvas, event, allowOutside = false, preferredZone = "", fast = false) {
+      const selection = hdf5CanvasPointerToSelection(canvas, event, allowOutside, preferredZone);
       if (!selection || !canvas.__hdf5PreviewState) return false;
       canvas.__hdf5PreviewState.selection = selection;
-      scheduleHDF5PreviewRedraw(canvas);
+      if (fast) {
+        drawHDF5PreviewOverlay(canvas, canvas.__hdf5PreviewState);
+        updateHDF5PreviewHintFromState(canvas.__hdf5PreviewState);
+      } else {
+        scheduleHDF5PreviewRedraw(canvas);
+      }
       return true;
     }
 
-    function setHDF5PreviewSelectionFromPointer(event, allowOutside = false) {
-      return setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, allowOutside);
+    function setHDF5PreviewSelectionFromPointer(event, allowOutside = false, preferredZone = "", fast = false) {
+      return setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, allowOutside, preferredZone, fast);
     }
 
     function redrawStaticHDF5PreviewSelection(canvas, state) {
@@ -15820,22 +16006,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h);
-      const col = hdf5ClampIndex(state.selection?.col ?? canvas.width / 2, state.sample.cols);
-      const row = hdf5ClampIndex(state.selection?.row ?? canvas.height / 2, state.sample.rows);
-      const crossX = rect.x + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * rect.w;
-      const crossY = rect.y + (state.sample.rows <= 1 ? 0 : row / (state.sample.rows - 1)) * rect.h;
-      ctx.strokeStyle = "rgba(45, 212, 191, 0.96)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(crossX, rect.y);
-      ctx.lineTo(crossX, rect.y + rect.h);
-      ctx.moveTo(rect.x, crossY);
-      ctx.lineTo(rect.x + rect.w, crossY);
-      ctx.stroke();
-      ctx.fillStyle = "rgba(45, 212, 191, 1)";
-      ctx.beginPath();
-      ctx.arc(crossX, crossY, 4.5, 0, Math.PI * 2);
-      ctx.fill();
+      drawHDF5PreviewOverlay(canvas, state);
     }
 
     function bindHDF5PreviewCanvasInteraction() {
@@ -15844,8 +16015,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const interactionSurface = hdf5PreviewHitLayer || hdf5PreviewCanvas;
       const beginDrag = event => {
         if (event.button != null && event.button !== 0) return;
-        if (!setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) return;
+        const zone = hdf5PreviewPointerZone(hdf5PreviewCanvas, event);
+        if (!zone) return;
+        if (!setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true, zone, true)) return;
         hdf5PreviewMouseDragging = true;
+        hdf5PreviewDragZone = zone;
         hdf5PreviewDragPointer = event.pointerId ?? "mouse";
         if (event.pointerId != null) interactionSurface.setPointerCapture?.(event.pointerId);
         document.body.classList.add("hdf5-preview-dragging");
@@ -15854,16 +16028,20 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const moveDrag = event => {
         if (!hdf5PreviewMouseDragging) return;
         if (hdf5PreviewDragPointer != null && event.pointerId != null && hdf5PreviewDragPointer !== event.pointerId) return;
-        if (setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) event.preventDefault();
+        if (setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true, hdf5PreviewDragZone, true)) event.preventDefault();
       };
       const stopDrag = event => {
+        const shouldCommit = hdf5PreviewMouseDragging;
         hdf5PreviewMouseDragging = false;
+        hdf5PreviewDragZone = "";
         hdf5PreviewDragPointer = null;
         document.body.classList.remove("hdf5-preview-dragging");
         if (event?.pointerId != null) interactionSurface.releasePointerCapture?.(event.pointerId);
+        if (shouldCommit) redrawHDF5PreviewSelection(hdf5PreviewCanvas);
       };
       interactionSurface.addEventListener("click", event => {
-        setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true);
+        const zone = hdf5PreviewPointerZone(hdf5PreviewCanvas, event);
+        if (zone) setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true, zone);
       });
       if ("PointerEvent" in window) {
         interactionSurface.addEventListener("pointerdown", beginDrag);
@@ -15874,7 +16052,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         interactionSurface.addEventListener("mousedown", beginDrag);
         window.addEventListener("mousemove", event => {
           if (!hdf5PreviewMouseDragging || hdf5PreviewDragPointer !== "mouse") return;
-          if (setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true)) event.preventDefault();
+          if (setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true, hdf5PreviewDragZone, true)) event.preventDefault();
         });
         window.addEventListener("mouseup", stopDrag);
       }
@@ -16131,6 +16309,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (hdf5PreviewHint) hdf5PreviewHint.textContent = message;
       if (hdf5PreviewInfo) hdf5PreviewInfo.innerHTML = `<span class="muted">${esc(message)}</span>`;
       if (!hdf5PreviewCanvas) return;
+      clearHDF5PreviewOverlay(hdf5PreviewCanvas);
       const ctx = hdf5PreviewCanvas.getContext("2d");
       ctx.fillStyle = "#070b10";
       ctx.fillRect(0, 0, hdf5PreviewCanvas.width, hdf5PreviewCanvas.height);
@@ -16138,6 +16317,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.font = "18px system-ui, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(message, hdf5PreviewCanvas.width / 2, hdf5PreviewCanvas.height / 2);
+      clearHDF5PreviewOverlay(hdf5PreviewCanvas);
       delete hdf5PreviewCanvas.__hdf5PreviewState;
     }
 
