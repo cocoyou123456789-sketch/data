@@ -4767,16 +4767,53 @@
     }
     .hdf5-preview-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.9fr) minmax(220px, 0.8fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 12px;
       align-items: stretch;
+    }
+    .hdf5-main-view-control {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-width: 0;
+    }
+    .hdf5-main-view-control[hidden] { display: none; }
+    .hdf5-main-view-label {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .hdf5-main-view-options {
+      display: inline-flex;
+      min-width: 0;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    .hdf5-main-view-options button {
+      min-height: 32px;
+      padding: 6px 12px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-radius: 0;
+      background: #111923;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .hdf5-main-view-options button:last-child { border-right: 0; }
+    .hdf5-main-view-options button[aria-pressed="true"] {
+      background: #0f766e;
+      color: #f8fafc;
     }
     .hdf5-preview-canvas-wrap {
       min-height: 300px;
       aspect-ratio: 12 / 7;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #070b10;
+      background: #0d0d12;
       overflow: hidden;
       position: relative;
     }
@@ -4815,8 +4852,8 @@
       -webkit-user-select: none !important;
     }
     .hdf5-preview-info {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 8px;
       min-width: 0;
       color: var(--muted);
@@ -6237,6 +6274,10 @@
             <span class="muted" id="hdf5PreviewHint" data-i18n="hdf5PreviewEmpty">导入后自动显示可预览的二维谱图或三维切片</span>
           </div>
           <div class="hdf5-preview-layout">
+            <div class="hdf5-main-view-control" id="hdf5MainViewControl" hidden>
+              <span class="hdf5-main-view-label" id="hdf5MainViewLabel">主图坐标</span>
+              <div class="hdf5-main-view-options" id="hdf5MainViewOptions" role="group" aria-label="Main plot axes"></div>
+            </div>
             <div class="hdf5-preview-canvas-wrap">
               <canvas id="hdf5PreviewCanvas" width="960" height="560"></canvas>
               <canvas id="hdf5PreviewOverlay" class="hdf5-preview-overlay" width="960" height="560"></canvas>
@@ -13946,6 +13987,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5PreviewCanvas = document.querySelector("#hdf5PreviewCanvas");
     const hdf5PreviewOverlay = document.querySelector("#hdf5PreviewOverlay");
     const hdf5PreviewHitLayer = document.querySelector("#hdf5PreviewHitLayer");
+    const hdf5MainViewControl = document.querySelector("#hdf5MainViewControl");
+    const hdf5MainViewLabel = document.querySelector("#hdf5MainViewLabel");
+    const hdf5MainViewOptions = document.querySelector("#hdf5MainViewOptions");
     const hdf5PreviewInfo = document.querySelector("#hdf5PreviewInfo");
     const hdf5PreviewHint = document.querySelector("#hdf5PreviewHint");
     const hdf5SavedImports = document.querySelector("#hdf5SavedImports");
@@ -15064,13 +15108,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function heatmapColor(value) {
       const stops = [
-        [0.00, [8, 8, 10]],
-        [0.16, [34, 12, 16]],
-        [0.34, [102, 14, 18]],
-        [0.56, [205, 34, 24]],
-        [0.76, [255, 132, 28]],
-        [0.91, [255, 220, 95]],
-        [1.00, [255, 255, 238]]
+        [0.00, [0, 0, 4]],
+        [0.13, [24, 15, 61]],
+        [0.25, [68, 15, 118]],
+        [0.38, [114, 31, 129]],
+        [0.50, [158, 47, 127]],
+        [0.63, [205, 64, 113]],
+        [0.75, [241, 96, 93]],
+        [0.88, [253, 150, 104]],
+        [1.00, [252, 253, 191]]
       ];
       const tValue = Math.max(0, Math.min(1, Number(value) || 0));
       for (let i = 1; i < stops.length; i++) {
@@ -15195,46 +15241,25 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return range.first + (range.last - range.first) * (index / (length - 1));
     }
 
-    function hdf5IsEnergyAxisLabel(label) {
-      const text = String(label || "").toLowerCase();
-      return text.includes("energy")
-        || text.includes("ev")
-        || text.includes("e_v")
-        || text.includes("kinetic")
-        || text.includes("binding")
-        || /^e\s*(\[|\(|$)/i.test(text.trim());
+    function hdf5ShouldFlipX(plan) {
+      const first = Number(plan?.xRange?.first);
+      const last = Number(plan?.xRange?.last);
+      return Number.isFinite(first) && Number.isFinite(last) && first > last;
     }
 
     function hdf5ShouldFlipY(plan) {
-      if (!hdf5IsEnergyAxisLabel(plan?.yLabel)) return false;
       const first = Number(plan?.yRange?.first);
       const last = Number(plan?.yRange?.last);
       return Number.isFinite(first) && Number.isFinite(last) && last > first;
-    }
-
-    function hdf5EnergyAxisDisplayValue(range, displayIndex, length) {
-      if (!range || !Number.isFinite(range.first) || !Number.isFinite(range.last) || length <= 1) return displayIndex;
-      const high = Math.max(range.first, range.last);
-      const low = Math.min(range.first, range.last);
-      return high - (high - low) * (displayIndex / (length - 1));
-    }
-
-    function hdf5EnergyAxisNeedsFlip(range) {
-      if (!range || !Number.isFinite(range.first) || !Number.isFinite(range.last)) return false;
-      return range.last > range.first;
-    }
-
-    function hdf5IsEnergyYAxis(plan) {
-      return hdf5IsEnergyAxisLabel(plan?.yLabel);
     }
 
     function hdf5ClampIndex(value, max) {
       return Math.max(0, Math.min(Math.max(0, max - 1), Math.round(Number(value) || 0)));
     }
 
-    function hdf5DisplayToSourceY(displayIndex, length, flipY) {
+    function hdf5DisplayToSourceIndex(displayIndex, length, flipAxis = false) {
       const index = hdf5ClampIndex(displayIndex, length);
-      return flipY ? length - 1 - index : index;
+      return flipAxis ? length - 1 - index : index;
     }
 
     function hdf5SourceToDisplayIndex(sourceIndex, length, flipAxis = false) {
@@ -15242,9 +15267,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return flipAxis ? Math.max(0, length - 1) - index : index;
     }
 
-    function hdf5AxisValueForDisplay(range, displayIndex, length, flipY) {
-      if (range?.forceEnergyAscending) return hdf5EnergyAxisDisplayValue(range, displayIndex, length);
-      return hdf5AxisValue(range, hdf5DisplayToSourceY(displayIndex, length, flipY), length);
+    function hdf5AxisValueForDisplay(range, displayIndex, length, flipAxis = false) {
+      return hdf5AxisValue(range, hdf5DisplayToSourceIndex(displayIndex, length, flipAxis), length);
     }
 
     function hdf5OrientedDisplayValues(sample, plan) {
@@ -15252,16 +15276,24 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const base = sample._hdf5DisplayValues;
       const cols = sample.cols;
       const rows = sample.rows;
-      const flipY = hdf5IsEnergyYAxis(plan) ? hdf5EnergyAxisNeedsFlip(plan?.yRange) : hdf5ShouldFlipY(plan);
-      if (!flipY) return { values: base, flipY };
-      if (sample._hdf5DisplayValuesFlipped) return { values: sample._hdf5DisplayValuesFlipped, flipY };
-      const flipped = new Float32Array(base.length);
-      for (let row = 0; row < rows; row++) {
-        const sourceRow = rows - 1 - row;
-        flipped.set(base.subarray(sourceRow * cols, sourceRow * cols + cols), row * cols);
+      const flipX = hdf5ShouldFlipX(plan);
+      const flipY = hdf5ShouldFlipY(plan);
+      if (!flipX && !flipY) return { values: base, flipX, flipY };
+      const cacheKey = `${flipX ? 1 : 0}${flipY ? 1 : 0}`;
+      sample._hdf5OrientedValues ||= {};
+      if (sample._hdf5OrientedValues[cacheKey]) {
+        return { values: sample._hdf5OrientedValues[cacheKey], flipX, flipY };
       }
-      sample._hdf5DisplayValuesFlipped = flipped;
-      return { values: flipped, flipY };
+      const oriented = new Float32Array(base.length);
+      for (let displayRow = 0; displayRow < rows; displayRow++) {
+        const sourceRow = flipY ? rows - 1 - displayRow : displayRow;
+        for (let displayCol = 0; displayCol < cols; displayCol++) {
+          const sourceCol = flipX ? cols - 1 - displayCol : displayCol;
+          oriented[displayRow * cols + displayCol] = base[sourceRow * cols + sourceCol];
+        }
+      }
+      sample._hdf5OrientedValues[cacheKey] = oriented;
+      return { values: oriented, flipX, flipY };
     }
 
     function formatHDF5Tick(value) {
@@ -15307,19 +15339,17 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function drawHDF5OverlayCrosshair(ctx, rect, x, y, radius = 3.5) {
       if (!rect || !Number.isFinite(x) || !Number.isFinite(y)) return;
       ctx.save();
-      ctx.strokeStyle = "rgba(45, 212, 191, 0.98)";
-      ctx.lineWidth = 1.6;
-      ctx.shadowColor = "rgba(45, 212, 191, 0.35)";
-      ctx.shadowBlur = 3;
+      ctx.strokeStyle = "rgba(241, 245, 249, 0.82)";
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x, rect.y);
       ctx.lineTo(x, rect.y + rect.h);
       ctx.moveTo(rect.x, y);
       ctx.lineTo(rect.x + rect.w, y);
       ctx.stroke();
-      ctx.fillStyle = "rgba(45, 212, 191, 1)";
+      ctx.fillStyle = "rgba(34, 197, 94, 0.95)";
       ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.arc(x, y, Math.min(radius, 2.4), 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
@@ -15327,10 +15357,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function drawHDF5OverlayProfileGuide(ctx, rect, x, y, mode = "vertical") {
       if (!rect || !Number.isFinite(x) || !Number.isFinite(y)) return;
       ctx.save();
-      ctx.strokeStyle = "rgba(45, 212, 191, 0.98)";
-      ctx.lineWidth = 1.5;
-      ctx.shadowColor = "rgba(45, 212, 191, 0.25)";
-      ctx.shadowBlur = 3;
+      ctx.strokeStyle = "rgba(241, 245, 249, 0.82)";
+      ctx.lineWidth = 1;
       ctx.beginPath();
       if (mode === "horizontal") {
         ctx.moveTo(rect.x, y);
@@ -15340,9 +15368,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         ctx.lineTo(x, rect.y + rect.h);
       }
       ctx.stroke();
-      ctx.fillStyle = "rgba(45, 212, 191, 1)";
+      ctx.fillStyle = "rgba(34, 197, 94, 0.95)";
       ctx.beginPath();
-      ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+      ctx.arc(x, y, 2.4, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
@@ -15375,6 +15403,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const topRect = layout.topRect;
         const rightRect = layout.rightRect;
         const topProfileRect = layout.topProfileRect;
+        const energyProfileRect = layout.energyProfileRect;
         const rightProfileRect = layout.rightProfileRect;
         const mainX = mainRect.x + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * mainRect.w;
         const mainY = mainRect.y + (state.sample.rows <= 1 ? 0 : row / (state.sample.rows - 1)) * mainRect.h;
@@ -15386,8 +15415,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const rightCols = Number(layout.rightCols) || fixedLen;
           const rightXLen = Number(layout.rightXLen) || fixedLen;
           const fixedDisplayTop = hdf5SourceToDisplayIndex(fixed, topYLen, layout.fixedFlipTop);
+          const fixedDisplayRight = hdf5SourceToDisplayIndex(fixed, rightXLen, layout.fixedFlipRight);
           const fixedRowTop = hdf5ClampIndex((fixedDisplayTop / Math.max(1, topYLen - 1)) * (topRows - 1), topRows);
-          const fixedColRight = hdf5ClampIndex((fixed / Math.max(1, rightXLen - 1)) * (rightCols - 1), rightCols);
+          const fixedColRight = hdf5ClampIndex((fixedDisplayRight / Math.max(1, rightXLen - 1)) * (rightCols - 1), rightCols);
           const topX = topRect.x + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * topRect.w;
           const topY = topRect.y + (topRows <= 1 ? 0 : fixedRowTop / (topRows - 1)) * topRect.h;
           const rightX = rightRect.x + (rightCols <= 1 ? 0 : fixedColRight / (rightCols - 1)) * rightRect.w;
@@ -15397,6 +15427,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
         if (topProfileRect) {
           drawHDF5OverlayProfileGuide(ctx, topProfileRect, mainX, topProfileRect.y + topProfileRect.h / 2, "vertical");
+        }
+        if (energyProfileRect) {
+          const fixedDisplay = hdf5SourceToDisplayIndex(fixed, fixedLen, layout.fixedFlipRight);
+          const energyX = energyProfileRect.x + (fixedLen <= 1 ? 0 : fixedDisplay / (fixedLen - 1)) * energyProfileRect.w;
+          drawHDF5OverlayProfileGuide(ctx, energyProfileRect, energyX, energyProfileRect.y + energyProfileRect.h / 2, "vertical");
         }
         if (rightProfileRect) {
           drawHDF5OverlayProfileGuide(ctx, rightProfileRect, rightProfileRect.x + rightProfileRect.w / 2, mainY, "horizontal");
@@ -15420,18 +15455,23 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return true;
     }
 
+    function hdf5PlanAxisMeta(plan) {
+      if (!plan) return {};
+      if (plan._hdf5AxisMeta) return plan._hdf5AxisMeta;
+      const meta = {};
+      if (Number.isInteger(plan.xDim)) meta[plan.xDim] = { label: plan.xLabel, range: plan.xRange };
+      if (Number.isInteger(plan.yDim)) meta[plan.yDim] = { label: plan.yLabel, range: plan.yRange };
+      if (Number.isInteger(plan.fixedDim)) meta[plan.fixedDim] = { label: plan.fixedLabel, range: plan.fixedRange };
+      plan._hdf5AxisMeta = meta;
+      return meta;
+    }
+
     function hdf5PlanDimLabel(plan, dim) {
-      if (dim === plan.xDim) return plan.xLabel || `dim ${dim + 1}`;
-      if (dim === plan.yDim) return plan.yLabel || `dim ${dim + 1}`;
-      if (dim === plan.fixedDim) return plan.fixedLabel || `dim ${dim + 1}`;
-      return `dim ${dim + 1}`;
+      return hdf5PlanAxisMeta(plan)[dim]?.label || `dim ${dim + 1}`;
     }
 
     function hdf5PlanDimRange(plan, dim) {
-      if (dim === plan.xDim) return plan.xRange;
-      if (dim === plan.yDim) return plan.yRange;
-      if (dim === plan.fixedDim) return plan.fixedRange;
-      return null;
+      return hdf5PlanAxisMeta(plan)[dim]?.range || null;
     }
 
     function hdf5PanelPlan(plan, xDim, yDim, nameSuffix = "") {
@@ -15446,6 +15486,122 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         yRange: hdf5PlanDimRange(plan, yDim)
       };
     }
+
+    function hdf5ReorientedPlan(basePlan, xDim, yDim) {
+      const dims = [basePlan.xDim, basePlan.yDim, basePlan.fixedDim].filter(Number.isInteger);
+      const fixedDim = dims.find(dim => dim !== xDim && dim !== yDim);
+      if (!Number.isInteger(fixedDim)) return null;
+      const axisMeta = hdf5PlanAxisMeta(basePlan);
+      return {
+        ...basePlan,
+        _hdf5AxisMeta: axisMeta,
+        xDim,
+        yDim,
+        fixedDim,
+        xLabel: hdf5PlanDimLabel(basePlan, xDim),
+        yLabel: hdf5PlanDimLabel(basePlan, yDim),
+        fixedLabel: hdf5PlanDimLabel(basePlan, fixedDim),
+        xRange: hdf5PlanDimRange(basePlan, xDim),
+        yRange: hdf5PlanDimRange(basePlan, yDim),
+        fixedRange: hdf5PlanDimRange(basePlan, fixedDim)
+      };
+    }
+
+    function hdf5MainViewPairs(basePlan) {
+      if (!Number.isInteger(basePlan?.fixedDim)) return [];
+      return [
+        [basePlan.xDim, basePlan.yDim],
+        [basePlan.xDim, basePlan.fixedDim],
+        [basePlan.fixedDim, basePlan.yDim]
+      ];
+    }
+
+    function hideHDF5MainViewControls() {
+      if (hdf5MainViewControl) hdf5MainViewControl.hidden = true;
+    }
+
+    function updateHDF5MainViewControls(state) {
+      if (!hdf5MainViewControl || !hdf5MainViewOptions || !state?.layout?.erlabStyle) return;
+      const basePlan = state.basePlan || state.plan;
+      const pairs = hdf5MainViewPairs(basePlan);
+      if (pairs.length !== 3) {
+        hideHDF5MainViewControls();
+        return;
+      }
+      hdf5MainViewControl.hidden = false;
+      if (hdf5MainViewLabel) hdf5MainViewLabel.textContent = currentLang === "zh" ? "主图坐标" : "Main plot axes";
+      const signature = pairs.map(([xDim, yDim]) => `${xDim}:${yDim}:${hdf5PlanDimLabel(basePlan, xDim)}:${hdf5PlanDimLabel(basePlan, yDim)}`).join("|");
+      if (hdf5MainViewOptions.dataset.signature !== signature) {
+        hdf5MainViewOptions.dataset.signature = signature;
+        hdf5MainViewOptions.innerHTML = pairs.map(([xDim, yDim]) => (
+          `<button type="button" data-x-dim="${xDim}" data-y-dim="${yDim}">${esc(hdf5PlanDimLabel(basePlan, xDim))} × ${esc(hdf5PlanDimLabel(basePlan, yDim))}</button>`
+        )).join("");
+        delete hdf5MainViewOptions.dataset.activeKey;
+      }
+      const activeKey = `${state.plan.xDim}:${state.plan.yDim}`;
+      if (hdf5MainViewOptions.dataset.activeKey !== activeKey) {
+        hdf5MainViewOptions.dataset.activeKey = activeKey;
+        hdf5MainViewOptions.querySelectorAll("button[data-x-dim]").forEach(button => {
+          const pressed = `${button.dataset.xDim}:${button.dataset.yDim}` === activeKey;
+          button.setAttribute("aria-pressed", String(pressed));
+        });
+      }
+    }
+
+    function hdf5SelectionSourceCoordinates(state) {
+      const coords = new Array(state.plan.shape.length).fill(0);
+      const sample = state.sample;
+      const xDisplay = hdf5ClampIndex((state.selection.col / Math.max(1, sample.cols - 1)) * (sample.xLen - 1), sample.xLen);
+      const yDisplay = hdf5ClampIndex((state.selection.row / Math.max(1, sample.rows - 1)) * (sample.yLen - 1), sample.yLen);
+      coords[state.plan.xDim] = hdf5DisplayToSourceIndex(xDisplay, sample.xLen, state.layout.flipX);
+      coords[state.plan.yDim] = hdf5DisplayToSourceIndex(yDisplay, sample.yLen, state.layout.flipY);
+      coords[state.plan.fixedDim] = hdf5ClampIndex(state.selection.fixed, state.plan.shape[state.plan.fixedDim] || 1);
+      return coords;
+    }
+
+    function hdf5SelectionForPlan(plan, sourceCoords) {
+      const shape = plan.shape.map(Number);
+      const xLen = shape[plan.xDim] || 1;
+      const yLen = shape[plan.yDim] || 1;
+      const cols = Math.min(500, xLen);
+      const rows = Math.min(300, yLen);
+      const sourceX = hdf5ClampIndex(sourceCoords[plan.xDim] ?? xLen / 2, xLen);
+      const sourceY = hdf5ClampIndex(sourceCoords[plan.yDim] ?? yLen / 2, yLen);
+      const displayX = hdf5SourceToDisplayIndex(sourceX, xLen, hdf5ShouldFlipX(plan));
+      const displayY = hdf5SourceToDisplayIndex(sourceY, yLen, hdf5ShouldFlipY(plan));
+      return {
+        col: hdf5ClampIndex((displayX / Math.max(1, xLen - 1)) * (cols - 1), cols),
+        row: hdf5ClampIndex((displayY / Math.max(1, yLen - 1)) * (rows - 1), rows),
+        fixed: hdf5ClampIndex(sourceCoords[plan.fixedDim] ?? shape[plan.fixedDim] / 2, shape[plan.fixedDim] || 1)
+      };
+    }
+
+    function setHDF5MainView(xDim, yDim) {
+      const state = hdf5PreviewCanvas?.__hdf5PreviewState;
+      if (!state?.layout?.erlabStyle || (state.plan.xDim === xDim && state.plan.yDim === yDim)) return;
+      const basePlan = state.basePlan || state.plan;
+      const nextPlan = hdf5ReorientedPlan(basePlan, xDim, yDim);
+      if (!nextPlan) return;
+      const sourceCoords = hdf5SelectionSourceCoordinates(state);
+      const selection = hdf5SelectionForPlan(nextPlan, sourceCoords);
+      nextPlan.fixedIndex = selection.fixed;
+      if (hdf5PreviewRedrawFrame) cancelAnimationFrame(hdf5PreviewRedrawFrame);
+      hdf5PreviewRedrawFrame = 0;
+      drawHDF5Heatmap(hdf5PreviewCanvas, state.sourceSample || state.sample, nextPlan, {
+        filename: state.filename,
+        selection,
+        basePlan
+      });
+      const updatedState = hdf5PreviewCanvas.__hdf5PreviewState;
+      if (updatedState) updateHDF5PreviewInfo(updatedState.plan, updatedState.sample, updatedState.filename);
+      updateHDF5PreviewHintFromState(updatedState);
+    }
+
+    hdf5MainViewOptions?.addEventListener("click", event => {
+      const button = event.target.closest("button[data-x-dim][data-y-dim]");
+      if (!button) return;
+      setHDF5MainView(Number(button.dataset.xDim), Number(button.dataset.yDim));
+    });
 
     function hdf5SampleFromReader(sourceSample, plan, xDim, yDim, fixedCoords = {}, options = {}) {
       if (!sourceSample?.readValue) return null;
@@ -15489,24 +15645,30 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function drawHDF5PanelImage(ctx, panelSample, panelPlan, rect) {
-      const { values } = hdf5OrientedDisplayValues(panelSample, panelPlan);
-      const imageCanvas = document.createElement("canvas");
-      imageCanvas.width = panelSample.cols;
-      imageCanvas.height = panelSample.rows;
-      const imageCtx = imageCanvas.getContext("2d");
-      const image = imageCtx.createImageData(panelSample.cols, panelSample.rows);
-      for (let i = 0; i < values.length; i++) {
-        const [r, g, b] = heatmapColor(values[i]);
-        const offset = i * 4;
-        image.data[offset] = r;
-        image.data[offset + 1] = g;
-        image.data[offset + 2] = b;
-        image.data[offset + 3] = Number.isFinite(values[i]) ? 255 : 0;
+      const { values, flipX, flipY } = hdf5OrientedDisplayValues(panelSample, panelPlan);
+      const cacheKey = `${flipX ? 1 : 0}${flipY ? 1 : 0}`;
+      panelSample._hdf5PanelCanvases ||= {};
+      let imageCanvas = panelSample._hdf5PanelCanvases[cacheKey];
+      if (!imageCanvas) {
+        imageCanvas = document.createElement("canvas");
+        imageCanvas.width = panelSample.cols;
+        imageCanvas.height = panelSample.rows;
+        const imageCtx = imageCanvas.getContext("2d");
+        const image = imageCtx.createImageData(panelSample.cols, panelSample.rows);
+        for (let i = 0; i < values.length; i++) {
+          const [r, g, b] = heatmapColor(values[i]);
+          const offset = i * 4;
+          image.data[offset] = r;
+          image.data[offset + 1] = g;
+          image.data[offset + 2] = b;
+          image.data[offset + 3] = Number.isFinite(values[i]) ? 255 : 0;
+        }
+        imageCtx.putImageData(image, 0, 0);
+        panelSample._hdf5PanelCanvases[cacheKey] = imageCanvas;
       }
-      imageCtx.putImageData(image, 0, 0);
       ctx.drawImage(imageCanvas, rect.x, rect.y, rect.w, rect.h);
-      ctx.strokeStyle = "#111827";
-      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = "#4b4652";
+      ctx.lineWidth = 1;
       ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
       return values;
     }
@@ -15514,17 +15676,20 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function drawHDF5PanelTicks(ctx, rect, sample, panelPlan, options = {}) {
       const xTicks = options.xTicks ?? true;
       const yTicks = options.yTicks ?? true;
-      ctx.strokeStyle = "#111827";
-      ctx.fillStyle = "#374151";
+      const xTop = !!options.xTop;
+      ctx.strokeStyle = "#817987";
+      ctx.fillStyle = "#d5d1da";
       ctx.font = "11px system-ui, sans-serif";
       if (xTicks) {
         ctx.textAlign = "center";
         for (let i = 0; i <= 2; i++) {
           const x = rect.x + rect.w * i / 2;
           const index = Math.round((sample.xLen - 1) * i / 2);
-          const label = formatHDF5Tick(hdf5AxisValue(panelPlan.xRange, index, sample.xLen));
-          ctx.beginPath(); ctx.moveTo(x, rect.y + rect.h); ctx.lineTo(x, rect.y + rect.h + 4); ctx.stroke();
-          ctx.fillText(label, x, rect.y + rect.h + 15);
+          const label = formatHDF5Tick(hdf5AxisValueForDisplay(panelPlan.xRange, index, sample.xLen, hdf5ShouldFlipX(panelPlan)));
+          const tickY = xTop ? rect.y : rect.y + rect.h;
+          const tickEndY = tickY + (xTop ? -4 : 4);
+          ctx.beginPath(); ctx.moveTo(x, tickY); ctx.lineTo(x, tickEndY); ctx.stroke();
+          ctx.fillText(label, x, xTop ? rect.y - 8 : rect.y + rect.h + 15);
         }
       }
       if (yTicks) {
@@ -15532,7 +15697,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         for (let i = 0; i <= 2; i++) {
           const y = rect.y + rect.h * i / 2;
           const displayIndex = Math.round((sample.yLen - 1) * i / 2);
-          const flipY = hdf5IsEnergyAxisLabel(panelPlan.yLabel) ? hdf5EnergyAxisNeedsFlip(panelPlan.yRange) : hdf5ShouldFlipY(panelPlan);
+          const flipY = hdf5ShouldFlipY(panelPlan);
           const label = formatHDF5Tick(hdf5AxisValueForDisplay(panelPlan.yRange, displayIndex, sample.yLen, flipY));
           const tickX = options.yRight ? rect.x + rect.w : rect.x;
           ctx.beginPath(); ctx.moveTo(tickX, y); ctx.lineTo(tickX + (options.yRight ? 4 : -4), y); ctx.stroke();
@@ -15549,104 +15714,131 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const H = canvas.height;
       const shape = (plan.shape || []).map(Number);
       const baseSelection = options.selection || {};
+      const basePlan = options.basePlan || plan;
+      hdf5PlanAxisMeta(basePlan);
+      const planCacheKey = `${plan.path || plan.name || "dataset"}:${plan.xDim}:${plan.yDim}:${plan.fixedDim}`;
+      const canReuseCache = options.slicerCache
+        && options.slicerCache.sourceSample === sourceSample
+        && options.slicerCache.planCacheKey === planCacheKey;
+      const slicerCache = canReuseCache
+        ? options.slicerCache
+        : { sourceSample, planCacheKey };
       const fixed = hdf5ClampIndex(baseSelection.fixed ?? plan.fixedIndex ?? Math.floor((shape[fixedDim] || 1) / 2), shape[fixedDim] || 1);
-      const initialMain = hdf5SampleFromReader(sourceSample, plan, plan.xDim, plan.yDim, { [fixedDim]: fixed }, {
-        maxCols: 430,
-        maxRows: 285,
-        low: sourceSample.low,
-        high: sourceSample.high
-      });
+      if (slicerCache.mainKey !== fixed || !slicerCache.mainSample) {
+        slicerCache.mainKey = fixed;
+        slicerCache.mainSample = hdf5SampleFromReader(sourceSample, plan, plan.xDim, plan.yDim, { [fixedDim]: fixed }, {
+          maxCols: 500,
+          maxRows: 300,
+          low: sourceSample.low,
+          high: sourceSample.high
+        });
+      }
+      const initialMain = slicerCache.mainSample;
       if (!initialMain) return false;
       const mainPanelPlan = hdf5PanelPlan(plan, plan.xDim, plan.yDim);
       const mainOriented = hdf5OrientedDisplayValues(initialMain, mainPanelPlan);
       const defaultProfiles = hdf5Profiles(mainOriented.values, initialMain.cols, initialMain.rows);
       const col = hdf5ClampIndex(baseSelection.col ?? profilePeakIndex(defaultProfiles.colProfile, Math.floor(initialMain.cols / 2)), initialMain.cols);
       const row = hdf5ClampIndex(baseSelection.row ?? profilePeakIndex(defaultProfiles.rowProfile, Math.floor(initialMain.rows / 2)), initialMain.rows);
-      const sourceX = hdf5ClampIndex((col / Math.max(1, initialMain.cols - 1)) * (initialMain.xLen - 1), initialMain.xLen);
+      const xDisplayIndex = hdf5ClampIndex((col / Math.max(1, initialMain.cols - 1)) * (initialMain.xLen - 1), initialMain.xLen);
+      const sourceX = hdf5DisplayToSourceIndex(xDisplayIndex, initialMain.xLen, mainOriented.flipX);
       const yDisplayIndex = hdf5ClampIndex((row / Math.max(1, initialMain.rows - 1)) * (initialMain.yLen - 1), initialMain.yLen);
-      const sourceY = hdf5DisplayToSourceY(yDisplayIndex, initialMain.yLen, mainOriented.flipY);
-      const topSample = hdf5SampleFromReader(sourceSample, plan, plan.xDim, fixedDim, { [plan.yDim]: sourceY }, {
-        maxCols: 430,
-        maxRows: 112,
-        low: sourceSample.low,
-        high: sourceSample.high
-      });
-      const rightSample = hdf5SampleFromReader(sourceSample, plan, fixedDim, plan.yDim, { [plan.xDim]: sourceX }, {
-        maxCols: 285,
-        maxRows: 285,
-        low: sourceSample.low,
-        high: sourceSample.high
-      });
+      const sourceY = hdf5DisplayToSourceIndex(yDisplayIndex, initialMain.yLen, mainOriented.flipY);
+      if (slicerCache.topKey !== sourceY || !slicerCache.topSample) {
+        slicerCache.topKey = sourceY;
+        slicerCache.topSample = hdf5SampleFromReader(sourceSample, plan, plan.xDim, fixedDim, { [plan.yDim]: sourceY }, {
+          maxCols: 500,
+          maxRows: 140,
+          low: sourceSample.low,
+          high: sourceSample.high
+        });
+      }
+      if (slicerCache.rightKey !== sourceX || !slicerCache.rightSample) {
+        slicerCache.rightKey = sourceX;
+        slicerCache.rightSample = hdf5SampleFromReader(sourceSample, plan, fixedDim, plan.yDim, { [plan.xDim]: sourceX }, {
+          maxCols: 300,
+          maxRows: 300,
+          low: sourceSample.low,
+          high: sourceSample.high
+        });
+      }
+      const topSample = slicerCache.topSample;
+      const rightSample = slicerCache.rightSample;
       if (!topSample || !rightSample) return false;
 
       const topPlan = hdf5PanelPlan(plan, plan.xDim, fixedDim, "x-z");
       const rightPlan = hdf5PanelPlan(plan, fixedDim, plan.yDim, "z-y");
       const topOriented = hdf5OrientedDisplayValues(topSample, topPlan);
       const rightOriented = hdf5OrientedDisplayValues(rightSample, rightPlan);
-      const topProfileRect = { x: 72, y: 42, w: 430, h: 42 };
-      const topRect = { x: 72, y: 92, w: 430, h: 106 };
-      const mainRect = { x: 72, y: 222, w: 430, h: 282 };
-      const rightRect = { x: 520, y: 222, w: 285, h: 282 };
-      const rightProfileRect = { x: 823, y: 222, w: 76, h: 282 };
+      const topProfileRect = { x: 58, y: 38, w: 500, h: 66 };
+      const topRect = { x: 58, y: 110, w: 500, h: 116 };
+      const energyProfileRect = { x: 570, y: 38, w: 280, h: 188 };
+      const mainRect = { x: 58, y: 244, w: 500, h: 260 };
+      const rightRect = { x: 570, y: 244, w: 280, h: 260 };
+      const rightProfileRect = { x: 860, y: 244, w: 72, h: 260 };
       const fixedFlipTop = topOriented.flipY;
+      const fixedFlipRight = rightOriented.flipX;
       const fixedDisplayTop = hdf5SourceToDisplayIndex(fixed, topSample.yLen, fixedFlipTop);
-      const fixedColRight = hdf5ClampIndex((fixed / Math.max(1, rightSample.xLen - 1)) * (rightSample.cols - 1), rightSample.cols);
+      const fixedDisplayRight = hdf5SourceToDisplayIndex(fixed, rightSample.xLen, fixedFlipRight);
+      const fixedColRight = hdf5ClampIndex((fixedDisplayRight / Math.max(1, rightSample.xLen - 1)) * (rightSample.cols - 1), rightSample.cols);
       const fixedRowTop = hdf5ClampIndex((fixedDisplayTop / Math.max(1, topSample.yLen - 1)) * (topSample.rows - 1), topSample.rows);
-      const mainX = mainRect.x + (initialMain.cols <= 1 ? 0 : col / (initialMain.cols - 1)) * mainRect.w;
-      const mainY = mainRect.y + (initialMain.rows <= 1 ? 0 : row / (initialMain.rows - 1)) * mainRect.h;
-      const topX = topRect.x + (topSample.cols <= 1 ? 0 : col / (initialMain.cols - 1)) * topRect.w;
-      const topY = topRect.y + (topSample.rows <= 1 ? 0 : fixedRowTop / (topSample.rows - 1)) * topRect.h;
-      const rightX = rightRect.x + (rightSample.cols <= 1 ? 0 : fixedColRight / (rightSample.cols - 1)) * rightRect.w;
-      const rightY = rightRect.y + (rightSample.rows <= 1 ? 0 : row / (initialMain.rows - 1)) * rightRect.h;
+      const topCol = hdf5ClampIndex((col / Math.max(1, initialMain.cols - 1)) * (topSample.cols - 1), topSample.cols);
+      const rightRow = hdf5ClampIndex((row / Math.max(1, initialMain.rows - 1)) * (rightSample.rows - 1), rightSample.rows);
 
-      ctx.fillStyle = "#f8fafc";
+      ctx.fillStyle = "#0d0d12";
       ctx.fillRect(0, 0, W, H);
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       const topValues = drawHDF5PanelImage(ctx, topSample, topPlan, topRect);
       const mainValues = drawHDF5PanelImage(ctx, initialMain, mainPanelPlan, mainRect);
       const rightValues = drawHDF5PanelImage(ctx, rightSample, rightPlan, rightRect);
-      const profiles = hdf5LineProfiles(mainValues, initialMain.cols, initialMain.rows, col, row);
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(topProfileRect.x, topProfileRect.y, topProfileRect.w, topProfileRect.h);
-      ctx.fillRect(rightProfileRect.x, rightProfileRect.y, rightProfileRect.w, rightProfileRect.h);
-      ctx.strokeStyle = "#111827";
+      const topProfiles = hdf5LineProfiles(topValues, topSample.cols, topSample.rows, topCol, fixedRowTop);
+      const mainProfiles = hdf5LineProfiles(mainValues, initialMain.cols, initialMain.rows, col, row);
+      const rightProfiles = hdf5LineProfiles(rightValues, rightSample.cols, rightSample.rows, fixedColRight, rightRow);
+      ctx.fillStyle = "#21141f";
+      [topProfileRect, energyProfileRect, rightProfileRect].forEach(rect => {
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+      });
+      ctx.strokeStyle = "#4b4652";
       ctx.lineWidth = 1;
-      ctx.strokeRect(topProfileRect.x, topProfileRect.y, topProfileRect.w, topProfileRect.h);
-      ctx.strokeRect(rightProfileRect.x, rightProfileRect.y, rightProfileRect.w, rightProfileRect.h);
-      ctx.strokeStyle = "#d21f3c";
-      ctx.lineWidth = 2;
-      drawProfilePath(ctx, profiles.colProfile, topProfileRect, "top");
-      drawProfilePath(ctx, profiles.rowProfile, rightProfileRect, "right");
+      [topProfileRect, energyProfileRect, rightProfileRect].forEach(rect => {
+        ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      });
+      ctx.strokeStyle = "#f4f1f5";
+      ctx.lineWidth = 1.25;
+      drawProfilePath(ctx, topProfiles.colProfile, topProfileRect, "top");
+      drawProfilePath(ctx, rightProfiles.colProfile, energyProfileRect, "top");
+      drawProfilePath(ctx, mainProfiles.rowProfile, rightProfileRect, "right");
 
       drawHDF5PanelTicks(ctx, mainRect, initialMain, mainPanelPlan, { xTicks: true, yTicks: true });
       drawHDF5PanelTicks(ctx, topRect, topSample, topPlan, { xTicks: false, yTicks: true });
       drawHDF5PanelTicks(ctx, rightRect, rightSample, rightPlan, { xTicks: true, yTicks: false });
-      ctx.fillStyle = "#111827";
-      ctx.font = "bold 16px system-ui, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(plan.name || "ImageTool", mainRect.x + mainRect.w / 2, 23);
-      ctx.fillStyle = "#4b5563";
+      drawHDF5PanelTicks(ctx, topProfileRect, initialMain, mainPanelPlan, { xTicks: true, yTicks: false, xTop: true });
+      drawHDF5PanelTicks(ctx, energyProfileRect, rightSample, rightPlan, { xTicks: true, yTicks: false, xTop: true });
+      drawHDF5PanelTicks(ctx, rightProfileRect, rightSample, rightPlan, { xTicks: false, yTicks: true, yRight: true });
+      ctx.fillStyle = "#d5d1da";
       ctx.font = "12px system-ui, sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText(`${options.filename || ""} · erlab-style slicer`, mainRect.x, 38);
       ctx.textAlign = "center";
       ctx.fillText(mainPanelPlan.xLabel, mainRect.x + mainRect.w / 2, H - 14);
-      ctx.fillText(topPlan.xLabel, topRect.x + topRect.w / 2, topRect.y - 8);
-      ctx.fillText(rightPlan.xLabel, rightRect.x + rightRect.w / 2, rightRect.y + rightRect.h + 32);
+      ctx.fillText(rightPlan.xLabel, rightRect.x + rightRect.w / 2, H - 14);
+      ctx.fillText(topPlan.xLabel, topProfileRect.x + topProfileRect.w / 2, 16);
+      ctx.fillText(rightPlan.xLabel, energyProfileRect.x + energyProfileRect.w / 2, 16);
       ctx.save();
-      ctx.translate(24, mainRect.y + mainRect.h / 2);
+      ctx.translate(18, mainRect.y + mainRect.h / 2);
       ctx.rotate(-Math.PI / 2);
       ctx.fillText(mainPanelPlan.yLabel, 0, 0);
       ctx.restore();
       ctx.save();
-      ctx.translate(rightRect.x + rightRect.w + 22, rightRect.y + rightRect.h / 2);
+      ctx.translate(18, topRect.y + topRect.h / 2);
       ctx.rotate(-Math.PI / 2);
-      ctx.fillText(rightPlan.yLabel, 0, 0);
+      ctx.fillText(topPlan.yLabel, 0, 0);
       ctx.restore();
 
       canvas.__hdf5PreviewState = {
         sample: initialMain,
+        sourceSample,
+        slicerCache,
+        basePlan,
         plan,
         filename: options.filename || "",
         selection: { col, row, fixed },
@@ -15656,24 +15848,29 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           topRect,
           rightRect,
           topProfileRect,
+          energyProfileRect,
           rightProfileRect,
           fixedDim,
           fixedLen: shape[fixedDim] || 1,
           fixedFlipTop,
+          fixedFlipRight,
           topRows: topSample.rows,
           topYLen: topSample.yLen,
           rightCols: rightSample.cols,
           rightXLen: rightSample.xLen,
+          flipX: mainOriented.flipX,
           flipY: mainOriented.flipY
         }
       };
       drawHDF5PreviewOverlay(canvas, canvas.__hdf5PreviewState);
+      updateHDF5MainViewControls(canvas.__hdf5PreviewState);
       return true;
     }
 
     function drawHDF5Heatmap(canvas, sample, plan, options = {}) {
       if (!canvas) return;
       if (!options.compact && drawHDF5SlicerHeatmap(canvas, sample, plan, options)) return;
+      if (!options.compact) hideHDF5MainViewControls();
       const ctx = canvas.getContext("2d");
       const W = canvas.width;
       const H = canvas.height;
@@ -15685,6 +15882,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const plotH = H - margin.top - margin.bottom;
       const oriented = hdf5OrientedDisplayValues(sample, plan);
       const displayValues = oriented.values;
+      const flipX = oriented.flipX;
       const flipY = oriented.flipY;
       ctx.fillStyle = compact ? "#070b10" : "#f8fafc";
       ctx.fillRect(0, 0, W, H);
@@ -15759,8 +15957,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.textAlign = "center";
       for (let i = 0; i <= 4; i++) {
         const x = margin.left + plotW * i / 4;
-        const index = Math.round((sample.xLen - 1) * i / 4);
-        const label = formatHDF5Tick(hdf5AxisValue(plan.xRange, index, sample.xLen));
+        const displayIndex = Math.round((sample.xLen - 1) * i / 4);
+        const label = formatHDF5Tick(hdf5AxisValueForDisplay(plan.xRange, displayIndex, sample.xLen, flipX));
         ctx.beginPath(); ctx.moveTo(x, margin.top + plotH); ctx.lineTo(x, margin.top + plotH + 5); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(x, topProfileRect.y + topProfileRect.h); ctx.lineTo(x, topProfileRect.y + topProfileRect.h + 5); ctx.stroke();
         ctx.fillText(label, x, H - 34);
@@ -15769,9 +15967,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       for (let i = 0; i <= 4; i++) {
         const y = margin.top + plotH * i / 4;
         const displayIndex = Math.round((sample.yLen - 1) * i / 4);
-        const yValue = hdf5IsEnergyYAxis(plan)
-          ? hdf5EnergyAxisDisplayValue(plan.yRange, displayIndex, sample.yLen)
-          : hdf5AxisValueForDisplay(plan.yRange, displayIndex, sample.yLen, flipY);
+        const yValue = hdf5AxisValueForDisplay(plan.yRange, displayIndex, sample.yLen, flipY);
         const label = formatHDF5Tick(yValue);
         ctx.beginPath(); ctx.moveTo(margin.left - 5, y); ctx.lineTo(margin.left, y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(rightProfileRect.x, y); ctx.lineTo(rightProfileRect.x + rightProfileRect.w + 5, y); ctx.stroke();
@@ -15794,7 +15990,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         plan,
         filename: options.filename || "",
         selection: { col: crossCol, row: crossRow },
-        layout: { margin, plotW, plotH, flipY, topProfileRect, rightProfileRect }
+        layout: { margin, plotW, plotH, flipX, flipY, topProfileRect, rightProfileRect }
       };
       drawHDF5PreviewOverlay(canvas, canvas.__hdf5PreviewState);
     }
@@ -15816,12 +16012,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!state?.layout || !state.sample) return "";
       const point = hdf5CanvasPointerPoint(canvas, event);
       if (state.layout.erlabStyle) {
-        const { mainRect, topRect, rightRect, topProfileRect, rightProfileRect } = state.layout;
+        const { mainRect, topRect, rightRect, topProfileRect, energyProfileRect, rightProfileRect } = state.layout;
         const zones = [
           ["main", mainRect],
           ["top", topRect],
           ["right", rightRect],
           ["topProfile", topProfileRect],
+          ["energyProfile", energyProfileRect],
           ["rightProfile", rightProfileRect]
         ];
         return zones.find(([, area]) => hdf5RectContains(area, point))?.[0] || "";
@@ -15843,7 +16040,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const mapX = (area, len) => hdf5ClampIndex(((x - area.x) / Math.max(1, area.w)) * (len - 1), len);
       const mapY = (area, len) => hdf5ClampIndex(((y - area.y) / Math.max(1, area.h)) * (len - 1), len);
       if (state.layout.erlabStyle) {
-        const { mainRect, topRect, rightRect, topProfileRect, rightProfileRect, fixedLen, fixedFlipTop } = state.layout;
+        const { mainRect, topRect, rightRect, topProfileRect, energyProfileRect, rightProfileRect, fixedLen, fixedFlipTop, fixedFlipRight } = state.layout;
         const current = state.selection || {};
         const baseSelection = {
           col: hdf5ClampIndex(current.col ?? Math.floor(state.sample.cols / 2), state.sample.cols),
@@ -15863,20 +16060,26 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           return {
             ...baseSelection,
             col: mapX(topRect, state.sample.cols),
-            fixed: hdf5SourceToDisplayIndex(fixedDisplay, fixedLen || 1, fixedFlipTop)
+            fixed: hdf5DisplayToSourceIndex(fixedDisplay, fixedLen || 1, fixedFlipTop)
           };
         }
         if (zone === "right" && rightRect) {
           return {
             ...baseSelection,
             row: mapY(rightRect, state.sample.rows),
-            fixed: mapX(rightRect, fixedLen || 1)
+            fixed: hdf5DisplayToSourceIndex(mapX(rightRect, fixedLen || 1), fixedLen || 1, fixedFlipRight)
           };
         }
         if (zone === "topProfile" && topProfileRect) {
           return {
             ...baseSelection,
             col: mapX(topProfileRect, state.sample.cols)
+          };
+        }
+        if (zone === "energyProfile" && energyProfileRect) {
+          return {
+            ...baseSelection,
+            fixed: hdf5DisplayToSourceIndex(mapX(energyProfileRect, fixedLen || 1), fixedLen || 1, fixedFlipRight)
           };
         }
         if (zone === "rightProfile" && rightProfileRect) {
@@ -15914,12 +16117,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!state?.sample || !state?.plan || !state?.selection) return "";
       const sample = state.sample;
       const { col, row } = state.selection;
-      const xIndex = hdf5ClampIndex((col / Math.max(1, sample.cols - 1)) * (sample.xLen - 1), sample.xLen);
+      const xDisplayIndex = hdf5ClampIndex((col / Math.max(1, sample.cols - 1)) * (sample.xLen - 1), sample.xLen);
       const yDisplayIndex = hdf5ClampIndex((row / Math.max(1, sample.rows - 1)) * (sample.yLen - 1), sample.yLen);
+      const xIndex = hdf5DisplayToSourceIndex(xDisplayIndex, sample.xLen, state.layout?.flipX);
+      const yIndex = hdf5DisplayToSourceIndex(yDisplayIndex, sample.yLen, state.layout?.flipY);
       const xValue = hdf5AxisValue(state.plan.xRange, xIndex, sample.xLen);
-      const yValue = hdf5IsEnergyYAxis(state.plan)
-        ? hdf5EnergyAxisDisplayValue(state.plan.yRange, yDisplayIndex, sample.yLen)
-        : hdf5AxisValueForDisplay(state.plan.yRange, yDisplayIndex, sample.yLen, state.layout?.flipY);
+      const yValue = hdf5AxisValue(state.plan.yRange, yIndex, sample.yLen);
       const parts = [`x=${formatHDF5Tick(xValue)}`, `y=${formatHDF5Tick(yValue)}`];
       if (state.plan.fixedDim != null) {
         const fixedLen = Number(state.plan.shape?.[state.plan.fixedDim]) || state.layout?.fixedLen || 1;
@@ -15931,7 +16134,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (sample.readValue && Array.isArray(state.plan.shape)) {
         const coords = new Array(state.plan.shape.length).fill(0);
         coords[state.plan.xDim] = xIndex;
-        coords[state.plan.yDim] = hdf5DisplayToSourceY(yDisplayIndex, sample.yLen, state.layout?.flipY);
+        coords[state.plan.yDim] = yIndex;
         if (state.plan.fixedDim != null) {
           const fixedLen = Number(state.plan.shape[state.plan.fixedDim]) || state.layout?.fixedLen || 1;
           coords[state.plan.fixedDim] = hdf5ClampIndex(state.selection.fixed ?? state.plan.fixedIndex ?? Math.floor(fixedLen / 2), fixedLen);
@@ -15955,9 +16158,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (hdf5PreviewHint) hdf5PreviewHint.textContent = `${state.plan.name} · ${hdf5PreviewSelectionSummary(state)}`;
         return;
       }
-      drawHDF5Heatmap(canvas, state.sample, state.plan, {
+      drawHDF5Heatmap(canvas, state.sourceSample || state.sample, state.plan, {
         filename: state.filename,
-        selection: state.selection
+        selection: state.selection,
+        slicerCache: state.slicerCache,
+        basePlan: state.basePlan
       });
       const updatedState = canvas.__hdf5PreviewState;
       if (hdf5PreviewHint && updatedState) {
@@ -15986,6 +16191,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (fast) {
         drawHDF5PreviewOverlay(canvas, canvas.__hdf5PreviewState);
         updateHDF5PreviewHintFromState(canvas.__hdf5PreviewState);
+        scheduleHDF5PreviewRedraw(canvas);
       } else {
         scheduleHDF5PreviewRedraw(canvas);
       }
@@ -16037,7 +16243,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         hdf5PreviewDragPointer = null;
         document.body.classList.remove("hdf5-preview-dragging");
         if (event?.pointerId != null) interactionSurface.releasePointerCapture?.(event.pointerId);
-        if (shouldCommit) redrawHDF5PreviewSelection(hdf5PreviewCanvas);
+        if (shouldCommit) {
+          if (hdf5PreviewRedrawFrame) cancelAnimationFrame(hdf5PreviewRedrawFrame);
+          hdf5PreviewRedrawFrame = 0;
+          redrawHDF5PreviewSelection(hdf5PreviewCanvas);
+        }
       };
       interactionSurface.addEventListener("click", event => {
         const zone = hdf5PreviewPointerZone(hdf5PreviewCanvas, event);
@@ -16137,6 +16347,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
               margin: { left: x, top: y },
               plotW: w,
               plotH: h,
+              flipX: false,
               flipY: false
             }
           };
@@ -16309,6 +16520,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (hdf5PreviewHint) hdf5PreviewHint.textContent = message;
       if (hdf5PreviewInfo) hdf5PreviewInfo.innerHTML = `<span class="muted">${esc(message)}</span>`;
       if (!hdf5PreviewCanvas) return;
+      hideHDF5MainViewControls();
       clearHDF5PreviewOverlay(hdf5PreviewCanvas);
       const ctx = hdf5PreviewCanvas.getContext("2d");
       ctx.fillStyle = "#070b10";
