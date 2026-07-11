@@ -1621,6 +1621,89 @@
       max-width: min(760px, 100%);
     }
 
+    .voice-command-wrap {
+      position: relative;
+      display: inline-flex;
+      width: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .voice-command-btn {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      padding: 0;
+      display: inline-grid;
+      place-items: center;
+      color: var(--muted);
+      background: var(--card-bg);
+    }
+
+    .voice-command-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .voice-command-btn[aria-pressed="true"] {
+      color: #f8fafc;
+      border-color: var(--accent-glow);
+      background: #0f766e;
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.14);
+    }
+
+    .voice-command-btn.is-listening::after {
+      content: "";
+      position: absolute;
+      inset: -5px;
+      border: 1px solid rgba(45, 212, 191, 0.72);
+      border-radius: 9px;
+      animation: voice-command-pulse 1.1s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes voice-command-pulse {
+      0% { opacity: 0.9; transform: scale(0.88); }
+      100% { opacity: 0; transform: scale(1.16); }
+    }
+
+    .voice-command-status {
+      position: absolute;
+      z-index: 80;
+      top: calc(100% + 8px);
+      right: 0;
+      width: max-content;
+      min-width: 160px;
+      max-width: min(290px, 82vw);
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--ink);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+      font-size: 12px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      pointer-events: none;
+    }
+
+    .voice-command-status[data-tone="error"] {
+      border-color: rgba(248, 113, 113, 0.48);
+      color: #fecaca;
+    }
+
+    .voice-command-status[data-tone="success"] {
+      border-color: rgba(45, 212, 191, 0.48);
+      color: #99f6e4;
+    }
+
     input[type="search"], select {
       min-height: 42px;
       border: 1px solid var(--line);
@@ -5108,6 +5191,15 @@
         width: 100%;
       }
 
+      .header-actions > .voice-command-wrap {
+        width: auto;
+        justify-self: end;
+      }
+
+      .voice-command-btn {
+        width: 40px !important;
+      }
+
       .lang-toggle {
         justify-content: center;
       }
@@ -5753,6 +5845,17 @@
       <div class="lang-toggle" id="langToggle" title="切换语言 Switch Language">
         <span class="lang-option active" data-lang="zh">中文</span>
         <span class="lang-option" data-lang="en">EN</span>
+      </div>
+      <div class="voice-command-wrap">
+        <button class="voice-command-btn" id="voiceCommandBtn" type="button" aria-label="语音控制" aria-pressed="false" title="语音控制">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <path d="M12 19v3"></path>
+            <path d="M8 22h8"></path>
+          </svg>
+        </button>
+        <div class="voice-command-status" id="voiceCommandStatus" role="status" aria-live="polite" hidden></div>
       </div>
       <label class="mini-control" title="PDF opens a print view; Word, Excel, and Markdown download directly.">
         <span class="mini-control-text" data-i18n="reportFormatLabel">报告格式</span>
@@ -7167,6 +7270,21 @@
         templateChipBrowser: "数据存于浏览器",
         soundBarsTitle: "音效可视化",
         languageLabel: "切换语言",
+        voiceControlLabel: "语音控制",
+        voiceListening: "正在听…",
+        voiceHeard: "识别：{transcript}",
+        voiceUnsupported: "当前浏览器不支持语音识别",
+        voiceLoginRequired: "请先进入工作台",
+        voiceNoSpeech: "没有听到语音",
+        voiceNoMatch: "未识别到命令：{transcript}",
+        voiceMicDenied: "请允许浏览器使用麦克风",
+        voiceMicUnavailable: "未检测到可用麦克风",
+        voiceNetworkError: "语音识别网络不可用",
+        voiceRecognitionError: "语音识别暂时不可用",
+        voiceOpenedPage: "已打开：{page}",
+        voiceSearchStarted: "正在搜索：{query}",
+        voiceSearchCleared: "已清除搜索",
+        voiceStopped: "语音控制已停止",
         elementInSC: "相关超导材料",
       },
       en: {
@@ -7715,6 +7833,21 @@
         templateChipBrowser: "Browser Storage",
         soundBarsTitle: "Sound Visualizer",
         languageLabel: "Switch Language",
+        voiceControlLabel: "Voice control",
+        voiceListening: "Listening…",
+        voiceHeard: "Heard: {transcript}",
+        voiceUnsupported: "Speech recognition is not supported in this browser",
+        voiceLoginRequired: "Enter the workbench first",
+        voiceNoSpeech: "No speech detected",
+        voiceNoMatch: "Command not recognized: {transcript}",
+        voiceMicDenied: "Allow microphone access in the browser",
+        voiceMicUnavailable: "No microphone is available",
+        voiceNetworkError: "Speech recognition network is unavailable",
+        voiceRecognitionError: "Speech recognition is temporarily unavailable",
+        voiceOpenedPage: "Opened: {page}",
+        voiceSearchStarted: "Searching for: {query}",
+        voiceSearchCleared: "Search cleared",
+        voiceStopped: "Voice control stopped",
         elementInSC: "in superconductivity",
       }
     };
@@ -7806,6 +7939,7 @@
         renderSourceFilters();
       }
       updateTopicUI();
+      updateVoiceControlLanguage();
     }
 
     function setLeadingText(el, text) {
@@ -7893,6 +8027,8 @@
     const ustcGuestBtn = $("#ustcGuestBtn");
     const ustcLoginStatus = $("#ustcLoginStatus");
     const logoutBtn = $("#logoutBtn");
+    const voiceCommandBtn = $("#voiceCommandBtn");
+    const voiceCommandStatus = $("#voiceCommandStatus");
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
     const advancedLibrary = $("#advancedLibrary");
@@ -8700,6 +8836,266 @@
         archiveLabel: "Materials Project"
       }
     ];
+
+    // ===== 语音导航与搜索 =====
+    const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let voiceRecognition = null;
+    let voiceRecognitionUnavailable = !SpeechRecognitionApi;
+    let voiceListening = false;
+    let voiceRecognitionHadFinal = false;
+    let voiceRecognitionHadError = false;
+    let voiceRecognitionManualStop = false;
+    let voiceStatusTimer = 0;
+
+    function parseVoiceCommand(transcript) {
+      const cleaned = String(transcript || "")
+        .replace(/[，。！？、,.!?;；:：]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!cleaned) return null;
+      const normalized = cleaned.toLowerCase();
+
+      if (/^(?:(?:请\s*)?(?:清除|清空|重置)\s*(?:搜索|筛选)|(?:clear|reset)\s+(?:search|filters?))$/i.test(normalized)) {
+        return { type: "clear-search" };
+      }
+
+      const searchMatch = cleaned.match(/^(?:请\s*)?(?:搜索|查找|查询|检索)\s*(.+)$/i)
+        || cleaned.match(/^(?:please\s+)?(?:search(?:\s+for)?|find|look\s+up)\s+(.+)$/i);
+      if (searchMatch) {
+        let query = searchMatch[1].trim();
+        let target = "auto";
+        const targetPrefixes = [
+          ["data", /^(?:本地)?数据(?:库)?(?:中|里|页)?\s*/i],
+          ["literature", /^(?:文献|论文)(?:中|里|页)?\s*/i],
+          ["materials", /^材料(?:库)?(?:中|里|页)?\s*/i],
+          ["data", /^(?:local\s+)?data(?:\s+library)?\s*/i],
+          ["literature", /^(?:papers?|literature)\s*/i],
+          ["materials", /^materials?\s*/i]
+        ];
+        for (const [candidate, pattern] of targetPrefixes) {
+          if (!pattern.test(query)) continue;
+          target = candidate;
+          query = query.replace(pattern, "").trim();
+          break;
+        }
+        query = query.replace(/^(?:for|about|关于|有关|中的|里的)\s*/i, "").trim();
+        return query ? { type: "search", target, query } : null;
+      }
+
+      const navigationMatch = normalized.match(/^(?:请\s*)?(?:打开|进入|切换(?:到)?|前往|去)\s*(.+)$/i)
+        || normalized.match(/^(?:please\s+)?(?:open|show|go\s+to|switch\s+to)\s+(.+)$/i);
+      if (!navigationMatch) return null;
+      const target = navigationMatch[1];
+      if (/(?:二维|2d|two[ -]?dimensional)/i.test(target)) return { type: "topic", topic: "2d", page: "materials" };
+      if (/(?:超导|superconduct)/i.test(target)) return { type: "topic", topic: "sc", page: "materials" };
+      if (/(?:文献|论文|paper|literature)/i.test(target)) return { type: "page", page: "literature" };
+      if (/(?:历史|首页|主页|history|home)/i.test(target)) return { type: "page", page: "history" };
+      if (/(?:材料|materials?)/i.test(target)) return { type: "page", page: "materials" };
+      if (/(?:数据|data)/i.test(target)) return { type: "page", page: "data" };
+      if (/(?:模型|model)/i.test(target)) return { type: "page", page: "model" };
+      if (/(?:报告|report)/i.test(target)) return { type: "page", page: "report" };
+      return null;
+    }
+
+    function setVoiceStatus(message, tone = "neutral", hideAfter = 0) {
+      if (!voiceCommandStatus) return;
+      clearTimeout(voiceStatusTimer);
+      voiceCommandStatus.textContent = message || "";
+      voiceCommandStatus.dataset.tone = tone;
+      voiceCommandStatus.hidden = !message;
+      if (message && hideAfter > 0) {
+        voiceStatusTimer = window.setTimeout(() => {
+          voiceCommandStatus.hidden = true;
+        }, hideAfter);
+      }
+    }
+
+    function setVoiceListening(active) {
+      voiceListening = !!active;
+      voiceCommandBtn?.classList.toggle("is-listening", voiceListening);
+      voiceCommandBtn?.setAttribute("aria-pressed", String(voiceListening));
+    }
+
+    function voicePageLabel(page) {
+      const labels = {
+        history: t("topMenuHome"),
+        materials: t("topMenuMaterials"),
+        literature: t("topMenuLiterature"),
+        data: t("topMenuData"),
+        model: t("topMenuModel"),
+        report: t("topMenuReport")
+      };
+      return labels[page] || page;
+    }
+
+    function clearVoiceSearch() {
+      const localDataSearch = document.querySelector("#librarySearch");
+      if (activeAppPage === "data" && localDataSearch) {
+        localDataSearch.value = "";
+        localDataSearch.dispatchEvent(new Event("input", { bubbles: true }));
+      } else if (searchInput) {
+        searchInput.value = "";
+        resetArticleListViewForFilter();
+        applyFilters();
+      }
+      const message = t("voiceSearchCleared");
+      setVoiceStatus(message, "success", 2400);
+      showToast(message);
+    }
+
+    function runVoiceCommand(transcript) {
+      if (document.body.classList.contains("locked")) {
+        const message = t("voiceLoginRequired");
+        setVoiceStatus(message, "error", 2600);
+        showToast(message);
+        return false;
+      }
+      const command = parseVoiceCommand(transcript);
+      if (!command) {
+        setVoiceStatus(tf("voiceNoMatch", { transcript }), "error", 3200);
+        return false;
+      }
+      if (command.type === "clear-search") {
+        clearVoiceSearch();
+        return true;
+      }
+      if (command.type === "page") {
+        showAppPage(command.page);
+        const message = tf("voiceOpenedPage", { page: voicePageLabel(command.page) });
+        setVoiceStatus(message, "success", 2400);
+        showToast(message);
+        return true;
+      }
+      if (command.type === "topic") {
+        setTopic(command.topic, { preserveScroll: false });
+        showAppPage(command.page || "materials");
+        const label = command.topic === "2d" ? t("topicTwoDInterface") : t("topicSuperInterface");
+        const message = tf("voiceOpenedPage", { page: label });
+        setVoiceStatus(message, "success", 2400);
+        showToast(message);
+        return true;
+      }
+      if (command.type === "search") {
+        const target = command.target === "auto"
+          ? (["materials", "literature", "data"].includes(activeAppPage) ? activeAppPage : "literature")
+          : command.target;
+        if (target === "data") {
+          showAppPage("data");
+          const localDataSearch = document.querySelector("#librarySearch");
+          if (localDataSearch) {
+            localDataSearch.value = command.query;
+            localDataSearch.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        } else {
+          showAppPage(target === "materials" ? "materials" : "literature");
+          searchInput.value = command.query;
+          resetArticleListViewForFilter();
+          applyFilters();
+        }
+        const message = tf("voiceSearchStarted", { query: command.query });
+        setVoiceStatus(message, "success", 2800);
+        showToast(message);
+        return true;
+      }
+      return false;
+    }
+
+    function voiceErrorMessage(errorCode) {
+      if (["not-allowed", "service-not-allowed"].includes(errorCode)) return t("voiceMicDenied");
+      if (errorCode === "audio-capture") return t("voiceMicUnavailable");
+      if (errorCode === "network") return t("voiceNetworkError");
+      if (errorCode === "no-speech") return t("voiceNoSpeech");
+      return t("voiceRecognitionError");
+    }
+
+    function updateVoiceControlLanguage() {
+      if (!voiceCommandBtn) return;
+      const supported = !!SpeechRecognitionApi && !voiceRecognitionUnavailable;
+      const label = supported ? t("voiceControlLabel") : t("voiceUnsupported");
+      voiceCommandBtn.disabled = !supported;
+      voiceCommandBtn.title = label;
+      voiceCommandBtn.setAttribute("aria-label", label);
+      if (voiceRecognition) voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
+    }
+
+    function initVoiceControl() {
+      if (!voiceCommandBtn) return;
+      updateVoiceControlLanguage();
+      if (!SpeechRecognitionApi) return;
+      try {
+        voiceRecognition = new SpeechRecognitionApi();
+      } catch {
+        voiceRecognitionUnavailable = true;
+        voiceCommandBtn.disabled = true;
+        voiceCommandBtn.title = t("voiceUnsupported");
+        voiceCommandBtn.setAttribute("aria-label", t("voiceUnsupported"));
+        return;
+      }
+      voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
+      voiceRecognition.continuous = false;
+      voiceRecognition.interimResults = true;
+      voiceRecognition.maxAlternatives = 3;
+      voiceRecognition.onstart = () => {
+        voiceRecognitionHadFinal = false;
+        voiceRecognitionHadError = false;
+        voiceRecognitionManualStop = false;
+        setVoiceListening(true);
+        setVoiceStatus(t("voiceListening"));
+      };
+      voiceRecognition.onresult = event => {
+        let finalTranscript = "";
+        let interimTranscript = "";
+        for (let index = event.resultIndex; index < event.results.length; index++) {
+          const text = String(event.results[index][0]?.transcript || "").trim();
+          if (event.results[index].isFinal) finalTranscript += `${text} `;
+          else interimTranscript += `${text} `;
+        }
+        if (interimTranscript.trim()) {
+          setVoiceStatus(tf("voiceHeard", { transcript: interimTranscript.trim() }));
+        }
+        if (finalTranscript.trim()) {
+          voiceRecognitionHadFinal = true;
+          runVoiceCommand(finalTranscript.trim());
+        }
+      };
+      voiceRecognition.onerror = event => {
+        voiceRecognitionHadError = true;
+        setVoiceStatus(voiceErrorMessage(event.error), "error", 3200);
+      };
+      voiceRecognition.onend = () => {
+        setVoiceListening(false);
+        if (!voiceRecognitionHadFinal && !voiceRecognitionHadError && !voiceRecognitionManualStop) {
+          setVoiceStatus(t("voiceNoSpeech"), "error", 2200);
+        }
+      };
+      voiceCommandBtn.addEventListener("click", () => {
+        if (document.body.classList.contains("locked")) {
+          const message = t("voiceLoginRequired");
+          setVoiceStatus(message, "error", 2400);
+          showToast(message);
+          return;
+        }
+        if (voiceListening) {
+          voiceRecognitionManualStop = true;
+          voiceRecognition.stop();
+          setVoiceStatus(t("voiceStopped"), "neutral", 1800);
+          return;
+        }
+        try {
+          voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
+          voiceRecognition.start();
+        } catch (error) {
+          setVoiceStatus(error.message || t("voiceMicUnavailable"), "error", 3000);
+        }
+      });
+    }
+
+    // Vosk or Whisper adapters can feed recognized text into this stable command interface.
+    window.ARPESVoiceControl = Object.freeze({
+      parse: parseVoiceCommand,
+      executeTranscript: runVoiceCommand
+    });
+    initVoiceControl();
 
     // ===== 事件绑定 =====
     generateReportBtn?.addEventListener("click", generateResearchReport);
