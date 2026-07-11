@@ -14864,14 +14864,35 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return { binary, metadata, viewerSettings, acquisition };
     }
 
-    function sesMapSample(values, rows, cols) {
-      const scale = rawMapIntensityScale(values);
+    function sesCubeIntensityScale(values) {
+      let min = Infinity;
+      let max = -Infinity;
+      const sampled = [];
+      const stride = Math.max(1, Math.floor(values.length / 240000));
+      for (let index = 0; index < values.length; index++) {
+        const value = values[index];
+        if (!Number.isFinite(value)) continue;
+        if (value < min) min = value;
+        if (value > max) max = value;
+        if (index % stride === 0) sampled.push(value);
+      }
+      if (!sampled.length) throw new Error(currentLang === "zh" ? "原始 map 中没有可用数值" : "No numeric values found in raw map");
+      sampled.sort((a, b) => a - b);
+      const at = q => sampled[Math.max(0, Math.min(sampled.length - 1, Math.floor((sampled.length - 1) * q)))];
+      const low = at(0.02);
+      const high = at(0.98);
+      return { min, max, low, high: high > low ? high : max };
+    }
+
+    function sesCubeSample(values, shape) {
+      const [depth, height, width] = shape;
+      const scale = sesCubeIntensityScale(values);
       const sample = {
         values,
-        cols,
-        rows,
-        xLen: cols,
-        yLen: rows,
+        cols: height,
+        rows: width,
+        xLen: height,
+        yLen: width,
         min: scale.min,
         max: scale.max,
         low: scale.low,
@@ -14879,19 +14900,34 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         byteSwapApplied: false
       };
       sample.readValue = coords => {
-        const row = hdf5ClampIndex(coords?.[0] ?? 0, rows);
-        const col = hdf5ClampIndex(coords?.[1] ?? 0, cols);
-        return values[row * cols + col];
+        const beta = hdf5ClampIndex(coords?.[0] ?? 0, depth);
+        const alpha = hdf5ClampIndex(coords?.[1] ?? 0, height);
+        const energy = hdf5ClampIndex(coords?.[2] ?? 0, width);
+        return values[(beta * height + alpha) * width + energy];
       };
+      sample.sourceShape = shape.slice();
       return sample;
     }
 
-    async function streamSESBinaryMap(zipFile, entry, dimensions, energyWindow) {
+    function sesSampleIndices(sourceLength, targetLength) {
+      const output = new Uint32Array(targetLength);
+      for (let index = 0; index < targetLength; index++) {
+        output[index] = Math.min(sourceLength - 1, Math.floor(index * sourceLength / targetLength));
+      }
+      return output;
+    }
+
+    async function streamSESBinaryCube(zipFile, entry, dimensions) {
       const { width, height, depth } = dimensions;
-      const firstEnergy = Math.max(0, Math.min(width - 1, Math.min(energyWindow.first, energyWindow.last)));
-      const lastEnergy = Math.max(firstEnergy, Math.min(width - 1, Math.max(energyWindow.first, energyWindow.last)));
-      const sums = new Float64Array(depth * height);
-      const counts = new Uint16Array(depth * height);
+      const previewWidth = Math.min(width, 420);
+      const previewHeight = Math.min(height, 320);
+      const energyIndices = sesSampleIndices(width, previewWidth);
+      const alphaIndices = sesSampleIndices(height, previewHeight);
+      const alphaDestination = new Int32Array(height);
+      alphaDestination.fill(-1);
+      alphaIndices.forEach((sourceIndex, outputIndex) => { alphaDestination[sourceIndex] = outputIndex; });
+      const values = new Float32Array(depth * previewHeight * previewWidth);
+      values.fill(NaN);
       const reader = (await openZipEntryStream(zipFile, entry)).getReader();
       let carry = new Uint8Array(0);
       let processedBytes = 0;
@@ -14918,17 +14954,17 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             const z = Math.floor(line / height);
             if (z < 0 || z >= depth) continue;
             const y = line % height;
-            const windowStart = line * width + firstEnergy;
-            const windowEnd = line * width + lastEnergy + 1;
-            const from = Math.max(firstFloat, windowStart);
-            const to = Math.min(lastFloat, windowEnd);
-            const outputIndex = z * height + y;
-            for (let sourceIndex = from; sourceIndex < to; sourceIndex++) {
+            const outputY = alphaDestination[y];
+            if (outputY < 0) continue;
+            const lineStart = line * width;
+            const outputStart = (z * previewHeight + outputY) * previewWidth;
+            for (let outputX = 0; outputX < previewWidth; outputX++) {
+              const sourceIndex = lineStart + energyIndices[outputX];
+              if (sourceIndex < firstFloat || sourceIndex >= lastFloat) continue;
               const byteOffset = (sourceIndex - firstFloat) * 4;
               const intensity = view.getFloat32(byteOffset, true);
               if (!Number.isFinite(intensity) || Math.abs(intensity) >= 1e38) continue;
-              sums[outputIndex] += intensity;
-              counts[outputIndex]++;
+              values[outputStart + outputX] = intensity;
             }
           }
         }
@@ -14943,11 +14979,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           await yieldToBrowser();
         }
       }
-      const values = new Float32Array(depth * height);
-      for (let index = 0; index < values.length; index++) {
-        values[index] = counts[index] ? sums[index] / counts[index] : NaN;
-      }
-      return values;
+      return {
+        values,
+        shape: [depth, previewHeight, previewWidth],
+        sourceShape: [depth, height, width]
+      };
     }
 
     async function handleSESBinaryMapZip(file, entries, packageInfo) {
@@ -14962,7 +14998,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const height = Math.round(sesIniNumber(metadata, "height"));
       const depth = Math.round(sesIniNumber(metadata, "depth"));
       const bytesPerPoint = Math.round(sesIniNumber(metadata, "byteperpoint", 4));
-      if (width < 2 || height < 2 || depth < 2 || bytesPerPoint !== 4) {
+      if (width < 2 || height < 2 || depth < 1 || bytesPerPoint !== 4) {
         throw new Error(currentLang === "zh" ? "这个 SES 二进制 map 的尺寸或数据类型不受支持" : "Unsupported SES binary map dimensions or data type");
       }
       const expectedBytes = width * height * depth * bytesPerPoint;
@@ -14974,7 +15010,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         first: Math.round(sesIniNumber(settings, "x_first", defaultEnergyIndex)),
         last: Math.round(sesIniNumber(settings, "x_last", defaultEnergyIndex))
       };
-      const values = await streamSESBinaryMap(file, packageInfo.binary, { width, height, depth }, energyWindow);
+      const cube = await streamSESBinaryCube(file, packageInfo.binary, { width, height, depth });
       const xOffset = sesIniNumber(metadata, "heightoffset");
       const xDelta = sesIniNumber(metadata, "heightdelta", 1);
       const yOffset = sesIniNumber(metadata, "depthoffset");
@@ -14984,46 +15020,79 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const energyLow = energyOffset + Math.min(energyWindow.first, energyWindow.last) * energyDelta;
       const energyHigh = energyOffset + Math.max(energyWindow.first, energyWindow.last) * energyDelta;
       const regionName = metadata.name || acquisition["region name"] || file.name.replace(/\.zip$/i, "");
-      const sample = sesMapSample(values, depth, height);
-      const plan = {
+      const [previewDepth, previewHeight, previewWidth] = cube.shape;
+      const cubeSample = sesCubeSample(cube.values, cube.shape);
+      const sourceEnergyCenter = (energyWindow.first + energyWindow.last) / 2;
+      const previewEnergyCenter = Math.round(sourceEnergyCenter * (previewWidth - 1) / Math.max(1, width - 1));
+      const betaFirst = Math.round(sesIniNumber(settings, "z_first", Math.floor(depth / 2)));
+      const betaLast = Math.round(sesIniNumber(settings, "z_last", betaFirst));
+      const previewBetaCenter = hdf5ClampIndex((betaFirst + betaLast) / 2, previewDepth);
+      const cubePlan = {
         h5: null,
         dataset: null,
         path: `/SES/${regionName}`,
-        name: `${regionName} · ${energyLow.toFixed(3)}–${energyHigh.toFixed(3)} eV`,
+        name: regionName,
         dtype: "float32-le",
-        shape: [depth, height],
+        shape: cube.shape,
         xDim: 1,
-        yDim: 0,
+        yDim: 2,
+        fixedDim: 0,
+        fixedIndex: previewBetaCenter,
+        xLabel: metadata.heightlabel || "Thetax [deg]",
+        yLabel: metadata.widthlabel || "Energy [eV]",
+        fixedLabel: metadata.depthlabel || "Thetay [deg]",
+        xRange: { first: xOffset, last: xOffset + (height - 1) * xDelta, length: previewHeight },
+        yRange: { first: energyOffset, last: energyOffset + (width - 1) * energyDelta, length: previewWidth },
+        fixedRange: { first: yOffset, last: yOffset + (depth - 1) * yDelta, length: previewDepth },
+        originalShape: cube.sourceShape
+      };
+      const isMap = depth > 1;
+      const plan = isMap ? cubePlan : {
+        ...cubePlan,
+        shape: [previewHeight, previewWidth],
+        xDim: 0,
+        yDim: 1,
         fixedDim: null,
         fixedIndex: null,
         fixedLabel: "",
-        xLabel: metadata.heightlabel || "Thetax [deg]",
-        yLabel: metadata.depthlabel || "Thetay [deg]",
-        xRange: { first: xOffset, last: xOffset + (height - 1) * xDelta, length: height },
-        yRange: { first: yOffset, last: yOffset + (depth - 1) * yDelta, length: depth }
+        fixedRange: null
       };
+      const sample = isMap
+        ? cubeSample
+        : hdf5SampleFromReader(cubeSample, cubePlan, 1, 2, { 0: 0 }, {
+            maxCols: previewHeight,
+            maxRows: previewWidth,
+            low: cubeSample.low,
+            high: cubeSample.high
+          });
       currentIgorImport = null;
       currentH5 = null;
       currentH5Detection = null;
       currentH5Path = "";
-      drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename: file.name });
+      if (isMap) {
+        const selection = hdf5SelectionForPlan(plan, [previewBetaCenter, Math.floor(previewHeight / 2), previewEnergyCenter]);
+        drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename: file.name, selection, basePlan: plan });
+      } else {
+        drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename: file.name });
+      }
       updateHDF5PreviewInfo(plan, sample, file.name);
       if (hdf5Tree) {
-        hdf5Tree.innerHTML = `<div class="dataset">📊 ${esc(regionName)} <span class="muted">[${depth}×${height}×${width}] SES binary map</span></div>`;
+        hdf5Tree.innerHTML = `<div class="dataset">📊 ${esc(regionName)} <span class="muted">[${depth}×${height}×${width}] ${esc(isMap ? "SES 3D MAP · linked preview" : "SES 2D CUT")}</span></div>`;
       }
       if (hdf5Meta) {
         hdf5Meta.innerHTML = [
-          `<strong>${esc(currentLang === "zh" ? "原始 SES 二进制 map 已读取" : "Raw SES binary map loaded")}</strong>`,
-          `<div>${esc(plan.xLabel)} × ${esc(plan.yLabel)}</div>`,
-          `<div>${esc(currentLang === "zh" ? "积分能量" : "Integrated energy")}: ${energyLow.toFixed(4)}–${energyHigh.toFixed(4)} eV</div>`,
-          `<div>Source: ${esc(packageInfo.binary.name)} · ${width}×${height}×${depth}</div>`
+          `<strong>${esc(currentLang === "zh" ? (isMap ? "原始 SES 三维 MAP 已读取" : "原始 SES 二维 CUT 已读取") : (isMap ? "Raw SES 3D MAP loaded" : "Raw SES 2D CUT loaded"))}</strong>`,
+          `<div>${esc(isMap ? `${plan.xLabel} × ${plan.yLabel} × ${plan.fixedLabel}` : `${plan.xLabel} × ${plan.yLabel}`)}</div>`,
+          `<div>${esc(currentLang === "zh" ? "初始能量位置" : "Initial energy position")}: ${energyLow.toFixed(4)}–${energyHigh.toFixed(4)} eV</div>`,
+          `<div>Source: ${esc(packageInfo.binary.name)} · ${width}×${height}×${depth}</div>`,
+          `<div>${esc(currentLang === "zh" ? (isMap ? "三图联动预览" : "二维 CUT 预览") : (isMap ? "Three-panel linked preview" : "2D CUT preview"))}: ${isMap ? `${previewWidth}×${previewHeight}×${previewDepth}` : `${previewWidth}×${previewHeight}`}</div>`
         ].join("<br>");
       }
       await saveRawMapTextSummary(file, { regionName, plan, sample });
       setHDF5Status(currentLang === "zh"
-        ? `✅ 已读取原始二进制 map: ${file.name} · ${depth}×${height}`
-        : `✅ Raw binary map loaded: ${file.name} · ${depth}×${height}`);
-      showToast(currentLang === "zh" ? "原始 map 已读取" : "Raw map loaded");
+        ? (isMap ? `✅ 已读取三维 MAP: ${file.name} · 三图联动预览已生成` : `✅ 已读取二维 CUT: ${file.name}`)
+        : (isMap ? `✅ Raw 3D MAP loaded: ${file.name} · linked preview ready` : `✅ Raw 2D CUT loaded: ${file.name}`));
+      showToast(currentLang === "zh" ? (isMap ? "三维 MAP 已读取" : "二维 CUT 已读取") : (isMap ? "3D MAP loaded" : "2D CUT loaded"));
       return { plan, sample, regionName };
     }
 
