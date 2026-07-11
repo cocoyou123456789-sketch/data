@@ -14846,6 +14846,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return Number.isFinite(value) ? value : fallback;
     }
 
+    function classifySESBinaryDataset(metadata, acquisitionSections, filename, depth) {
+      const ses = acquisitionSections?.ses || {};
+      const runMode = acquisitionSections?.["run mode information"] || {};
+      const identity = [
+        metadata?.name,
+        ses["region name"],
+        runMode.mode,
+        filename
+      ].filter(Boolean).join(" ");
+      if (/(?:^|[^a-z])(fast\s*map|map|mapping)(?:[^a-z]|$)/i.test(identity)) {
+        return { kind: "map", reason: runMode.mode || metadata?.name || filename || "MAP metadata" };
+      }
+      if (/(?:^|[^a-z])(fine\s*cut|cut)(?:[^a-z]|$)/i.test(identity)) {
+        return { kind: "cut", reason: metadata?.name || filename || "CUT metadata" };
+      }
+      return {
+        kind: Number(depth) > 1 ? "map" : "cut",
+        reason: Number(depth) > 1 ? `depth=${depth}` : "depth=1"
+      };
+    }
+
     function findSESBinaryMapPackage(entries) {
       const files = entries.filter(entry => !isZipEntryDirectory(entry));
       const binary = files.find(entry => isSESBinaryMapName(entry.name));
@@ -14993,7 +15014,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const settingsSections = parseSESIni(settingsText);
       const settings = Object.values(settingsSections).find(section => "x_first" in section || "x_last" in section) || {};
       const acquisitionText = packageInfo.acquisition ? await readZipEntryText(file, packageInfo.acquisition) : "";
-      const acquisition = parseSESIni(acquisitionText).ses || {};
+      const acquisitionSections = parseSESIni(acquisitionText);
+      const acquisition = acquisitionSections.ses || {};
       const width = Math.round(sesIniNumber(metadata, "width"));
       const height = Math.round(sesIniNumber(metadata, "height"));
       const depth = Math.round(sesIniNumber(metadata, "depth"));
@@ -15002,8 +15024,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         throw new Error(currentLang === "zh" ? "这个 SES 二进制 map 的尺寸或数据类型不受支持" : "Unsupported SES binary map dimensions or data type");
       }
       const expectedBytes = width * height * depth * bytesPerPoint;
-      if (packageInfo.binary.uncompressedSize < expectedBytes) {
-        throw new Error(currentLang === "zh" ? "二进制数据长度小于 INI 中记录的尺寸" : "Binary data is smaller than the dimensions declared in the INI file");
+      if (packageInfo.binary.uncompressedSize !== expectedBytes) {
+        throw new Error(currentLang === "zh"
+          ? `二进制数据与 INI 尺寸不匹配：实际 ${formatBytes(packageInfo.binary.uncompressedSize)}，应为 ${formatBytes(expectedBytes)}`
+          : `Binary data does not match the INI dimensions: got ${formatBytes(packageInfo.binary.uncompressedSize)}, expected ${formatBytes(expectedBytes)}`);
       }
       const defaultEnergyIndex = Math.floor(width / 2);
       const energyWindow = {
@@ -15020,6 +15044,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const energyLow = energyOffset + Math.min(energyWindow.first, energyWindow.last) * energyDelta;
       const energyHigh = energyOffset + Math.max(energyWindow.first, energyWindow.last) * energyDelta;
       const regionName = metadata.name || acquisition["region name"] || file.name.replace(/\.zip$/i, "");
+      const classification = classifySESBinaryDataset(metadata, acquisitionSections, file.name, depth);
       const [previewDepth, previewHeight, previewWidth] = cube.shape;
       const cubeSample = sesCubeSample(cube.values, cube.shape);
       const sourceEnergyCenter = (energyWindow.first + energyWindow.last) / 2;
@@ -15046,7 +15071,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         fixedRange: { first: yOffset, last: yOffset + (depth - 1) * yDelta, length: previewDepth },
         originalShape: cube.sourceShape
       };
-      const isMap = depth > 1;
+      const isMap = classification.kind === "map" && depth > 1;
       const plan = isMap ? cubePlan : {
         ...cubePlan,
         shape: [previewHeight, previewWidth],
@@ -15059,7 +15084,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       };
       const sample = isMap
         ? cubeSample
-        : hdf5SampleFromReader(cubeSample, cubePlan, 1, 2, { 0: 0 }, {
+        : hdf5SampleFromReader(cubeSample, cubePlan, 1, 2, { 0: previewBetaCenter }, {
             maxCols: previewHeight,
             maxRows: previewWidth,
             low: cubeSample.low,
@@ -15085,6 +15110,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           `<div>${esc(isMap ? `${plan.xLabel} × ${plan.yLabel} × ${plan.fixedLabel}` : `${plan.xLabel} × ${plan.yLabel}`)}</div>`,
           `<div>${esc(currentLang === "zh" ? "初始能量位置" : "Initial energy position")}: ${energyLow.toFixed(4)}–${energyHigh.toFixed(4)} eV</div>`,
           `<div>Source: ${esc(packageInfo.binary.name)} · ${width}×${height}×${depth}</div>`,
+          `<div>${esc(currentLang === "zh" ? "自动识别" : "Detected as")}: ${isMap ? "MAP" : "CUT"} · ${esc(classification.reason)}</div>`,
           `<div>${esc(currentLang === "zh" ? (isMap ? "三图联动预览" : "二维 CUT 预览") : (isMap ? "Three-panel linked preview" : "2D CUT preview"))}: ${isMap ? `${previewWidth}×${previewHeight}×${previewDepth}` : `${previewWidth}×${previewHeight}`}</div>`
         ].join("<br>");
       }
