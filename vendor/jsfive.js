@@ -25,7 +25,9 @@ var hdf5 = (() => {
     Dataset: () => Dataset,
     File: () => File,
     Filters: () => Filters,
-    Group: () => Group
+    Group: () => Group,
+    Inflate: () => Inflate,
+    inflateRaw: () => inflateRaw
   });
 
   // esm/core.js
