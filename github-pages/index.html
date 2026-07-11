@@ -6298,14 +6298,14 @@
     <section id="section-hdf5" data-app-page-section="data">
       <div class="section-head">
         <h2 data-i18n="hdf5Title">📊 HDF5 / PXT 数据管理</h2>
-        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip 文件</span>
+        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip/.txt 文件</span>
       </div>
       <div class="content">
         <div class="drop-zone" id="hdf5DropZone">
           <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 / PXT / ZIP 文件</strong>
-          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES HDF5、PXT/IBW 和 .zip 批量包：zip 内可包含 HDF5、PXT/IBW、预览 JSON 或图片。</p>
+          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包：zip 内可包含 HDF5、PXT/IBW、.txt/.dat/.csv 原始 map、预览 JSON 或图片。</p>
           <div class="upload-actions">
-            <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 / PXT / ZIP 文件</button>
+            <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 / PXT / ZIP / 原始 map</button>
             <button type="button" id="hdf5PackageChooseBtn" data-i18n="hdf5PackageChooseBtn">导入转换包</button>
           </div>
           <div class="hdf5-reader-helper">
@@ -6318,7 +6318,7 @@
             <span data-i18n="hdf5PxtHint">直接把 Igor/Scienta .pxt/.pxp/.ibw 拖到这里；网页会读取 wave、选择主谱图、生成预览并加入本地数据记录。</span>
             <code>Drop .pxt / .pxp / .ibw here for browser-side preview</code>
           </div>
-          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,application/x-hdf5,application/octet-stream,application/zip" multiple>
+          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,.txt,.dat,.csv,.tsv,application/x-hdf5,application/octet-stream,application/zip,text/plain,text/csv" multiple>
           <input class="hdf5-native-input" type="file" id="hdf5PackageInput" accept=".zip,.json,application/json,application/zip,image/png,image/jpeg,image/webp" multiple>
         </div>
         <div class="card">
@@ -6979,10 +6979,10 @@
         clearBtn: "🗑️ 清空",
         notesTitle: "📌 模板说明",
         hdf5Title: "📊 HDF5 / PXT 数据管理",
-        hdf5StatusInitial: "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip 文件",
+        hdf5StatusInitial: "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip/.txt 文件",
         hdf5DropTitle: "📁 拖放或点击上传 HDF5 / PXT / ZIP 文件",
-        hdf5DropHint: "支持 ARPES HDF5、PXT/IBW 和 .zip 批量包：zip 内可包含 HDF5、PXT/IBW、预览 JSON 或图片。",
-        hdf5ChooseBtn: "选择 HDF5 / PXT / ZIP 文件",
+        hdf5DropHint: "支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包：zip 内可包含 HDF5、PXT/IBW、.txt/.dat/.csv 原始 map、预览 JSON 或图片。",
+        hdf5ChooseBtn: "选择 HDF5 / PXT / ZIP / 原始 map",
         hdf5PackageChooseBtn: "导入转换包",
         hdf5ReaderTitle: "本地 HDF5 读图程序",
         hdf5ReaderHint: "如果浏览器直接预览发花，先用脚本生成预览包，再点“导入转换包”。",
@@ -7001,14 +7001,14 @@
         hdf5SavedImportFiles: "{count} 个 HDF5 文件",
         hdf5SavedImportDatasets: "{count} 个数据集",
         hdf5LibraryLoading: "正在加载 HDF5 解析库...",
-        hdf5LibraryReady: "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.hdf5/.hd5/.pxt/.ibw/.zip 文件",
+        hdf5LibraryReady: "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.hdf5/.hd5/.pxt/.ibw/.zip/.txt 文件",
         hdf5LibraryMissing: "HDF5 解析库未加载。请检查网络/CDN，或刷新后重试。",
         hdf5NoFileSelected: "未选择文件",
         hdf5SelectedFiles: "已选择 {count} 个文件，开始解析...",
-        hdf5UnsupportedFile: "请选择 .h5、.hdf5、.hd5、.pxt、.pxp、.ibw 或 .zip 文件；zip 内可包含 HDF5、PXT/IBW、预览 JSON 或图片",
+        hdf5UnsupportedFile: "请选择 .h5、.hdf5、.hd5、.pxt、.pxp、.ibw、.txt、.dat、.csv 或 .zip 文件；zip 内可包含 HDF5、PXT/IBW、原始 map、预览 JSON 或图片",
         hdf5LargeFileWarning: "正在解析大文件 {filename}（{size}），请稍等...",
         hdf5ZipScanning: "正在扫描压缩包 {filename}...",
-        hdf5ZipNoH5: "{filename} 中没有找到可导入的 .h5/.hdf5/.pxt/.ibw/.json/.png 文件",
+        hdf5ZipNoH5: "{filename} 中没有找到可导入的 .h5/.hdf5/.pxt/.ibw/.txt/.dat/.csv/.json/.png 文件",
         hdf5ZipEntryProgress: "正在导入 {filename}：{index}/{total} · {entry}（{size}）",
         hdf5ZipDone: "✅ {filename} 已导入 {count} 个文件",
         hdf5ZipInflateMissing: "当前浏览器不能直接解压这个 zip。请先解压后上传 .h5 文件，或使用最新版 Chrome/Edge。",
@@ -7527,10 +7527,10 @@
         clearBtn: "🗑️ Clear",
         notesTitle: "📌 Template Notes",
         hdf5Title: "📊 HDF5 / PXT Data Library",
-        hdf5StatusInitial: "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw/.zip files",
+        hdf5StatusInitial: "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw/.zip/.txt files",
         hdf5DropTitle: "📁 Drop or click to upload HDF5 / PXT / ZIP files",
-        hdf5DropHint: "Supports ARPES HDF5, PXT/IBW, and .zip batches containing HDF5, PXT/IBW, preview JSON, or images.",
-        hdf5ChooseBtn: "Choose HDF5 / PXT / ZIP Files",
+        hdf5DropHint: "Supports ARPES HDF5, PXT/IBW, raw map text, and .zip batches containing HDF5, PXT/IBW, .txt/.dat/.csv raw maps, preview JSON, or images.",
+        hdf5ChooseBtn: "Choose HDF5 / PXT / ZIP / Raw Map",
         hdf5PackageChooseBtn: "Import Preview Package",
         hdf5ReaderTitle: "Local HDF5 reader",
         hdf5ReaderHint: "If direct browser preview looks noisy, create a preview package with the script, then import it here.",
@@ -7549,14 +7549,14 @@
         hdf5SavedImportFiles: "{count} HDF5 file(s)",
         hdf5SavedImportDatasets: "{count} dataset(s)",
         hdf5LibraryLoading: "Loading HDF5 parser...",
-        hdf5LibraryReady: "HDF5 and PXT parsers ready. Choose .h5/.hdf5/.hd5/.pxt/.ibw/.zip files",
+        hdf5LibraryReady: "HDF5 and PXT parsers ready. Choose .h5/.hdf5/.hd5/.pxt/.ibw/.zip/.txt files",
         hdf5LibraryMissing: "HDF5 parser did not load. Check network/CDN access, or refresh and retry.",
         hdf5NoFileSelected: "No file selected",
         hdf5SelectedFiles: "{count} file(s) selected. Parsing...",
-        hdf5UnsupportedFile: "Choose a .h5, .hdf5, .hd5, .pxt, .pxp, .ibw, or .zip file containing HDF5, PXT/IBW, preview JSON, or images",
+        hdf5UnsupportedFile: "Choose a .h5, .hdf5, .hd5, .pxt, .pxp, .ibw, .txt, .dat, .csv, or .zip file containing HDF5, PXT/IBW, raw maps, preview JSON, or images",
         hdf5LargeFileWarning: "Parsing large file {filename} ({size}); please wait...",
         hdf5ZipScanning: "Scanning archive {filename}...",
-        hdf5ZipNoH5: "No importable .h5/.hdf5/.pxt/.ibw/.json/.png files were found in {filename}",
+        hdf5ZipNoH5: "No importable .h5/.hdf5/.pxt/.ibw/.txt/.dat/.csv/.json/.png files were found in {filename}",
         hdf5ZipEntryProgress: "Importing {filename}: {index}/{total} · {entry} ({size})",
         hdf5ZipDone: "✅ {filename} imported {count} file(s)",
         hdf5ZipInflateMissing: "This browser cannot decompress this zip directly. Extract it first and upload the .h5 files, or use current Chrome/Edge.",
@@ -14097,6 +14097,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return isPXTWorkflowName(file.name || "");
     }
 
+    function isRawMapTextName(name) {
+      return /\.(txt|dat|csv|tsv)$/i.test(name || "");
+    }
+
+    function isRawMapTextFile(file) {
+      const name = file?.name || "";
+      const type = file?.type || "";
+      return isRawMapTextName(name) || /^text\//i.test(type);
+    }
+
     function isHDF5PreviewPackageName(name) {
       return /\.(json|png|jpe?g|webp)$/i.test(name || "");
     }
@@ -14110,15 +14120,26 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function isSupportedZipEntry(entry) {
       const name = entry?.name || "";
       return !isZipEntryDirectory(entry)
-        && (isHDF5EntryName(name) || isPXTWorkflowName(name) || isHDF5PreviewPackageName(name));
+        && (isHDF5EntryName(name) || isPXTWorkflowName(name) || isRawMapTextName(name) || isHDF5PreviewPackageName(name));
     }
 
     function zipEntryMimeType(name) {
       if (/\.json$/i.test(name || "")) return "application/json";
+      if (/\.csv$/i.test(name || "")) return "text/csv";
+      if (/\.(txt|dat|tsv)$/i.test(name || "")) return "text/plain";
       if (/\.png$/i.test(name || "")) return "image/png";
       if (/\.jpe?g$/i.test(name || "")) return "image/jpeg";
       if (/\.webp$/i.test(name || "")) return "image/webp";
       return "application/octet-stream";
+    }
+
+    function zipEntryImportRank(entry) {
+      const name = entry?.name || "";
+      if (isHDF5EntryName(name)) return 10;
+      if (isPXTWorkflowName(name)) return 20;
+      if (isHDF5PreviewPackageName(name)) return 30;
+      if (isRawMapTextName(name)) return 40;
+      return 99;
     }
 
     function fileFromZipEntryBuffer(buffer, name) {
@@ -14224,7 +14245,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     updateHDF5ParserStatus();
 
     async function handleHDF5Files(files) {
-      const validFiles = files.filter(file => isHDF5File(file) || isHDF5ZipFile(file) || isPXTWorkflowFile(file));
+      const validFiles = files.filter(file => isHDF5File(file) || isHDF5ZipFile(file) || isPXTWorkflowFile(file) || isRawMapTextFile(file));
       if (!files.length) {
         setHDF5Status(t("hdf5NoFileSelected"));
         return;
@@ -14236,6 +14257,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       setHDF5Status(tf("hdf5SelectedFiles", { count: validFiles.length }));
       for (const file of validFiles) {
         if (isPXTWorkflowFile(file)) await handleIgorPXTFile(file);
+        else if (isRawMapTextFile(file)) await handleRawMapTextFile(file);
         else if (isHDF5ZipFile(file)) await handleHDF5ZipFile(file);
         else await handleHDF5File(file);
       }
@@ -14373,6 +14395,238 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
     }
 
+    function parseRawMapNumbers(text) {
+      return String(text || "").match(/[-+]?(?:\d+\.?\d*|\.\d+)(?:[Ee][-+]?\d+)?/g)?.map(Number) || [];
+    }
+
+    function parseRawMapDimension(text, index) {
+      const name = text.match(new RegExp(`^Dimension\\s+${index}\\s+name\\s*=\\s*(.+)$`, "mi"))?.[1]?.trim() || `Dimension ${index}`;
+      const size = Number(text.match(new RegExp(`^Dimension\\s+${index}\\s+size\\s*=\\s*(\\d+)`, "mi"))?.[1] || 0);
+      const scaleLine = text.match(new RegExp(`^Dimension\\s+${index}\\s+scale\\s*=\\s*(.+)$`, "mi"))?.[1] || "";
+      const scale = parseRawMapNumbers(scaleLine).filter(Number.isFinite);
+      return { name, size, scale };
+    }
+
+    function rawMapRange(values, length) {
+      const finite = Array.from(values || []).filter(Number.isFinite);
+      if (finite.length >= 2) return { first: finite[0], last: finite[finite.length - 1], length: finite.length };
+      return { first: 0, last: Math.max(0, (Number(length) || 1) - 1), length: Number(length) || 0 };
+    }
+
+    function rawMapIntensityScale(values) {
+      const finite = Array.from(values || []).filter(Number.isFinite).sort((a, b) => a - b);
+      if (!finite.length) throw new Error(currentLang === "zh" ? "原始 map 中没有可用数值" : "No numeric values found in raw map");
+      const at = q => finite[Math.max(0, Math.min(finite.length - 1, Math.floor((finite.length - 1) * q)))];
+      const low = at(0.02);
+      const high = at(0.98);
+      return {
+        min: finite[0],
+        max: finite[finite.length - 1],
+        low,
+        high: high > low ? high : finite[finite.length - 1]
+      };
+    }
+
+    function rawMapBuildSample(rows, cols, rowValues) {
+      const values = new Float32Array(rows * cols);
+      for (let row = 0; row < rows; row++) {
+        const source = rowValues[row] || [];
+        for (let col = 0; col < cols; col++) {
+          const value = Number(source[col]);
+          values[row * cols + col] = Number.isFinite(value) ? value : NaN;
+        }
+      }
+      const scale = rawMapIntensityScale(values);
+      const sample = {
+        values,
+        cols,
+        rows,
+        xLen: cols,
+        yLen: rows,
+        min: scale.min,
+        max: scale.max,
+        low: scale.low,
+        high: scale.high,
+        byteSwapApplied: false
+      };
+      sample.readValue = coords => {
+        const row = hdf5ClampIndex(coords?.[0] ?? 0, rows);
+        const col = hdf5ClampIndex(coords?.[1] ?? 0, cols);
+        return values[row * cols + col];
+      };
+      return sample;
+    }
+
+    function parseRawMapText(text, filename = "raw-map.txt") {
+      const normalized = String(text || "").replace(/\r\n?/g, "\n");
+      const dataMatch = normalized.match(/^\[Data\s+\d+\]\s*$/mi);
+      if (!dataMatch) throw new Error(currentLang === "zh" ? "没有找到 [Data] 数据块" : "No [Data] block found");
+      const dataStart = (dataMatch.index || 0) + dataMatch[0].length;
+      const nextSection = normalized.slice(dataStart).search(/\n\[[^\]]+\]\s*$/m);
+      const dataText = nextSection >= 0
+        ? normalized.slice(dataStart, dataStart + nextSection)
+        : normalized.slice(dataStart);
+      const numericRows = dataText
+        .split("\n")
+        .map(line => parseRawMapNumbers(line))
+        .filter(row => row.length >= 2);
+      if (!numericRows.length) throw new Error(currentLang === "zh" ? "数据块里没有二维数值矩阵" : "No 2D numeric matrix in data block");
+
+      const d1 = parseRawMapDimension(normalized, 1);
+      const d2 = parseRawMapDimension(normalized, 2);
+      const regionName = normalized.match(/^Region Name\s*=\s*(.+)$/mi)?.[1]?.trim()
+        || filename.replace(/\.[^.]+$/, "")
+        || "Raw Map";
+      const firstRow = numericRows[0] || [];
+      let rows = 0;
+      let cols = 0;
+      let matrixRows = [];
+      let xLabel = d2.name || "x";
+      let yLabel = d1.name || "y";
+      let xRange = null;
+      let yRange = null;
+
+      if (d1.size && d2.size && numericRows.length >= d1.size && firstRow.length >= d2.size + 1) {
+        rows = d1.size;
+        cols = d2.size;
+        matrixRows = numericRows.slice(0, rows).map(row => row.slice(1, cols + 1));
+        const rowAxis = numericRows.slice(0, rows).map(row => Number(row[0])).filter(Number.isFinite);
+        xRange = rawMapRange(d2.scale, cols);
+        yRange = rawMapRange(rowAxis.length === rows ? rowAxis : d1.scale, rows);
+      } else if (d1.size && d2.size && numericRows.length >= d2.size && firstRow.length >= d1.size + 1) {
+        rows = d2.size;
+        cols = d1.size;
+        matrixRows = numericRows.slice(0, rows).map(row => row.slice(1, cols + 1));
+        const rowAxis = numericRows.slice(0, rows).map(row => Number(row[0])).filter(Number.isFinite);
+        xLabel = d1.name || "x";
+        yLabel = d2.name || "y";
+        xRange = rawMapRange(d1.scale, cols);
+        yRange = rawMapRange(rowAxis.length === rows ? rowAxis : d2.scale, rows);
+      } else if (d1.size && d2.size && numericRows.length >= d1.size && firstRow.length >= d2.size) {
+        rows = d1.size;
+        cols = d2.size;
+        matrixRows = numericRows.slice(0, rows).map(row => row.slice(0, cols));
+        xRange = rawMapRange(d2.scale, cols);
+        yRange = rawMapRange(d1.scale, rows);
+      } else {
+        const widthCounts = new Map();
+        numericRows.forEach(row => widthCounts.set(row.length, (widthCounts.get(row.length) || 0) + 1));
+        cols = [...widthCounts.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0]?.[0] || firstRow.length;
+        matrixRows = numericRows.filter(row => row.length >= cols).map(row => row.slice(0, cols));
+        rows = matrixRows.length;
+        xRange = rawMapRange([], cols);
+        yRange = rawMapRange([], rows);
+      }
+
+      if (rows < 2 || cols < 2) {
+        throw new Error(currentLang === "zh" ? "原始 map 至少需要 2×2 数据" : "Raw map needs at least a 2x2 matrix");
+      }
+      const sample = rawMapBuildSample(rows, cols, matrixRows);
+      const plan = {
+        h5: null,
+        dataset: null,
+        path: `[Data] ${regionName}`,
+        name: regionName,
+        dtype: "raw-text",
+        shape: [rows, cols],
+        xDim: 1,
+        yDim: 0,
+        fixedDim: null,
+        fixedIndex: null,
+        fixedLabel: "",
+        xLabel,
+        yLabel,
+        xRange,
+        yRange,
+        preserveYOrder: true
+      };
+      return { kind: "ses-raw-map-v1", filename, regionName, sample, plan, dims: [d1, d2] };
+    }
+
+    async function saveRawMapTextSummary(file, parsed) {
+      try {
+        const db = await openIDB();
+        const thumbnail = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
+        const tx = db.transaction(["datasets", "imports"], "readwrite");
+        tx.objectStore("datasets").put({
+          id: `raw-map-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          name: parsed.regionName || file.name,
+          path: parsed.plan.path || "/raw-map",
+          shape: parsed.plan.shape || [],
+          dtype: "raw-text",
+          attrs: {
+            x: parsed.plan.xLabel,
+            y: parsed.plan.yLabel,
+            source: file.name
+          },
+          data: null,
+          thumbnail,
+          preview_error: "",
+          source_file: file.name,
+          imported_at: new Date().toISOString(),
+          tags: autoTag(file.name, { raw: "SES map" })
+        });
+        tx.objectStore("imports").put({
+          id: `raw-map-import-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          kind: "raw-map",
+          filename: file.name,
+          file_count: 1,
+          dataset_count: 1,
+          arpes_count: 1,
+          size: file.size || 0,
+          files: [file.name],
+          layouts: [`Raw map ${parsed.plan.shape.join("×")}`],
+          imported_at: new Date().toISOString(),
+          preview_dataset: parsed.regionName || ""
+        });
+        await new Promise((resolve, reject) => {
+          tx.oncomplete = resolve;
+          tx.onerror = () => reject(tx.error);
+          tx.onabort = () => reject(tx.error);
+        });
+        renderLibrary();
+        renderHDF5ImportHistory().catch(error => console.warn("Could not render raw map import history", error));
+      } catch (error) {
+        console.warn("Could not save raw map summary", error);
+      }
+    }
+
+    async function handleRawMapTextFile(file) {
+      const filename = file.name || "raw-map.txt";
+      setHDF5Status(currentLang === "zh" ? `正在读取原始 map: ${filename}...` : `Parsing raw map: ${filename}...`);
+      showHDF5PreviewMessage(currentLang === "zh" ? `正在读取原始 map: ${filename}...` : `Parsing raw map: ${filename}...`);
+      try {
+        const text = await readFileAsText(file);
+        await yieldToBrowser();
+        const parsed = parseRawMapText(text, filename);
+        currentIgorImport = null;
+        currentH5 = null;
+        currentH5Detection = null;
+        currentH5Path = "";
+        drawHDF5Heatmap(hdf5PreviewCanvas, parsed.sample, parsed.plan, { filename });
+        updateHDF5PreviewInfo(parsed.plan, parsed.sample, filename);
+        if (hdf5Tree) {
+          hdf5Tree.innerHTML = `<div class="dataset">📊 ${esc(parsed.regionName)} <span class="muted">[${parsed.plan.shape.join("×")}] raw-text</span></div>`;
+        }
+        if (hdf5Meta) {
+          hdf5Meta.innerHTML = [
+            `<strong>${esc(currentLang === "zh" ? "原始 SES/Scienta map 已读取" : "Raw SES/Scienta map loaded")}</strong>`,
+            `<div>${esc(parsed.plan.xLabel)} × ${esc(parsed.plan.yLabel)}</div>`,
+            `<div>Shape: [${parsed.plan.shape.join("×")}]</div>`,
+            `<div>${esc(filename)}</div>`
+          ].join("<br>");
+        }
+        await saveRawMapTextSummary(file, parsed);
+        setHDF5Status(currentLang === "zh"
+          ? `✅ 已读取原始 map: ${filename} · ${parsed.plan.shape.join("×")}`
+          : `✅ Raw map loaded: ${filename} · ${parsed.plan.shape.join("×")}`);
+      } catch (error) {
+        console.warn("Could not import raw map text", filename, error);
+        setHDF5Status(currentLang === "zh" ? `❌ 无法读取原始 map ${filename}: ${error.message}` : `❌ Cannot read raw map ${filename}: ${error.message}`);
+        showHDF5PreviewMessage(t("hdf5PreviewUnavailable"));
+      }
+    }
+
     async function handleHDF5File(file) {
       if (!hdf5Parser()?.File) { setHDF5Status(t("hdf5LibraryMissing")); return; }
       const sizeText = formatBytes(file.size || 0);
@@ -14503,7 +14757,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       setHDF5Status(tf("hdf5ZipScanning", { filename: file.name }));
       try {
         const entries = (await readZipEntries(file))
-          .filter(isSupportedZipEntry);
+          .filter(isSupportedZipEntry)
+          .sort((a, b) => zipEntryImportRank(a) - zipEntryImportRank(b) || String(a.name).localeCompare(String(b.name)));
         if (!entries.length) {
           setHDF5Status(tf("hdf5ZipNoH5", { filename: file.name }));
           return;
@@ -14536,6 +14791,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             totalDatasets += 1;
             totalArpes += 1;
             importedLayouts.push("Igor PXT/IBW");
+          } else if (isRawMapTextName(entry.name)) {
+            await handleRawMapTextFile(fileFromZipEntryBuffer(buffer, entryName));
+            totalDatasets += 1;
+            totalArpes += 1;
+            importedLayouts.push("Raw SES/Scienta map");
           } else if (isHDF5PreviewPackageName(entry.name)) {
             previewPackageFiles.push(fileFromZipEntryBuffer(buffer, entryName));
           }
@@ -15370,6 +15630,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function hdf5ShouldFlipY(plan) {
+      if (plan?.preserveYOrder) return false;
       const first = Number(plan?.yRange?.first);
       const last = Number(plan?.yRange?.last);
       return Number.isFinite(first) && Number.isFinite(last) && last > first;
@@ -17336,8 +17597,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           if (status) {
             status.textContent = parserReady
               ? ((document.documentElement.lang || "zh").startsWith("zh")
-                ? "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw 文件"
-                : "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw files")
+                ? "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip/.txt 文件"
+                : "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw/.zip/.txt files")
               : ((document.documentElement.lang || "zh").startsWith("zh")
                 ? "HDF5 解析库未加载。请刷新页面后重试。"
                 : "HDF5 parser did not load. Refresh and retry.");
@@ -17370,7 +17631,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
       function updateStatus() {
         setStatus(parser()
-          ? (zh() ? "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw 文件" : "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw files")
+          ? (zh() ? "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip/.txt 文件" : "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw/.zip/.txt files")
           : parserMissing());
       }
 
