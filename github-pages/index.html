@@ -6303,7 +6303,7 @@
       <div class="content">
         <div class="drop-zone" id="hdf5DropZone">
           <strong data-i18n="hdf5DropTitle">📁 拖放或点击上传 HDF5 / PXT / ZIP 文件</strong>
-          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包：zip 内可包含 HDF5、PXT/IBW、.txt/.dat/.csv 原始 map、预览 JSON 或图片。</p>
+          <p class="muted" data-i18n="hdf5DropHint">支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包：zip 可直接读取 SES 的 Spectrum_*.bin + .ini，也可包含 HDF5、PXT/IBW、文本 map、预览 JSON 或图片。</p>
           <div class="upload-actions">
             <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 / PXT / ZIP / 原始 map</button>
             <button type="button" id="hdf5PackageChooseBtn" data-i18n="hdf5PackageChooseBtn">导入转换包</button>
@@ -6981,7 +6981,7 @@
         hdf5Title: "📊 HDF5 / PXT 数据管理",
         hdf5StatusInitial: "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip/.txt 文件",
         hdf5DropTitle: "📁 拖放或点击上传 HDF5 / PXT / ZIP 文件",
-        hdf5DropHint: "支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包：zip 内可包含 HDF5、PXT/IBW、.txt/.dat/.csv 原始 map、预览 JSON 或图片。",
+        hdf5DropHint: "支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包：zip 可直接读取 SES 的 Spectrum_*.bin + .ini，也可包含 HDF5、PXT/IBW、文本 map、预览 JSON 或图片。",
         hdf5ChooseBtn: "选择 HDF5 / PXT / ZIP / 原始 map",
         hdf5PackageChooseBtn: "导入转换包",
         hdf5ReaderTitle: "本地 HDF5 读图程序",
@@ -7529,7 +7529,7 @@
         hdf5Title: "📊 HDF5 / PXT Data Library",
         hdf5StatusInitial: "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw/.zip/.txt files",
         hdf5DropTitle: "📁 Drop or click to upload HDF5 / PXT / ZIP files",
-        hdf5DropHint: "Supports ARPES HDF5, PXT/IBW, raw map text, and .zip batches containing HDF5, PXT/IBW, .txt/.dat/.csv raw maps, preview JSON, or images.",
+        hdf5DropHint: "Supports ARPES HDF5, PXT/IBW, raw map text, and .zip batches. SES Spectrum_*.bin + .ini packages open directly, alongside HDF5, PXT/IBW, text maps, preview JSON, or images.",
         hdf5ChooseBtn: "Choose HDF5 / PXT / ZIP / Raw Map",
         hdf5PackageChooseBtn: "Import Preview Package",
         hdf5ReaderTitle: "Local HDF5 reader",
@@ -14107,6 +14107,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return isRawMapTextName(name) || /^text\//i.test(type);
     }
 
+    function isSESBinaryMapName(name) {
+      return /(?:^|\/)Spectrum_[^/]+\.bin$/i.test(name || "");
+    }
+
+    function isSESBinaryMapMetadataName(name) {
+      return /(?:^|\/)Spectrum_[^/]+\.ini$/i.test(name || "");
+    }
+
     function isHDF5PreviewPackageName(name) {
       return /\.(json|png|jpe?g|webp)$/i.test(name || "");
     }
@@ -14735,6 +14743,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           throw new Error(`${t("hdf5ZipInflateMissing")} ${error.message || ""}`.trim());
         }
       }
+      const inflateRaw = hdf5Parser()?.inflateRaw;
+      if (typeof inflateRaw === "function") {
+        const output = inflateRaw(compressedBytes);
+        if (expectedSize && output.byteLength !== expectedSize) {
+          console.warn("Unexpected zip inflate size", output.byteLength, expectedSize);
+        }
+        return output.buffer.slice(output.byteOffset, output.byteOffset + output.byteLength);
+      }
       throw new Error(t("hdf5ZipInflateMissing"));
     }
 
@@ -14753,10 +14769,274 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       throw new Error(tf("hdf5ZipUnsupportedCompression", { entry: entry.name, method: entry.method }));
     }
 
+    async function readZipEntryText(zipFile, entry) {
+      const buffer = await readZipEntryArrayBuffer(zipFile, entry);
+      return new TextDecoder("utf-8").decode(buffer);
+    }
+
+    async function openZipEntryStream(zipFile, entry) {
+      const localHeader = await zipFile.slice(entry.localHeaderOffset, entry.localHeaderOffset + 30).arrayBuffer();
+      const header = new DataView(localHeader);
+      if (header.getUint32(0, true) !== 0x04034b50) {
+        throw new Error(currentLang === "zh" ? `zip 条目头损坏: ${entry.name}` : `Invalid ZIP local header: ${entry.name}`);
+      }
+      const nameLength = header.getUint16(26, true);
+      const extraLength = header.getUint16(28, true);
+      const dataOffset = entry.localHeaderOffset + 30 + nameLength + extraLength;
+      const compressedStream = zipFile.slice(dataOffset, dataOffset + entry.compressedSize).stream();
+      if (entry.method === 0) return compressedStream;
+      if (entry.method === 8 && typeof DecompressionStream === "function") {
+        return compressedStream.pipeThrough(new DecompressionStream("deflate-raw"));
+      }
+      if (entry.method === 8 && typeof hdf5Parser()?.Inflate === "function") {
+        const Inflate = hdf5Parser().Inflate;
+        const input = compressedStream.getReader();
+        const inflator = new Inflate({ raw: true, chunkSize: 128 * 1024 });
+        const pending = [];
+        let inputDone = false;
+        inflator.onData = chunk => pending.push(chunk);
+        return new ReadableStream({
+          async pull(controller) {
+            try {
+              while (!pending.length && !inputDone) {
+                const { value, done } = await input.read();
+                inflator.push(value || new Uint8Array(0), done);
+                if (inflator.err) throw new Error(inflator.msg || `inflate error ${inflator.err}`);
+                inputDone = done;
+              }
+              if (pending.length) controller.enqueue(pending.shift());
+              else if (inputDone) controller.close();
+            } catch (error) {
+              controller.error(error);
+            }
+          },
+          cancel() {
+            input.cancel().catch(() => {});
+          }
+        });
+      }
+      if (entry.method === 8) throw new Error(t("hdf5ZipInflateMissing"));
+      throw new Error(tf("hdf5ZipUnsupportedCompression", { entry: entry.name, method: entry.method }));
+    }
+
+    function parseSESIni(text) {
+      const sections = {};
+      let current = "";
+      String(text || "").replace(/\r\n?/g, "\n").split("\n").forEach(rawLine => {
+        const line = rawLine.trim();
+        if (!line || line.startsWith(";") || line.startsWith("#")) return;
+        const sectionMatch = line.match(/^\[([^\]]+)\]$/);
+        if (sectionMatch) {
+          current = sectionMatch[1].trim().toLowerCase();
+          sections[current] ||= {};
+          return;
+        }
+        const equals = line.indexOf("=");
+        if (equals < 0) return;
+        const key = line.slice(0, equals).trim().toLowerCase();
+        const value = line.slice(equals + 1).trim();
+        sections[current] ||= {};
+        sections[current][key] = value;
+      });
+      return sections;
+    }
+
+    function sesIniNumber(section, key, fallback = 0) {
+      const value = Number(section?.[String(key).toLowerCase()]);
+      return Number.isFinite(value) ? value : fallback;
+    }
+
+    function findSESBinaryMapPackage(entries) {
+      const files = entries.filter(entry => !isZipEntryDirectory(entry));
+      const binary = files.find(entry => isSESBinaryMapName(entry.name));
+      if (!binary) return null;
+      const expectedMetadata = binary.name.replace(/\.bin$/i, ".ini").toLowerCase();
+      const metadata = files.find(entry => entry.name.toLowerCase() === expectedMetadata)
+        || files.find(entry => isSESBinaryMapMetadataName(entry.name));
+      if (!metadata) return null;
+      const directory = binary.name.includes("/") ? binary.name.slice(0, binary.name.lastIndexOf("/") + 1) : "";
+      const viewerSettings = files.find(entry => entry.name.toLowerCase() === `${directory}viewer_settings.ini`.toLowerCase())
+        || files.find(entry => /(?:^|\/)viewer_settings\.ini$/i.test(entry.name));
+      const acquisition = files.find(entry => {
+        const name = entry.name.toLowerCase();
+        return name.endsWith(".ini") && entry !== metadata && entry !== viewerSettings && !name.endsWith("viewer.ini");
+      });
+      return { binary, metadata, viewerSettings, acquisition };
+    }
+
+    function sesMapSample(values, rows, cols) {
+      const scale = rawMapIntensityScale(values);
+      const sample = {
+        values,
+        cols,
+        rows,
+        xLen: cols,
+        yLen: rows,
+        min: scale.min,
+        max: scale.max,
+        low: scale.low,
+        high: scale.high,
+        byteSwapApplied: false
+      };
+      sample.readValue = coords => {
+        const row = hdf5ClampIndex(coords?.[0] ?? 0, rows);
+        const col = hdf5ClampIndex(coords?.[1] ?? 0, cols);
+        return values[row * cols + col];
+      };
+      return sample;
+    }
+
+    async function streamSESBinaryMap(zipFile, entry, dimensions, energyWindow) {
+      const { width, height, depth } = dimensions;
+      const firstEnergy = Math.max(0, Math.min(width - 1, Math.min(energyWindow.first, energyWindow.last)));
+      const lastEnergy = Math.max(firstEnergy, Math.min(width - 1, Math.max(energyWindow.first, energyWindow.last)));
+      const sums = new Float64Array(depth * height);
+      const counts = new Uint16Array(depth * height);
+      const reader = (await openZipEntryStream(zipFile, entry)).getReader();
+      let carry = new Uint8Array(0);
+      let processedBytes = 0;
+      let nextProgress = 0.05;
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        let bytes = value instanceof Uint8Array ? value : new Uint8Array(value || 0);
+        if (carry.length) {
+          const joined = new Uint8Array(carry.length + bytes.length);
+          joined.set(carry, 0);
+          joined.set(bytes, carry.length);
+          bytes = joined;
+        }
+        const usableBytes = bytes.length - (bytes.length % 4);
+        const floatCount = usableBytes / 4;
+        const firstFloat = processedBytes / 4;
+        const lastFloat = firstFloat + floatCount;
+        const view = new DataView(bytes.buffer, bytes.byteOffset, usableBytes);
+        if (floatCount) {
+          const firstLine = Math.floor(firstFloat / width);
+          const lastLine = Math.floor((lastFloat - 1) / width);
+          for (let line = firstLine; line <= lastLine; line++) {
+            const z = Math.floor(line / height);
+            if (z < 0 || z >= depth) continue;
+            const y = line % height;
+            const windowStart = line * width + firstEnergy;
+            const windowEnd = line * width + lastEnergy + 1;
+            const from = Math.max(firstFloat, windowStart);
+            const to = Math.min(lastFloat, windowEnd);
+            const outputIndex = z * height + y;
+            for (let sourceIndex = from; sourceIndex < to; sourceIndex++) {
+              const byteOffset = (sourceIndex - firstFloat) * 4;
+              const intensity = view.getFloat32(byteOffset, true);
+              if (!Number.isFinite(intensity) || Math.abs(intensity) >= 1e38) continue;
+              sums[outputIndex] += intensity;
+              counts[outputIndex]++;
+            }
+          }
+        }
+        processedBytes += usableBytes;
+        carry = usableBytes < bytes.length ? bytes.slice(usableBytes) : new Uint8Array(0);
+        const progress = processedBytes / Math.max(1, entry.uncompressedSize);
+        if (progress >= nextProgress) {
+          setHDF5Status(currentLang === "zh"
+            ? `正在读取原始 map: ${Math.min(100, Math.round(progress * 100))}%`
+            : `Reading raw map: ${Math.min(100, Math.round(progress * 100))}%`);
+          nextProgress += 0.05;
+          await yieldToBrowser();
+        }
+      }
+      const values = new Float32Array(depth * height);
+      for (let index = 0; index < values.length; index++) {
+        values[index] = counts[index] ? sums[index] / counts[index] : NaN;
+      }
+      return values;
+    }
+
+    async function handleSESBinaryMapZip(file, entries, packageInfo) {
+      const metadataText = await readZipEntryText(file, packageInfo.metadata);
+      const metadata = parseSESIni(metadataText).spectrum || {};
+      const settingsText = packageInfo.viewerSettings ? await readZipEntryText(file, packageInfo.viewerSettings) : "";
+      const settingsSections = parseSESIni(settingsText);
+      const settings = Object.values(settingsSections).find(section => "x_first" in section || "x_last" in section) || {};
+      const acquisitionText = packageInfo.acquisition ? await readZipEntryText(file, packageInfo.acquisition) : "";
+      const acquisition = parseSESIni(acquisitionText).ses || {};
+      const width = Math.round(sesIniNumber(metadata, "width"));
+      const height = Math.round(sesIniNumber(metadata, "height"));
+      const depth = Math.round(sesIniNumber(metadata, "depth"));
+      const bytesPerPoint = Math.round(sesIniNumber(metadata, "byteperpoint", 4));
+      if (width < 2 || height < 2 || depth < 2 || bytesPerPoint !== 4) {
+        throw new Error(currentLang === "zh" ? "这个 SES 二进制 map 的尺寸或数据类型不受支持" : "Unsupported SES binary map dimensions or data type");
+      }
+      const expectedBytes = width * height * depth * bytesPerPoint;
+      if (packageInfo.binary.uncompressedSize < expectedBytes) {
+        throw new Error(currentLang === "zh" ? "二进制数据长度小于 INI 中记录的尺寸" : "Binary data is smaller than the dimensions declared in the INI file");
+      }
+      const defaultEnergyIndex = Math.floor(width / 2);
+      const energyWindow = {
+        first: Math.round(sesIniNumber(settings, "x_first", defaultEnergyIndex)),
+        last: Math.round(sesIniNumber(settings, "x_last", defaultEnergyIndex))
+      };
+      const values = await streamSESBinaryMap(file, packageInfo.binary, { width, height, depth }, energyWindow);
+      const xOffset = sesIniNumber(metadata, "heightoffset");
+      const xDelta = sesIniNumber(metadata, "heightdelta", 1);
+      const yOffset = sesIniNumber(metadata, "depthoffset");
+      const yDelta = sesIniNumber(metadata, "depthdelta", 1);
+      const energyOffset = sesIniNumber(metadata, "widthoffset");
+      const energyDelta = sesIniNumber(metadata, "widthdelta", 1);
+      const energyLow = energyOffset + Math.min(energyWindow.first, energyWindow.last) * energyDelta;
+      const energyHigh = energyOffset + Math.max(energyWindow.first, energyWindow.last) * energyDelta;
+      const regionName = metadata.name || acquisition["region name"] || file.name.replace(/\.zip$/i, "");
+      const sample = sesMapSample(values, depth, height);
+      const plan = {
+        h5: null,
+        dataset: null,
+        path: `/SES/${regionName}`,
+        name: `${regionName} · ${energyLow.toFixed(3)}–${energyHigh.toFixed(3)} eV`,
+        dtype: "float32-le",
+        shape: [depth, height],
+        xDim: 1,
+        yDim: 0,
+        fixedDim: null,
+        fixedIndex: null,
+        fixedLabel: "",
+        xLabel: metadata.heightlabel || "Thetax [deg]",
+        yLabel: metadata.depthlabel || "Thetay [deg]",
+        xRange: { first: xOffset, last: xOffset + (height - 1) * xDelta, length: height },
+        yRange: { first: yOffset, last: yOffset + (depth - 1) * yDelta, length: depth }
+      };
+      currentIgorImport = null;
+      currentH5 = null;
+      currentH5Detection = null;
+      currentH5Path = "";
+      drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename: file.name });
+      updateHDF5PreviewInfo(plan, sample, file.name);
+      if (hdf5Tree) {
+        hdf5Tree.innerHTML = `<div class="dataset">📊 ${esc(regionName)} <span class="muted">[${depth}×${height}×${width}] SES binary map</span></div>`;
+      }
+      if (hdf5Meta) {
+        hdf5Meta.innerHTML = [
+          `<strong>${esc(currentLang === "zh" ? "原始 SES 二进制 map 已读取" : "Raw SES binary map loaded")}</strong>`,
+          `<div>${esc(plan.xLabel)} × ${esc(plan.yLabel)}</div>`,
+          `<div>${esc(currentLang === "zh" ? "积分能量" : "Integrated energy")}: ${energyLow.toFixed(4)}–${energyHigh.toFixed(4)} eV</div>`,
+          `<div>Source: ${esc(packageInfo.binary.name)} · ${width}×${height}×${depth}</div>`
+        ].join("<br>");
+      }
+      await saveRawMapTextSummary(file, { regionName, plan, sample });
+      setHDF5Status(currentLang === "zh"
+        ? `✅ 已读取原始二进制 map: ${file.name} · ${depth}×${height}`
+        : `✅ Raw binary map loaded: ${file.name} · ${depth}×${height}`);
+      showToast(currentLang === "zh" ? "原始 map 已读取" : "Raw map loaded");
+      return { plan, sample, regionName };
+    }
+
     async function handleHDF5ZipFile(file) {
       setHDF5Status(tf("hdf5ZipScanning", { filename: file.name }));
       try {
-        const entries = (await readZipEntries(file))
+        const allEntries = await readZipEntries(file);
+        const sesPackage = findSESBinaryMapPackage(allEntries);
+        if (sesPackage) {
+          await handleSESBinaryMapZip(file, allEntries, sesPackage);
+          return;
+        }
+        const entries = allEntries
           .filter(isSupportedZipEntry)
           .sort((a, b) => zipEntryImportRank(a) - zipEntryImportRank(b) || String(a.name).localeCompare(String(b.name)));
         if (!entries.length) {
