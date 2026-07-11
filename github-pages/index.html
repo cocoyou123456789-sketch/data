@@ -6508,7 +6508,7 @@
     <div class="floating-compare-body floating-figure-body" id="floatingFigureBody">
       <label class="floating-figure-drop" id="floatingFigureDrop" for="floatingFigureInput">
         <strong data-i18n="floatingFigureDropTitle">拖入实验图 / HDF5 截图</strong>
-        <span data-i18n="floatingFigureDropHint">支持 PNG、JPG、WebP；HDF5 导入后会自动放入这里</span>
+        <span data-i18n="floatingFigureDropHint">支持 PNG、JPG、WebP；HDF5 图像请在本地数据仓库中选择后点击“对比选中”</span>
         <input type="file" id="floatingFigureInput" accept="image/*" multiple hidden>
       </label>
       <div class="floating-figure-grid" id="floatingFigureUserGrid"></div>
@@ -6986,16 +6986,16 @@
         floatingFigureTitle: "悬浮图像对比",
         floatingFigureCount: "{count} 张实验图",
         floatingFigureDropTitle: "拖入实验图 / HDF5 截图",
-        floatingFigureDropHint: "支持 PNG、JPG、WebP；HDF5 导入后会自动放入这里",
+        floatingFigureDropHint: "支持 PNG、JPG、WebP；HDF5 图像请在本地数据仓库中选择后点击“对比选中”",
         floatingFigureDbTitle: "数据库论文图",
         floatingFigureDbStatus: "{count} 张可对比论文图",
-        floatingFigureNoImages: "导入 HDF5 后会自动生成预览图。也可以把自己的 PNG/JPG 拖到这里。",
+        floatingFigureNoImages: "请在本地数据仓库中选择至少两张预览图并点击“对比选中”，也可以把自己的 PNG/JPG 拖到这里。",
         floatingFigureNoDb: "当前筛选下暂无数据库论文图。可以切到文献页导入更多文章或清除筛选。",
         floatingFigureOpenFiguresBtn: "打开图表库",
         floatingFigureClearBtn: "清空图像",
         floatingFigureClearedToast: "悬浮图像已清空",
         floatingFigureAddedToast: "已加入悬浮图像对比",
-        floatingFigureAutoToast: "HDF5 预览图已放入悬浮对比窗",
+        floatingFigureAutoToast: "已加入悬浮图像对比",
         floatingFigureRemovedToast: "已移除图像",
         floatingFigureRemove: "移除",
         floatingFigureSourceHdf5: "HDF5 导入",
@@ -7056,6 +7056,7 @@
         detectedArpesLayout: "识别到 ARPES 数据布局",
         libraryCleared: "🗑️ 数据仓库已清空",
         selectTwoDatasets: "请至少选择2个数据集进行对比",
+        selectTwoPreviewImages: "请至少选择2个带预览图的数据集",
         bandComparisonTitle: "📊 能带图对比",
         highSymmetryHint: "⚡ 高对称方向 · ML 扩展接口预留",
         exportBandDataBtn: "📥 导出数据 JSON",
@@ -7533,16 +7534,16 @@
         floatingFigureTitle: "Floating Figure Compare",
         floatingFigureCount: "{count} experiment image(s)",
         floatingFigureDropTitle: "Drop experiment figures / HDF5 snapshots",
-        floatingFigureDropHint: "PNG, JPG, and WebP supported; HDF5 previews are added here automatically",
+        floatingFigureDropHint: "PNG, JPG, and WebP supported; select HDF5 previews in the local library, then choose Compare Selected",
         floatingFigureDbTitle: "Database Paper Figures",
         floatingFigureDbStatus: "{count} paper figure(s) to compare",
-        floatingFigureNoImages: "HDF5 imports will create preview images automatically. You can also drop PNG/JPG files here.",
+        floatingFigureNoImages: "Select at least two previews in the local library and choose Compare Selected, or drop your own PNG/JPG files here.",
         floatingFigureNoDb: "No database paper figures match the current filters. Import more literature or clear filters.",
         floatingFigureOpenFiguresBtn: "Open Figure Library",
         floatingFigureClearBtn: "Clear Images",
         floatingFigureClearedToast: "Floating figures cleared",
         floatingFigureAddedToast: "Added to floating figure compare",
-        floatingFigureAutoToast: "HDF5 preview added to the floating compare window",
+        floatingFigureAutoToast: "Added to floating figure compare",
         floatingFigureRemovedToast: "Figure removed",
         floatingFigureRemove: "Remove",
         floatingFigureSourceHdf5: "HDF5 import",
@@ -7603,6 +7604,7 @@
         detectedArpesLayout: "Detected ARPES data layout",
         libraryCleared: "🗑️ Data library cleared",
         selectTwoDatasets: "Select at least two datasets to compare",
+        selectTwoPreviewImages: "Select at least two datasets with preview images",
         bandComparisonTitle: "📊 Band Structure Comparison",
         highSymmetryHint: "⚡ High-symmetry directions · ML extension placeholder",
         exportBandDataBtn: "📥 Export Data JSON",
@@ -13399,9 +13401,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (floatingFigureCount) floatingFigureCount.textContent = tf("floatingFigureCount", { count: 0 });
         return;
       }
-      if (options.open) floatingFigurePanel.dataset.dismissed = "false";
-      floatingFigurePanel.hidden = floatingFigurePanel.dataset.dismissed === "true";
-      if (options.open) floatingFigurePanel.classList.remove("is-minimized");
+      if (options.open) {
+        floatingFigurePanel.dataset.dismissed = "false";
+        floatingFigurePanel.hidden = false;
+        floatingFigurePanel.classList.remove("is-minimized");
+      } else if (floatingFigurePanel.dataset.dismissed === "true") {
+        floatingFigurePanel.hidden = true;
+      }
       if (floatingFigureCount) floatingFigureCount.textContent = tf("floatingFigureCount", { count: figures.length });
 
       floatingFigureUserGrid.innerHTML = figures.length
@@ -13470,7 +13476,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       state.floatingFigures = [item, ...(state.floatingFigures || []).filter(existing => existing.src !== item.src)]
         .slice(0, FLOATING_FIGURE_LIMIT);
       persistFloatingFigures();
-      renderFloatingFigureComparison({ open: options.open !== false });
+      renderFloatingFigureComparison({ open: options.open === true });
       if (options.toast !== false) showToast(options.auto ? t("floatingFigureAutoToast") : t("floatingFigureAddedToast"));
     }
 
@@ -13488,22 +13494,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.imageSmoothingQuality = "medium";
       ctx.drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
       return canvas.toDataURL("image/jpeg", 0.58);
-    }
-
-    function addHDF5PreviewToFloatingFigure(preview, filename) {
-      if (!preview || !hdf5PreviewCanvas) return;
-      try {
-        const src = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
-        if (!src) return;
-        addFloatingFigureImage({
-          title: `${filename || "HDF5"} · ${preview.plan?.name || preview.plan?.path || ""}`,
-          src,
-          source: "hdf5",
-          dataset: preview.plan?.path || preview.plan?.name || ""
-        }, { open: true, auto: true });
-      } catch (error) {
-        console.warn("Could not add HDF5 preview to floating figure panel", error);
-      }
     }
 
     function readImageFileAsFloatingFigure(file) {
@@ -14231,8 +14221,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const wave = currentIgorImport.waves?.[index];
       if (!wave || wave.error) return;
       try {
-        const preview = await renderIgorWavePreview(currentIgorImport, wave, currentIgorImport.filename || "Igor file");
-        addHDF5PreviewToFloatingFigure(preview, currentIgorImport.filename || "Igor file");
+        await renderIgorWavePreview(currentIgorImport, wave, currentIgorImport.filename || "Igor file");
       } catch (error) {
         console.warn("Could not preview Igor wave", wave?.path, error);
         setHDF5Status(currentLang === "zh" ? `❌ 无法预览 ${wave?.path || ""}: ${error.message}` : `❌ Cannot preview ${wave?.path || ""}: ${error.message}`);
@@ -14256,7 +14245,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         currentH5Path = "";
         renderIgorTree(parsed);
         const preview = await renderIgorWavePreview(parsed, parsed.primary, file.name);
-        addHDF5PreviewToFloatingFigure(preview, file.name);
         await saveIgorImportSummary(file, parsed, preview);
         setHDF5Status(tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 }));
         showToast(tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 }));
@@ -14291,7 +14279,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const detection = autoScanARPES(h5, filename);
       currentH5Detection = detection;
       const preview = await renderAutomaticHDF5Preview(h5, detection, filename);
-      addHDF5PreviewToFloatingFigure(preview, filename);
       if (options.addSummaries) {
         try { await addDetectedHDF5SummariesToLibrary(filename, detection, h5); }
         catch (error) { console.warn("Could not add HDF5 summaries", error); }
@@ -16473,13 +16460,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         await drawExternalHDF5PreviewImage(src, title);
       }
       updateHDF5PreviewPackageInfo(packageData, filename);
-      const floatingSrc = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas) || src;
-      addFloatingFigureImage({
-        title: `${filename || packageData.source_file || "HDF5"} · ${title}`,
-        src: floatingSrc,
-        source: "hdf5",
-        dataset: packageData.dataset || packageData.name || ""
-      }, { open: true, auto: true });
       setHDF5Status(t("hdf5PreviewPackageLoaded"));
       showToast(t("hdf5PreviewPackageLoaded"));
     }
@@ -16926,8 +16906,19 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const tx = db.transaction("datasets", "readonly");
       const all = await new Promise((resolve) => { tx.objectStore("datasets").getAll().onsuccess = (e) => resolve(e.target.result || []); });
       const selected = all.filter(r => librarySelection.has(r.id));
-      drawBandComparison(selected);
-      document.querySelector("#section-overview")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const previewable = selected.filter(record => /^data:image\//i.test(record.thumbnail || ""));
+      if (previewable.length < 2) { showToast(t("selectTwoPreviewImages")); return; }
+      state.floatingFigures = previewable.slice(0, FLOATING_FIGURE_LIMIT).map(record => ({
+        id: `library:${record.id}`,
+        title: `${record.source_file || "HDF5"} · ${record.name || record.path || "dataset"}`,
+        src: record.thumbnail,
+        source: "hdf5",
+        dataset: record.path || record.name || "",
+        created_at: record.imported_at || new Date().toISOString()
+      }));
+      persistFloatingFigures();
+      renderFloatingFigureComparison({ open: true });
+      showToast(t("floatingFigureAddedToast"));
     });
 
     // ===== 能带图 Canvas 绘制 =====
