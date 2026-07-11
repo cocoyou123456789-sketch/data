@@ -553,6 +553,71 @@
       grid-template-columns: 1fr 1fr;
     }
 
+    .mobile-load-help {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      padding: 24px;
+      align-items: center;
+      justify-content: center;
+      background: #f8fbff;
+      color: #102033;
+      text-align: center;
+    }
+
+    .mobile-load-help-card {
+      width: min(360px, 100%);
+      padding: 24px 20px;
+      border: 1px solid rgba(16,32,51,0.14);
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(16,32,51,0.16);
+    }
+
+    .mobile-load-help strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .mobile-load-help p {
+      margin: 0 0 14px;
+      color: #445166;
+      line-height: 1.55;
+    }
+
+    .mobile-load-help a {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: #0f766e;
+      color: #ffffff;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    @keyframes mobile-help-show {
+      to { opacity: 1; visibility: visible; pointer-events: auto; }
+    }
+
+    @media (max-width: 820px) {
+      body:not(.app-initialized) .mobile-load-help {
+        display: flex;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        animation: mobile-help-show 0s 2s forwards;
+      }
+    }
+
+    body.app-initialized .mobile-load-help {
+      display: none !important;
+    }
+
     body.locked header,
     body.locked .top-menu-bar,
     body.locked main {
@@ -5467,8 +5532,8 @@
       }
     }
   </style>
-<script src="vendor/jsfive.js"></script>
-<script src="vendor/igor-pxt.js"></script>
+<script defer src="vendor/jsfive.js" onload="window.jsfive=window.jsfive||window.hdf5;if(window.updateHDF5ParserStatus)window.updateHDF5ParserStatus();"></script>
+<script defer src="vendor/igor-pxt.js" onload="if(window.updateHDF5ParserStatus)window.updateHDF5ParserStatus();"></script>
 <script>
   window.jsfive = window.jsfive || window.hdf5;
   window.addEventListener("error", event => {
@@ -5481,6 +5546,13 @@
 </script>
 </head>
 <body class="locked">
+  <div class="mobile-load-help" id="mobileLoadHelp">
+    <div class="mobile-load-help-card">
+      <strong>手机微信加载较慢</strong>
+      <p>如果这里一直是空白，请点右上角 “...” 选择“在浏览器打开”。GitHub Pages 在微信内置浏览器里经常会被拦截或卡住。</p>
+      <a href="https://cocoyou123456789-sketch.github.io/data/" target="_self" rel="noopener">重新打开页面</a>
+    </div>
+  </div>
   <div class="login-screen" id="loginScreen">
     <div class="login-card">
       <div class="login-layout">
@@ -9615,6 +9687,7 @@
         renderArticles();
         renderKeywordChips();
         initLogin();
+        document.body.classList.add("app-initialized");
         renderModelRegistry();
         renderToc();
         showAppPage(activeAppPage, { preserveScroll: true });
@@ -14071,6 +14144,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         window.setTimeout(() => { if (!hdf5Parser()?.File) setHDF5Status(t("hdf5LibraryMissing")); }, 1600);
       }
     }
+    window.updateHDF5ParserStatus = updateHDF5ParserStatus;
 
     // 拖放/点击上传
     hdf5ChooseBtn.addEventListener("click", (e) => {
