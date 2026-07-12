@@ -8857,9 +8857,11 @@
     const VOICE_COMMAND_PHRASES = [
       "打开历史", "打开材料", "打开文献", "打开论文", "打开数据", "打开模型", "打开报告",
       "打开二维材料", "打开超导材料", "搜索文献", "搜索材料", "搜索数据", "清除搜索",
+      "帮我找到关于材料的文章", "帮我查一下论文", "我想看关于材料的文献", "给我找几篇文章",
       "打开 history", "打开 materials", "打开 paper", "打开 data", "打开 model", "打开 report",
       "open history", "open materials", "open papers", "open literature", "open data", "open model",
       "open report", "open two dimensional materials", "open superconducting materials",
+      "find me papers about materials", "show me articles about materials", "I want papers about materials",
       "two dimensional materials", "superconducting materials", "search papers",
       "search data", "clear search"
     ];
@@ -8870,7 +8872,8 @@
       "alpha", "beta", "history", "materials", "literature", "papers", "data", "model", "report",
       "超导", "二维材料", "石墨烯", "铁基超导", "铜氧化物", "高压氢化物", "光电子能谱",
       "费米面", "能带", "能隙", "文献", "数据", "历史", "材料", "模型", "报告",
-      "MoS2", "WS2", "h-BN", "MXene", "YBCO", "Bi2212", "FeSe", "LaH10", "MgB2",
+      "TMD", "TMDs", "transition metal dichalcogenide", "MoS2", "WS2", "h-BN", "MXene",
+      "YBCO", "Bi2212", "FeSe", "LaH10", "MgB2",
       "NbSe2", "graphene", "phosphorene", "black phosphorus"
     ];
 
@@ -8939,40 +8942,82 @@
       return applied || voiceContextPhraseKeys.size > 0;
     }
 
+    function voiceSearchTarget(label) {
+      const value = String(label || "").toLowerCase();
+      if (/(?:数据|数据库|data)/i.test(value)) return "data";
+      if (/(?:材料|materials?)/i.test(value)) return "materials";
+      if (/(?:文献|论文|文章|资料|paper|articles?|literature)/i.test(value)) return "literature";
+      return "auto";
+    }
+
+    function buildVoiceSearchCommand(rawQuery, targetHint = "auto") {
+      let query = String(rawQuery || "").trim();
+      let target = targetHint;
+      if (!query) return null;
+
+      const targetPrefixes = [
+        ["data", /^(?:本地)?数据(?:库)?(?:中|里|页)?\s*/i],
+        ["literature", /^(?:文献|论文|文章)(?:中|里|页)?\s*/i],
+        ["materials", /^材料(?:库)?(?:中|里|页)?\s*/i],
+        ["data", /^(?:local\s+)?data(?:\s+library)?\s*/i],
+        ["literature", /^(?:papers?|articles?|literature)\s*/i],
+        ["materials", /^materials?\s*/i]
+      ];
+      if (target === "auto") {
+        for (const [candidate, pattern] of targetPrefixes) {
+          const remainder = query.replace(pattern, "").trim();
+          if (remainder === query || !remainder) continue;
+          target = candidate;
+          query = remainder;
+          break;
+        }
+      }
+
+      query = query
+        .replace(/^(?:for|about|on|regarding|关于|有关)\s*/i, "")
+        .replace(/(?:给我看看|给我看|给我|看看|一下)$/i, "")
+        .trim();
+
+      const suffixMatch = query.match(/^(.+?)(?:\s*(?:相关的|有关的|的))?\s*(文章|论文|文献|资料|材料|数据|papers?|articles?|literature|materials?|data)$/i);
+      if (suffixMatch) {
+        query = suffixMatch[1].trim();
+        if (target === "auto") target = voiceSearchTarget(suffixMatch[2]);
+      }
+      query = query.replace(/(?:相关|有关)$/i, "").replace(/^["'“”‘’]+|["'“”‘’]+$/g, "").trim();
+      return query ? { type: "search", target, query } : null;
+    }
+
     function parseVoiceCommand(transcript) {
       const cleaned = normalizeVoiceTranscript(transcript);
       if (!cleaned) return null;
       const normalized = cleaned.toLowerCase();
 
-      if (/^(?:(?:请\s*)?(?:清除|清空|重置)\s*(?:搜索|筛选)|(?:clear|reset)\s+(?:search|filters?))$/i.test(normalized)) {
+      if (/^(?:(?:请\s*)?(?:(?:帮|替|给)我\s*)?(?:清除|清空|重置)\s*(?:搜索|筛选)|(?:please\s+)?(?:(?:can|could|would)\s+you\s+)?(?:clear|reset)\s+(?:search|filters?))$/i.test(normalized)) {
         return { type: "clear-search" };
+      }
+
+      const compoundSearchMatch = cleaned.match(/^(?:请\s*)?(?:(?:帮|替|给)我\s*)?(?:打开|进入|前往|去)\s*(文献|论文|文章|材料|数据)(?:页|页面)?\s*(?:并|然后|再)?\s*(?:搜索|查找|查询|检索)\s*(.+)$/i)
+        || cleaned.match(/^(?:please\s+)?(?:open|show|go\s+to)\s+(papers?|articles?|literature|materials?|data)(?:\s+page)?\s+(?:and\s+then\s+|and\s+)?(?:search(?:\s+for)?|find|look\s+up)\s+(.+)$/i);
+      if (compoundSearchMatch) {
+        return buildVoiceSearchCommand(compoundSearchMatch[2], voiceSearchTarget(compoundSearchMatch[1]));
+      }
+
+      const naturalSearchMatch = cleaned.match(/^(?:请\s*)?(?:(?:帮|替|给)我\s*|(?:我想|我要|想要)\s*)?(?:找到|找|搜索|搜|查找|查询|查|检索|看看|看|显示)(?:一下|一些|几篇)?\s*(?:关于|有关)?\s*(.+)$/i)
+        || cleaned.match(/^(?:please\s+)?(?:(?:can|could|would)\s+you\s+)?(?:find|search|show|get)(?:\s+me)?\s+(.+)$/i)
+        || cleaned.match(/^i\s+(?:want|need|would\s+like)(?:\s+to\s+(?:find|see|read|search(?:\s+for)?))?\s+(.+)$/i);
+      if (naturalSearchMatch) {
+        const command = buildVoiceSearchCommand(naturalSearchMatch[1]);
+        if (command) return command;
       }
 
       const searchMatch = cleaned.match(/^(?:请\s*)?(?:搜索|查找|查询|检索)\s*(.+)$/i)
         || cleaned.match(/^(?:please\s+)?(?:search(?:\s+for)?|find|look\s+up)\s+(.+)$/i);
       if (searchMatch) {
-        let query = searchMatch[1].trim();
-        let target = "auto";
-        const targetPrefixes = [
-          ["data", /^(?:本地)?数据(?:库)?(?:中|里|页)?\s*/i],
-          ["literature", /^(?:文献|论文)(?:中|里|页)?\s*/i],
-          ["materials", /^材料(?:库)?(?:中|里|页)?\s*/i],
-          ["data", /^(?:local\s+)?data(?:\s+library)?\s*/i],
-          ["literature", /^(?:papers?|literature)\s*/i],
-          ["materials", /^materials?\s*/i]
-        ];
-        for (const [candidate, pattern] of targetPrefixes) {
-          if (!pattern.test(query)) continue;
-          target = candidate;
-          query = query.replace(pattern, "").trim();
-          break;
-        }
-        query = query.replace(/^(?:for|about|关于|有关|中的|里的)\s*/i, "").trim();
-        return query ? { type: "search", target, query } : null;
+        return buildVoiceSearchCommand(searchMatch[1]);
       }
 
-      const navigationMatch = normalized.match(/^(?:请\s*)?(?:打开|进入|切换(?:到)?|前往|去)\s*(.+)$/i)
-        || normalized.match(/^(?:please\s+)?(?:open|show|go\s+to|switch\s+to)\s+(.+)$/i);
+      const navigationMatch = normalized.match(/^(?:请\s*)?(?:(?:帮|替|给)我\s*|(?:我想|我要|想要)\s*)?(?:打开|进入|切换(?:到)?|前往|去)\s*(.+)$/i)
+        || normalized.match(/^(?:please\s+)?(?:(?:can|could|would)\s+you\s+|i\s+(?:want|need|would\s+like)(?:\s+to)?\s+)?(?:open|show|go\s+to|switch\s+to)\s+(.+)$/i);
       let target = navigationMatch?.[1] || "";
       if (!target) {
         target = normalized
