@@ -5054,7 +5054,7 @@
       border-radius: 10px;
       background: var(--card-bg);
       padding: 12px;
-      cursor: pointer;
+      cursor: default;
       transition: all 0.3s;
     }
     .library-card:hover { border-color: var(--accent-glow); transform: translateY(-2px); }
@@ -5102,6 +5102,34 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+    .library-card-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 6px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .library-card-actions button {
+      min-height: 34px;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+    .library-source-state {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+    .library-source-state.available { color: var(--success); }
+    .library-card.dragging { opacity: 0.55; }
+    .hdf5-preview-card.repository-drag-over {
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.2) inset;
     }
 
     /* === 语言切换 === */
@@ -6465,9 +6493,13 @@
         </div>
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
-            <h3 data-i18n="localLibraryTitle">🗄️ 本地数据仓库</h3>
+            <div>
+              <h3 data-i18n="localLibraryTitle">🗄️ 本地数据仓库</h3>
+              <span class="muted" data-i18n="localLibraryHint">上传会保存原始文件；点击载入或把仓库卡片拖到数据预览。</span>
+            </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <input type="search" id="librarySearch" data-i18n-placeholder="librarySearchPlaceholder" placeholder="搜索：能量范围、温度、材料..." style="width:260px; min-height:34px;">
+              <button id="importToLibraryBtn" class="primary" data-i18n="importToLibraryBtn">⬆️ 导入本地仓库</button>
               <button id="compareSelectedBtn" class="primary" data-i18n="compareSelectedBtn">📊 对比选中</button>
               <button id="clearLibraryBtn" data-i18n="clearLibraryBtn">🗑️ 清空库</button>
             </div>
@@ -7131,7 +7163,18 @@
         hdf5PreviewDataset: "数据集",
         hdf5PreviewAxes: "坐标轴",
         localLibraryTitle: "🗄️ 本地数据仓库",
+        localLibraryHint: "上传会保存原始文件；点击载入或把仓库卡片拖到数据预览。",
         librarySearchPlaceholder: "搜索：能量范围、温度、材料...",
+        importToLibraryBtn: "⬆️ 导入本地仓库",
+        loadLibraryPreviewBtn: "载入预览",
+        selectLibraryCompareBtn: "选择对比",
+        selectedLibraryCompareBtn: "已选中",
+        repositorySourceAvailable: "原始文件已保存在本地",
+        repositoryThumbnailOnly: "旧记录：载入现有缩略图",
+        repositoryLoading: "正在从本地仓库载入 {filename}...",
+        repositoryLoaded: "✅ 已从本地仓库载入 {dataset}",
+        repositorySourceMissing: "这条旧记录没有保存原始文件，请重新上传同名文件。",
+        repositoryStorageFailed: "文件已预览，但原始文件未能保存到本地仓库：{message}",
         compareSelectedBtn: "📊 对比选中",
         clearLibraryBtn: "🗑️ 清空库",
         libraryEmpty: "暂无数据。上传 HDF5 文件后添加到库。",
@@ -7694,7 +7737,18 @@
         hdf5PreviewDataset: "Dataset",
         hdf5PreviewAxes: "Axes",
         localLibraryTitle: "🗄️ Local Data Library",
+        localLibraryHint: "Uploads keep the original file locally; load a record or drag its card into Data Preview.",
         librarySearchPlaceholder: "Search: energy range, temperature, material...",
+        importToLibraryBtn: "⬆️ Import to Local Library",
+        loadLibraryPreviewBtn: "Load Preview",
+        selectLibraryCompareBtn: "Select",
+        selectedLibraryCompareBtn: "Selected",
+        repositorySourceAvailable: "Original file stored locally",
+        repositoryThumbnailOnly: "Legacy record: load saved thumbnail",
+        repositoryLoading: "Loading {filename} from the local library...",
+        repositoryLoaded: "✅ Loaded {dataset} from the local library",
+        repositorySourceMissing: "This legacy record has no stored source file. Re-upload the original file.",
+        repositoryStorageFailed: "The file was previewed, but its source could not be saved locally: {message}",
         compareSelectedBtn: "📊 Compare Selected",
         clearLibraryBtn: "🗑️ Clear Library",
         libraryEmpty: "No data yet. Upload an HDF5 file and add datasets to the library.",
@@ -14662,6 +14716,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5SavedImportsStatus = document.querySelector("#hdf5SavedImportsStatus");
     const librarySearch = document.querySelector("#librarySearch");
     const dataLibraryGrid = document.querySelector("#dataLibraryGrid");
+    const importToLibraryBtn = document.querySelector("#importToLibraryBtn");
     const compareSelectedBtn = document.querySelector("#compareSelectedBtn");
     const clearLibraryBtn = document.querySelector("#clearLibraryBtn");
 
@@ -14669,6 +14724,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let currentH5Detection = null;
     let currentH5Path = "";
     let currentIgorImport = null;
+    let currentRepositorySourceId = "";
     let librarySelection = new Set();
     window.__hdf5UploadBound = true;
 
@@ -14756,7 +14812,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function fileFromZipEntryBuffer(buffer, name) {
       const type = zipEntryMimeType(name);
       try {
-        return new File([buffer], name, { type });
+        return new File([buffer], name, { type, lastModified: 0 });
       } catch {
         const blob = new Blob([buffer], { type });
         blob.name = name;
@@ -14821,6 +14877,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     // 拖放/点击上传
     hdf5ChooseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      chooseHDF5Files();
+    });
+    importToLibraryBtn?.addEventListener("click", (e) => {
       e.stopPropagation();
       chooseHDF5Files();
     });
@@ -14910,7 +14970,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ].filter(Boolean).join("<br>");
     }
 
-    async function saveIgorImportSummary(file, parsed, preview) {
+    async function saveIgorImportSummary(file, parsed, preview, sourceId = "") {
       try {
         const db = await openIDB();
         const thumbnail = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
@@ -14926,6 +14986,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           data: null,
           thumbnail,
           preview_error: "",
+          source_id: sourceId,
           source_file: file.name,
           imported_at: new Date().toISOString(),
           tags: autoTag(wave.name || file.name, wave.attrs || {})
@@ -14942,7 +15003,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           layouts: ["Igor PXT/IBW"],
           imported_at: new Date().toISOString(),
           primary_path: wave.path || "",
-          preview_dataset: preview?.plan?.path || ""
+          preview_dataset: preview?.plan?.path || "",
+          source_id: sourceId
         });
         await new Promise((resolve, reject) => {
           tx.oncomplete = resolve;
@@ -14979,7 +15041,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
     };
 
-    async function handleIgorPXTFile(file) {
+    async function handleIgorPXTFile(file, options = {}) {
       if (!window.IgorPxtReader?.parseFileBuffer) {
         setHDF5Status(t("hdf5PxtReaderMissing"));
         return;
@@ -14996,13 +15058,20 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         currentH5Path = "";
         renderIgorTree(parsed);
         const preview = await renderIgorWavePreview(parsed, parsed.primary, file.name);
-        await saveIgorImportSummary(file, parsed, preview);
+        const sourceRecord = options.persist === false
+          ? null
+          : await trySaveRepositorySourceFile(file, "igor", { sourceArchive: options.sourceArchive || "" });
+        currentRepositorySourceId = options.sourceId || sourceRecord?.id || "";
+        parsed.repositorySourceId = currentRepositorySourceId;
+        if (options.persist !== false) await saveIgorImportSummary(file, parsed, preview, currentRepositorySourceId);
         setHDF5Status(tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 }));
         showToast(tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 }));
+        return { parsed, preview };
       } catch (error) {
         console.warn("Could not import Igor/PXT file", file.name, error);
         setHDF5Status(currentLang === "zh" ? `❌ 无法读取 ${file.name}: ${error.message}` : `❌ Cannot read ${file.name}: ${error.message}`);
         showHDF5PreviewMessage(t("hdf5PreviewUnavailable"));
+        return null;
       }
     }
 
@@ -15154,7 +15223,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return { kind: "ses-raw-map-v1", filename, regionName, sample, plan, dims: [d1, d2] };
     }
 
-    async function saveRawMapTextSummary(file, parsed) {
+    async function saveRawMapTextSummary(file, parsed, sourceId = "") {
       try {
         const db = await openIDB();
         const thumbnail = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
@@ -15173,6 +15242,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           data: null,
           thumbnail,
           preview_error: "",
+          source_id: sourceId,
           source_file: file.name,
           imported_at: new Date().toISOString(),
           tags: autoTag(file.name, { raw: "SES map" })
@@ -15188,7 +15258,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           files: [file.name],
           layouts: [`Raw map ${parsed.plan.shape.join("×")}`],
           imported_at: new Date().toISOString(),
-          preview_dataset: parsed.regionName || ""
+          preview_dataset: parsed.regionName || "",
+          source_id: sourceId
         });
         await new Promise((resolve, reject) => {
           tx.oncomplete = resolve;
@@ -15202,7 +15273,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
     }
 
-    async function handleRawMapTextFile(file) {
+    async function handleRawMapTextFile(file, options = {}) {
       const filename = file.name || "raw-map.txt";
       setHDF5Status(currentLang === "zh" ? `正在读取原始 map: ${filename}...` : `Parsing raw map: ${filename}...`);
       showHDF5PreviewMessage(currentLang === "zh" ? `正在读取原始 map: ${filename}...` : `Parsing raw map: ${filename}...`);
@@ -15227,18 +15298,24 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             `<div>${esc(filename)}</div>`
           ].join("<br>");
         }
-        await saveRawMapTextSummary(file, parsed);
+        const sourceRecord = options.persist === false
+          ? null
+          : await trySaveRepositorySourceFile(file, "raw-map", { sourceArchive: options.sourceArchive || "" });
+        currentRepositorySourceId = options.sourceId || sourceRecord?.id || "";
+        if (options.persist !== false) await saveRawMapTextSummary(file, parsed, currentRepositorySourceId);
         setHDF5Status(currentLang === "zh"
           ? `✅ 已读取原始 map: ${filename} · ${parsed.plan.shape.join("×")}`
           : `✅ Raw map loaded: ${filename} · ${parsed.plan.shape.join("×")}`);
+        return parsed;
       } catch (error) {
         console.warn("Could not import raw map text", filename, error);
         setHDF5Status(currentLang === "zh" ? `❌ 无法读取原始 map ${filename}: ${error.message}` : `❌ Cannot read raw map ${filename}: ${error.message}`);
         showHDF5PreviewMessage(t("hdf5PreviewUnavailable"));
+        return null;
       }
     }
 
-    async function handleHDF5File(file) {
+    async function handleHDF5File(file, options = {}) {
       if (!hdf5Parser()?.File) { setHDF5Status(t("hdf5LibraryMissing")); return; }
       const sizeText = formatBytes(file.size || 0);
       setHDF5Status((file.size || 0) > 80 * 1024 * 1024
@@ -15246,7 +15323,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : (currentLang === "zh" ? `⏳ 解析 ${file.name}...` : `⏳ Parsing ${file.name}...`));
       try {
         const buffer = await file.arrayBuffer();
-        await parseHDF5Buffer(buffer, file.name, { addSummaries: true, persistImport: true });
+        const sourceRecord = options.persist === false
+          ? null
+          : await trySaveRepositorySourceFile(file, "h5", { sourceArchive: options.sourceArchive || "" });
+        await parseHDF5Buffer(buffer, file.name, {
+          addSummaries: options.persist !== false,
+          persistImport: options.persist !== false,
+          sourceArchive: options.sourceArchive || "",
+          sourceId: options.sourceId || sourceRecord?.id || ""
+        });
       } catch (e) {
         setHDF5Status(currentLang === "zh" ? `❌ 无法解析 ${file.name}: ${e.message}` : `❌ Cannot parse ${file.name}: ${e.message}`);
       }
@@ -15255,6 +15340,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     async function parseHDF5Buffer(buffer, filename, options = {}) {
       const h5 = openHDF5Buffer(buffer, filename);
       currentH5 = h5;
+      currentIgorImport = null;
+      currentRepositorySourceId = options.sourceId || "";
       renderHDF5Tree(h5);
       setHDF5Status(currentLang === "zh"
         ? `✅ 已加载: ${filename} (${formatBytes(buffer.byteLength)})`
@@ -15263,7 +15350,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       currentH5Detection = detection;
       const preview = await renderAutomaticHDF5Preview(h5, detection, filename);
       if (options.addSummaries) {
-        try { await addDetectedHDF5SummariesToLibrary(filename, detection, h5); }
+        try { await addDetectedHDF5SummariesToLibrary(filename, detection, h5, currentRepositorySourceId); }
         catch (error) { console.warn("Could not add HDF5 summaries", error); }
       }
       if (options.persistImport !== false) {
@@ -15278,6 +15365,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           size: buffer.byteLength,
           preview_dataset: preview?.plan?.path || preview?.plan?.name || "",
           layouts: detection.layouts || [],
+          source_id: currentRepositorySourceId,
           files: [filename],
           imported_at: new Date().toISOString()
         });
@@ -15610,7 +15698,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       };
     }
 
-    async function handleSESBinaryMapZip(file, entries, packageInfo) {
+    async function handleSESBinaryMapZip(file, entries, packageInfo, options = {}) {
       const metadataText = await readZipEntryText(file, packageInfo.metadata);
       const metadata = parseSESIni(metadataText).spectrum || {};
       const settingsText = packageInfo.viewerSettings ? await readZipEntryText(file, packageInfo.viewerSettings) : "";
@@ -15697,6 +15785,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       currentH5 = null;
       currentH5Detection = null;
       currentH5Path = "";
+      currentRepositorySourceId = options.sourceId || "";
       if (isMap) {
         const selection = hdf5SelectionForPlan(plan, [previewBetaCenter, Math.floor(previewHeight / 2), previewEnergyCenter]);
         drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename: file.name, selection, basePlan: plan });
@@ -15717,7 +15806,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           `<div>${esc(currentLang === "zh" ? (isMap ? "三图联动预览" : "二维 CUT 预览") : (isMap ? "Three-panel linked preview" : "2D CUT preview"))}: ${isMap ? `${previewWidth}×${previewHeight}×${previewDepth}` : `${previewWidth}×${previewHeight}`}</div>`
         ].join("<br>");
       }
-      await saveRawMapTextSummary(file, { regionName, plan, sample });
+      if (options.persist !== false) {
+        await saveRawMapTextSummary(file, { regionName, plan, sample }, currentRepositorySourceId);
+      }
       setHDF5Status(currentLang === "zh"
         ? (isMap ? `✅ 已读取三维 MAP: ${file.name} · 三图联动预览已生成` : `✅ 已读取二维 CUT: ${file.name}`)
         : (isMap ? `✅ Raw 3D MAP loaded: ${file.name} · linked preview ready` : `✅ Raw 2D CUT loaded: ${file.name}`));
@@ -15725,13 +15816,19 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return { plan, sample, regionName };
     }
 
-    async function handleHDF5ZipFile(file) {
+    async function handleHDF5ZipFile(file, options = {}) {
       setHDF5Status(tf("hdf5ZipScanning", { filename: file.name }));
       try {
         const allEntries = await readZipEntries(file);
         const sesPackage = findSESBinaryMapPackage(allEntries);
         if (sesPackage) {
-          await handleSESBinaryMapZip(file, allEntries, sesPackage);
+          const sourceRecord = options.persist === false
+            ? null
+            : await trySaveRepositorySourceFile(file, "ses-zip");
+          return await handleSESBinaryMapZip(file, allEntries, sesPackage, {
+            persist: options.persist,
+            sourceId: options.sourceId || sourceRecord?.id || ""
+          });
           return;
         }
         const entries = allEntries
@@ -15760,17 +15857,32 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const buffer = await readZipEntryArrayBuffer(file, entry);
           if (isHDF5EntryName(entry.name)) {
             if (!hdf5Parser()?.File) throw new Error(t("hdf5LibraryMissing"));
-            const parsed = await parseHDF5Buffer(buffer, entryName, { addSummaries: true, persistImport: false, sourceArchive: file.name });
+            const entryFile = fileFromZipEntryBuffer(buffer, entryName);
+            const sourceRecord = options.persist === false
+              ? null
+              : await trySaveRepositorySourceFile(entryFile, "h5", { sourceArchive: file.name });
+            const parsed = await parseHDF5Buffer(buffer, entryName, {
+              addSummaries: options.persist !== false,
+              persistImport: false,
+              sourceArchive: file.name,
+              sourceId: options.sourceId || sourceRecord?.id || ""
+            });
             totalDatasets += parsed?.detection?.allDatasets?.length || 0;
             totalArpes += parsed?.detection?.arpesDatasets?.length || 0;
             importedLayouts.push(...(parsed?.detection?.layouts || []));
           } else if (isPXTWorkflowName(entry.name)) {
-            await handleIgorPXTFile(fileFromZipEntryBuffer(buffer, entryName));
+            await handleIgorPXTFile(fileFromZipEntryBuffer(buffer, entryName), {
+              persist: options.persist,
+              sourceArchive: file.name
+            });
             totalDatasets += 1;
             totalArpes += 1;
             importedLayouts.push("Igor PXT/IBW");
           } else if (isRawMapTextName(entry.name)) {
-            await handleRawMapTextFile(fileFromZipEntryBuffer(buffer, entryName));
+            await handleRawMapTextFile(fileFromZipEntryBuffer(buffer, entryName), {
+              persist: options.persist,
+              sourceArchive: file.name
+            });
             totalDatasets += 1;
             totalArpes += 1;
             importedLayouts.push("Raw SES/Scienta map");
@@ -15784,21 +15896,25 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (previewPackageFiles.length) {
           await handleHDF5PreviewPackageFiles(previewPackageFiles);
         }
-        await saveHDF5ImportRecord({
-          id: `zip:${file.name}`,
-          kind: "zip",
-          filename: file.name,
-          file_count: imported,
-          dataset_count: totalDatasets,
-          arpes_count: totalArpes,
-          size: file.size || 0,
-          files: importedFiles,
-          layouts: [...new Set(importedLayouts)],
-          imported_at: new Date().toISOString()
-        });
+        if (options.persist !== false) {
+          await saveHDF5ImportRecord({
+            id: `zip:${file.name}`,
+            kind: "zip",
+            filename: file.name,
+            file_count: imported,
+            dataset_count: totalDatasets,
+            arpes_count: totalArpes,
+            size: file.size || 0,
+            files: importedFiles,
+            layouts: [...new Set(importedLayouts)],
+            imported_at: new Date().toISOString()
+          });
+        }
         setHDF5Status(tf("hdf5ZipDone", { filename: file.name, count: imported }));
+        return { imported, totalDatasets, totalArpes };
       } catch (error) {
         setHDF5Status(currentLang === "zh" ? `❌ 无法导入 ${file.name}: ${error.message}` : `❌ Cannot import ${file.name}: ${error.message}`);
+        return null;
       }
     }
 
@@ -17989,7 +18105,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return rankedHDF5PreviewDatasets(detection).slice(0, 6);
     }
 
-    async function addDetectedHDF5SummariesToLibrary(filename, detection, h5 = null) {
+    async function addDetectedHDF5SummariesToLibrary(filename, detection, h5 = null, sourceId = "") {
       const primary = primaryDetectedHDF5Datasets(detection);
       if (!primary.length) return;
       const db = await openIDB();
@@ -18017,8 +18133,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
         const existingRecord = existingByKey.get(key);
         if (existingRecord) {
-          if ((thumbnail && thumbnail !== existingRecord.thumbnail) || previewError !== (existingRecord.preview_error || "")) {
-            store.put({ ...existingRecord, thumbnail: thumbnail || existingRecord.thumbnail || "", preview_error: thumbnail ? "" : previewError });
+          const sourceChanged = !!sourceId && sourceId !== (existingRecord.source_id || "");
+          if ((thumbnail && thumbnail !== existingRecord.thumbnail) || previewError !== (existingRecord.preview_error || "") || sourceChanged) {
+            store.put({
+              ...existingRecord,
+              thumbnail: thumbnail || existingRecord.thumbnail || "",
+              preview_error: thumbnail ? "" : previewError,
+              source_id: sourceId || existingRecord.source_id || ""
+            });
             changed++;
           }
           continue;
@@ -18033,6 +18155,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           data: null,
           thumbnail,
           preview_error: thumbnail ? "" : previewError,
+          source_id: sourceId,
           source_file: filename,
           imported_at: new Date().toISOString(),
           tags: autoTag(dataset.name, {})
@@ -18066,6 +18189,88 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
     }
 
+    let repositoryPersistenceRequested = false;
+
+    async function requestRepositoryPersistence() {
+      if (repositoryPersistenceRequested) return;
+      repositoryPersistenceRequested = true;
+      try {
+        if (navigator.storage?.persist) await navigator.storage.persist();
+      } catch (error) {
+        console.warn("Could not request persistent local storage", error);
+      }
+    }
+
+    function repositorySourceId(file, kind, sourceArchive = "") {
+      const filename = String(file?.name || "dataset").replace(/\s+/g, " ").trim();
+      const size = Number(file?.size || 0);
+      const modified = Number(file?.lastModified || 0);
+      return `source:${kind}:${sourceArchive}:${filename}:${size}:${modified}`;
+    }
+
+    async function saveRepositorySourceFile(file, kind, metadata = {}) {
+      if (!file) return null;
+      await requestRepositoryPersistence();
+      const sourceArchive = String(metadata.sourceArchive || "");
+      const record = {
+        id: metadata.sourceId || repositorySourceId(file, kind, sourceArchive),
+        record_type: "source",
+        kind,
+        filename: file.name || metadata.filename || "dataset",
+        source_archive: sourceArchive,
+        size: Number(file.size || 0),
+        type: file.type || "application/octet-stream",
+        last_modified: Number(file.lastModified || 0),
+        saved_at: new Date().toISOString(),
+        blob: typeof file.slice === "function" ? file.slice(0, file.size, file.type || "application/octet-stream") : file
+      };
+      const db = await openIDB();
+      const tx = db.transaction("imports", "readwrite");
+      await new Promise((resolve, reject) => {
+        tx.objectStore("imports").put(record);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
+      });
+      return record;
+    }
+
+    async function trySaveRepositorySourceFile(file, kind, metadata = {}) {
+      try {
+        return await saveRepositorySourceFile(file, kind, metadata);
+      } catch (error) {
+        console.warn("Could not persist repository source", file?.name, error);
+        showToast(tf("repositoryStorageFailed", { message: error?.message || String(error) }));
+        return null;
+      }
+    }
+
+    async function getRepositorySourceFile(sourceId) {
+      if (!sourceId) return null;
+      const db = await openIDB();
+      return new Promise((resolve) => {
+        const tx = db.transaction("imports", "readonly");
+        const req = tx.objectStore("imports").get(sourceId);
+        req.onsuccess = () => resolve(req.result?.record_type === "source" ? req.result : null);
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    function fileFromRepositorySource(source) {
+      const blob = source?.blob instanceof Blob
+        ? source.blob
+        : new Blob([source?.blob || new ArrayBuffer(0)], { type: source?.type || "application/octet-stream" });
+      try {
+        return new File([blob], source.filename || "dataset", {
+          type: source.type || blob.type || "application/octet-stream",
+          lastModified: Number(source.last_modified || 0)
+        });
+      } catch {
+        blob.name = source.filename || "dataset";
+        return blob;
+      }
+    }
+
     async function saveHDF5ImportRecord(record) {
       const db = await openIDB();
       const tx = db.transaction("imports", "readwrite");
@@ -18088,11 +18293,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!hdf5SavedImports) return;
       const db = await openIDB();
       const tx = db.transaction("imports", "readonly");
-      const records = await new Promise((resolve) => {
+      const storedRecords = await new Promise((resolve) => {
         const req = tx.objectStore("imports").getAll();
         req.onsuccess = () => resolve(req.result || []);
         req.onerror = () => resolve([]);
       });
+      const records = storedRecords.filter(record => record.record_type !== "source");
       if (!records.length) {
         const datasetTx = db.transaction("datasets", "readonly");
         const datasets = await new Promise((resolve) => {
@@ -18206,6 +18412,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           data: data ? data.slice(0, 5000) : null,
           thumbnail,
           preview_error: thumbnail ? "" : previewError,
+          source_id: currentRepositorySourceId,
           source_file: currentH5.filename || "unknown.h5",
           imported_at: new Date().toISOString(),
           tags: autoTag(name, attrs)
@@ -18246,9 +18453,97 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function renderLibraryThumbnail(record) {
       if (record?.thumbnail) {
-        return `<img class="hdf5-library-thumb" src="${esc(record.thumbnail)}" alt="${esc(record.name || "HDF5")} preview" loading="lazy">`;
+        return `<img class="hdf5-library-thumb" src="${esc(record.thumbnail)}" alt="${esc(record.name || "HDF5")} preview" loading="lazy" draggable="false">`;
       }
       return missingLibraryThumbnail(record);
+    }
+
+    async function getLibraryRecord(id) {
+      const db = await openIDB();
+      return new Promise((resolve) => {
+        const tx = db.transaction("datasets", "readonly");
+        const req = tx.objectStore("datasets").get(id);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    async function renderLegacyLibraryPreview(record) {
+      if (!/^data:image\//i.test(record?.thumbnail || "")) return false;
+      currentH5 = null;
+      currentH5Detection = null;
+      currentH5Path = "";
+      currentIgorImport = null;
+      currentRepositorySourceId = "";
+      hideHDF5MainViewControls();
+      const title = `${record.source_file || "HDF5"} · ${record.name || record.path || "dataset"}`;
+      await drawExternalHDF5PreviewImage(record.thumbnail, title);
+      if (hdf5PreviewHint) hdf5PreviewHint.textContent = title;
+      if (hdf5PreviewInfo) {
+        hdf5PreviewInfo.innerHTML = [
+          `<div class="metric"><strong>${esc(t("hdf5PreviewDataset"))}:</strong> ${esc(record.source_file || "")} · ${esc(record.path || record.name || "")}</div>`,
+          `<div class="metric"><strong>Shape:</strong> [${esc((record.shape || []).join("×"))}] ${esc(record.dtype || "")}</div>`,
+          `<div class="metric"><strong>${esc(t("repositoryThumbnailOnly"))}</strong><br>${esc(t("repositorySourceMissing"))}</div>`
+        ].join("");
+      }
+      setHDF5Status(t("repositoryThumbnailOnly"));
+      return true;
+    }
+
+    async function loadLibraryRecordIntoPreview(id) {
+      const record = await getLibraryRecord(id);
+      if (!record) return false;
+      const filename = record.source_file || record.name || "dataset";
+      setHDF5Status(tf("repositoryLoading", { filename }));
+      try {
+        let loaded = false;
+        const source = await getRepositorySourceFile(record.source_id || "");
+        if (source?.blob) {
+          const file = fileFromRepositorySource(source);
+          const kind = source.kind || (isHDF5File(file) ? "h5" : isPXTWorkflowFile(file) ? "igor" : isHDF5ZipFile(file) ? "ses-zip" : "raw-map");
+          if (kind === "h5") {
+            const buffer = await file.arrayBuffer();
+            await parseHDF5Buffer(buffer, source.filename || filename, {
+              addSummaries: false,
+              persistImport: false,
+              sourceId: source.id
+            });
+            if (record.path) {
+              try { await renderHDF5PreviewForPath(record.path, source.filename || filename); }
+              catch (error) { console.warn("Could not reopen requested HDF5 path", record.path, error); }
+            }
+            loaded = true;
+          } else if (kind === "igor") {
+            const result = await handleIgorPXTFile(file, { persist: false, sourceId: source.id });
+            if (!result) throw new Error(t("hdf5PreviewUnavailable"));
+            const waveIndex = currentIgorImport?.waves?.findIndex(wave => wave.path === record.path || wave.name === record.name) ?? -1;
+            if (waveIndex >= 0) await renderIgorWavePreview(currentIgorImport, currentIgorImport.waves[waveIndex], source.filename || filename);
+            loaded = true;
+          } else if (kind === "ses-zip") {
+            loaded = !!(await handleHDF5ZipFile(file, { persist: false, sourceId: source.id }));
+          } else {
+            loaded = !!(await handleRawMapTextFile(file, { persist: false, sourceId: source.id }));
+          }
+        } else if (record.path && currentH5?.filename === record.source_file) {
+          await renderHDF5PreviewForPath(record.path, record.source_file);
+          loaded = true;
+        } else {
+          loaded = await renderLegacyLibraryPreview(record);
+        }
+
+        if (!loaded) throw new Error(t("repositorySourceMissing"));
+        const dataset = record.name || record.path || filename;
+        setHDF5Status(tf("repositoryLoaded", { dataset }));
+        showToast(tf("repositoryLoaded", { dataset }));
+        document.querySelector(".hdf5-preview-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return true;
+      } catch (error) {
+        console.warn("Could not load local repository record", record, error);
+        const message = error?.message || t("repositorySourceMissing");
+        setHDF5Status(`❌ ${message}`);
+        showToast(message);
+        return false;
+      }
     }
 
     async function renderLibrary() {
@@ -18273,35 +18568,72 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       dataLibraryGrid.innerHTML = filtered.map(r => {
         const sel = librarySelection.has(r.id) ? "selected" : "";
         const thumb = renderLibraryThumbnail(r);
-        return `<div class="library-card ${sel} ${thumb ? "has-thumb" : ""}" data-id="${esc(r.id)}" onclick="toggleLibrarySelect('${esc(r.id)}')">
+        const sourceState = r.source_id ? t("repositorySourceAvailable") : t("repositoryThumbnailOnly");
+        return `<div class="library-card ${sel} ${thumb ? "has-thumb" : ""}" data-id="${esc(r.id)}" draggable="true">
           ${thumb}
           <div class="library-card-title"><span>📊</span><strong>${esc(r.name)}</strong></div>
           <span class="muted">[${(r.shape||[]).join("×")}] ${esc(r.dtype)}</span>
           <span class="muted">📁 ${t("sourceFileLabel")}: ${esc(r.source_file)}</span>
           <div class="chips">${(r.tags||[]).map(t => `<span class="chip good">${esc(t)}</span>`).join("")}</div>
+          <span class="library-source-state ${r.source_id ? "available" : ""}">${esc(sourceState)}</span>
           <span class="muted">${esc(r.imported_at?.slice(0,16) || "")}</span>
+          <div class="library-card-actions">
+            <button type="button" class="primary" data-library-load="${esc(r.id)}">${esc(t("loadLibraryPreviewBtn"))}</button>
+            <button type="button" data-library-select="${esc(r.id)}" aria-pressed="${librarySelection.has(r.id)}">${esc(t(librarySelection.has(r.id) ? "selectedLibraryCompareBtn" : "selectLibraryCompareBtn"))}</button>
+          </div>
         </div>`;
       }).join("");
     }
+
+    dataLibraryGrid?.addEventListener("click", async event => {
+      const selectButton = event.target.closest("[data-library-select]");
+      if (selectButton) {
+        window.toggleLibrarySelect(selectButton.dataset.librarySelect || "");
+        return;
+      }
+      const loadButton = event.target.closest("[data-library-load]");
+      if (loadButton) {
+        loadButton.disabled = true;
+        try { await loadLibraryRecordIntoPreview(loadButton.dataset.libraryLoad || ""); }
+        finally { if (loadButton.isConnected) loadButton.disabled = false; }
+      }
+    });
+
+    dataLibraryGrid?.addEventListener("dragstart", event => {
+      const card = event.target.closest(".library-card[data-id]");
+      if (!card || !event.dataTransfer) return;
+      event.dataTransfer.effectAllowed = "copy";
+      event.dataTransfer.setData("application/x-arpes-library-id", card.dataset.id || "");
+      event.dataTransfer.setData("text/plain", card.dataset.id || "");
+      card.classList.add("dragging");
+    });
+
+    dataLibraryGrid?.addEventListener("dragend", event => {
+      event.target.closest(".library-card")?.classList.remove("dragging");
+    });
+
+    const hdf5PreviewCard = document.querySelector(".hdf5-preview-card");
+    hdf5PreviewCard?.addEventListener("dragover", event => {
+      if (!Array.from(event.dataTransfer?.types || []).includes("application/x-arpes-library-id")) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+      hdf5PreviewCard.classList.add("repository-drag-over");
+    });
+    hdf5PreviewCard?.addEventListener("dragleave", event => {
+      if (!hdf5PreviewCard.contains(event.relatedTarget)) hdf5PreviewCard.classList.remove("repository-drag-over");
+    });
+    hdf5PreviewCard?.addEventListener("drop", event => {
+      const id = event.dataTransfer?.getData("application/x-arpes-library-id") || "";
+      hdf5PreviewCard.classList.remove("repository-drag-over");
+      if (!id) return;
+      event.preventDefault();
+      loadLibraryRecordIntoPreview(id);
+    });
 
     window.toggleLibrarySelect = async function(id) {
       if (librarySelection.has(id)) librarySelection.delete(id);
       else librarySelection.add(id);
       renderLibrary();
-      try {
-        const db = await openIDB();
-        const record = await new Promise((resolve) => {
-          const tx = db.transaction("datasets", "readonly");
-          const req = tx.objectStore("datasets").get(id);
-          req.onsuccess = () => resolve(req.result || null);
-          req.onerror = () => resolve(null);
-        });
-        if (record?.path && currentH5?.filename === record.source_file) {
-          await renderHDF5PreviewForPath(record.path, record.source_file);
-        }
-      } catch (error) {
-        console.warn("Could not preview selected library record", error);
-      }
     };
 
     clearLibraryBtn.addEventListener("click", async () => {
