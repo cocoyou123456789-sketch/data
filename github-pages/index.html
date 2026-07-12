@@ -8839,6 +8839,7 @@
 
     // ===== 语音导航与搜索 =====
     const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognitionPhraseApi = window.SpeechRecognitionPhrase || window.webkitSpeechRecognitionPhrase;
     let voiceRecognition = null;
     let voiceRecognitionUnavailable = !SpeechRecognitionApi;
     let voiceListening = false;
@@ -8849,14 +8850,97 @@
     let voiceLastInterim = "";
     let voiceInterimTimer = 0;
     let voiceStatusTimer = 0;
+    const voiceContextPhraseKeys = new Set();
     const VOICE_NAVIGATION_DELAY_MS = 320;
     const VOICE_SEARCH_DELAY_MS = 650;
 
-    function parseVoiceCommand(transcript) {
-      const cleaned = String(transcript || "")
+    const VOICE_COMMAND_PHRASES = [
+      "打开历史", "打开材料", "打开文献", "打开论文", "打开数据", "打开模型", "打开报告",
+      "打开二维材料", "打开超导材料", "搜索文献", "搜索材料", "搜索数据", "清除搜索",
+      "打开 history", "打开 materials", "打开 paper", "打开 data", "打开 model", "打开 report",
+      "open history", "open materials", "open papers", "open literature", "open data", "open model",
+      "open report", "open two dimensional materials", "open superconducting materials",
+      "two dimensional materials", "superconducting materials", "search papers",
+      "search data", "clear search"
+    ];
+
+    const VOICE_DOMAIN_PHRASES = [
+      "ARPES", "angle-resolved photoemission spectroscopy", "superconductor", "superconductivity",
+      "HDF5", "PXT", "IBW", "Quick_Map", "Fine_Cut", "CORE_LEVEL", "Fermi surface", "energy",
+      "alpha", "beta", "history", "materials", "literature", "papers", "data", "model", "report",
+      "超导", "二维材料", "石墨烯", "铁基超导", "铜氧化物", "高压氢化物", "光电子能谱",
+      "费米面", "能带", "能隙", "文献", "数据", "历史", "材料", "模型", "报告",
+      "MoS2", "WS2", "h-BN", "MXene", "YBCO", "Bi2212", "FeSe", "LaH10", "MgB2",
+      "NbSe2", "graphene", "phosphorene", "black phosphorus"
+    ];
+
+    function normalizeVoiceTranscript(transcript) {
+      let text = String(transcript || "").normalize("NFKC");
+      text = text
         .replace(/[，。！？、,.!?;；:：]/g, " ")
+        .replace(/\bquick[\s_-]*map\b/gi, "Quick_Map")
+        .replace(/quick[\s_-]*麦普/gi, "Quick_Map")
+        .replace(/\bfine[\s_-]*cut\b/gi, "Fine_Cut")
+        .replace(/fine[\s_-]*卡特/gi, "Fine_Cut")
+        .replace(/\bcore[\s_-]*level\b/gi, "CORE_LEVEL")
+        .replace(/\ba\s*r\s*p\s*e\s*s\b/gi, "ARPES")
+        .replace(/\bare\s*pass\b/gi, "ARPES")
+        .replace(/阿佩斯/gi, "ARPES")
+        .replace(/\bh\s*d\s*f\s*(?:five|5)\b/gi, "HDF5")
+        .replace(/\bm\s*o\s*s\s*(?:two|2)\b/gi, "MoS2")
+        .replace(/\bw\s*s\s*(?:two|2)\b/gi, "WS2")
+        .replace(/\bh\s*b\s*n\b/gi, "h-BN")
+        .replace(/\bpapers?\b/gi, "paper")
+        .replace(/材质/g, "材料")
+        .replace(/报表/g, "报告")
+        .replace(/搜(?:素|所)/g, "搜索")
+        .replace(/数据酷/g, "数据库")
         .replace(/\s+/g, " ")
         .trim();
+      return text;
+    }
+
+    function getVoiceContextPhrases() {
+      const phrases = new Map();
+      const add = (phrase, boost) => {
+        const value = String(phrase || "").trim();
+        if (value.length < 2 || value.length > 80) return;
+        const key = value.toLocaleLowerCase();
+        const previous = phrases.get(key);
+        if (!previous || previous.boost < boost) phrases.set(key, { phrase: value, boost });
+      };
+      VOICE_COMMAND_PHRASES.forEach(phrase => add(phrase, 8));
+      VOICE_DOMAIN_PHRASES.forEach(phrase => add(phrase, 5.5));
+      const databases = Object.values(state.topicDbs || {});
+      const materialRows = databases.flatMap(db => Array.isArray(db?.materials) ? db.materials : []);
+      materialRows.concat(state.ourData || []).slice(0, 120).forEach(row => {
+        add(row?.display_name, 4);
+        add(row?.material, 4);
+        add(row?.family, 3.5);
+      });
+      return [...phrases.values()];
+    }
+
+    function applyVoiceContextPhrases() {
+      const phraseCollection = voiceRecognition?.phrases;
+      if (!SpeechRecognitionPhraseApi || !phraseCollection || typeof phraseCollection.push !== "function") return false;
+      let applied = false;
+      for (const { phrase, boost } of getVoiceContextPhrases()) {
+        const key = phrase.toLocaleLowerCase();
+        if (voiceContextPhraseKeys.has(key)) continue;
+        try {
+          phraseCollection.push(new SpeechRecognitionPhraseApi(phrase, boost));
+          voiceContextPhraseKeys.add(key);
+          applied = true;
+        } catch {
+          return voiceContextPhraseKeys.size > 0;
+        }
+      }
+      return applied || voiceContextPhraseKeys.size > 0;
+    }
+
+    function parseVoiceCommand(transcript) {
+      const cleaned = normalizeVoiceTranscript(transcript);
       if (!cleaned) return null;
       const normalized = cleaned.toLowerCase();
 
@@ -8889,12 +8973,18 @@
 
       const navigationMatch = normalized.match(/^(?:请\s*)?(?:打开|进入|切换(?:到)?|前往|去)\s*(.+)$/i)
         || normalized.match(/^(?:please\s+)?(?:open|show|go\s+to|switch\s+to)\s+(.+)$/i);
-      if (!navigationMatch) return null;
-      const target = navigationMatch[1];
+      let target = navigationMatch?.[1] || "";
+      if (!target) {
+        target = normalized
+          .replace(/^(?:the\s+)?/i, "")
+          .replace(/(?:页面|那页|页|\s+page)$/i, "")
+          .trim();
+        if (!/^(?:二维材料|2d(?:\s+materials?)?|two[ -]?dimensional(?:\s+materials?)?|超导(?:材料)?|superconduct(?:ing)?(?:\s+materials?)?|文献|论文|paper|literature|历史|首页|主页|本性|利息|history|home|材料|material|materials|数据|data|模型|model|报告|report)$/i.test(target)) return null;
+      }
       if (/(?:二维|2d|two[ -]?dimensional)/i.test(target)) return { type: "topic", topic: "2d", page: "materials" };
       if (/(?:超导|superconduct)/i.test(target)) return { type: "topic", topic: "sc", page: "materials" };
       if (/(?:文献|论文|paper|literature)/i.test(target)) return { type: "page", page: "literature" };
-      if (/(?:历史|首页|主页|history|home)/i.test(target)) return { type: "page", page: "history" };
+      if (/(?:历史|首页|主页|本性|利息|history|home)/i.test(target)) return { type: "page", page: "history" };
       if (/(?:材料|materials?)/i.test(target)) return { type: "page", page: "materials" };
       if (/(?:数据|data)/i.test(target)) return { type: "page", page: "data" };
       if (/(?:模型|model)/i.test(target)) return { type: "page", page: "model" };
@@ -9074,7 +9164,8 @@
       voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
       voiceRecognition.continuous = false;
       voiceRecognition.interimResults = true;
-      voiceRecognition.maxAlternatives = 3;
+      voiceRecognition.maxAlternatives = 5;
+      applyVoiceContextPhrases();
       voiceRecognition.onstart = () => {
         voiceRecognitionHadFinal = false;
         voiceRecognitionHadError = false;
@@ -9150,6 +9241,7 @@
         }
         try {
           voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
+          applyVoiceContextPhrases();
           voiceRecognition.start();
         } catch (error) {
           setVoiceStatus(error.message || t("voiceMicUnavailable"), "error", 3000);
@@ -9160,6 +9252,9 @@
     // Vosk or Whisper adapters can feed recognized text into this stable command interface.
     window.ARPESVoiceControl = Object.freeze({
       parse: parseVoiceCommand,
+      normalize: normalizeVoiceTranscript,
+      getContextPhrases: getVoiceContextPhrases,
+      applyContextPhrases: applyVoiceContextPhrases,
       executeTranscript: runVoiceCommand
     });
     initVoiceControl();
