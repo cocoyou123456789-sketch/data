@@ -5381,10 +5381,15 @@
       .login-screen {
         align-items: start;
         overflow-y: auto;
+        padding:
+          max(8px, env(safe-area-inset-top))
+          max(8px, env(safe-area-inset-right))
+          max(8px, env(safe-area-inset-bottom))
+          max(8px, env(safe-area-inset-left));
       }
 
       .login-card {
-        padding: 16px;
+        padding: 0;
       }
 
       .login-card h2 {
@@ -5396,9 +5401,12 @@
       .login-entry-actions,
       .login-ustc-actions,
       .login-mini-grid,
-      .auth-tabs,
       .login-card .form-grid {
         grid-template-columns: 1fr;
+      }
+
+      .auth-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .login-screen {
@@ -5414,6 +5422,18 @@
       .login-feature {
         min-height: auto;
         padding: 18px;
+      }
+
+      .login-feature {
+        order: -1;
+      }
+
+      .login-feature .virtual-access-orbit,
+      .login-feature .login-virtual-copy,
+      .login-column .login-eye-stage,
+      .login-column .login-visual-copy,
+      .login-column .login-badge-row {
+        display: none;
       }
 
       .login-column {
@@ -5791,7 +5811,7 @@
             <span class="virtual-eye-scan"></span>
             <span class="virtual-eye-label" data-i18n="loginVirtualAccessLabel">Virtual Eye</span>
           </div>
-          <div>
+          <div class="login-virtual-copy">
             <h2 data-i18n="loginGuestTitle">其他访问者 · 虚拟入口</h2>
             <p class="muted" data-i18n="loginGuestHint">右侧给非 NSRL 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。</p>
           </div>
@@ -8243,6 +8263,8 @@
     const chatTableWrap = $("#chatTableWrap");
     let activeAppPage = "module-select";
     let pendingWorkbenchUser = null;
+    let loginInitialized = false;
+    let appDataReadyPromise = null;
     let magicBookMode = "library";
     let magicBookTargetPage = "history";
     let compareCount = $("#compareCount");
@@ -10709,11 +10731,15 @@
 
     // ===== 初始化 =====
     async function init() {
+      initLogin();
+      document.body.classList.add("app-initialized");
       try {
-        state.topicDbs = {
-          sc: await loadJson("data/superconductivity.json"),
-          "2d": await loadJson("data/two_dimensional_materials.json")
-        };
+        appDataReadyPromise = Promise.all([
+          loadJson("data/superconductivity.json"),
+          loadJson("data/two_dimensional_materials.json")
+        ]);
+        const [superconductivityDb, twoDimensionalDb] = await appDataReadyPromise;
+        state.topicDbs = { sc: superconductivityDb, "2d": twoDimensionalDb };
         state.db = state.topicDbs[state.topic] || state.topicDbs.sc;
         state.articles = [];
         articleMetricsDirty = true;
@@ -10731,8 +10757,6 @@
         renderOurData();
         renderArticles();
         renderKeywordChips();
-        initLogin();
-        document.body.classList.add("app-initialized");
         renderModelRegistry();
         renderToc();
         showAppPage(activeAppPage, { preserveScroll: true });
@@ -11050,9 +11074,23 @@
       setMagicBookPrimary("magicBookChoosePage");
     }
 
-    function handleMagicBookTocItem(item) {
+    async function waitForAppData() {
+      if (state.db) return true;
+      if (!appDataReadyPromise) return false;
+      showToast(t("loading"));
+      try {
+        await appDataReadyPromise;
+        return Boolean(state.db);
+      } catch {
+        showToast(t("loadingFailed"));
+        return false;
+      }
+    }
+
+    async function handleMagicBookTocItem(item) {
       if (!item) return;
       if (item.dataset.magicPage) {
+        if (!await waitForAppData()) return;
         if (item.dataset.magicTopic) setTopic(item.dataset.magicTopic, { preserveScroll: true });
         enterWorkbenchFromMagicBook(item.dataset.magicPage);
         return;
@@ -11072,6 +11110,8 @@
     }
 
     function initLogin() {
+      if (loginInitialized) return;
+      loginInitialized = true;
       const user = loadUser();
       document.body.classList.add("locked");
       document.body.classList.remove("magic-active");
@@ -11182,8 +11222,9 @@
         unlockWorkbench(guest);
       });
       magicBookEnterBtn?.addEventListener("click", openMagicBookCatalog);
-      magicBookOpenBtn?.addEventListener("click", () => {
+      magicBookOpenBtn?.addEventListener("click", async () => {
         if (magicBookMode === "toc") {
+          if (!await waitForAppData()) return;
           setTopic("sc", { preserveScroll: true });
           enterWorkbenchFromMagicBook("history");
         } else {
