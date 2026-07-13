@@ -9021,13 +9021,10 @@
     let voiceLastInterim = "";
     let voiceBestTranscript = "";
     let voiceLastRecognizedTranscript = "";
-    let voiceInterimTimer = 0;
     let voiceSessionTimer = 0;
     let voiceStatusTimer = 0;
     const voiceContextPhraseKeys = new Set();
-    const VOICE_NAVIGATION_DELAY_MS = 480;
-    const VOICE_SEARCH_DELAY_MS = 1100;
-    const VOICE_SESSION_TIMEOUT_MS = 12000;
+    const VOICE_SESSION_TIMEOUT_MS = 20000;
 
     const VOICE_COMMAND_PHRASES = [
       "打开历史", "打开材料", "打开文献", "打开论文", "打开数据", "打开模型", "打开报告",
@@ -9057,6 +9054,8 @@
       let text = String(transcript || "").normalize("NFKC");
       text = text
         .replace(/[\u200B-\u200D\uFEFF]/g, "")
+        .replace(/\bi[’']d\b/gi, "I would")
+        .replace(/\bi[’']m\b/gi, "I am")
         .replace(/[，。！？、,.!?;；:：]/g, " ")
         .replace(/\bquick[\s_-]*map\b/gi, "Quick_Map")
         .replace(/quick[\s_-]*麦普/gi, "Quick_Map")
@@ -9195,7 +9194,7 @@
         ["literature", /^(?:文献|论文|文章)(?:中|里|页)?\s*/i],
         ["materials", /^材料(?:库)?(?:中|里|页)?\s*/i],
         ["data", /^(?:local\s+)?data(?:\s+library)?\s*/i],
-        ["literature", /^(?:papers?|articles?|literature)\s*/i],
+        ["literature", /^(?:(?:some|the|all|any)\s+)?(?:papers?|articles?|literature)\s*/i],
         ["materials", /^materials?\s*/i]
       ];
       if (target === "auto") {
@@ -9250,9 +9249,16 @@
         return buildVoiceSearchCommand(compoundSearchMatch[2], voiceSearchTarget(compoundSearchMatch[1]));
       }
 
+      const openLiteratureSearchMatch = cleaned.match(/^(?:please\s+)?(?:(?:can|could|would)\s+you\s+)?(?:please\s+)?(?:open|show)(?:\s+me)?\s+(papers?|articles?|literature)\s+(?:about|on|for|regarding)\s+(.+)$/i);
+      if (openLiteratureSearchMatch) {
+        return buildVoiceSearchCommand(openLiteratureSearchMatch[2], "literature");
+      }
+
       const naturalSearchMatch = cleaned.match(/^(?:请\s*)?(?:(?:帮|替|给)我\s*|(?:我想|我要|想要)\s*)?(?:找到|找|搜索|搜|查找|查询|查|检索|看看|看|显示)(?:一下|一些|几篇)?\s*(?:关于|有关)?\s*(.+)$/i)
-        || cleaned.match(/^(?:please\s+)?(?:(?:can|could|would)\s+you\s+)?(?:find|search|show|get)(?:\s+me)?\s+(.+)$/i)
-        || cleaned.match(/^i\s+(?:want|need|would\s+like)(?:\s+to\s+(?:find|see|read|search(?:\s+for)?))?\s+(.+)$/i);
+        || cleaned.match(/^(?:please\s+)?(?:(?:can|could|would)\s+you\s+)?(?:please\s+)?(?:help\s+me\s+)?(?:find|search(?:\s+for)?|look\s+(?:for|up)|show|get)(?:\s+me)?\s+(.+)$/i)
+        || cleaned.match(/^i\s+(?:want|need|would\s+like)(?:\s+you)?\s+to\s+(?:find|see|read|search(?:\s+for)?|look\s+(?:for|up)|show|get)\s+(.+)$/i)
+        || cleaned.match(/^i\s+(?:want|need|would\s+like)\s+((?:(?:some|the|all|any)\s+)?(?:papers?|articles?|literature)\b.+)$/i)
+        || cleaned.match(/^i\s+am\s+looking\s+for\s+(.+)$/i);
       if (naturalSearchMatch) {
         const command = buildVoiceSearchCommand(naturalSearchMatch[1]);
         if (command) return command;
@@ -9322,7 +9328,6 @@
     function stopVoiceRecognitionForCorrection() {
       if (!voiceListening) return;
       voiceRecognitionManualStop = true;
-      clearVoiceInterimTimer();
       clearTimeout(voiceSessionTimer);
       try { voiceRecognition?.stop(); } catch {}
       setVoiceListening(false);
@@ -9405,11 +9410,6 @@
       });
     }
 
-    function clearVoiceInterimTimer() {
-      if (voiceInterimTimer) clearTimeout(voiceInterimTimer);
-      voiceInterimTimer = 0;
-    }
-
     function voiceCommandCandidateScore(value) {
       const transcript = String(value || "").trim();
       const command = parseVoiceCommand(transcript);
@@ -9473,26 +9473,12 @@
 
     function executeRecognizedVoiceCommand(transcript) {
       if (voiceCommandExecuted || !parseVoiceCommand(transcript)) return false;
-      clearVoiceInterimTimer();
       rememberVoiceTranscript(transcript);
       voiceCommandExecuted = runVoiceCommand(transcript);
       if (voiceCommandExecuted && voiceListening) {
         try { voiceRecognition?.stop(); } catch {}
       }
       return voiceCommandExecuted;
-    }
-
-    function scheduleInterimVoiceCommand(transcript) {
-      const command = parseVoiceCommand(transcript);
-      clearVoiceInterimTimer();
-      if (!command || voiceCommandExecuted) return;
-      voiceLastInterim = transcript;
-      voiceBestTranscript = transcript;
-      const delay = command.type === "search" ? VOICE_SEARCH_DELAY_MS : VOICE_NAVIGATION_DELAY_MS;
-      voiceInterimTimer = window.setTimeout(() => {
-        voiceInterimTimer = 0;
-        executeRecognizedVoiceCommand(voiceLastInterim);
-      }, delay);
     }
 
     function voicePageLabel(page) {
@@ -9659,7 +9645,7 @@
         return;
       }
       voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
-      voiceRecognition.continuous = true;
+      voiceRecognition.continuous = false;
       voiceRecognition.interimResults = true;
       voiceRecognition.maxAlternatives = 10;
       applyVoiceContextPhrases();
@@ -9669,25 +9655,9 @@
         voiceCommandExecuted = false;
         voiceLastInterim = "";
         voiceBestTranscript = "";
-        clearVoiceInterimTimer();
         clearTimeout(voiceSessionTimer);
         voiceSessionTimer = window.setTimeout(() => {
-          const pendingTranscript = voiceBestTranscript || voiceLastInterim;
-          if (pendingTranscript && executeRecognizedVoiceCommand(pendingTranscript)) return;
-          voiceRecognitionManualStop = true;
           try { voiceRecognition?.stop(); } catch {}
-          setVoiceListening(false);
-          setVoiceStatus(
-            pendingTranscript ? tf("voiceNoMatch", { transcript: pendingTranscript }) : t("voiceNoSpeech"),
-            "error",
-            3200
-          );
-          if (pendingTranscript) {
-            setVoiceCorrectionOpen(true, {
-              transcript: pendingTranscript,
-              feedback: t("voiceCorrectionInvalid")
-            });
-          }
         }, VOICE_SESSION_TIMEOUT_MS);
         setVoiceListening(true);
         setVoiceStatus(t("voiceListening"));
@@ -9708,7 +9678,6 @@
           interimTranscript,
           ...voiceResultCandidates(event.results)
         ]);
-        clearVoiceInterimTimer();
         if (combinedTranscript) {
           voiceLastInterim = combinedTranscript;
           rememberVoiceTranscript(combinedTranscript);
@@ -9719,20 +9688,15 @@
         if (combinedTranscript) {
           setVoiceStatus(tf("voiceHeard", { transcript: combinedTranscript }));
         }
-        // Interim text is display-only. Commit after the recognizer marks the whole
-        // utterance final, so a prefix such as "find me papers about" cannot fire early.
-        if (!interimTranscript.trim() && parseableTranscript && !voiceCommandExecuted) {
-          scheduleInterimVoiceCommand(parseableTranscript);
-        }
+        // The recognizer may mark several partial English clauses as final. Keep
+        // collecting them here and execute only from onend after the full utterance.
       };
       voiceRecognition.onerror = event => {
-        clearVoiceInterimTimer();
         clearTimeout(voiceSessionTimer);
         voiceRecognitionHadError = true;
         setVoiceStatus(voiceErrorMessage(event.error), "error", 3200);
       };
       voiceRecognition.onend = () => {
-        clearVoiceInterimTimer();
         clearTimeout(voiceSessionTimer);
         setVoiceListening(false);
         if (!voiceCommandExecuted && !voiceRecognitionManualStop && !voiceRecognitionHadError) {
@@ -9762,7 +9726,6 @@
           voiceRecognitionManualStop = true;
           voiceLastInterim = "";
           voiceBestTranscript = "";
-          clearVoiceInterimTimer();
           clearTimeout(voiceSessionTimer);
           voiceRecognition.stop();
           setVoiceStatus(t("voiceStopped"), "neutral", 1800);
