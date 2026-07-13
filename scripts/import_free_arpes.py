@@ -64,6 +64,14 @@ ELEMENTS = [
 ]
 
 FORMULA_RE = re.compile(r"([A-Z][a-z]?)(?:\d+(?:\.\d+)?|x|y|z|-\w+)?")
+MATERIAL_ELEMENT_ALIASES = {
+    "YBCO": ["Y", "Ba", "Cu", "O"],
+    "LSCO": ["La", "Sr", "Cu", "O"],
+    "LBCO": ["La", "Ba", "Cu", "O"],
+    "Bi2212": ["Bi", "Sr", "Ca", "Cu", "O"],
+    "Bi2201": ["Bi", "Sr", "Cu", "O"],
+    "BaK122": ["Ba", "K", "Fe", "As"],
+}
 
 
 @dataclass
@@ -275,38 +283,38 @@ def authors_from_openalex(authorships: list[dict[str, Any]]) -> str:
 
 
 def arpes_score(text: str) -> float:
-    lower = text.lower()
+    if not re.search(r"\bARPES\b|\bangle[- ]resolved photoemission\b|\bphotoemission spectroscopy\b", text, flags=re.IGNORECASE):
+        return 0.0
     score = 0.0
-    for phrase, weight in [
-        ("angle-resolved photoemission", 0.55),
-        ("angle resolved photoemission", 0.55),
-        ("arpes", 0.45),
-        ("photoemission spectroscopy", 0.2),
-        ("fermi surface", 0.12),
-        ("superconducting gap", 0.14),
-        ("band structure", 0.08),
-        ("superconduct", 0.12),
+    for pattern, weight in [
+        (r"\bangle[- ]resolved photoemission\b", 0.55),
+        (r"\bARPES\b", 0.45),
+        (r"\bphotoemission spectroscopy\b", 0.2),
+        (r"\bFermi surface\b", 0.12),
+        (r"\bsuperconducting gap\b", 0.14),
+        (r"\bband structure\b", 0.08),
+        (r"\bsuperconduct(?:or|ors|ing|ivity)?\b", 0.12),
     ]:
-        if phrase in lower:
+        if re.search(pattern, text, flags=re.IGNORECASE):
             score += weight
     return min(1.0, score)
 
 
 def extract_materials(text: str) -> list[str]:
-    lower = text.lower()
-    found = [material for material in KNOWN_MATERIALS if material.lower() in lower]
+    found = [
+        material for material in KNOWN_MATERIALS
+        if re.search(rf"(?<![A-Za-z0-9]){re.escape(material)}(?![A-Za-z0-9])", text, flags=re.IGNORECASE)
+    ]
     return sorted(set(found), key=lambda item: (KNOWN_MATERIALS.index(item), item))
 
 
 def extract_elements(text: str, materials: list[str]) -> list[str]:
     found: list[str] = []
     for material in materials:
-        for symbol in FORMULA_RE.findall(material):
+        symbols = MATERIAL_ELEMENT_ALIASES.get(material, FORMULA_RE.findall(material))
+        for symbol in symbols:
             if symbol in ELEMENTS and symbol not in found:
                 found.append(symbol)
-    for token in re.findall(r"\b[A-Z][a-z]?\b", text):
-        if token in ELEMENTS and token not in {"In", "As"} and token not in found:
-            found.append(token)
     return found
 
 

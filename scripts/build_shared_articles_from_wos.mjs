@@ -1,43 +1,18 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import {
+  KNOWN_MATERIALS,
+  elementsFromMaterials,
+  extractFormulaCandidates,
+  extractTechniquesFromText,
+  materialAppearsInText,
+  normalizeArticleRecord,
+  normalizeDoi
+} from "./article_taxonomy.mjs";
 
 const DEFAULT_OUT = "github-pages/data/shared_articles.json";
 const MIN_ARTICLE_YEAR = 2016;
-
-const KNOWN_MATERIALS = [
-  "Bi2Se3", "Bi2Te3", "Sb2Te3", "WTe2", "MoS2", "MoSe2", "MoTe2", "WS2", "WSe2",
-  "FeSe", "FeTe", "BaFe2As2", "BaK122", "Ba0.6K0.4Fe2As2",
-  "YBCO", "YBa2Cu3O7", "Bi2212", "Bi2Sr2CaCu2O8", "Bi2201", "LSCO", "LBCO",
-  "Nd2CuO4", "Nd1-xSrxNiO2", "La3Ni2O7", "LaNiO3",
-  "SnSe2", "SnSe", "SnS2", "SnS",
-  "MgB2", "Nb3Sn", "NbSe2", "2H-NbSe2",
-  "CeCoIn5", "CeIrIn5", "Hg", "Pb", "Nb", "H3S", "LaH10", "SrTiO3", "KTaO3",
-  "NiPS3", "TaS2", "TaSe2", "Bi", "Bi111", "1T-TaS2", "2H-TaSe2"
-];
-
-const ELEMENTS = new Set([
-  "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar",
-  "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr",
-  "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe",
-  "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au",
-  "Hg", "Tl", "Pb", "Bi"
-]);
-
-const TECHNIQUE_MAP = {
-  ARPES: ["arpes", "angle-resolved photoemission"],
-  XPS: ["xps", "x-ray photoelectron"],
-  XRD: ["xrd", "x-ray diffraction"],
-  STM: ["stm", "scanning tunneling"],
-  TEM: ["tem", "transmission electron"],
-  DFT: ["dft", "density functional theory", "first-principles"],
-  MBE: ["mbe", "molecular beam epitaxy"],
-  CVT: ["cvt", "chemical vapor transport"],
-  Raman: ["raman"],
-  neutron: ["neutron scattering", "neutron diffraction"],
-  transport: ["resistivity", "transport", "hall effect"],
-  SQUID: ["squid", "magnetic susceptibility"]
-};
 
 function parseArgs(argv) {
   let out = DEFAULT_OUT;
@@ -110,45 +85,6 @@ function clean(value, limit = 600) {
   return text.length > limit ? text.slice(0, limit - 1) + "..." : text;
 }
 
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function materialAppearsInText(material, text) {
-  if (/^[A-Z][a-z]?$/.test(material)) {
-    return new RegExp(`(^|[^A-Za-z0-9])${escapeRegExp(material)}($|[^A-Za-z0-9])`, "i").test(text);
-  }
-  return text.toLowerCase().includes(material.toLowerCase());
-}
-
-function parseFormulaElements(formula) {
-  const normalized = formula.replace(/^[0-9]+[HTR]-/i, "");
-  const found = [];
-  let index = 0;
-  while (index < normalized.length) {
-    const symbolMatch = normalized.slice(index).match(/^[A-Z][a-z]?/);
-    if (!symbolMatch) return [];
-    const symbol = symbolMatch[0];
-    if (!ELEMENTS.has(symbol)) return [];
-    found.push(symbol);
-    index += symbol.length;
-    const suffix = normalized.slice(index).match(/^(?:[0-9.]+|[xy]|delta|Delta|δ|\+|-|\(|\))+/);
-    index += suffix ? suffix[0].length : 0;
-  }
-  return uniq(found);
-}
-
-function extractFormulaCandidates(text) {
-  const candidates = [];
-  const formulaPattern = /\b(?:[0-9]+[HTR]-)?(?:[A-Z][a-z]?(?:[0-9.]+|[xy]|delta|Delta|δ|\+|-|\(|\))*?){2,}\b/g;
-  for (const match of text.matchAll(formulaPattern)) {
-    const formula = match[0].replace(/[.,;:]+$/, "");
-    const elements = parseFormulaElements(formula);
-    if (elements.length >= 2 && formula.length <= 40) candidates.push(formula);
-  }
-  return uniq(candidates);
-}
-
 function extractMaterials(text) {
   return uniq([
     ...KNOWN_MATERIALS.filter(material => materialAppearsInText(material, text)),
@@ -157,27 +93,15 @@ function extractMaterials(text) {
 }
 
 function extractElements(text, materials) {
-  const found = [];
-  for (const material of materials) {
-    for (const symbol of parseFormulaElements(material)) {
-      if (!found.includes(symbol)) found.push(symbol);
-    }
-  }
-  for (const word of text.split(/[\s,;.\-()[\]{}:/]+/)) {
-    if (ELEMENTS.has(word) && !found.includes(word)) found.push(word);
-  }
-  return found.slice(0, 22);
+  return elementsFromMaterials(materials);
 }
 
 function extractTechniques(text) {
-  const lower = text.toLowerCase();
-  return Object.entries(TECHNIQUE_MAP)
-    .filter(([, keywords]) => keywords.some(keyword => lower.includes(keyword)))
-    .map(([name]) => name);
+  return extractTechniquesFromText(text);
 }
 
 function articleKey(article) {
-  if (article.doi) return `doi:${article.doi.toLowerCase()}`;
+  if (article.doi) return `doi:${normalizeDoi(article.doi)}`;
   if (article.wos_uid) return `wos:${article.wos_uid.toLowerCase()}`;
   return `title:${article.title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()}:${article.year || ""}`;
 }
@@ -198,7 +122,7 @@ function rowToArticle(row, index) {
   const year = Number.parseInt(row.PY, 10) || null;
   const citationCount = Number.parseInt(row.TC, 10);
   const url = row.DL || (doi ? `https://doi.org/${doi}` : (wosUid ? `https://www.webofscience.com/wos/woscc/full-record/${wosUid}` : ""));
-  return {
+  return normalizeArticleRecord({
     id: wosUid ? `wos:${wosUid}` : (doi ? `doi:${doi}` : `wos-shared-${index}`),
     title,
     year,
@@ -221,7 +145,7 @@ function rowToArticle(row, index) {
     evidence: uniq([title, doi ? `DOI: ${doi}` : "", wosUid ? `WoS ID: ${wosUid}` : ""]).filter(Boolean),
     verification_status: "wos_public_shared_metadata",
     figures: []
-  };
+  }, { strictElements: true });
 }
 
 const { out, files } = parseArgs(process.argv.slice(2));

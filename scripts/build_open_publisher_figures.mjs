@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import { inferFigureTypeFromText, normalizeDoi, normalizeArticleRecord } from "./article_taxonomy.mjs";
 
 const DEFAULT_IN = "github-pages/data/shared_articles.json";
 const DEFAULT_OUT = "github-pages/data/open_figure_articles.json";
@@ -29,13 +30,6 @@ function clean(value, limit = 700) {
   return text.length > limit ? text.slice(0, limit - 1) + "..." : text;
 }
 
-function normalizeDoi(doi) {
-  return String(doi || "")
-    .trim()
-    .replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")
-    .toLowerCase();
-}
-
 function natureArticleUrl(doi) {
   const normalized = normalizeDoi(doi);
   if (!normalized.startsWith("10.1038/")) return "";
@@ -52,23 +46,6 @@ function isSupportedOpenPublisher(article) {
 function imageTypeFromUrl(url) {
   const match = url.match(/Fig(\d+)_HTML\.(png|jpg|jpeg|webp)/i);
   return match ? `Figure ${Number(match[1])}` : "Figure";
-}
-
-function inferFigureType(article) {
-  const text = [
-    article.title,
-    article.source_title,
-    ...(article.keywords || []),
-    ...(article.properties || [])
-  ].join(" ").toLowerCase();
-  if (text.includes("fermi")) return "Fermi surface";
-  if (text.includes("gap") || text.includes("superconduct")) return "Gap map";
-  if (text.includes("temperature") || text.includes("doping") || text.includes("phase diagram") || text.includes("dependence")) return "Temperature / doping dependence";
-  if (text.includes("charge") || text.includes("cdw") || text.includes("order") || text.includes("reconstruction") || text.includes("folding")) return "Charge order";
-  if (text.includes("edc") || text.includes("mdc") || text.includes("lineshape") || text.includes("line shape") || text.includes("self-energy") || text.includes("spectrum")) return "EDC/MDC analysis";
-  if (text.includes("band") || text.includes("dispersion") || text.includes("arpes")) return "Band structure";
-  if (text.includes("dft") || text.includes("calculation") || text.includes("theory") || text.includes("comparison") || text.includes("model")) return "Theory comparison";
-  return "Other";
 }
 
 function extractNatureFigureUrls(html, doi) {
@@ -102,6 +79,90 @@ function extractNatureFigureUrls(html, doi) {
     .slice(0, MAX_FIGURES_PER_ARTICLE);
 }
 
+function decodeHtml(value) {
+  const named = {
+    amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ",
+    minus: "-", ndash: "-", mdash: "-", thinsp: " ", times: "x"
+  };
+  return String(value || "")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)))
+    .replace(/&([a-z]+);/gi, (match, name) => named[name.toLowerCase()] ?? match);
+}
+
+function stripHtml(value) {
+  return clean(decodeHtml(String(value || "")
+    .replace(/<(?:script|style)\b[\s\S]*?<\/(?:script|style)>/gi, " ")
+    .replace(/<[^>]+>/g, " ")), 500);
+}
+
+function shortExcerpt(value, maxWords = 20) {
+  const words = stripHtml(value).split(/\s+/).filter(Boolean);
+  return words.length > maxWords ? `${words.slice(0, maxWords).join(" ")}...` : words.join(" ");
+}
+
+function normalizeFigureUrl(url) {
+  let normalized = decodeHtml(url);
+  if (normalized.startsWith("//")) normalized = `https:${normalized}`;
+  return normalized
+    .replace("/lw1200/", "/lw685/")
+    .replace("/m685/", "/lw685/")
+    .replace("/full/", "/lw685/")
+    .replace("/w215h120/", "/lw685/")
+    .replace(/\?as=webp$/i, "");
+}
+
+function extractNatureFigures(html, article) {
+  const starts = [];
+  const containerPattern = /<div[^>]+class="[^"]*c-article-section__figure(?:\s|[^"])*"[^>]*data-test="figure"[^>]*>/gi;
+  for (const match of html.matchAll(containerPattern)) {
+    const id = match[0].match(/id="figure-(\d+)"/i)?.[1];
+    if (id) starts.push({ number: Number(id), index: match.index });
+  }
+
+  const figures = [];
+  for (let index = 0; index < starts.length; index++) {
+    const current = starts[index];
+    const end = starts[index + 1]?.index ?? Math.min(html.length, current.index + 30000);
+    const block = html.slice(current.index, end);
+    const imagePattern = new RegExp(`(?:src|data-src)="([^"]*Fig${current.number}_HTML\\.(?:png|jpg|jpeg|webp)[^"]*)"`, "i");
+    const imageUrl = normalizeFigureUrl(block.match(imagePattern)?.[1] || "");
+    if (!imageUrl) continue;
+    const captionHtml = block.match(/data-test="bottom-caption"[^>]*>([\s\S]*?)<\/div>/i)?.[1] || "";
+    const publisherCaption = stripHtml(captionHtml);
+    const captionExcerpt = shortExcerpt(publisherCaption);
+    const classification = inferFigureTypeFromText(publisherCaption);
+    figures.push({
+      caption: `${clean(article.title, 180)} - Figure ${current.number}${captionExcerpt ? `: ${captionExcerpt}` : ""}`,
+      publisher_caption: publisherCaption,
+      type: classification.type,
+      classification_confidence: classification.confidence,
+      type_source: captionExcerpt ? "publisher_caption" : "unclassified",
+      caption_source: captionExcerpt ? "publisher" : "generated_label",
+      image_url: imageUrl,
+      original_figure_url: `${natureArticleUrl(article.doi) || article.url || ""}/figures/${current.number}`,
+      energy_eV: null,
+      temp_K: null,
+      figure_index: current.number
+    });
+  }
+
+  if (figures.length) return figures.slice(0, MAX_FIGURES_PER_ARTICLE);
+  return extractNatureFigureUrls(html, article.doi).map((url, index) => ({
+    caption: `${clean(article.title, 180)} - ${imageTypeFromUrl(url)}`,
+    publisher_caption: "",
+    type: "Other",
+    classification_confidence: "unclassified",
+    type_source: "unclassified",
+    caption_source: "generated_label",
+    image_url: url,
+    original_figure_url: natureArticleUrl(article.doi) || article.url || "",
+    energy_eV: null,
+    temp_K: null,
+    figure_index: index + 1
+  }));
+}
+
 async function fetchText(url) {
   const response = await fetch(url, {
     redirect: "follow",
@@ -114,26 +175,17 @@ async function fetchText(url) {
   return await response.text();
 }
 
-function toFigureArticle(article, urls) {
+function toFigureArticle(article, figures) {
   const articleUrl = natureArticleUrl(article.doi) || article.url || `https://doi.org/${article.doi}`;
-  const inferredType = inferFigureType(article);
-  return {
+  return normalizeArticleRecord({
     ...article,
     source: article.source || "Open publisher article",
     url: articleUrl,
     open_access_url: articleUrl,
     verification_status: "curated_real_article_figure_open_publisher",
     data_quality: "curated_real_article_figure_open_publisher",
-    figures: urls.map((url, index) => ({
-      caption: `${clean(article.title, 220)} - ${imageTypeFromUrl(url)}`,
-      type: inferredType,
-      image_url: url,
-      original_figure_url: articleUrl,
-      energy_eV: null,
-      temp_K: null,
-      figure_index: index + 1
-    }))
-  };
+    figures
+  }, { strictElements: true });
 }
 
 async function runPool(items, worker, concurrency) {
@@ -163,9 +215,9 @@ await runPool(candidates, async (article, index, total) => {
   if (!url) return;
   try {
     const html = await fetchText(url);
-    const urls = extractNatureFigureUrls(html, article.doi);
-    if (urls.length) found.push(toFigureArticle(article, urls));
-    console.error(`${index}/${total} ${urls.length} ${article.doi}`);
+    const figures = extractNatureFigures(html, article);
+    if (figures.length) found.push(toFigureArticle(article, figures));
+    console.error(`${index}/${total} ${figures.length} ${article.doi}`);
   } catch (error) {
     failures++;
     console.error(`${index}/${total} FAIL ${article.doi} ${error.message}`);
