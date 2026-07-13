@@ -107,7 +107,11 @@ const SUPERCONDUCTIVITY_DEFINITIONS = [
   { id: "iron-based", patterns: [/\biron[- ]based\b/i, /\biron (?:pnictide|chalcogenide)s?\b/i, /\b(?:FeSe|FeTe|LiFeAs|NaFeAs|BaFe2As2|BaK122)\b/i] },
   { id: "nickelate", patterns: [/\bnickelates?\b/i, /\b(?:Nd1-xSrxNiO2|La3Ni2O7|LaNiO3)\b/i] },
   { id: "conventional", patterns: [/\bconventional superconduct/i, /\b(?:MgB2|Nb3Sn|NbN)\b/i] },
-  { id: "tmd", patterns: [/\b(?:NbSe2|TaS2|TaSe2|TiSe2)\b/i, /\bsuperconducting (?:transition[- ]metal )?(?:di)?chalcogenide/i] },
+  {
+    id: "tmd",
+    patterns: [/\b(?:NbSe2|TaS2|TaSe2|TiSe2)\b/i, /\bsuperconducting (?:transition[- ]metal )?(?:di)?chalcogenide/i],
+    requiresSuperconductivityContext: true
+  },
   { id: "heavy-fermion", patterns: [/\bheavy[- ]fermion\b/i, /\b(?:CeCoIn5|CeIrIn5|CeCu2Si2|UPt3|UBe13)\b/i] },
   { id: "hydride", patterns: [/\bhydride superconduct/i, /\b(?:H3S|LaH10|H2S|C-S-H|CSH)\b/i] }
 ];
@@ -282,6 +286,23 @@ function articleCategoryText(article) {
   return [article?.title, ...(article?.materials || [])].filter(Boolean).join(" ");
 }
 
+const SUPERCONDUCTIVITY_TOPIC_PATTERN = /\bsuperconduct(?:or|ors|ing|ivity)?\b|\bCooper pairs?\b|\bpairing symmetry\b/i;
+
+function isUppercaseIndexKeyword(value) {
+  const letters = String(value || "").replace(/[^A-Za-z]/g, "");
+  return letters.length >= 3 && letters === letters.toUpperCase();
+}
+
+export function hasExplicitSuperconductivityContext(article) {
+  const text = [
+    article?.title,
+    article?.source_title,
+    article?.abstract,
+    ...(article?.keywords || []).filter(keyword => !isUppercaseIndexKeyword(keyword))
+  ].filter(Boolean).join(" ");
+  return SUPERCONDUCTIVITY_TOPIC_PATTERN.test(text);
+}
+
 export function classifyTwoDCategories(article) {
   const text = normalizeFormulaText(articleCategoryText(article));
   const hasTwoDContext = /\b(?:2D|two[- ]dimensional|layered|monolayer|bilayer|few[- ]layer|nanosheet)\b/i.test(text);
@@ -295,18 +316,27 @@ export function classifyTwoDCategories(article) {
 
 export function classifySuperconductivityCategories(article) {
   const text = normalizeFormulaText(articleCategoryText(article));
+  const hasSuperconductivityContext = hasExplicitSuperconductivityContext(article);
   return SUPERCONDUCTIVITY_DEFINITIONS
-    .filter(definition => definition.patterns.some(pattern => pattern.test(text)))
+    .filter(definition => {
+      if (definition.requiresSuperconductivityContext && !hasSuperconductivityContext) return false;
+      return definition.patterns.some(pattern => pattern.test(text));
+    })
     .map(definition => definition.id);
 }
 
-export function classifyTopicTags(article, twoDCategories = classifyTwoDCategories(article)) {
+export function classifyTopicTags(
+  article,
+  twoDCategories = classifyTwoDCategories(article),
+  superconductivityCategories = classifySuperconductivityCategories(article)
+) {
   const text = articleText(article);
+  const categoryText = articleCategoryText(article);
   const techniques = new Set(article?.techniques || []);
   const tags = [];
   if (techniques.has("ARPES") || /\b(?:ARPES|angle[- ]resolved photoemission|photoemission spectroscopy)\b/i.test(text)) tags.push("arpes");
-  if (/\bsuperconduct(?:or|ors|ing|ivity)?\b|\bCooper pairs?\b|\bpairing symmetry\b/i.test(text)) tags.push("superconductivity");
-  if (twoDCategories.length || /\b(?:2D|two[- ]dimensional|monolayer|bilayer|few[- ]layer)\b/i.test(text)) tags.push("2d-materials");
+  if (hasExplicitSuperconductivityContext(article) || superconductivityCategories.some(category => category !== "tmd")) tags.push("superconductivity");
+  if (twoDCategories.length || /\b(?:2D|two[- ]dimensional|monolayer|bilayer|few[- ]layer)\b/i.test(categoryText)) tags.push("2d-materials");
   if (/\b(?:beamline|endstation|analy[sz]er|instrumentation|spectrometer)\b/i.test(text)) tags.push("instrumentation");
   return uniq(tags);
 }
@@ -357,8 +387,8 @@ export function normalizeArticleRecord(article, options = {}) {
   const twoDCategories = classifyTwoDCategories(normalized);
   const superconductivityCategories = classifySuperconductivityCategories(normalized);
   normalized.classification = {
-    version: "arpes-taxonomy-v2",
-    topic_tags: classifyTopicTags(normalized, twoDCategories),
+    version: "arpes-taxonomy-v3",
+    topic_tags: classifyTopicTags(normalized, twoDCategories, superconductivityCategories),
     two_d_categories: twoDCategories,
     superconductivity_categories: superconductivityCategories
   };

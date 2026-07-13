@@ -107,7 +107,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -214,7 +214,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -295,7 +295,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -399,7 +399,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -500,7 +500,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -604,7 +604,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -745,7 +745,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -861,7 +861,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "instrumentation"
       ],
@@ -965,10 +965,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [
-        "2d-materials"
-      ],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
     },
@@ -1113,7 +1111,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials",
         "instrumentation"
@@ -1276,7 +1274,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -1401,7 +1399,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -1512,16 +1510,14 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
       "two_d_categories": [
         "tmds"
       ],
-      "superconductivity_categories": [
-        "tmd"
-      ]
+      "superconductivity_categories": []
     },
     "open_access_url": "https://www.nature.com/articles/s41467-025-59228-w",
     "data_quality": "curated_real_article_figure_open_publisher"
@@ -1666,7 +1662,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -1780,10 +1776,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [
-        "2d-materials"
-      ],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
     },
@@ -1884,8 +1878,10 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "superconductivity"
+      ],
       "two_d_categories": [],
       "superconductivity_categories": [
         "cuprate"
@@ -1988,7 +1984,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -2100,10 +2096,9 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
-        "superconductivity",
         "instrumentation"
       ],
       "two_d_categories": [],
@@ -2210,7 +2205,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -2299,9 +2294,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
-        "superconductivity",
         "2d-materials"
       ],
       "two_d_categories": [
@@ -2415,7 +2409,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -2560,7 +2554,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -2670,7 +2664,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -2782,7 +2776,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -2882,7 +2876,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -2992,7 +2986,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -3087,7 +3081,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -3201,7 +3195,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -3306,7 +3300,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -3413,7 +3407,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity",
         "2d-materials"
@@ -3521,7 +3515,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -3627,7 +3621,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -3731,10 +3725,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [
-        "superconductivity"
-      ],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
     },
@@ -3841,7 +3833,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -3940,9 +3932,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
-        "superconductivity",
         "2d-materials"
       ],
       "two_d_categories": [
@@ -4042,7 +4033,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -4169,7 +4160,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -4278,7 +4269,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -4365,7 +4356,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -4469,7 +4460,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -4573,7 +4564,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -4675,7 +4666,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -4784,7 +4775,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -4903,7 +4894,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -5021,7 +5012,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "instrumentation"
@@ -5124,7 +5115,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -5237,7 +5228,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -5353,7 +5344,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -5442,7 +5433,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -5564,7 +5555,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -5668,7 +5659,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -5785,7 +5776,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -5874,8 +5865,10 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "superconductivity"
+      ],
       "two_d_categories": [],
       "superconductivity_categories": [
         "cuprate"
@@ -6021,7 +6014,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "instrumentation"
       ],
@@ -6137,7 +6130,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -6264,7 +6257,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -6371,10 +6364,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [
-        "superconductivity"
-      ],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
     },
@@ -6478,7 +6469,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -6581,7 +6572,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -6683,7 +6674,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -6795,7 +6786,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -6909,8 +6900,10 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "superconductivity"
+      ],
       "two_d_categories": [],
       "superconductivity_categories": [
         "cuprate"
@@ -7019,7 +7012,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -7130,7 +7123,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -7234,10 +7227,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [
-        "superconductivity"
-      ],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
     },
@@ -7342,7 +7333,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -7472,7 +7463,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -7590,7 +7581,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -7692,7 +7683,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -7835,7 +7826,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -7987,7 +7978,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -8096,7 +8087,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -8198,7 +8189,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -8301,10 +8292,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [
-        "superconductivity"
-      ],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
     },
@@ -8419,9 +8408,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
-        "superconductivity",
         "2d-materials"
       ],
       "two_d_categories": [
@@ -8542,7 +8530,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -8654,7 +8642,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -8754,7 +8742,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -8849,7 +8837,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -8972,7 +8960,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -9075,7 +9063,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -9188,7 +9176,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -9297,7 +9285,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -9398,7 +9386,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -9554,7 +9542,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -9686,7 +9674,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -9775,10 +9763,8 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [
-        "superconductivity"
-      ],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
     },
@@ -9919,7 +9905,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -10019,7 +10005,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -10116,7 +10102,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -10241,7 +10227,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -10389,7 +10375,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -10488,7 +10474,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -10639,7 +10625,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -10797,7 +10783,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -10909,7 +10895,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -11030,7 +11016,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -11139,7 +11125,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -11262,7 +11248,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -11383,7 +11369,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -11531,7 +11517,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -11702,9 +11688,10 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
+        "superconductivity",
         "2d-materials",
         "instrumentation"
       ],
@@ -11712,8 +11699,7 @@
         "tmds"
       ],
       "superconductivity_categories": [
-        "cuprate",
-        "tmd"
+        "cuprate"
       ]
     },
     "open_access_url": "https://www.nature.com/articles/s41467-019-11492-3",
@@ -11821,7 +11807,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -11950,7 +11936,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -12060,7 +12046,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -12144,7 +12130,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -12260,7 +12246,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -12363,10 +12349,9 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
-        "arpes",
-        "superconductivity"
+        "arpes"
       ],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -12463,7 +12448,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -12559,7 +12544,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -12666,7 +12651,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -12757,7 +12742,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity",
         "2d-materials"
@@ -12893,7 +12878,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -12969,7 +12954,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -13065,7 +13050,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -13208,7 +13193,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -13361,7 +13346,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -13443,7 +13428,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -13531,7 +13516,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -13646,7 +13631,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -13743,8 +13728,10 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
-      "topic_tags": [],
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "superconductivity"
+      ],
       "two_d_categories": [],
       "superconductivity_categories": [
         "nickelate"
@@ -13893,7 +13880,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity",
@@ -14031,7 +14018,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -14124,7 +14111,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -14216,7 +14203,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -14314,7 +14301,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -14451,7 +14438,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -14549,7 +14536,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -14657,7 +14644,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -14778,7 +14765,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -14888,7 +14875,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -14987,7 +14974,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -15112,7 +15099,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -15233,17 +15220,14 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
-        "superconductivity",
         "2d-materials"
       ],
       "two_d_categories": [
         "tmds"
       ],
-      "superconductivity_categories": [
-        "tmd"
-      ]
+      "superconductivity_categories": []
     },
     "open_access_url": "https://www.nature.com/articles/nphys3527",
     "data_quality": "curated_real_article_figure_open_publisher"
@@ -15334,7 +15318,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -15427,7 +15411,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -15580,7 +15564,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -15690,7 +15674,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -15779,7 +15763,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -15894,7 +15878,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -16035,7 +16019,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -16157,7 +16141,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -16274,7 +16258,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -16354,7 +16338,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -16443,7 +16427,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -16578,7 +16562,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -16669,7 +16653,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "2d-materials"
       ],
@@ -16775,7 +16759,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -16896,7 +16880,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -17002,7 +16986,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []
@@ -17079,7 +17063,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "superconductivity"
       ],
@@ -17183,7 +17167,7 @@
       }
     ],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [],
       "two_d_categories": [],
       "superconductivity_categories": []

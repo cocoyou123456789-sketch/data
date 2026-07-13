@@ -2,6 +2,9 @@
 import fs from "node:fs";
 import {
   ELEMENT_SYMBOLS,
+  classifySuperconductivityCategories,
+  classifyTopicTags,
+  classifyTwoDCategories,
   elementsFromMaterials,
   inferFigureTypeFromText,
   isPlausibleMaterial,
@@ -75,6 +78,19 @@ const invalidTwoDCategories = Object.values(data).flatMap(records => records.fla
     .filter(category => !categoryIds.has(category))
     .map(category => ({ id: article.id, category }))
 ));
+const classificationMismatches = Object.entries(data).flatMap(([file, records]) => records.flatMap(article => {
+  const twoD = classifyTwoDCategories(article);
+  const superconductivity = classifySuperconductivityCategories(article);
+  const expected = {
+    version: "arpes-taxonomy-v3",
+    topic_tags: classifyTopicTags(article, twoD, superconductivity),
+    two_d_categories: twoD,
+    superconductivity_categories: superconductivity
+  };
+  return JSON.stringify(article.classification || {}) === JSON.stringify(expected)
+    ? []
+    : [{ file, id: article.id, stored: article.classification, expected }];
+}));
 
 const report = {
   files: Object.fromEntries(Object.entries(data).map(([file, records]) => [file, records.length])),
@@ -99,7 +115,8 @@ const report = {
     figure_classification_mismatches: figureClassificationMismatches.length,
     invalid_figure_types: invalidFigureTypes.length,
     invalid_two_d_categories: invalidTwoDCategories.length,
-    unsupported_arpes_tags: unsupportedArpesTags.length
+    unsupported_arpes_tags: unsupportedArpesTags.length,
+    article_classification_mismatches: classificationMismatches.length
   },
   samples: {
     suspicious_materials: suspiciousMaterials.slice(0, 8),
@@ -110,7 +127,8 @@ const report = {
       type: figure.type,
       publisher_caption: figure.publisher_caption
     })),
-    unsupported_arpes_tags: unsupportedArpesTags.slice(0, 5).map(article => ({ id: article.id, title: article.title }))
+    unsupported_arpes_tags: unsupportedArpesTags.slice(0, 5).map(article => ({ id: article.id, title: article.title })),
+    article_classification_mismatches: classificationMismatches.slice(0, 5)
   }
 };
 
