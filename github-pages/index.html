@@ -84,7 +84,7 @@
       justify-content: space-between;
       gap: 18px;
       position: relative;
-      z-index: 1;
+      z-index: 40;
     }
 
     h1 {
@@ -1625,6 +1625,7 @@
       position: relative;
       display: inline-flex;
       width: auto;
+      gap: 6px;
       align-items: center;
       justify-content: center;
     }
@@ -1657,6 +1658,11 @@
       border-color: var(--accent-glow);
       background: #0f766e;
       box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.14);
+    }
+
+    .voice-command-btn.has-transcript {
+      color: #5eead4;
+      border-color: rgba(45, 212, 191, 0.48);
     }
 
     .voice-command-btn.is-listening::after {
@@ -1702,6 +1708,73 @@
     .voice-command-status[data-tone="success"] {
       border-color: rgba(45, 212, 191, 0.48);
       color: #99f6e4;
+    }
+
+    .voice-correction-panel {
+      position: absolute;
+      z-index: 90;
+      top: calc(100% + 8px);
+      right: 0;
+      width: min(360px, calc(100vw - 24px));
+      padding: 12px;
+      border: 1px solid rgba(45, 212, 191, 0.46);
+      border-radius: 6px;
+      background: var(--panel);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.36);
+    }
+
+    .voice-correction-panel[hidden] {
+      display: none;
+    }
+
+    .voice-correction-head,
+    .voice-correction-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .voice-correction-head {
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .voice-correction-close {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      min-height: 28px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .voice-correction-input {
+      min-height: 40px;
+    }
+
+    .voice-correction-actions {
+      margin-top: 8px;
+    }
+
+    .voice-correction-actions button {
+      min-height: 34px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .voice-correction-feedback {
+      display: block;
+      min-height: 17px;
+      margin-top: 7px;
+      color: #fca5a5;
+      font-size: 11px;
+      line-height: 1.4;
     }
 
     input[type="search"], select {
@@ -5883,7 +5956,25 @@
             <path d="M8 22h8"></path>
           </svg>
         </button>
+        <button class="voice-command-btn" id="voiceCorrectionBtn" type="button" aria-label="修改识别结果" aria-expanded="false" aria-controls="voiceCorrectionPanel" title="修改识别结果">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path>
+          </svg>
+        </button>
         <div class="voice-command-status" id="voiceCommandStatus" role="status" aria-live="polite" hidden></div>
+        <div class="voice-correction-panel" id="voiceCorrectionPanel" role="dialog" aria-modal="false" aria-labelledby="voiceCorrectionTitle" hidden>
+          <div class="voice-correction-head">
+            <span id="voiceCorrectionTitle" data-i18n="voiceCorrectionTitle">修改识别结果</span>
+            <button class="voice-correction-close" id="voiceCorrectionCloseBtn" type="button" aria-label="关闭" title="关闭">×</button>
+          </div>
+          <input class="voice-correction-input" id="voiceCorrectionInput" type="text" autocomplete="off" spellcheck="false" data-i18n-placeholder="voiceCorrectionPlaceholder" placeholder="识别结果或手动输入指令">
+          <div class="voice-correction-actions">
+            <button class="primary" id="voiceCorrectionRunBtn" type="button" data-i18n="voiceCorrectionRun">执行</button>
+            <button id="voiceCorrectionRetryBtn" type="button" data-i18n="voiceCorrectionRetry">重说</button>
+          </div>
+          <span class="voice-correction-feedback" id="voiceCorrectionFeedback" role="status" aria-live="polite"></span>
+        </div>
       </div>
       <label class="mini-control" title="PDF opens a print view; Word, Excel, and Markdown download directly.">
         <span class="mini-control-text" data-i18n="reportFormatLabel">报告格式</span>
@@ -7314,6 +7405,14 @@
         soundBarsTitle: "音效可视化",
         languageLabel: "切换语言",
         voiceControlLabel: "语音控制",
+        voiceEditLabel: "修改识别结果",
+        voiceCorrectionTitle: "修改识别结果",
+        voiceCorrectionPlaceholder: "识别结果或手动输入指令",
+        voiceCorrectionRun: "执行",
+        voiceCorrectionRetry: "重说",
+        voiceCorrectionClose: "关闭",
+        voiceCorrectionEmpty: "请先输入一条指令",
+        voiceCorrectionInvalid: "这句话还不能执行，请修改后再试",
         voiceListening: "正在听…",
         voiceHeard: "识别：{transcript}",
         voiceUnsupported: "当前浏览器不支持语音识别",
@@ -7888,6 +7987,14 @@
         soundBarsTitle: "Sound Visualizer",
         languageLabel: "Switch Language",
         voiceControlLabel: "Voice control",
+        voiceEditLabel: "Edit recognized command",
+        voiceCorrectionTitle: "Edit recognized command",
+        voiceCorrectionPlaceholder: "Recognized text or a manual command",
+        voiceCorrectionRun: "Run",
+        voiceCorrectionRetry: "Try again",
+        voiceCorrectionClose: "Close",
+        voiceCorrectionEmpty: "Enter a command first",
+        voiceCorrectionInvalid: "This command cannot run yet. Edit it and try again.",
         voiceListening: "Listening…",
         voiceHeard: "Heard: {transcript}",
         voiceUnsupported: "Speech recognition is not supported in this browser",
@@ -8083,6 +8190,13 @@
     const logoutBtn = $("#logoutBtn");
     const voiceCommandBtn = $("#voiceCommandBtn");
     const voiceCommandStatus = $("#voiceCommandStatus");
+    const voiceCorrectionBtn = $("#voiceCorrectionBtn");
+    const voiceCorrectionPanel = $("#voiceCorrectionPanel");
+    const voiceCorrectionInput = $("#voiceCorrectionInput");
+    const voiceCorrectionRunBtn = $("#voiceCorrectionRunBtn");
+    const voiceCorrectionRetryBtn = $("#voiceCorrectionRetryBtn");
+    const voiceCorrectionCloseBtn = $("#voiceCorrectionCloseBtn");
+    const voiceCorrectionFeedback = $("#voiceCorrectionFeedback");
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
     const advancedLibrary = $("#advancedLibrary");
@@ -8902,6 +9016,7 @@
     let voiceCommandExecuted = false;
     let voiceLastInterim = "";
     let voiceBestTranscript = "";
+    let voiceLastRecognizedTranscript = "";
     let voiceInterimTimer = 0;
     let voiceSessionTimer = 0;
     let voiceStatusTimer = 0;
@@ -9106,7 +9221,7 @@
       clearTimeout(voiceStatusTimer);
       voiceCommandStatus.textContent = message || "";
       voiceCommandStatus.dataset.tone = tone;
-      voiceCommandStatus.hidden = !message;
+      voiceCommandStatus.hidden = !message || !!(voiceCorrectionPanel && !voiceCorrectionPanel.hidden);
       if (message && hideAfter > 0) {
         voiceStatusTimer = window.setTimeout(() => {
           voiceCommandStatus.hidden = true;
@@ -9118,6 +9233,102 @@
       voiceListening = !!active;
       voiceCommandBtn?.classList.toggle("is-listening", voiceListening);
       voiceCommandBtn?.setAttribute("aria-pressed", String(voiceListening));
+    }
+
+    function rememberVoiceTranscript(transcript) {
+      const value = String(transcript || "").trim();
+      if (!value) return;
+      voiceLastRecognizedTranscript = value;
+      voiceCorrectionBtn?.classList.add("has-transcript");
+      if (voiceCorrectionInput && (voiceCorrectionPanel?.hidden || document.activeElement !== voiceCorrectionInput)) {
+        voiceCorrectionInput.value = value;
+      }
+    }
+
+    function stopVoiceRecognitionForCorrection() {
+      if (!voiceListening) return;
+      voiceRecognitionManualStop = true;
+      clearVoiceInterimTimer();
+      clearTimeout(voiceSessionTimer);
+      try { voiceRecognition?.stop(); } catch {}
+      setVoiceListening(false);
+    }
+
+    function setVoiceCorrectionOpen(open, options = {}) {
+      if (!voiceCorrectionPanel || !voiceCorrectionBtn) return;
+      const shouldOpen = !!open;
+      if (shouldOpen && document.body.classList.contains("locked")) {
+        const message = t("voiceLoginRequired");
+        setVoiceStatus(message, "error", 2400);
+        showToast(message);
+        return;
+      }
+      if (shouldOpen) {
+        stopVoiceRecognitionForCorrection();
+        if (options.transcript) rememberVoiceTranscript(options.transcript);
+        if (voiceCorrectionInput && !voiceCorrectionInput.value) {
+          voiceCorrectionInput.value = voiceLastRecognizedTranscript;
+        }
+        if (voiceCorrectionFeedback) voiceCorrectionFeedback.textContent = options.feedback || "";
+        voiceCommandStatus.hidden = true;
+      } else if (voiceCorrectionFeedback) {
+        voiceCorrectionFeedback.textContent = "";
+      }
+      voiceCorrectionPanel.hidden = !shouldOpen;
+      voiceCorrectionBtn.setAttribute("aria-expanded", String(shouldOpen));
+      if (shouldOpen && options.focus !== false) {
+        window.requestAnimationFrame(() => {
+          voiceCorrectionInput?.focus();
+          if (options.select !== false) voiceCorrectionInput?.select();
+        });
+      }
+    }
+
+    function runCorrectedVoiceCommand() {
+      const transcript = String(voiceCorrectionInput?.value || "").trim();
+      if (!transcript) {
+        if (voiceCorrectionFeedback) voiceCorrectionFeedback.textContent = t("voiceCorrectionEmpty");
+        voiceCorrectionInput?.focus();
+        return false;
+      }
+      if (!parseVoiceCommand(transcript)) {
+        if (voiceCorrectionFeedback) voiceCorrectionFeedback.textContent = t("voiceCorrectionInvalid");
+        voiceCorrectionInput?.focus();
+        return false;
+      }
+      rememberVoiceTranscript(transcript);
+      voiceLastInterim = transcript;
+      voiceBestTranscript = transcript;
+      setVoiceCorrectionOpen(false);
+      return runVoiceCommand(transcript);
+    }
+
+    function initVoiceCorrection() {
+      if (!voiceCorrectionBtn || !voiceCorrectionPanel) return;
+      voiceCorrectionBtn.addEventListener("click", () => {
+        setVoiceCorrectionOpen(voiceCorrectionPanel.hidden, {
+          transcript: voiceLastRecognizedTranscript,
+          select: true
+        });
+      });
+      voiceCorrectionCloseBtn?.addEventListener("click", () => setVoiceCorrectionOpen(false));
+      voiceCorrectionRunBtn?.addEventListener("click", runCorrectedVoiceCommand);
+      voiceCorrectionRetryBtn?.addEventListener("click", () => {
+        setVoiceCorrectionOpen(false);
+        startVoiceRecognition();
+      });
+      voiceCorrectionInput?.addEventListener("input", () => {
+        if (voiceCorrectionFeedback) voiceCorrectionFeedback.textContent = "";
+      });
+      voiceCorrectionInput?.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          runCorrectedVoiceCommand();
+        } else if (event.key === "Escape") {
+          setVoiceCorrectionOpen(false);
+          voiceCorrectionBtn.focus();
+        }
+      });
     }
 
     function clearVoiceInterimTimer() {
@@ -9189,6 +9400,7 @@
     function executeRecognizedVoiceCommand(transcript) {
       if (voiceCommandExecuted || !parseVoiceCommand(transcript)) return false;
       clearVoiceInterimTimer();
+      rememberVoiceTranscript(transcript);
       voiceCommandExecuted = runVoiceCommand(transcript);
       if (voiceCommandExecuted && voiceListening) {
         try { voiceRecognition?.stop(); } catch {}
@@ -9301,7 +9513,38 @@
       return t("voiceRecognitionError");
     }
 
+    function startVoiceRecognition() {
+      if (document.body.classList.contains("locked")) {
+        const message = t("voiceLoginRequired");
+        setVoiceStatus(message, "error", 2400);
+        showToast(message);
+        return false;
+      }
+      if (!voiceRecognition || voiceRecognitionUnavailable) {
+        setVoiceStatus(t("voiceUnsupported"), "error", 3000);
+        return false;
+      }
+      setVoiceCorrectionOpen(false);
+      try {
+        voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
+        applyVoiceContextPhrases();
+        voiceRecognition.start();
+        return true;
+      } catch (error) {
+        setVoiceStatus(error.message || t("voiceMicUnavailable"), "error", 3000);
+        return false;
+      }
+    }
+
     function updateVoiceControlLanguage() {
+      if (voiceCorrectionBtn) {
+        voiceCorrectionBtn.title = t("voiceEditLabel");
+        voiceCorrectionBtn.setAttribute("aria-label", t("voiceEditLabel"));
+      }
+      if (voiceCorrectionCloseBtn) {
+        voiceCorrectionCloseBtn.title = t("voiceCorrectionClose");
+        voiceCorrectionCloseBtn.setAttribute("aria-label", t("voiceCorrectionClose"));
+      }
       if (!voiceCommandBtn) return;
       const supported = !!SpeechRecognitionApi && !voiceRecognitionUnavailable;
       const label = supported ? t("voiceControlLabel") : t("voiceUnsupported");
@@ -9348,6 +9591,12 @@
             "error",
             3200
           );
+          if (pendingTranscript) {
+            setVoiceCorrectionOpen(true, {
+              transcript: pendingTranscript,
+              feedback: t("voiceCorrectionInvalid")
+            });
+          }
         }, VOICE_SESSION_TIMEOUT_MS);
         setVoiceListening(true);
         setVoiceStatus(t("voiceListening"));
@@ -9369,7 +9618,10 @@
           ...voiceResultCandidates(event.results)
         ]);
         clearVoiceInterimTimer();
-        if (combinedTranscript) voiceLastInterim = combinedTranscript;
+        if (combinedTranscript) {
+          voiceLastInterim = combinedTranscript;
+          rememberVoiceTranscript(combinedTranscript);
+        }
         if (parseableTranscript && voiceCommandCandidateScore(parseableTranscript) >= voiceCommandCandidateScore(voiceBestTranscript)) {
           voiceBestTranscript = parseableTranscript;
         }
@@ -9400,6 +9652,12 @@
             "error",
             pendingTranscript ? 3200 : 2200
           );
+          if (pendingTranscript) {
+            setVoiceCorrectionOpen(true, {
+              transcript: pendingTranscript,
+              feedback: t("voiceCorrectionInvalid")
+            });
+          }
         }
       };
       voiceCommandBtn.addEventListener("click", () => {
@@ -9419,13 +9677,7 @@
           setVoiceStatus(t("voiceStopped"), "neutral", 1800);
           return;
         }
-        try {
-          voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
-          applyVoiceContextPhrases();
-          voiceRecognition.start();
-        } catch (error) {
-          setVoiceStatus(error.message || t("voiceMicUnavailable"), "error", 3000);
-        }
+        startVoiceRecognition();
       });
     }
 
@@ -9437,6 +9689,7 @@
       applyContextPhrases: applyVoiceContextPhrases,
       executeTranscript: runVoiceCommand
     });
+    initVoiceCorrection();
     initVoiceControl();
 
     // ===== 事件绑定 =====
