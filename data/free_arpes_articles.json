@@ -46,7 +46,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "https://creativecommons.org/licenses/by/4.0",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -112,7 +112,7 @@
     "publisher": "American Chemical Society (ACS)",
     "license": "https://doi.org/10.15223/policy-029",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -171,7 +171,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "https://creativecommons.org/licenses/by/4.0",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity",
@@ -231,7 +231,7 @@
     "publisher": "Royal Society of Chemistry (RSC)",
     "license": "http://rsc.li/journals-terms-of-use",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -296,7 +296,7 @@
     "publisher": "AIP Publishing",
     "license": "",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -349,7 +349,7 @@
     "publisher": "American Chemical Society (ACS)",
     "license": "https://doi.org/10.15223/policy-029",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -407,7 +407,7 @@
     "publisher": "IOP Publishing",
     "license": "https://publishingsupport.iopscience.iop.org/iop-standard/v1",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -459,7 +459,7 @@
     "publisher": "IOP Publishing",
     "license": "https://publishingsupport.iopscience.iop.org/iop-standard/v1",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -520,7 +520,7 @@
     "publisher": "Royal Society of Chemistry (RSC)",
     "license": "http://rsc.li/journals-terms-of-use",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -572,7 +572,7 @@
     "publisher": "MDPI AG",
     "license": "http://creativecommons.org/licenses/by/4.0",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -632,7 +632,7 @@
     "publisher": "American Physical Society (APS)",
     "license": "https://link.aps.org/licenses/aps-default-license",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity",
@@ -691,7 +691,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "https://creativecommons.org/licenses/by/4.0",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -746,7 +746,7 @@
     "publisher": "Elsevier BV",
     "license": "https://www.elsevier.com/tdm/userlicense/1.0/",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -802,7 +802,7 @@
     "publisher": "Frontiers Media SA",
     "license": "https://creativecommons.org/licenses/by/4.0/",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -858,7 +858,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "http://www.springer.com/tdm",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -923,7 +923,7 @@
     "publisher": "American Physical Society (APS)",
     "license": "https://link.aps.org/licenses/aps-default-license",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -983,7 +983,7 @@
     "publisher": "American Physical Society (APS)",
     "license": "https://link.aps.org/licenses/aps-default-license",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1036,7 +1036,7 @@
     "publisher": "American Physical Society (APS)",
     "license": "https://link.aps.org/licenses/aps-default-license",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -1086,7 +1086,7 @@
     "publisher": "American Physical Society (APS)",
     "license": "https://link.aps.org/licenses/aps-default-license",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -1138,7 +1138,7 @@
     "verification_status": "free_api_metadata_needs_fulltext",
     "figures": [],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1202,7 +1202,7 @@
     "publisher": "American Association for the Advancement of Science (AAAS)",
     "license": "",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1260,7 +1260,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "http://www.springer.com/tdm",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1326,7 +1326,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "https://creativecommons.org/licenses/by/4.0",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes"
       ],
@@ -1375,7 +1375,7 @@
     "verification_status": "free_api_metadata_needs_fulltext",
     "figures": [],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1430,7 +1430,7 @@
     "publisher": "IOP Publishing",
     "license": "https://creativecommons.org/licenses/by/4.0/",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1495,7 +1495,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "https://creativecommons.org/licenses/by/4.0",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "2d-materials"
@@ -1558,9 +1558,10 @@
     "publisher": "IOP Publishing",
     "license": "http://iopscience.iop.org/info/page/text-and-data-mining",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
-        "arpes"
+        "arpes",
+        "superconductivity"
       ],
       "two_d_categories": [],
       "superconductivity_categories": [
@@ -1616,7 +1617,7 @@
     "publisher": "Uspekhi Fizicheskikh Nauk (UFN) Journal",
     "license": "http://iopscience.iop.org/info/page/text-and-data-mining",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1678,7 +1679,7 @@
     "publisher": "China Engineering Science Press Co. Ltd.",
     "license": "http://www.springer.com/tdm",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1735,9 +1736,10 @@
     "verification_status": "free_api_metadata_needs_fulltext",
     "figures": [],
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
-        "arpes"
+        "arpes",
+        "superconductivity"
       ],
       "two_d_categories": [],
       "superconductivity_categories": [
@@ -1797,7 +1799,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "https://creativecommons.org/licenses/by/4.0",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity"
@@ -1851,7 +1853,7 @@
     "publisher": "Springer Science and Business Media LLC",
     "license": "http://www.springer.com/tdm",
     "classification": {
-      "version": "arpes-taxonomy-v2",
+      "version": "arpes-taxonomy-v3",
       "topic_tags": [
         "arpes",
         "superconductivity",

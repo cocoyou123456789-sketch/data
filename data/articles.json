@@ -43,7 +43,18 @@
       }
     ],
     "data_quality": "curated_real_article_figure",
-    "verification_status": "curated_real_article_figure"
+    "verification_status": "curated_real_article_figure",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "arxiv:1705.02286",
@@ -89,7 +100,18 @@
       }
     ],
     "data_quality": "curated_real_article_figure",
-    "verification_status": "curated_real_article_figure"
+    "verification_status": "curated_real_article_figure",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "doi:10.1103/PhysRevB.97.180501",
@@ -119,7 +141,18 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "doi:10.1103/PhysRevB.95.224507",
@@ -149,7 +182,18 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "doi:10.1088/1361-648X/aa9caa",
@@ -180,7 +224,18 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "doi:10.1038/s41467-024-48610-9",
@@ -206,7 +261,16 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": []
+    }
   },
   {
     "id": "doi:10.1063/1.4950964",
@@ -243,7 +307,18 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "doi:10.1038/s41467-021-23106-y",
@@ -281,7 +356,18 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "doi:10.1093/nsr/nwad213",
@@ -320,7 +406,19 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity",
+        "2d-materials"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "doi:10.1360/SSPMA-2022-0406",
@@ -356,7 +454,18 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "iron-based"
+      ]
+    }
   },
   {
     "id": "doi:10.1038/s41535-020-0251-3",
@@ -390,7 +499,18 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "wos_indexed_publisher_record"
+    "verification_status": "wos_indexed_publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "superconductivity"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": [
+        "cuprate"
+      ]
+    }
   },
   {
     "id": "doi:10.1080/08940886.2024.2391251",
@@ -420,6 +540,15 @@
     ],
     "figures": [],
     "data_quality": "publisher_metadata_no_direct_figure",
-    "verification_status": "publisher_record"
+    "verification_status": "publisher_record",
+    "classification": {
+      "version": "arpes-taxonomy-v3",
+      "topic_tags": [
+        "arpes",
+        "instrumentation"
+      ],
+      "two_d_categories": [],
+      "superconductivity_categories": []
+    }
   }
 ]

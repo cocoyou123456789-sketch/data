@@ -34,6 +34,7 @@
     }
 
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
     body {
       margin: 0;
       background: var(--bg);
@@ -4874,10 +4875,17 @@
       gap: 6px;
       transition: all 0.3s;
       cursor: pointer;
+      color: inherit;
+      text-decoration: none;
     }
     .article-card:hover {
       border-color: #60a5fa;
       transform: translateY(-2px);
+    }
+    .article-card:focus-visible {
+      outline: 2px solid var(--accent-glow);
+      outline-offset: 3px;
+      border-color: var(--accent-glow);
     }
     .article-card .title {
       font-size: 13px;
@@ -5217,12 +5225,16 @@
       cursor: pointer;
     }
     .lang-option {
+      min-height: 26px;
+      border: 0;
       padding: 4px 12px;
       border-radius: 16px;
+      background: transparent;
       font-size: 13px;
       font-weight: 680;
       color: var(--muted);
       transition: all 0.2s;
+      cursor: pointer;
     }
     .lang-option.active {
       background: var(--accent);
@@ -5766,7 +5778,7 @@
       <a href="https://cocoyou123456789-sketch.github.io/data/" target="_self" rel="noopener">重新打开页面</a>
     </div>
   </div>
-  <div class="login-screen" id="loginScreen">
+  <div class="login-screen" id="loginScreen" role="dialog" aria-modal="true" aria-label="ARPES access">
     <div class="login-card">
       <div class="login-layout">
         <div class="login-column">
@@ -5816,9 +5828,9 @@
             <p class="muted" data-i18n="loginGuestHint">右侧给非 NSRL 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。</p>
           </div>
           <div class="login-form-panel">
-            <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
-              <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab">登录</button>
-              <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab">创建账号</button>
+            <div class="auth-tabs" role="group" aria-label="Authentication mode">
+              <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab" aria-pressed="true">登录</button>
+              <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab" aria-pressed="false">创建账号</button>
             </div>
             <div class="form-grid">
               <label data-label-i18n="loginEmailLabel">Email
@@ -5827,14 +5839,14 @@
               <label data-label-i18n="loginPasswordLabel">密码
                 <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
               </label>
-              <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" style="display:none;">确认密码
+              <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" hidden>确认密码
                 <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="••••••••">
               </label>
-              <label data-label-i18n="loginNameLabel">姓名 / 用户
+              <label id="loginNameWrap" data-label-i18n="loginNameLabel" hidden>姓名 / 用户
                 <input id="loginName" autocomplete="name" placeholder="NSRL ARPES user">
               </label>
-              <label data-label-i18n="loginGroupLabel">课题组 / 光源站
-                <input id="loginGroup" placeholder="NSRL / ARPES">
+              <label id="loginGroupWrap" data-label-i18n="loginGroupLabel" hidden>课题组 / 光源站
+                <input id="loginGroup" autocomplete="organization" placeholder="NSRL / ARPES">
               </label>
             </div>
             <span class="status" id="loginStatus"></span>
@@ -5848,7 +5860,7 @@
       </div>
     </div>
   </div>
-  <div class="magic-book-screen" id="magicBookScreen" hidden aria-live="polite">
+  <div class="magic-book-screen" id="magicBookScreen" role="dialog" aria-modal="true" aria-label="Material library" hidden aria-hidden="true" inert aria-live="polite">
     <div class="magic-sparks" aria-hidden="true">
       <span style="--x:14%;--y:28%;--s:5px;--d:4.4s;--delay:-0.6s"></span>
       <span style="--x:26%;--y:62%;--s:7px;--d:5.2s;--delay:-1.8s"></span>
@@ -5945,15 +5957,15 @@
     </div>
   </div>
   <!-- 粒子背景 -->
-  <div class="particles-container" id="particles"></div>
+  <div class="particles-container" id="particles" aria-hidden="true"></div>
 
-  <header>
+  <header aria-hidden="true" inert>
     <div>
       <h1 data-i18n="title">ARPES 超导材料探索器</h1>
       <p class="subtitle" data-i18n="subtitle">历史、材料、文献和数据</p>
     </div>
     <div class="header-actions">
-      <div class="sound-bars" id="soundBars">
+      <div class="sound-bars" id="soundBars" aria-hidden="true">
         <div class="sound-bar" style="animation-delay:0s"></div>
         <div class="sound-bar" style="animation-delay:0.08s"></div>
         <div class="sound-bar" style="animation-delay:0.16s"></div>
@@ -5963,9 +5975,9 @@
         <div class="sound-bar" style="animation-delay:0.08s"></div>
         <div class="sound-bar" style="animation-delay:0.16s"></div>
       </div>
-      <div class="lang-toggle" id="langToggle" title="切换语言 Switch Language">
-        <span class="lang-option active" data-lang="zh">中文</span>
-        <span class="lang-option" data-lang="en">EN</span>
+      <div class="lang-toggle" id="langToggle" role="group" aria-label="切换语言 Switch Language" title="切换语言 Switch Language">
+        <button class="lang-option active" type="button" data-lang="zh" aria-pressed="true">中文</button>
+        <button class="lang-option" type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
       <div class="voice-command-wrap">
         <button class="voice-command-btn" id="voiceCommandBtn" type="button" aria-label="语音控制" aria-pressed="false" title="语音控制">
@@ -5988,7 +6000,7 @@
             <span id="voiceCorrectionTitle" data-i18n="voiceCorrectionTitle">修改识别结果</span>
             <button class="voice-correction-close" id="voiceCorrectionCloseBtn" type="button" aria-label="关闭" title="关闭">×</button>
           </div>
-          <input class="voice-correction-input" id="voiceCorrectionInput" type="text" autocomplete="off" spellcheck="false" data-i18n-placeholder="voiceCorrectionPlaceholder" placeholder="识别结果或手动输入指令">
+          <input class="voice-correction-input" id="voiceCorrectionInput" type="text" autocomplete="off" spellcheck="false" aria-label="语音识别结果" data-i18n-placeholder="voiceCorrectionPlaceholder" placeholder="识别结果或手动输入指令">
           <div class="voice-correction-actions">
             <button class="primary" id="voiceCorrectionRunBtn" type="button" data-i18n="voiceCorrectionRun">执行</button>
             <button id="voiceCorrectionRetryBtn" type="button" data-i18n="voiceCorrectionRetry">重说</button>
@@ -6011,12 +6023,12 @@
     </div>
   </header>
 
-  <nav class="topic-switch-bar" aria-label="Knowledge topic">
-    <button class="topic-switch-btn active" type="button" data-topic="sc" data-i18n="topicSuperInterface">⚡ 超导界面</button>
-    <button class="topic-switch-btn" type="button" data-topic="2d" data-i18n="topicTwoDInterface">▦ 二维材料界面</button>
+  <nav class="topic-switch-bar" aria-label="Knowledge topic" aria-hidden="true" inert>
+    <button class="topic-switch-btn active" type="button" data-topic="sc" data-i18n="topicSuperInterface" aria-pressed="true">⚡ 超导界面</button>
+    <button class="topic-switch-btn" type="button" data-topic="2d" data-i18n="topicTwoDInterface" aria-pressed="false">▦ 二维材料界面</button>
   </nav>
 
-  <nav class="top-menu-bar" aria-label="Main navigation">
+  <nav class="top-menu-bar" aria-label="Main navigation" aria-hidden="true" inert>
     <button class="top-menu-btn active" type="button" data-page-tab="history" data-i18n="topMenuHome">历史</button>
     <button class="top-menu-btn" type="button" data-page-tab="materials" data-i18n="topMenuMaterials">材料</button>
     <button class="top-menu-btn" type="button" data-page-tab="literature" data-i18n="topMenuLiterature">文献</button>
@@ -6025,7 +6037,7 @@
     <button class="top-menu-btn" type="button" data-page-tab="report" data-i18n="topMenuReport">报告</button>
   </nav>
 
-  <main>
+  <main aria-hidden="true" inert>
     <aside class="toc-panel" aria-label="Module directory">
       <h2 data-i18n="tocTitle">模块</h2>
       <nav class="toc-list" id="tocList"></nav>
@@ -6141,7 +6153,7 @@
                   <button type="button" data-chat-prompt="请生成当前检索结果的表格" data-i18n="chatPromptTable">生成表格</button>
                   <button type="button" data-chat-prompt="请总结适合写进调研报告的要点" data-i18n="chatPromptReport">报告要点</button>
                 </div>
-                <textarea id="chatInput" data-i18n-placeholder="chatInputPlaceholder" placeholder="问一个 ARPES/超导材料问题，或让 Chat platform 生成表格..."></textarea>
+                <textarea id="chatInput" aria-label="ARPES 对话问题" data-i18n-placeholder="chatInputPlaceholder" placeholder="问一个 ARPES/超导材料问题，或让 Chat platform 生成表格..."></textarea>
                 <div class="toolbar">
                   <button class="primary" id="chatSendBtn" type="button" data-i18n="chatSendBtn">发送</button>
                   <button id="chatMakeTableBtn" type="button" data-i18n="chatMakeTableBtn">生成表格</button>
@@ -6293,14 +6305,14 @@
           <p class="two-d-category-summary" id="twoDCategorySummary" data-i18n="twoDCategorySummary">总体来看，目前研究最广泛、应用前景最成熟的二维材料主要包括石墨烯、过渡金属二硫族化合物（如 MoS₂）、六方氮化硼、黑磷和 MXene。它们在电子器件、光电子、催化、能源存储、柔性电子和量子信息等领域均展现出重要潜力。</p>
         </div>
         <div class="toolbar">
-          <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder">
-          <select id="familyFilter" title="材料家族">
+          <input id="searchInput" type="search" aria-label="搜索材料和文献" data-i18n-placeholder="searchPlaceholder">
+          <select id="familyFilter" aria-label="材料家族" title="材料家族">
             <option value="">全部家族</option>
           </select>
-          <select id="regionFilter" title="地区">
+          <select id="regionFilter" aria-label="地区" title="地区">
             <option value="">全部地区</option>
           </select>
-          <select id="sourceTypeFilter" title="光源类型">
+          <select id="sourceTypeFilter" aria-label="光源类型" title="光源类型">
             <option value="">全部类型</option>
           </select>
           <button class="primary" id="searchBtn">🔍 搜索</button>
@@ -6609,7 +6621,7 @@
               <span class="muted" data-i18n="localLibraryHint">上传会保存原始文件；点击载入或把仓库卡片拖到数据预览。</span>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <input type="search" id="librarySearch" data-i18n-placeholder="librarySearchPlaceholder" placeholder="搜索：能量范围、温度、材料..." style="width:260px; min-height:34px;">
+              <input type="search" id="librarySearch" aria-label="搜索本地数据仓库" data-i18n-placeholder="librarySearchPlaceholder" placeholder="搜索：能量范围、温度、材料..." style="width:260px; min-height:34px;">
               <button id="importToLibraryBtn" class="primary" data-i18n="importToLibraryBtn">⬆️ 导入本地仓库</button>
               <button id="compareSelectedBtn" class="primary" data-i18n="compareSelectedBtn">📊 对比选中</button>
               <button id="clearLibraryBtn" data-i18n="clearLibraryBtn">🗑️ 清空库</button>
@@ -8049,9 +8061,12 @@
     function switchLang(lang) {
       currentLang = lang;
       localStorage.setItem(LANG_STORAGE_KEY, lang);
+      document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
       // Update toggle buttons
       document.querySelectorAll(".lang-option").forEach(opt => {
-        opt.classList.toggle("active", opt.dataset.lang === lang);
+        const isActive = opt.dataset.lang === lang;
+        opt.classList.toggle("active", isActive);
+        opt.setAttribute("aria-pressed", String(isActive));
       });
       // Re-render everything
       applyFilters();
@@ -8200,6 +8215,8 @@
     const loginPassword = $("#loginPassword");
     const confirmPassword = $("#confirmPassword");
     const confirmPasswordWrap = $("#confirmPasswordWrap");
+    const loginNameWrap = $("#loginNameWrap");
+    const loginGroupWrap = $("#loginGroupWrap");
     const loginName = $("#loginName");
     const loginGroup = $("#loginGroup");
     const loginBtn = $("#loginBtn");
@@ -8255,6 +8272,12 @@
     const axisViewButtons = $$("[data-axis-view]");
     const appPages = $$(".app-page");
     const appPageSections = $$("[data-app-page-section]");
+    const appSurfaceElements = [
+      document.querySelector("header"),
+      document.querySelector(".topic-switch-bar"),
+      document.querySelector(".top-menu-bar"),
+      document.querySelector("main")
+    ].filter(Boolean);
     const chatThread = $("#chatThread");
     const chatInput = $("#chatInput");
     const chatSendBtn = $("#chatSendBtn");
@@ -8398,6 +8421,13 @@
       "OF", "ON", "IN", "BY", "SI", "FS", "SC", "SOC", "SPIN", "PHYSICS", "PHONON", "PHONONS",
       "BCS", "VHS", "COPY", "B.V", "BI", "IV", "IP", "OP", "BOSONIC", "ELECTRON", "ELECTRONS"
     ]);
+    const ARTICLE_KEYWORD_STOPWORDS = new Set([
+      "state", "states", "surface", "surfaces", "transition", "transitions", "temperature", "temperatures",
+      "dynamics", "physics", "science", "study", "studies", "system", "systems", "effect", "effects",
+      "property", "properties", "material", "materials", "electron", "electrons", "electronic structure",
+      "structure", "structures", "band", "bands", "theory", "experimental", "measurement", "measurements",
+      "order", "phase", "symmetry", "dependence", "normal state", "gap", "t c", "wos"
+    ]);
     const ARTICLE_MATERIAL_ACRONYMS = new Set(["YBCO", "LSCO", "LBCO", "BSCCO", "STO", "KTO", "BN", "BP", "CSH"]);
     const ARTICLE_ELEMENT_SYMBOLS = new Set([
       "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar",
@@ -8424,6 +8454,8 @@
       "heavy-fermion": [/\bheavy[- ]fermion\b/i, /\b(?:CeCoIn5|CeIrIn5|CeCu2Si2|UPt3|UBe13)\b/i],
       hydride: [/\bhydride superconduct/i, /\b(?:H3S|LaH10|H2S|C-S-H|CSH)\b/i]
     };
+    const SC_CONTEXT_REQUIRED_CATEGORIES = new Set(["tmd"]);
+    const SUPERCONDUCTIVITY_TOPIC_PATTERN = /\bsuperconduct(?:or|ors|ing|ivity)?\b|\bCooper pairs?\b|\bpairing symmetry\b/i;
 
     function normalizeArticleDoi(value) {
       return String(value || "")
@@ -8466,23 +8498,39 @@
       ].filter(Boolean).join(" ");
     }
 
+    function isUppercaseIndexKeyword(value) {
+      const letters = String(value || "").replace(/[^A-Za-z]/g, "");
+      return letters.length >= 3 && letters === letters.toUpperCase();
+    }
+
+    function hasExplicitSuperconductivityContext(article) {
+      const text = [
+        article.title,
+        article.source_title,
+        article.abstract,
+        ...(article.keywords || []).filter(keyword => !isUppercaseIndexKeyword(keyword))
+      ].filter(Boolean).join(" ");
+      return SUPERCONDUCTIVITY_TOPIC_PATTERN.test(text);
+    }
+
     function computeArticleClassification(article) {
       const text = normalizeFormulaText(articleTaxonomyText(article));
       const categoryText = normalizeFormulaText([article.title, ...(article.materials || [])].filter(Boolean).join(" "));
       const hasTwoDContext = /\b(?:2D|two[- ]dimensional|layered|monolayer|bilayer|few[- ]layer|nanosheet)\b/i.test(categoryText);
+      const hasSuperconductivityContext = hasExplicitSuperconductivityContext(article);
       const twoDCategories = Object.entries(TWO_D_ARTICLE_PATTERNS)
         .filter(([id, patterns]) => (id !== "cof-mof" || hasTwoDContext) && patterns.some(pattern => pattern.test(categoryText)))
         .map(([id]) => id);
       const superconductivityCategories = Object.entries(SC_ARTICLE_PATTERNS)
-        .filter(([, patterns]) => patterns.some(pattern => pattern.test(categoryText)))
+        .filter(([id, patterns]) => (!SC_CONTEXT_REQUIRED_CATEGORIES.has(id) || hasSuperconductivityContext) && patterns.some(pattern => pattern.test(categoryText)))
         .map(([id]) => id);
       const topicTags = [];
       if ((article.techniques || []).includes("ARPES") || /\b(?:ARPES|angle[- ]resolved photoemission|photoemission spectroscopy)\b/i.test(text)) topicTags.push("arpes");
-      if (/\bsuperconduct(?:or|ors|ing|ivity)?\b|\bCooper pairs?\b|\bpairing symmetry\b/i.test(text)) topicTags.push("superconductivity");
+      if (hasSuperconductivityContext || superconductivityCategories.some(category => category !== "tmd")) topicTags.push("superconductivity");
       if (twoDCategories.length || hasTwoDContext) topicTags.push("2d-materials");
       if (/\b(?:beamline|endstation|analy[sz]er|instrumentation|spectrometer)\b/i.test(text)) topicTags.push("instrumentation");
       return {
-        version: "arpes-taxonomy-v2",
+        version: "arpes-taxonomy-v3",
         topic_tags: uniq(topicTags),
         two_d_categories: twoDCategories,
         superconductivity_categories: superconductivityCategories
@@ -8607,6 +8655,14 @@
       return year != null && year >= ARTICLE_MIN_YEAR;
     }
 
+    function compareArticlesForDisplay(left, right) {
+      const yearDelta = (articleYear(right) || 0) - (articleYear(left) || 0);
+      if (yearDelta) return yearDelta;
+      const citationDelta = (Number(right?.citation_count) || 0) - (Number(left?.citation_count) || 0);
+      if (citationDelta) return citationDelta;
+      return String(left?.title || "").localeCompare(String(right?.title || ""), currentLang === "zh" ? "zh-CN" : "en");
+    }
+
     function mergeArticleRecords(...groups) {
       const byId = new Map();
       for (const group of groups) {
@@ -8637,7 +8693,7 @@
           }
         }
       }
-      return [...byId.values()].map(normalizeArticleRecordForUi);
+      return [...byId.values()].map(normalizeArticleRecordForUi).sort(compareArticlesForDisplay);
     }
 
     function uniqFigures(figures) {
@@ -8652,18 +8708,13 @@
     }
 
     async function loadDefaultArticles() {
-      let curated = [];
-      let free = [];
-      let shared = [];
-      let openFigures = [];
-      try { curated = await loadJson("data/articles.json"); }
-      catch { curated = []; }
-      try { free = await loadJson("data/free_arpes_articles.json"); }
-      catch { free = []; }
-      try { shared = await loadJson("data/shared_articles.json"); }
-      catch { shared = []; }
-      try { openFigures = await loadJson("data/open_figure_articles.json"); }
-      catch { openFigures = []; }
+      const optionalLoad = path => loadJson(path).catch(() => []);
+      const [curated, free, shared, openFigures] = await Promise.all([
+        optionalLoad("data/articles.json"),
+        optionalLoad("data/free_arpes_articles.json"),
+        optionalLoad("data/shared_articles.json"),
+        optionalLoad("data/open_figure_articles.json")
+      ]);
       return mergeArticleRecords(curated, free, shared, openFigures);
     }
 
@@ -10895,7 +10946,7 @@
       let lastError = null;
       for (const url of candidates) {
         try {
-          const resp = await fetch(url, { cache: "no-store" });
+          const resp = await fetch(url, { cache: location.protocol === "file:" ? "no-store" : "default" });
           if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
           return await resp.json();
         } catch (error) {
@@ -10940,7 +10991,9 @@
     function updateTopicUI() {
       const meta = activeTopicMeta();
       topicButtons.forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.topic === state.topic);
+        const isActive = btn.dataset.topic === state.topic;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", String(isActive));
       });
       if (searchInput) searchInput.placeholder = meta.searchPlaceholder;
       if (chatInput) {
@@ -11188,6 +11241,19 @@
       setMagicBookPrimary("magicBookOpenCatalog");
     }
 
+    function setRegionInteractive(element, interactive) {
+      if (!element) return;
+      element.inert = !interactive;
+      if (interactive) element.removeAttribute("aria-hidden");
+      else element.setAttribute("aria-hidden", "true");
+    }
+
+    function setInterfaceStage(stage) {
+      setRegionInteractive(loginScreen, stage === "login");
+      setRegionInteractive(magicBookScreen, stage === "catalog");
+      appSurfaceElements.forEach(element => setRegionInteractive(element, stage === "workbench"));
+    }
+
     function openMagicBookCatalog() {
       if (!magicBookScreen || magicBookMode === "flipping") return;
       magicBookMode = "toc";
@@ -11243,15 +11309,22 @@
         magicBookScreen.hidden = true;
         resetMagicBook();
       }
+      setInterfaceStage("login");
       if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.account_mode !== "guest" && user.name) loginName.value = user.name;
       if (loginGroup && user.group) loginGroup.value = user.group;
       let authMode = "signin";
       const setAuthMode = (mode) => {
         authMode = mode;
-        signInTab?.classList.toggle("active", mode === "signin");
-        createAccountTab?.classList.toggle("active", mode === "signup");
-        if (confirmPasswordWrap) confirmPasswordWrap.style.display = mode === "signup" ? "grid" : "none";
+        const isSignup = mode === "signup";
+        signInTab?.classList.toggle("active", !isSignup);
+        createAccountTab?.classList.toggle("active", isSignup);
+        signInTab?.setAttribute("aria-pressed", String(!isSignup));
+        createAccountTab?.setAttribute("aria-pressed", String(isSignup));
+        if (confirmPasswordWrap) confirmPasswordWrap.hidden = !isSignup;
+        if (loginNameWrap) loginNameWrap.hidden = !isSignup;
+        if (loginGroupWrap) loginGroupWrap.hidden = !isSignup;
+        if (loginPassword) loginPassword.autocomplete = isSignup ? "new-password" : "current-password";
         if (loginBtn) loginBtn.textContent = mode === "signup" ? t("createAccountBtn") : t("loginBtn");
         loginStatus.textContent = "";
       };
@@ -11410,6 +11483,7 @@
         magicBookScreen.hidden = true;
         resetMagicBook();
       }
+      setInterfaceStage("login");
       if (loginPassword) loginPassword.value = "";
       if (confirmPassword) confirmPassword.value = "";
       showToast(t("logoutToast"));
@@ -11429,7 +11503,12 @@
         section.hidden = !pageListMatches(section.dataset.appPageSection, page);
       });
       document.querySelectorAll("[data-page-tab]").forEach(tab => {
-        tab.classList.toggle("active", tab.dataset.pageTab === page);
+        const isActive = tab.dataset.pageTab === page;
+        tab.classList.toggle("active", isActive);
+        if (tab.closest(".top-menu-bar, .flow-tabs, .toc-list")) {
+          if (isActive) tab.setAttribute("aria-current", "page");
+          else tab.removeAttribute("aria-current");
+        }
       });
       if (pageNeedsArticles(page)) {
         ensureArticlesLoaded({ render: true }).then(() => {
@@ -11461,6 +11540,7 @@
       if (magicBookScreen) {
         magicBookScreen.hidden = false;
         resetMagicBook();
+        setInterfaceStage("catalog");
       } else {
         enterWorkbenchFromMagicBook();
       }
@@ -11492,6 +11572,7 @@
         magicBookScreen.hidden = true;
         resetMagicBook();
       }
+      setInterfaceStage("workbench");
       if (loginEmail && user.email) loginEmail.value = user.email;
       if (loginName && user.name) loginName.value = user.name;
       if (loginGroup && user.group) loginGroup.value = user.group;
@@ -11516,7 +11597,7 @@
         ["report", t("topMenuReport")]
       ];
       tocList.innerHTML = items.map(([page, label]) =>
-        `<a class="toc-link ${page === activeAppPage ? "active" : ""}" data-page-tab="${esc(page)}" href="#${esc(page)}">${esc(label)}</a>`
+        `<a class="toc-link ${page === activeAppPage ? "active" : ""}" data-page-tab="${esc(page)}" href="#${esc(page)}"${page === activeAppPage ? ' aria-current="page"' : ""}>${esc(label)}</a>`
       ).join("");
       tocList.querySelectorAll(".toc-link").forEach(link => {
         link.addEventListener("click", event => {
@@ -11533,6 +11614,8 @@
       tocList.querySelectorAll(".toc-link").forEach(link => {
         const isActive = link.dataset.pageTab === activeAppPage;
         link.classList.toggle("active", isActive);
+        if (isActive) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
         if (isActive) link.scrollIntoView({ block: "nearest", inline: "nearest" });
       });
     }
@@ -12984,9 +13067,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (axisSpriteLayer && ENABLE_AXIS_SPRITES) {
         axisSpriteLayer.innerHTML = plottedPoints.map(({ point, pressure, color }) => {
           const activeClass = point.id === activeAxisPointId ? " active" : "";
-          return `<button class="axis-sprite${activeClass}" type="button" data-history-point="${esc(point.id)}"
-            style="--point-color:${esc(color)}" tabindex="-1"
-            aria-label="${esc(point.label)} X ${esc(point.year)} Y ${pressure} GPa Z Tc ${esc(point.tc)}"
+          return `<span class="axis-sprite${activeClass}" data-history-point="${esc(point.id)}"
+            style="--point-color:${esc(color)}" aria-hidden="true"
             title="${esc(point.label)} · ${esc(point.year)} · Tc ${esc(point.tc)} · ${pressure} GPa">
             <span class="axis-sprite-orb" aria-hidden="true">
               <span class="axis-sphere-glow"></span>
@@ -12995,7 +13077,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
               <span class="axis-sphere-ring lon"></span>
               <span class="axis-point-glint"></span>
             </span>
-          </button>`;
+          </span>`;
         }).join("");
       } else if (axisSpriteLayer) {
         axisSpriteLayer.innerHTML = "";
@@ -14066,7 +14148,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const classification = article.classification || computeArticleClassification(article);
       if (state.topic === "2d") return (classification.two_d_categories || []).length > 0;
       const tags = classification.topic_tags || [];
-      return tags.includes("arpes") || tags.includes("superconductivity");
+      return tags.includes("superconductivity");
     }
 
     function topicArticles() {
@@ -14093,6 +14175,72 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         instrumentation: currentLang === "zh" ? "仪器/束线" : "Instrumentation"
       };
       return tags.map(tag => labels[tag]).filter(Boolean).join(" · ");
+    }
+
+    function safeArticleUrl(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      try {
+        const parsed = new URL(raw, location.href);
+        return ["http:", "https:"].includes(parsed.protocol) ? parsed.href : "";
+      } catch {
+        return "";
+      }
+    }
+
+    function summarizeArticleValues(values, limit = 6) {
+      const items = uniq((values || []).map(value => cleanArticleMetadataText(value, 100)).filter(Boolean));
+      if (!items.length) return { full: "", summary: "" };
+      const visible = items.slice(0, limit);
+      const remaining = items.length - visible.length;
+      return {
+        full: items.join(", "),
+        summary: `${visible.join(", ")}${remaining > 0 ? ` (+${remaining})` : ""}`
+      };
+    }
+
+    function renderArticleCard(article) {
+      const url = safeArticleUrl(article.url || article.open_access_url || (article.doi ? `https://doi.org/${article.doi}` : ""));
+      const topicLabel = articleTopicLabel(article);
+      const sourceLine = [articleYear(article), article.source_title || article.source].filter(Boolean).join(" · ");
+      const techniques = summarizeArticleValues(article.techniques, 5);
+      const materials = summarizeArticleValues(article.materials, 6);
+      const elements = summarizeArticleValues(article.elements, 8);
+      const keywords = summarizeArticleValues(article.keywords, 8);
+      const categoryLabels = state.topic === "2d" ? articleTwoDCategoryLabels(article) : [];
+      const meta = [];
+      if (sourceLine) meta.push(`<div class="meta">📅 ${esc(sourceLine)}</div>`);
+      meta.push(`<div class="meta">● ${esc(articleQualityLabel(article))}${topicLabel ? ` · ${esc(topicLabel)}` : ""}</div>`);
+      if (techniques.summary) meta.push(`<div class="meta" title="${esc(techniques.full)}">🔬 ${esc(t("techniqueLabel"))}: ${esc(techniques.summary)}</div>`);
+      const materialParts = [];
+      if (materials.summary) materialParts.push(`${t("materialLabel")}: ${materials.summary}`);
+      if (elements.summary) materialParts.push(`${t("elementLabel")}: ${elements.summary}`);
+      if (materialParts.length) meta.push(`<div class="meta" title="${esc([materials.full, elements.full].filter(Boolean).join(" | "))}">🧪 ${esc(materialParts.join(" | "))}</div>`);
+      if (categoryLabels.length) meta.push(`<div class="meta">▦ ${esc(t("twoDCategoryCol"))}: ${esc(categoryLabels.join(", "))}</div>`);
+      if (keywords.summary) meta.push(`<div class="meta" title="${esc(keywords.full)}">🏷️ ${esc(t("keywordLabel"))}: ${esc(keywords.summary)}</div>`);
+      const content = `
+        <div class="title">📄 ${esc(article.title)}</div>
+        ${meta.join("")}
+        ${url ? `<span class="chip good" style="font-size:11px;width:max-content;">${esc(t("viewPaperChip"))}</span>` : ""}
+      `;
+      return url
+        ? `<a class="article-card" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${content}</a>`
+        : `<article class="article-card" style="cursor:default;">${content}</article>`;
+    }
+
+    function articleSearchRelevance(article, term) {
+      if (!term) return 0;
+      const title = String(article.title || "").toLowerCase();
+      const doi = String(article.doi || "").toLowerCase();
+      const exactValues = [...(article.materials || []), ...(article.elements || []), ...(article.techniques || [])]
+        .map(value => String(value || "").toLowerCase());
+      let score = 0;
+      if (title === term) score += 120;
+      else if (title.startsWith(term)) score += 80;
+      else if (title.includes(term)) score += 55;
+      if (doi === term || doi.endsWith(`/${term}`)) score += 100;
+      if (exactValues.includes(term)) score += 45;
+      return score;
     }
 
     // ===== 文章数据渲染 =====
@@ -14129,18 +14277,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         articleGrid.innerHTML = `<div class="article-collapsed-card">${esc(t("articleCollapsedHint"))}</div>`;
         return;
       }
-      articleGrid.innerHTML = rows.slice(0, visibleCount).map(a => `
-        <div class="article-card" onclick="window.open('${esc(a.url || "#")}', '_blank')">
-          <div class="title">📄 ${esc(a.title)}</div>
-          <div class="meta">📅 ${esc(a.year)} · ${esc(a.source_title || a.source)}</div>
-          <div class="meta">● ${esc(articleQualityLabel(a))}${articleTopicLabel(a) ? ` · ${esc(articleTopicLabel(a))}` : ""}</div>
-          <div class="meta">🔬 ${t("techniqueLabel")}: ${esc((a.techniques || []).join(", "))}</div>
-          <div class="meta">🧪 ${t("materialLabel")}: ${esc((a.materials || []).join(", "))} | ${t("elementLabel")}: ${esc((a.elements || []).join(", "))}</div>
-          ${state.topic === "2d" ? `<div class="meta">▦ ${esc(t("twoDCategoryCol"))}: ${esc(articleTwoDCategoryLabels(a).join(", ") || "-")}</div>` : ""}
-          <div class="meta">🏷️ ${t("keywordLabel")}: ${esc((a.keywords || []).join(", "))}</div>
-          ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noreferrer" class="chip good" style="font-size:11px;">${t("viewPaperChip")}</a>` : ""}
-        </div>
-      `).join("");
+      articleGrid.innerHTML = rows.slice(0, visibleCount).map(renderArticleCard).join("");
     }
 
     function filteredArticles() {
@@ -14153,6 +14290,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const elementOk = !selectedElement || articleMatchesElement(article, selectedElement);
         const familyOk = articleMatchesFamilySelection(article, family);
         return termOk && elementOk && familyOk;
+      }).sort((left, right) => {
+        const relevanceDelta = articleSearchRelevance(right, term) - articleSearchRelevance(left, term);
+        return relevanceDelta || compareArticlesForDisplay(left, right);
       });
     }
 
@@ -14198,26 +14338,36 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         return;
       }
       const counts = new Map();
+      const normalizeKeyword = value => String(value || "")
+        .trim()
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .toLowerCase();
       const add = (value, weight = 1) => {
-        const key = String(value || "").trim();
-        if (!key || key.length > 32) return;
-        const normalized = key.replace(/\s+/g, " ");
-        counts.set(normalized, (counts.get(normalized) || 0) + weight);
+        const label = String(value || "").trim().replace(/\s+/g, " ");
+        const normalized = normalizeKeyword(label);
+        if (!label || label.length > 32 || normalized.length < 2 || ARTICLE_KEYWORD_STOPWORDS.has(normalized)) return;
+        const previous = counts.get(normalized);
+        const previousIsAllCaps = previous && /^[A-Z\d\s-]+$/.test(previous.label);
+        const labelIsAllCaps = /^[A-Z\d\s-]+$/.test(label);
+        counts.set(normalized, {
+          label: previousIsAllCaps && !labelIsAllCaps ? label : previous?.label || label,
+          weight: (previous?.weight || 0) + weight
+        });
       };
       for (const article of topicArticles().slice(0, KEYWORD_SAMPLE_LIMIT)) {
-        (article.keywords || []).forEach(value => add(value, 3));
+        (article.keywords || []).filter(value => !isUppercaseIndexKeyword(value)).forEach(value => add(value, 3));
         (article.materials || []).forEach(value => add(value, 4));
-        (article.elements || []).forEach(value => add(value, 1));
         (article.techniques || []).forEach(value => add(value, 2));
       }
       const priority = ["FeSe", "Bi2212", "BaK122", "MgB2", "KFe2As2", "cuprate", "iron-based", "superconducting gap", "Fermi surface", "ARPES", "Web of Science", "Nature", "APS"];
       priority.forEach(value => {
-        if ([...counts.keys()].some(k => k.toLowerCase() === value.toLowerCase())) add(value, 6);
+        if (counts.has(normalizeKeyword(value))) add(value, 6);
       });
-      const terms = [...counts.entries()]
-        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      const terms = [...counts.values()]
+        .sort((a, b) => b.weight - a.weight || a.label.localeCompare(b.label))
         .slice(0, 22)
-        .map(([term]) => term);
+        .map(entry => entry.label);
       keywordChips.innerHTML = terms.map(term => `<button data-keyword="${esc(term)}">${esc(term)}</button>`).join("");
       keywordChips.querySelectorAll("button").forEach(btn => {
         btn.addEventListener("click", () => {
