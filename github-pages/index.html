@@ -8897,16 +8897,18 @@
     let voiceRecognition = null;
     let voiceRecognitionUnavailable = !SpeechRecognitionApi;
     let voiceListening = false;
-    let voiceRecognitionHadFinal = false;
     let voiceRecognitionHadError = false;
     let voiceRecognitionManualStop = false;
     let voiceCommandExecuted = false;
     let voiceLastInterim = "";
+    let voiceBestTranscript = "";
     let voiceInterimTimer = 0;
+    let voiceSessionTimer = 0;
     let voiceStatusTimer = 0;
     const voiceContextPhraseKeys = new Set();
-    const VOICE_NAVIGATION_DELAY_MS = 320;
-    const VOICE_SEARCH_DELAY_MS = 650;
+    const VOICE_NAVIGATION_DELAY_MS = 480;
+    const VOICE_SEARCH_DELAY_MS = 1100;
+    const VOICE_SESSION_TIMEOUT_MS = 12000;
 
     const VOICE_COMMAND_PHRASES = [
       "打开历史", "打开材料", "打开文献", "打开论文", "打开数据", "打开模型", "打开报告",
@@ -8947,6 +8949,14 @@
         .replace(/\bm\s*o\s*s\s*(?:two|2)\b/gi, "MoS2")
         .replace(/\bw\s*s\s*(?:two|2)\b/gi, "WS2")
         .replace(/\bh\s*b\s*n\b/gi, "h-BN")
+        .replace(/\bt\s*m\s*d\s*s?\b/gi, "TMDs")
+        .replace(/\bf\s*e\s*s\s*e\b/gi, "FeSe")
+        .replace(/\by\s*b\s*c\s*o\b/gi, "YBCO")
+        .replace(/\bm\s*x\s*e\s*n\s*e\b/gi, "MXene")
+        .replace(/\bb\s*i\s*(?:two|2)\s*(?:two|2)\s*(?:one|1)\s*(?:two|2)\b/gi, "Bi2212")
+        .replace(/\bl\s*a\s*h\s*(?:ten|10)\b/gi, "LaH10")
+        .replace(/\bm\s*g\s*b\s*(?:two|2)\b/gi, "MgB2")
+        .replace(/\bn\s*b\s*s\s*e\s*(?:two|2)\b/gi, "NbSe2")
         .replace(/\bpapers?\b/gi, "paper")
         .replace(/材质/g, "材料")
         .replace(/报表/g, "报告")
@@ -9065,7 +9075,7 @@
       }
 
       const searchMatch = cleaned.match(/^(?:请\s*)?(?:搜索|查找|查询|检索)\s*(.+)$/i)
-        || cleaned.match(/^(?:please\s+)?(?:search(?:\s+for)?|find|look\s+up)\s+(.+)$/i);
+        || cleaned.match(/^(?:please\s+)?(?:search(?:\s+for)?|find|look\s+up)(?:\s+me)?\s+(.+)$/i);
       if (searchMatch) {
         return buildVoiceSearchCommand(searchMatch[1]);
       }
@@ -9115,17 +9125,70 @@
       voiceInterimTimer = 0;
     }
 
+    function voiceCommandCandidateScore(value) {
+      const transcript = String(value || "").trim();
+      const command = parseVoiceCommand(transcript);
+      if (!transcript || !command) return Number.NEGATIVE_INFINITY;
+      let score = transcript.length;
+      if (command.type === "search") {
+        const query = normalizeVoiceTranscript(command.query).toLowerCase();
+        if (!query || /^(?:about|for|on|regarding|关于|有关)$/i.test(query)) {
+          return Number.NEGATIVE_INFINITY;
+        }
+        score += 1000 + query.length * 8;
+        if (command.target !== "auto") score += 40;
+        if (VOICE_DOMAIN_PHRASES.some(phrase => query.includes(normalizeVoiceTranscript(phrase).toLowerCase()))) {
+          score += 160;
+        }
+      } else if (command.type === "topic") {
+        score += 800;
+      } else if (command.type === "page") {
+        score += 700;
+      } else {
+        score += 600;
+      }
+      return score;
+    }
+
     function bestVoiceCommandTranscript(candidates) {
-      return candidates
+      const uniqueCandidates = [...new Set(candidates
         .map(value => String(value || "").trim())
-        .filter(Boolean)
-        .find(value => parseVoiceCommand(value)) || "";
+        .filter(Boolean))];
+      uniqueCandidates.sort((left, right) => voiceCommandCandidateScore(right) - voiceCommandCandidateScore(left));
+      return voiceCommandCandidateScore(uniqueCandidates[0]) > Number.NEGATIVE_INFINITY
+        ? uniqueCandidates[0]
+        : "";
+    }
+
+    function voiceResultCandidates(results) {
+      const candidates = [];
+      const primaryParts = [];
+      let maxAlternatives = 0;
+      for (let index = 0; index < results.length; index++) {
+        const result = results[index];
+        const primary = String(result[0]?.transcript || "").trim();
+        if (primary) primaryParts.push(primary);
+        maxAlternatives = Math.max(maxAlternatives, result.length);
+        for (let alternative = 0; alternative < result.length; alternative++) {
+          candidates.push(String(result[alternative]?.transcript || "").trim());
+        }
+      }
+      if (primaryParts.length) candidates.unshift(primaryParts.join(" "));
+      for (let alternative = 1; alternative < Math.min(maxAlternatives, 10); alternative++) {
+        const parts = [];
+        for (let index = 0; index < results.length; index++) {
+          const result = results[index];
+          const text = String(result[alternative]?.transcript || result[0]?.transcript || "").trim();
+          if (text) parts.push(text);
+        }
+        if (parts.length) candidates.push(parts.join(" "));
+      }
+      return candidates;
     }
 
     function executeRecognizedVoiceCommand(transcript) {
       if (voiceCommandExecuted || !parseVoiceCommand(transcript)) return false;
       clearVoiceInterimTimer();
-      voiceRecognitionHadFinal = true;
       voiceCommandExecuted = runVoiceCommand(transcript);
       if (voiceCommandExecuted && voiceListening) {
         try { voiceRecognition?.stop(); } catch {}
@@ -9138,6 +9201,7 @@
       clearVoiceInterimTimer();
       if (!command || voiceCommandExecuted) return;
       voiceLastInterim = transcript;
+      voiceBestTranscript = transcript;
       const delay = command.type === "search" ? VOICE_SEARCH_DELAY_MS : VOICE_NAVIGATION_DELAY_MS;
       voiceInterimTimer = window.setTimeout(() => {
         voiceInterimTimer = 0;
@@ -9261,66 +9325,81 @@
         return;
       }
       voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
-      voiceRecognition.continuous = false;
+      voiceRecognition.continuous = true;
       voiceRecognition.interimResults = true;
-      voiceRecognition.maxAlternatives = 5;
+      voiceRecognition.maxAlternatives = 10;
       applyVoiceContextPhrases();
       voiceRecognition.onstart = () => {
-        voiceRecognitionHadFinal = false;
         voiceRecognitionHadError = false;
         voiceRecognitionManualStop = false;
         voiceCommandExecuted = false;
         voiceLastInterim = "";
+        voiceBestTranscript = "";
         clearVoiceInterimTimer();
+        clearTimeout(voiceSessionTimer);
+        voiceSessionTimer = window.setTimeout(() => {
+          const pendingTranscript = voiceBestTranscript || voiceLastInterim;
+          if (pendingTranscript && executeRecognizedVoiceCommand(pendingTranscript)) return;
+          voiceRecognitionManualStop = true;
+          try { voiceRecognition?.stop(); } catch {}
+          setVoiceListening(false);
+          setVoiceStatus(
+            pendingTranscript ? tf("voiceNoMatch", { transcript: pendingTranscript }) : t("voiceNoSpeech"),
+            "error",
+            3200
+          );
+        }, VOICE_SESSION_TIMEOUT_MS);
         setVoiceListening(true);
         setVoiceStatus(t("voiceListening"));
       };
       voiceRecognition.onresult = event => {
         let finalTranscript = "";
         let interimTranscript = "";
-        const alternativeTranscripts = [];
         for (let index = 0; index < event.results.length; index++) {
           const result = event.results[index];
           const text = String(result[0]?.transcript || "").trim();
           if (result.isFinal) finalTranscript += `${text} `;
           else interimTranscript += `${text} `;
-          for (let alternative = 0; alternative < result.length; alternative++) {
-            alternativeTranscripts.push(String(result[alternative]?.transcript || "").trim());
-          }
         }
         const combinedTranscript = `${finalTranscript} ${interimTranscript}`.trim();
         const parseableTranscript = bestVoiceCommandTranscript([
           combinedTranscript,
           finalTranscript,
           interimTranscript,
-          ...alternativeTranscripts
+          ...voiceResultCandidates(event.results)
         ]);
+        clearVoiceInterimTimer();
+        if (combinedTranscript) voiceLastInterim = combinedTranscript;
+        if (parseableTranscript && voiceCommandCandidateScore(parseableTranscript) >= voiceCommandCandidateScore(voiceBestTranscript)) {
+          voiceBestTranscript = parseableTranscript;
+        }
         if (combinedTranscript) {
           setVoiceStatus(tf("voiceHeard", { transcript: combinedTranscript }));
         }
-        if (finalTranscript.trim()) {
-          clearVoiceInterimTimer();
-          voiceRecognitionHadFinal = true;
-          if (!voiceCommandExecuted && !executeRecognizedVoiceCommand(parseableTranscript || finalTranscript.trim())) {
-            setVoiceStatus(tf("voiceNoMatch", { transcript: finalTranscript.trim() }), "error", 3200);
-          }
-        } else if (parseableTranscript) {
+        // Interim text is display-only. Commit after the recognizer marks the whole
+        // utterance final, so a prefix such as "find me papers about" cannot fire early.
+        if (!interimTranscript.trim() && parseableTranscript && !voiceCommandExecuted) {
           scheduleInterimVoiceCommand(parseableTranscript);
         }
       };
       voiceRecognition.onerror = event => {
         clearVoiceInterimTimer();
+        clearTimeout(voiceSessionTimer);
         voiceRecognitionHadError = true;
         setVoiceStatus(voiceErrorMessage(event.error), "error", 3200);
       };
       voiceRecognition.onend = () => {
         clearVoiceInterimTimer();
+        clearTimeout(voiceSessionTimer);
         setVoiceListening(false);
-        if (!voiceCommandExecuted && !voiceRecognitionManualStop && voiceLastInterim) {
-          executeRecognizedVoiceCommand(voiceLastInterim);
-        }
-        if (!voiceRecognitionHadFinal && !voiceRecognitionHadError && !voiceRecognitionManualStop) {
-          setVoiceStatus(t("voiceNoSpeech"), "error", 2200);
+        if (!voiceCommandExecuted && !voiceRecognitionManualStop && !voiceRecognitionHadError) {
+          const pendingTranscript = voiceBestTranscript || voiceLastInterim;
+          if (pendingTranscript && executeRecognizedVoiceCommand(pendingTranscript)) return;
+          setVoiceStatus(
+            pendingTranscript ? tf("voiceNoMatch", { transcript: pendingTranscript }) : t("voiceNoSpeech"),
+            "error",
+            pendingTranscript ? 3200 : 2200
+          );
         }
       };
       voiceCommandBtn.addEventListener("click", () => {
@@ -9333,7 +9412,9 @@
         if (voiceListening) {
           voiceRecognitionManualStop = true;
           voiceLastInterim = "";
+          voiceBestTranscript = "";
           clearVoiceInterimTimer();
+          clearTimeout(voiceSessionTimer);
           voiceRecognition.stop();
           setVoiceStatus(t("voiceStopped"), "neutral", 1800);
           return;
