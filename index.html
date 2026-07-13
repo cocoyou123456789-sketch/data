@@ -8394,10 +8394,127 @@
       special: $("#ourSpecial"), q: $("#ourQ"), photon: $("#ourPhoton"), notes: $("#ourNotes")
     };
 
+    const ARTICLE_MATERIAL_STOPWORDS = new Set([
+      "OF", "ON", "IN", "BY", "SI", "FS", "SC", "SOC", "SPIN", "PHYSICS", "PHONON", "PHONONS",
+      "BCS", "VHS", "COPY", "B.V", "BI", "IV", "IP", "OP", "BOSONIC", "ELECTRON", "ELECTRONS"
+    ]);
+    const ARTICLE_MATERIAL_ACRONYMS = new Set(["YBCO", "LSCO", "LBCO", "BSCCO", "STO", "KTO", "BN", "BP", "CSH"]);
+    const ARTICLE_ELEMENT_SYMBOLS = new Set([
+      "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar",
+      "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr",
+      "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe",
+      "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
+      "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U"
+    ]);
+    const TWO_D_ARTICLE_PATTERNS = {
+      graphene: [/\bgraphene\b/i],
+      tmds: [/\bTMDs?\b/i, /\btransition[- ]metal (?:di)?chalcogenides?\b/i, /\b(?:Mo|W)(?:S|Se|Te)2\b/i, /\b(?:Nb|Ta|Ti|V)(?:S|Se|Te)2\b/i],
+      hbn: [/\bh-?BN\b/i, /\b(?:hexagonal )?boron nitride\b/i],
+      "black-phosphorus": [/\bblack phosphorus\b/i, /\bphosphorene\b/i],
+      mxene: [/\bMXenes?\b/i, /\bTi3C2T?x?\b/i],
+      xenes: [/\bXenes?\b/i, /\b(?:silicene|germanene|stanene|borophene|antimonene|bismuthene|plumbene)\b/i],
+      "cof-mof": [/\b(?:COF|MOF)s?\b/i, /\bcovalent organic frameworks?\b/i, /\bmetal[- ]organic frameworks?\b/i]
+    };
+    const SC_ARTICLE_PATTERNS = {
+      cuprate: [/\bcuprates?\b/i, /\b(?:YBCO|LSCO|LBCO|Bi2212|Bi2201|BSCCO|YBa2Cu3O7|Bi2Sr2CaCu2O8)\b/i],
+      "iron-based": [/\biron[- ]based\b/i, /\biron (?:pnictide|chalcogenide)s?\b/i, /\b(?:FeSe|FeTe|LiFeAs|NaFeAs|BaFe2As2|BaK122)\b/i],
+      nickelate: [/\bnickelates?\b/i, /\b(?:Nd1-xSrxNiO2|La3Ni2O7|LaNiO3)\b/i],
+      conventional: [/\bconventional superconduct/i, /\b(?:MgB2|Nb3Sn|NbN)\b/i],
+      tmd: [/\b(?:NbSe2|TaS2|TaSe2|TiSe2)\b/i, /\bsuperconducting (?:transition[- ]metal )?(?:di)?chalcogenide/i],
+      "heavy-fermion": [/\bheavy[- ]fermion\b/i, /\b(?:CeCoIn5|CeIrIn5|CeCu2Si2|UPt3|UBe13)\b/i],
+      hydride: [/\bhydride superconduct/i, /\b(?:H3S|LaH10|H2S|C-S-H|CSH)\b/i]
+    };
+
+    function normalizeArticleDoi(value) {
+      return String(value || "")
+        .trim()
+        .replace(/^doi\s*:\s*/i, "")
+        .replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")
+        .split(/[?#]/, 1)[0]
+        .replace(/[\s.,;:]+$/g, "")
+        .toLowerCase();
+    }
+
+    function cleanArticleMetadataText(value, limit = 700) {
+      const text = String(value || "")
+        .replace(/<middle dot>/gi, "·")
+        .replace(/<[^>]+>/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+      return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
+    }
+
+    function cleanArticleMaterials(values) {
+      const seen = new Set();
+      return (values || []).map(value => String(value || "").replace(/\s+/g, " ").trim().replace(/[;,.:]+$/g, ""))
+        .filter(value => {
+          if (!value || ARTICLE_MATERIAL_STOPWORDS.has(value.toUpperCase())) return false;
+          if (/^[A-Z][A-Z.]{1,}$/.test(value) && !ARTICLE_MATERIAL_ACRONYMS.has(value)) return false;
+          const key = normalizeFormulaText(value).toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .slice(0, 18);
+    }
+
+    function articleTaxonomyText(article) {
+      return [
+        article.title, article.source_title, article.abstract,
+        ...(article.materials || []), ...(article.techniques || []),
+        ...(article.keywords || []), ...(article.properties || [])
+      ].filter(Boolean).join(" ");
+    }
+
+    function computeArticleClassification(article) {
+      const text = normalizeFormulaText(articleTaxonomyText(article));
+      const categoryText = normalizeFormulaText([article.title, ...(article.materials || [])].filter(Boolean).join(" "));
+      const hasTwoDContext = /\b(?:2D|two[- ]dimensional|layered|monolayer|bilayer|few[- ]layer|nanosheet)\b/i.test(categoryText);
+      const twoDCategories = Object.entries(TWO_D_ARTICLE_PATTERNS)
+        .filter(([id, patterns]) => (id !== "cof-mof" || hasTwoDContext) && patterns.some(pattern => pattern.test(categoryText)))
+        .map(([id]) => id);
+      const superconductivityCategories = Object.entries(SC_ARTICLE_PATTERNS)
+        .filter(([, patterns]) => patterns.some(pattern => pattern.test(categoryText)))
+        .map(([id]) => id);
+      const topicTags = [];
+      if ((article.techniques || []).includes("ARPES") || /\b(?:ARPES|angle[- ]resolved photoemission|photoemission spectroscopy)\b/i.test(text)) topicTags.push("arpes");
+      if (/\bsuperconduct(?:or|ors|ing|ivity)?\b|\bCooper pairs?\b|\bpairing symmetry\b/i.test(text)) topicTags.push("superconductivity");
+      if (twoDCategories.length || hasTwoDContext) topicTags.push("2d-materials");
+      if (/\b(?:beamline|endstation|analy[sz]er|instrumentation|spectrometer)\b/i.test(text)) topicTags.push("instrumentation");
+      return {
+        version: "arpes-taxonomy-v2",
+        topic_tags: uniq(topicTags),
+        two_d_categories: twoDCategories,
+        superconductivity_categories: superconductivityCategories
+      };
+    }
+
+    function normalizeArticleRecordForUi(article) {
+      const normalized = { ...article };
+      normalized.title = cleanArticleMetadataText(article.title);
+      normalized.source = cleanArticleMetadataText(article.source, 260);
+      normalized.source_title = cleanArticleMetadataText(article.source_title, 260);
+      normalized.doi = normalizeArticleDoi(article.doi);
+      normalized.materials = cleanArticleMaterials(article.materials);
+      normalized.elements = uniq((article.elements || []).filter(symbol => ARTICLE_ELEMENT_SYMBOLS.has(symbol)));
+      normalized.techniques = uniq(article.techniques || []);
+      normalized.keywords = uniq(article.keywords || []);
+      normalized.properties = uniq(article.properties || []);
+      normalized.classification = computeArticleClassification(normalized);
+      normalized.figures = (article.figures || []).map(figure => {
+        if (figure.classification_confidence || !String(article.verification_status || "").includes("open_publisher")) return { ...figure };
+        return { ...figure, type: "Other", classification_confidence: "unclassified", type_source: "unclassified" };
+      });
+      normalized.record_sources = uniq([...(article.record_sources || []), article.source].filter(Boolean));
+      delete normalized._searchText;
+      return normalized;
+    }
+
     function articleIdentity(article) {
-      const doi = String(article.doi || "").trim().toLowerCase();
-      if (doi) return `doi:${doi.replace(/^https?:\/\/doi\.org\//, "")}`;
-      return `title:${String(article.title || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()}:${article.year || ""}`;
+      const doi = normalizeArticleDoi(article.doi);
+      if (doi) return `doi:${doi}`;
+      const title = String(article.title || "").normalize("NFKC").toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+      return `title:${title}:${article.year || ""}`;
     }
 
     function articleYear(article) {
@@ -8493,7 +8610,8 @@
     function mergeArticleRecords(...groups) {
       const byId = new Map();
       for (const group of groups) {
-        for (const article of group || []) {
+        for (const rawArticle of group || []) {
+          const article = normalizeArticleRecordForUi(rawArticle);
           if (!isRecentArticle(article)) continue;
           const key = articleIdentity(article);
           if (!key || key === "title::") continue;
@@ -8503,6 +8621,10 @@
             target.keywords = uniq([...(target.keywords || []), ...(article.keywords || [])]);
             target.materials = uniq([...(target.materials || []), ...(article.materials || [])]);
             target.elements = uniq([...(target.elements || []), ...(article.elements || [])]);
+            target.techniques = uniq([...(target.techniques || []), ...(article.techniques || [])]);
+            target.properties = uniq([...(target.properties || []), ...(article.properties || [])]);
+            target.evidence = uniq([...(target.evidence || []), ...(article.evidence || [])]);
+            target.record_sources = uniq([...(target.record_sources || []), ...(article.record_sources || [])]);
             target.figures = uniqFigures([...(target.figures || []), ...(article.figures || [])]);
             target.open_access_url = target.open_access_url || article.open_access_url || "";
             target.citation_count = Math.max(target.citation_count || 0, article.citation_count || 0) || target.citation_count || article.citation_count || null;
@@ -8515,13 +8637,14 @@
           }
         }
       }
-      return [...byId.values()];
+      return [...byId.values()].map(normalizeArticleRecordForUi);
     }
 
     function uniqFigures(figures) {
       const seen = new Set();
       return (figures || []).filter(fig => {
-        const key = [fig.image_url || fig.ar5iv_fig || "", fig.caption || "", fig.type || ""].join("|");
+        const primaryUrl = String(fig.image_url || fig.ar5iv_fig || "").split(/[?#]/, 1)[0].toLowerCase();
+        const key = primaryUrl || [fig.original_figure_url || "", fig.caption || "", fig.type || ""].join("|").toLowerCase();
         if (!key.trim() || seen.has(key)) return false;
         seen.add(key);
         return true;
@@ -10987,7 +11110,7 @@
 
     function curatedArticles() {
       return (state.articles || []).filter(article =>
-        String(article.verification_status || "").startsWith("curated_real_article")
+        String(article.verification_status || "").startsWith("curated_real_article") && articleIsRelevantToTopic(article)
       );
     }
 
@@ -13276,6 +13399,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function isPublicFigureCandidateArticle(article) {
       const status = String(article.verification_status || "");
       if (!status.includes("wos_public_shared_metadata")) return false;
+      if (!articleIsRelevantToTopic(article)) return false;
       if ((article.figures || []).some(fig => resolveFigureImage(fig, article))) return false;
       const text = articleSearchText(article);
       return (article.techniques || []).includes("ARPES") || text.includes("arpes") || text.includes("photoemission");
@@ -13476,7 +13600,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             ${figContent}
             <div class="figure-card-footer">
               <strong>${esc(fig.caption)}</strong>
-              <span style="font-size:10px;">✅ ${esc(fig.data_quality || "curated_real_article_figure")}</span>
+              <span style="font-size:10px;">● ${esc(figureClassificationLabel(fig))}</span>
               <span style="font-size:10px;">📄 ${esc(fig.article_title.slice(0, 70))}...</span>
               <span style="font-size:10px;">🧪 ${esc((fig.materials || []).join(", "))}</span>
             </div>
@@ -13767,7 +13891,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           <div class="figure-compare-meta">
             <strong>${esc(fig.caption)}</strong>
             <span>📄 ${esc(fig.article_title || "")}</span>
-            <span>✅ ${esc(fig.data_quality || "curated_real_article_figure")}</span>
+            <span>● ${esc(figureClassificationLabel(fig))}</span>
             <a href="${esc(fig.article_url || fig.original_figure_url || fig.image_url)}" target="_blank" rel="noreferrer" class="chip good" style="width:max-content;">${esc(t("viewFigureSource"))}</a>
           </div>
         </div>
@@ -13788,10 +13912,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function classifyFigureType(fig) {
       if (!fig || typeof fig !== "object") return normalizeFigureType(fig);
+      if (fig.classification_confidence === "unclassified" || fig.type_source === "unclassified") return "Other";
       const explicitType = String(fig.type || "").toLowerCase();
       if (explicitType && !["arpes spectrum", "comparison", "other"].includes(explicitType)) return normalizeFigureType(explicitType);
       const text = [fig.type, fig.caption].join(" ");
       return normalizeFigureType(text);
+    }
+
+    function figureClassificationLabel(fig) {
+      if (fig?.type_source === "publisher_caption" && fig?.classification_confidence === "high") {
+        return currentLang === "zh" ? "图类依据：出版社图注" : "Type evidence: publisher caption";
+      }
+      if (fig?.classification_confidence === "unclassified" || fig?.type_source === "unclassified") {
+        return currentLang === "zh" ? "图类：未确认" : "Type: unclassified";
+      }
+      return currentLang === "zh" ? "图类：人工整理" : "Type: curated";
     }
 
     function figureTypeLabel(type) {
@@ -13905,22 +14040,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function articleMatchesFamilySelection(article, selection) {
       if (!selection) return true;
       const articleMaterials = new Set((article.materials || []).map(normalizeMaterialName));
-      const normalizedArticleText = normalizeMaterialName(articleSearchText(article));
       const category = state.topic === "2d" ? twoDCategoryById(selection) : null;
 
       if (category) {
-        const categoryTerms = [
-          category.category?.zh,
-          category.category?.en,
-          category.representatives?.zh,
-          category.representatives?.en,
-          ...(category.searchTerms || [])
-        ]
-          .flatMap(value => String(value || "").split(/[、,，;；/|]/))
-          .map(value => normalizeMaterialName(value.trim()))
-          .filter(Boolean);
-        if (categoryTerms.some(term => normalizedArticleText.includes(term))) return true;
+        return (article.classification?.two_d_categories || []).includes(selection);
       }
+
+      if (state.topic === "sc" && (article.classification?.superconductivity_categories || []).includes(selection)) return true;
 
       return (state.db?.materials || []).some(row => {
         if (!rowMatchesFamilySelection(row, selection)) return false;
@@ -13930,9 +14056,43 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function articleTwoDCategoryLabels(article) {
       if (state.topic !== "2d") return [];
+      const categories = new Set(article.classification?.two_d_categories || []);
       return twoDCategoryRows
-        .filter(row => articleMatchesFamilySelection(article, twoDCategoryId(row)))
+        .filter(row => categories.has(twoDCategoryId(row)))
         .map(row => localizedCategoryValue(row, "category"));
+    }
+
+    function articleIsRelevantToTopic(article) {
+      const classification = article.classification || computeArticleClassification(article);
+      if (state.topic === "2d") return (classification.two_d_categories || []).length > 0;
+      const tags = classification.topic_tags || [];
+      return tags.includes("arpes") || tags.includes("superconductivity");
+    }
+
+    function topicArticles() {
+      return (state.articles || []).filter(articleIsRelevantToTopic);
+    }
+
+    function articleQualityLabel(article) {
+      const status = String(article.verification_status || "").toLowerCase();
+      if (status.includes("curated_real_article_figure")) return currentLang === "zh" ? "出版社图像 + 标准化元数据" : "Publisher figures + normalized metadata";
+      if (status.startsWith("curated_real_article")) return currentLang === "zh" ? "人工整理" : "Curated";
+      if (status.includes("wos_indexed")) return currentLang === "zh" ? "WoS / 出版社记录" : "WoS / publisher record";
+      if (status.includes("wos_public_shared_metadata")) return currentLang === "zh" ? "WoS 元数据（已标准化）" : "Normalized WoS metadata";
+      if (status.includes("publisher_record")) return currentLang === "zh" ? "出版社记录" : "Publisher record";
+      if (status.includes("free_api") || status.includes("openalex") || status.includes("crossref")) return currentLang === "zh" ? "开放 API 元数据" : "Open API metadata";
+      return currentLang === "zh" ? "导入元数据" : "Imported metadata";
+    }
+
+    function articleTopicLabel(article) {
+      const tags = article.classification?.topic_tags || [];
+      const labels = {
+        arpes: "ARPES",
+        superconductivity: currentLang === "zh" ? "超导" : "Superconductivity",
+        "2d-materials": currentLang === "zh" ? "二维材料" : "2D materials",
+        instrumentation: currentLang === "zh" ? "仪器/束线" : "Instrumentation"
+      };
+      return tags.map(tag => labels[tag]).filter(Boolean).join(" · ");
     }
 
     // ===== 文章数据渲染 =====
@@ -13942,7 +14102,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         return;
       }
       const rows = filteredArticles();
-      articleStatus.textContent = `${rows.length} / ${state.articles.length} ${t("records")}`;
+      const topicRows = topicArticles();
+      articleStatus.textContent = `${rows.length} / ${topicRows.length} ${t("records")}`;
       if (articleMetricsDirty) updateImportMetrics();
       if (rows.length > ARTICLE_LARGE_LIST_THRESHOLD && !articleListManuallyExpanded) {
         articleListCollapsed = true;
@@ -13971,7 +14132,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       articleGrid.innerHTML = rows.slice(0, visibleCount).map(a => `
         <div class="article-card" onclick="window.open('${esc(a.url || "#")}', '_blank')">
           <div class="title">📄 ${esc(a.title)}</div>
-          <div class="meta">📅 ${esc(a.year)} · ${esc(a.source)} · ${esc(a.verification_status)}</div>
+          <div class="meta">📅 ${esc(a.year)} · ${esc(a.source_title || a.source)}</div>
+          <div class="meta">● ${esc(articleQualityLabel(a))}${articleTopicLabel(a) ? ` · ${esc(articleTopicLabel(a))}` : ""}</div>
           <div class="meta">🔬 ${t("techniqueLabel")}: ${esc((a.techniques || []).join(", "))}</div>
           <div class="meta">🧪 ${t("materialLabel")}: ${esc((a.materials || []).join(", "))} | ${t("elementLabel")}: ${esc((a.elements || []).join(", "))}</div>
           ${state.topic === "2d" ? `<div class="meta">▦ ${esc(t("twoDCategoryCol"))}: ${esc(articleTwoDCategoryLabels(a).join(", ") || "-")}</div>` : ""}
@@ -13986,7 +14148,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const term = (searchInput.value || "").trim().toLowerCase();
       const selectedElement = state.selectedElement || "";
       const family = familyFilter.value;
-      return state.articles.filter(article => {
+      return topicArticles().filter(article => {
         const termOk = !term || articleSearchText(article).includes(term);
         const elementOk = !selectedElement || articleMatchesElement(article, selectedElement);
         const familyOk = articleMatchesFamilySelection(article, family);
@@ -14000,6 +14162,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         article.title, article.source, article.source_title, article.verification_status,
         ...(article.materials || []), ...(article.elements || []), ...(article.dopants || []),
         ...(article.techniques || []), ...(article.keywords || []), ...(article.properties || []),
+        ...(article.classification?.topic_tags || []), ...(article.classification?.two_d_categories || []),
+        ...(article.classification?.superconductivity_categories || []),
         article.doi, article.url
       ].join(" ").toLowerCase();
       return article._searchText;
@@ -14010,7 +14174,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         setArticleDeferredUi(!!articlesLoadingPromise);
         return;
       }
-      const articles = state.articles || [];
+      const articles = topicArticles();
       const wosCount = articles.filter(article => {
         const text = [article.source, article.verification_status, article.wos_uid].join(" ").toLowerCase();
         return text.includes("wos") || text.includes("web of science") || text.includes("publisher");
@@ -14040,7 +14204,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const normalized = key.replace(/\s+/g, " ");
         counts.set(normalized, (counts.get(normalized) || 0) + weight);
       };
-      for (const article of (state.articles || []).slice(0, KEYWORD_SAMPLE_LIMIT)) {
+      for (const article of topicArticles().slice(0, KEYWORD_SAMPLE_LIMIT)) {
         (article.keywords || []).forEach(value => add(value, 3));
         (article.materials || []).forEach(value => add(value, 4));
         (article.elements || []).forEach(value => add(value, 1));
