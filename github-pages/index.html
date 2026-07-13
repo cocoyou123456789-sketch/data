@@ -7425,6 +7425,8 @@
         voiceRecognitionError: "语音识别暂时不可用",
         voiceOpenedPage: "已打开：{page}",
         voiceSearchStarted: "正在搜索：{query}",
+        voiceSearchResults: "已找到 {count} 篇 {query} 文献",
+        voiceSearchNoResults: "当前文献库没有找到 {query}，可以修改识别结果后重试",
         voiceSearchCleared: "已清除搜索",
         voiceStopped: "语音控制已停止",
         elementInSC: "相关超导材料",
@@ -8007,6 +8009,8 @@
         voiceRecognitionError: "Speech recognition is temporarily unavailable",
         voiceOpenedPage: "Opened: {page}",
         voiceSearchStarted: "Searching for: {query}",
+        voiceSearchResults: "Found {count} paper(s) for {query}",
+        voiceSearchNoResults: "No {query} papers were found in the current library. Edit the transcript and try again.",
         voiceSearchCleared: "Search cleared",
         voiceStopped: "Voice control stopped",
         elementInSC: "in superconductivity",
@@ -9044,6 +9048,7 @@
       "超导", "二维材料", "石墨烯", "铁基超导", "铜氧化物", "高压氢化物", "光电子能谱",
       "费米面", "能带", "能隙", "文献", "数据", "历史", "材料", "模型", "报告",
       "TMD", "TMDs", "transition metal dichalcogenide", "MoS2", "WS2", "h-BN", "MXene",
+      "过渡金属二硫族化合物", "过渡金属硫族化合物", "提艾姆迪", "踢艾姆迪", "team D",
       "YBCO", "Bi2212", "FeSe", "LaH10", "MgB2",
       "NbSe2", "graphene", "phosphorene", "black phosphorus"
     ];
@@ -9051,6 +9056,7 @@
     function normalizeVoiceTranscript(transcript) {
       let text = String(transcript || "").normalize("NFKC");
       text = text
+        .replace(/[\u200B-\u200D\uFEFF]/g, "")
         .replace(/[，。！？、,.!?;；:：]/g, " ")
         .replace(/\bquick[\s_-]*map\b/gi, "Quick_Map")
         .replace(/quick[\s_-]*麦普/gi, "Quick_Map")
@@ -9064,7 +9070,8 @@
         .replace(/\bm\s*o\s*s\s*(?:two|2)\b/gi, "MoS2")
         .replace(/\bw\s*s\s*(?:two|2)\b/gi, "WS2")
         .replace(/\bh\s*b\s*n\b/gi, "h-BN")
-        .replace(/\bt\s*m\s*d\s*s?\b/gi, "TMDs")
+        .replace(/\b(?:t\s*m|team|tee\s*m)\s*d\s*s?\b/gi, "TMDs")
+        .replace(/(?:提|踢|梯)[\s-]*(?:艾姆|M)[\s-]*迪/gi, "TMDs")
         .replace(/\bf\s*e\s*s\s*e\b/gi, "FeSe")
         .replace(/\by\s*b\s*c\s*o\b/gi, "YBCO")
         .replace(/\bm\s*x\s*e\s*n\s*e\b/gi, "MXene")
@@ -9129,6 +9136,55 @@
       return "auto";
     }
 
+    const VOICE_TWO_D_CATEGORY_ALIASES = {
+      graphene: ["graphene", "石墨烯"],
+      tmds: [
+        "tmd", "tmds", "transition metal dichalcogenide", "transition metal dichalcogenides",
+        "过渡金属二硫族化合物", "过渡金属硫族化合物", "过渡金属二硫化物", "二硫族化合物"
+      ],
+      hbn: ["hbn", "hexagonal boron nitride", "六方氮化硼"],
+      "black-phosphorus": ["black phosphorus", "phosphorene", "黑磷", "磷烯"],
+      mxene: ["mxene", "mxenes"],
+      xenes: ["xene", "xenes", "硅烯", "锡烯"],
+      "cof-mof": ["cof", "mof", "cof mof", "二维有机框架"]
+    };
+
+    function normalizeVoiceCategoryKey(value) {
+      return normalizeVoiceTranscript(value)
+        .toLowerCase()
+        .replace(/[₀₁₂₃₄₅₆₇₈₉]/g, digit => "₀₁₂₃₄₅₆₇₈₉".indexOf(digit))
+        .replace(/ₓ/g, "x")
+        .replace(/[^a-z0-9\u3400-\u9fff]+/g, "");
+    }
+
+    function voiceTwoDCategoryForQuery(rawQuery) {
+      const queryKey = normalizeVoiceCategoryKey(rawQuery);
+      if (!queryKey) return null;
+      for (const row of twoDCategoryRows) {
+        const broadAliases = VOICE_TWO_D_CATEGORY_ALIASES[twoDCategoryId(row)] || [];
+        const allAliases = [
+          ...broadAliases,
+          row.category?.zh,
+          row.category?.en,
+          ...(row.searchTerms || [])
+        ].filter(Boolean);
+        const matchedAlias = allAliases.find(alias => {
+          const aliasKey = normalizeVoiceCategoryKey(alias);
+          return aliasKey.length >= 3 && queryKey.includes(aliasKey);
+        });
+        if (!matchedAlias) continue;
+        const broad = broadAliases.some(alias => normalizeVoiceCategoryKey(alias) === queryKey)
+          || normalizeVoiceCategoryKey(row.category?.zh) === queryKey
+          || normalizeVoiceCategoryKey(row.category?.en) === queryKey;
+        return {
+          id: twoDCategoryId(row),
+          label: localizedCategoryValue(row, "category"),
+          filterQuery: broad ? "" : String(rawQuery || "").trim()
+        };
+      }
+      return null;
+    }
+
     function buildVoiceSearchCommand(rawQuery, targetHint = "auto") {
       let query = String(rawQuery || "").trim();
       let target = targetHint;
@@ -9163,7 +9219,20 @@
         if (target === "auto") target = voiceSearchTarget(suffixMatch[2]);
       }
       query = query.replace(/(?:相关|有关)$/i, "").replace(/^["'“”‘’]+|["'“”‘’]+$/g, "").trim();
-      return query ? { type: "search", target, query } : null;
+      if (!query) return null;
+      const twoDCategory = voiceTwoDCategoryForQuery(query);
+      if (twoDCategory) {
+        return {
+          type: "search",
+          target: target === "auto" ? "literature" : target,
+          topic: "2d",
+          family: twoDCategory.id,
+          query,
+          displayQuery: twoDCategory.label,
+          filterQuery: twoDCategory.filterQuery
+        };
+      }
+      return { type: "search", target, query };
     }
 
     function parseVoiceCommand(transcript) {
@@ -9193,6 +9262,11 @@
         || cleaned.match(/^(?:please\s+)?(?:search(?:\s+for)?|find|look\s+up)(?:\s+me)?\s+(.+)$/i);
       if (searchMatch) {
         return buildVoiceSearchCommand(searchMatch[1]);
+      }
+
+      const impliedArticleSearch = cleaned.match(/^(.+?)(?:\s*(?:相关的|有关的|的))?\s*(?:文章|论文|文献|资料|papers?|articles?|literature)$/i);
+      if (impliedArticleSearch && voiceTwoDCategoryForQuery(impliedArticleSearch[1])) {
+        return buildVoiceSearchCommand(`${impliedArticleSearch[1]}文章`);
       }
 
       const navigationMatch = normalized.match(/^(?:请\s*)?(?:(?:帮|替|给)我\s*|(?:我想|我要|想要)\s*)?(?:打开|进入|切换(?:到)?|前往|去)\s*(.+)$/i)
@@ -9484,6 +9558,9 @@
         const target = command.target === "auto"
           ? (["materials", "literature", "data"].includes(activeAppPage) ? activeAppPage : "literature")
           : command.target;
+        if (command.topic && state.topic !== command.topic) {
+          setTopic(command.topic, { preserveScroll: false });
+        }
         if (target === "data") {
           showAppPage("data");
           const localDataSearch = document.querySelector("#librarySearch");
@@ -9493,13 +9570,27 @@
           }
         } else {
           showAppPage(target === "materials" ? "materials" : "literature");
-          searchInput.value = command.query;
+          searchInput.value = command.filterQuery ?? command.query;
+          if (command.family) familyFilter.value = command.family;
           resetArticleListViewForFilter();
           applyFilters();
+          renderFigureFilterControls();
         }
-        const message = tf("voiceSearchStarted", { query: command.query });
+        const displayQuery = command.displayQuery || command.query;
+        const message = tf("voiceSearchStarted", { query: displayQuery });
         setVoiceStatus(message, "success", 2800);
         showToast(message);
+        if (target === "literature") {
+          ensureArticlesLoaded({ render: false }).then(() => {
+            applyFilters();
+            const count = filteredArticles().length;
+            const resultMessage = count
+              ? tf("voiceSearchResults", { count, query: displayQuery })
+              : tf("voiceSearchNoResults", { query: displayQuery });
+            setVoiceStatus(resultMessage, count ? "success" : "error", 3600);
+            showToast(resultMessage);
+          }).catch(() => {});
+        }
         return true;
       }
       return false;
