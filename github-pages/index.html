@@ -1228,6 +1228,12 @@
       letter-spacing: 0.2px;
     }
 
+    .magic-toc-item.workspace-ready em {
+      border-color: rgba(94,234,212,0.58);
+      color: #d8fff8;
+      background: rgba(15,118,110,0.34);
+    }
+
     .magic-toc-item.magic-toc-shell {
       cursor: default;
       opacity: 0.86;
@@ -1506,6 +1512,55 @@
       color: #ffffff;
       box-shadow: none;
       transform: none;
+    }
+
+    .workspace-context-bar {
+      min-height: 72px;
+      border: 1px solid rgba(96,208,255,0.24);
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: rgba(10,18,28,0.76);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .workspace-context-copy {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+    }
+
+    .workspace-context-copy > span {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .workspace-context-copy strong {
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .workspace-context-copy small {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .workspace-context-bar button {
+      flex: 0 0 auto;
+    }
+
+    body[data-material-workspace="2d"] .top-menu-bar {
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+    }
+
+    body[data-material-workspace="2d"] [data-page-tab="history"] {
+      display: none !important;
     }
 
     .module-select-page {
@@ -5850,6 +5905,9 @@
         top: 0;
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
+      body[data-material-workspace="2d"] .top-menu-bar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
       main > section, main > details, .toc-panel { grid-column: 1; }
       .toc-panel {
         position: relative;
@@ -6069,6 +6127,15 @@
         display: grid;
         grid-template-columns: 1fr;
         align-items: stretch;
+      }
+
+      .workspace-context-bar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .workspace-context-bar button {
+        width: 100%;
       }
 
       .super-button-wrap,
@@ -6580,10 +6647,10 @@
           <span class="magic-page-title" data-i18n="magicBookCatalogRight">扩展库</span>
           <span class="magic-page-line top"></span>
           <div class="magic-toc-list">
-            <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="low-dimensional">
+            <button class="magic-toc-item workspace-ready" type="button" data-magic-topic="2d" data-magic-page="materials">
               <strong data-i18n="magicBookCardLowDim">二维材料</strong>
-              <span data-i18n="magicBookTocLowDim">二维、范德华和量子薄膜材料。</span>
-              <em data-i18n="magicBookComingSoon">建设中</em>
+              <span data-i18n="magicBookTocLowDim">进入独立的二维、范德华和量子薄膜材料界面。</span>
+              <em data-i18n="magicBookReady">可进入</em>
             </button>
             <button class="magic-toc-item magic-toc-shell" type="button" data-magic-shell="magnetic">
               <strong data-i18n="magicBookCardMagnetic">磁性材料</strong>
@@ -6610,8 +6677,8 @@
 
   <header aria-hidden="true" inert>
     <div>
-      <h1 data-i18n="title">ARPES 超导材料探索器</h1>
-      <p class="subtitle" data-i18n="subtitle">历史、材料、文献和数据</p>
+      <h1 id="appTitle" data-i18n="title">ARPES 超导材料探索器</h1>
+      <p class="subtitle" id="appSubtitle" data-i18n="subtitle">历史、材料、文献和数据</p>
     </div>
     <div class="header-actions">
       <div class="sound-bars" id="soundBars" aria-hidden="true">
@@ -6667,6 +6734,7 @@
         </select>
       </label>
       <button class="primary" id="generateReportBtn" data-i18n="generateReportBtn" title="Generate the current research report in the selected format">生成调研报告</button>
+      <button id="workspaceCatalogBtn" type="button" data-i18n="workspaceCatalogBtn" title="返回材料书架">切换材料界面</button>
       <button id="logoutBtn" type="button" data-i18n="logoutBtn" title="Return to the login screen">注销</button>
       <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">📦 GitHub</a>
     </div>
@@ -6920,13 +6988,13 @@
         <span class="status" id="loadStatus">Loading...</span>
       </div>
       <div class="content">
-        <div class="topic-tabs" aria-label="材料知识界面">
-          <div class="super-button-wrap">
-            <button class="super-button topic-button active" id="superconductorBtn" type="button" data-topic="sc" data-i18n="superconductorBtn">⚡ SUPERCONDUCTOR ⚡</button>
+        <div class="workspace-context-bar" aria-live="polite">
+          <div class="workspace-context-copy">
+            <span data-i18n="workspaceCurrentLabel">当前材料界面</span>
+            <strong id="workspaceContextTitle">超导材料工作区</strong>
+            <small id="workspaceContextHint">超导材料、Tc 历史、ARPES 文献和实验数据。</small>
           </div>
-          <div class="super-button-wrap">
-            <button class="super-button topic-button" id="twoDimensionalBtn" type="button" data-topic="2d" data-i18n="twoDimensionalBtn">▦ 二维材料 2D MATERIALS</button>
-          </div>
+          <button id="workspaceContextSwitchBtn" type="button" data-i18n="workspaceCatalogBtn">切换材料界面</button>
         </div>
         <div class="two-d-category-panel" id="twoDCategoryPanel" hidden>
           <div class="two-d-category-head">
@@ -7568,6 +7636,14 @@
       zh: {
         title: "ARPES 超导材料探索器",
         subtitle: "历史、材料、文献和数据",
+        twoDWorkspaceTitle: "ARPES 二维材料探索器",
+        twoDWorkspaceSubtitle: "二维材料、分类、文献、谱图和数据",
+        workspaceCurrentLabel: "当前材料界面",
+        workspaceSuperTitle: "超导材料工作区",
+        workspaceSuperHint: "超导材料、Tc 历史、ARPES 文献和实验数据。",
+        workspaceTwoDTitle: "二维材料工作区",
+        workspaceTwoDHint: "石墨烯、TMDs、h-BN、黑磷、MXene、Xenes 与 COF/MOF。",
+        workspaceCatalogBtn: "切换材料界面",
         loginTitle: "NSRL 光源入口",
         loginHint: "左侧代表 NSRL / ARPES 的真实实验入口，连接材料、文献和本地实验数据。",
         signInTab: "登录",
@@ -7595,7 +7671,7 @@
         magicBookTitle: "材料数据库",
         magicBookLead: "先选择材料书，再打开对应材料数据库。",
         magicBookShelfPhysical: "物理材料",
-        magicBookShelfPhysicalHint: "超导材料入口",
+        magicBookShelfPhysicalHint: "超导与二维材料入口",
         magicBookChemistry: "化学材料",
         magicBookBiology: "生物材料",
         magicBookInfo: "信息材料",
@@ -7605,16 +7681,17 @@
         magicBookCoverTitle: "物理材料手册",
         magicBookCoverHint: "点击打开目录",
         magicBookOpenCatalog: "打开第一本书",
-        magicBookChoosePage: "进入超导材料",
+        magicBookChoosePage: "进入所选材料界面",
         magicBookCatalogLeft: "目录",
-        magicBookCatalogRight: "扩展库",
+        magicBookCatalogRight: "独立界面",
         magicBookTocSuper: "进入 ARPES 超导材料数据库。",
         magicBookTocPhoton: "光子能带、禁带和结构库。",
         magicBookTocTopo: "拓扑态、边界态和能带材料。",
-        magicBookTocLowDim: "二维、范德华和量子薄膜材料。",
+        magicBookTocLowDim: "进入独立的二维、范德华和量子薄膜材料界面。",
         magicBookTocMagnetic: "自旋、磁有序和关联电子材料。",
         magicBookTocBioInfo: "软物质、生物材料和信息功能材料。",
         magicBookComingSoon: "建设中",
+        magicBookReady: "可进入",
         magicBookShellToast: "这个材料库先作为空壳保留，后续再建立。",
         magicBookFlipping: "正在翻页...",
         magicBookPageLeft: "物理材料",
@@ -7626,7 +7703,7 @@
         magicBookCardMagnetic: "磁性材料",
         magicBookCardBioInfo: "生物 / 信息材料",
         magicBookEnter: "打开魔法书进入主界面",
-        magicBookHint: "打开“物理材料”目录后，当前可进入超导材料；其他材料库为后续扩展入口。",
+        magicBookHint: "打开“物理材料”目录后，可分别进入超导材料和二维材料两个独立界面。",
         loginFeatureHistory: "历史图",
         loginFeatureHistoryHint: "大事件已合并到 Tc 历史图。",
         loginFeatureCube: "3D 魔方",
@@ -8163,6 +8240,14 @@
       en: {
         title: "ARPES Superconductivity Explorer",
         subtitle: "History, materials, papers, and data",
+        twoDWorkspaceTitle: "ARPES 2D Materials Explorer",
+        twoDWorkspaceSubtitle: "2D materials, categories, papers, spectra, and data",
+        workspaceCurrentLabel: "Current materials interface",
+        workspaceSuperTitle: "Superconductivity Workspace",
+        workspaceSuperHint: "Superconducting materials, Tc history, ARPES papers, and experimental data.",
+        workspaceTwoDTitle: "2D Materials Workspace",
+        workspaceTwoDHint: "Graphene, TMDs, h-BN, black phosphorus, MXenes, Xenes, and COF/MOF.",
+        workspaceCatalogBtn: "Switch materials interface",
         loginTitle: "NSRL Light Source Access",
         loginHint: "The left side represents the real NSRL / ARPES experimental entrance connected to materials, papers, and local data.",
         signInTab: "Sign In",
@@ -8190,7 +8275,7 @@
         magicBookTitle: "Materials Database",
         magicBookLead: "Choose a material book, then open the matching database.",
         magicBookShelfPhysical: "Physical Materials",
-        magicBookShelfPhysicalHint: "Superconductor entrance",
+        magicBookShelfPhysicalHint: "Superconductor and 2D-material entrances",
         magicBookChemistry: "Chemical Materials",
         magicBookBiology: "Biomaterials",
         magicBookInfo: "Information Materials",
@@ -8200,16 +8285,17 @@
         magicBookCoverTitle: "Physical Materials Book",
         magicBookCoverHint: "Click to open the contents",
         magicBookOpenCatalog: "Open first book",
-        magicBookChoosePage: "Enter superconductors",
+        magicBookChoosePage: "Enter selected interface",
         magicBookCatalogLeft: "Contents",
-        magicBookCatalogRight: "Future Libraries",
+        magicBookCatalogRight: "Independent Interfaces",
         magicBookTocSuper: "Enter the ARPES superconducting materials database.",
         magicBookTocPhoton: "Photonic bands, gaps, and structure library.",
         magicBookTocTopo: "Topological states, boundary states, and band materials.",
-        magicBookTocLowDim: "2D, van der Waals, and quantum thin-film materials.",
+        magicBookTocLowDim: "Enter the independent 2D, van der Waals, and quantum thin-film interface.",
         magicBookTocMagnetic: "Spin, magnetic order, and correlated electron materials.",
         magicBookTocBioInfo: "Soft matter, biomaterials, and information materials.",
         magicBookComingSoon: "Coming soon",
+        magicBookReady: "Available",
         magicBookShellToast: "This material library is a placeholder for now.",
         magicBookFlipping: "Turning pages...",
         magicBookPageLeft: "Physical Materials",
@@ -8221,7 +8307,7 @@
         magicBookCardMagnetic: "Magnetic materials",
         magicBookCardBioInfo: "Bio / information materials",
         magicBookEnter: "Open the spellbook",
-        magicBookHint: "Open Physical Materials to enter the superconductivity database; the other material libraries are future expansion entries.",
+        magicBookHint: "Open Physical Materials to enter the superconductivity and 2D-material workspaces as separate interfaces.",
         loginFeatureHistory: "History Chart",
         loginFeatureHistoryHint: "Milestones are merged into the Tc chart.",
         loginFeatureCube: "3D Cube",
@@ -8922,6 +9008,12 @@
     const magicBookBackBtn = $("#magicBookBackBtn");
     const magicBookTocItems = $$(".magic-toc-item");
     const magicLibraryBooks = $$(".magic-tome");
+    const workspaceCatalogBtn = $("#workspaceCatalogBtn");
+    const workspaceContextSwitchBtn = $("#workspaceContextSwitchBtn");
+    const workspaceContextTitle = $("#workspaceContextTitle");
+    const workspaceContextHint = $("#workspaceContextHint");
+    const appTitle = $("#appTitle");
+    const appSubtitle = $("#appSubtitle");
     const signInTab = $("#signInTab");
     const createAccountTab = $("#createAccountTab");
     const loginEmail = $("#loginEmail");
@@ -9014,6 +9106,7 @@
     let loginInitialized = false;
     let appDataReadyPromise = null;
     let magicBookMode = "library";
+    let magicBookTargetTopic = "sc";
     let magicBookTargetPage = "history";
     let compareCount = $("#compareCount");
     const topicButtons = $$("[data-topic]");
@@ -10766,6 +10859,7 @@
       const nextTopic = state.topicDbs[topic] ? topic : "sc";
       if (!state.topicDbs[nextTopic]) return;
       state.topic = nextTopic;
+      if (nextTopic === "2d" && activeAppPage === "history") activeAppPage = "materials";
       state.db = state.topicDbs[nextTopic] || state.db;
       if (familyFilter) familyFilter.value = "";
       if (searchInput) searchInput.value = "";
@@ -11762,6 +11856,14 @@
 
     function updateTopicUI() {
       const meta = activeTopicMeta();
+      const isTwoD = state.topic === "2d";
+      document.body.dataset.materialWorkspace = state.topic;
+      if (appTitle) appTitle.textContent = t(isTwoD ? "twoDWorkspaceTitle" : "title");
+      if (appSubtitle) appSubtitle.textContent = t(isTwoD ? "twoDWorkspaceSubtitle" : "subtitle");
+      if (workspaceContextTitle) workspaceContextTitle.textContent = t(isTwoD ? "workspaceTwoDTitle" : "workspaceSuperTitle");
+      if (workspaceContextHint) workspaceContextHint.textContent = t(isTwoD ? "workspaceTwoDHint" : "workspaceSuperHint");
+      if (workspaceCatalogBtn) workspaceCatalogBtn.title = t("workspaceCatalogBtn");
+      document.title = appTitle?.textContent || t(isTwoD ? "twoDWorkspaceTitle" : "title");
       topicButtons.forEach(btn => {
         const isActive = btn.dataset.topic === state.topic;
         btn.classList.toggle("active", isActive);
@@ -12435,6 +12537,7 @@
 
     function resetMagicBook() {
       magicBookMode = "library";
+      magicBookTargetTopic = "sc";
       magicBookTargetPage = "history";
       if (magicBookScreen) {
         magicBookScreen.classList.remove("is-toc", "is-flipping", "is-opening");
@@ -12480,6 +12583,19 @@
       window.scrollTo({ top: 0, behavior: "auto" });
     }
 
+    function returnToMagicBookFromWorkbench() {
+      pendingWorkbenchUser = loadUser();
+      document.body.classList.add("locked", "magic-active");
+      if (loginScreen) loginScreen.style.display = "none";
+      if (magicBookScreen) {
+        magicBookScreen.hidden = false;
+        resetMagicBook();
+        openMagicBookCatalog();
+      }
+      setInterfaceStage("catalog");
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+
     async function waitForAppData() {
       if (state.db) return true;
       if (!appDataReadyPromise) return false;
@@ -12497,8 +12613,11 @@
       if (!item) return;
       if (item.dataset.magicPage) {
         if (!await waitForAppData()) return;
-        if (item.dataset.magicTopic) setTopic(item.dataset.magicTopic, { preserveScroll: true });
-        enterWorkbenchFromMagicBook(item.dataset.magicPage);
+        magicBookTargetTopic = item.dataset.magicTopic || "sc";
+        magicBookTargetPage = item.dataset.magicPage || (magicBookTargetTopic === "2d" ? "materials" : "history");
+        magicBookTocItems.forEach(node => node.classList.toggle("active", node === item));
+        setTopic(magicBookTargetTopic, { preserveScroll: true });
+        enterWorkbenchFromMagicBook(magicBookTargetPage);
         return;
       }
       magicBookTocItems.forEach(node => node.classList.remove("active"));
@@ -12639,8 +12758,8 @@
       magicBookOpenBtn?.addEventListener("click", async () => {
         if (magicBookMode === "toc") {
           if (!await waitForAppData()) return;
-          setTopic("sc", { preserveScroll: true });
-          enterWorkbenchFromMagicBook("history");
+          setTopic(magicBookTargetTopic, { preserveScroll: true });
+          enterWorkbenchFromMagicBook(magicBookTargetPage);
         } else {
           openMagicBookCatalog();
         }
@@ -12672,6 +12791,8 @@
         event.preventDefault();
         handleMagicBookTocItem(item);
       });
+      workspaceCatalogBtn?.addEventListener("click", returnToMagicBookFromWorkbench);
+      workspaceContextSwitchBtn?.addEventListener("click", returnToMagicBookFromWorkbench);
       logoutBtn?.addEventListener("click", logoutWorkbench);
       [loginEmail, loginPassword, confirmPassword, loginName, loginGroup].forEach(input => {
         input?.addEventListener("keydown", event => {
@@ -12713,6 +12834,7 @@
     }
 
     function showAppPage(page = "history", options = {}) {
+      if (state.topic === "2d" && page === "history") page = "materials";
       activeAppPage = page;
       appPages.forEach(section => {
         section.hidden = !pageListMatches(section.dataset.appPage, page);
@@ -12808,7 +12930,7 @@
       const element = state.selectedElement ? ` · ${state.selectedElement}` : "";
       const items = [
         ["module-select", t("moduleSelectTitle")],
-        ["history", t("topMenuHome")],
+        ...(state.topic === "2d" ? [] : [["history", t("topMenuHome")]]),
         ["materials", `${t("topMenuMaterials")}${element}`],
         ["data", t("topMenuData")],
         ["literature", t("topMenuLiterature")],
