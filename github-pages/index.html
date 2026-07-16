@@ -4843,14 +4843,6 @@
       margin-top: 8px;
     }
 
-    .history-side-panel[data-chat-size="compact"] {
-      grid-template-columns: minmax(560px, 1.55fr) minmax(300px, 0.55fr);
-    }
-
-    .history-side-panel[data-chat-size="expanded"] {
-      grid-template-columns: minmax(360px, 0.62fr) minmax(560px, 1.38fr);
-    }
-
     .chat-panel-head {
       min-height: 38px;
       padding: 0;
@@ -4864,13 +4856,6 @@
       margin: 0;
     }
 
-    .chat-size-controls {
-      display: inline-grid;
-      grid-template-columns: repeat(2, 34px);
-      gap: 6px;
-      flex: 0 0 auto;
-    }
-
     .chat-agent-select {
       min-height: 34px;
       max-width: 160px;
@@ -4881,26 +4866,8 @@
       font-size: 12px;
     }
 
-    .chat-size-controls button {
-      width: 34px;
-      height: 34px;
-      min-height: 34px;
-      padding: 0;
-      display: grid;
-      place-items: center;
-      font-size: 19px;
-      line-height: 1;
-    }
-
-    .history-side-panel[data-chat-size="expanded"] .chat-thread {
-      max-height: 280px;
-    }
-
-    .history-side-panel[data-chat-size="compact"] .chat-thread {
-      max-height: 92px;
-    }
-
     .history-chat-panel {
+      position: relative;
       min-height: 0;
       height: 100%;
       border: 1px solid rgba(96,208,255,0.22);
@@ -4912,7 +4879,64 @@
       gap: 8px;
       align-content: start;
       overflow: auto;
-      resize: horizontal;
+      resize: none;
+    }
+
+    .chat-resize-handle {
+      position: absolute;
+      z-index: 10;
+      top: 10px;
+      bottom: 10px;
+      left: -1px;
+      width: 18px;
+      border: 0;
+      background: transparent;
+      cursor: col-resize;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+
+    .chat-resize-handle::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 2px;
+      border-radius: 2px;
+      background: rgba(96,208,255,0.22);
+      transition: width 140ms ease, background 140ms ease, box-shadow 140ms ease;
+    }
+
+    .chat-resize-handle::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 2px;
+      width: 10px;
+      height: 54px;
+      border: 1px solid rgba(96,208,255,0.42);
+      border-radius: 5px;
+      background:
+        radial-gradient(circle, rgba(207,250,254,0.82) 0 1px, transparent 2px) center 9px / 4px 9px repeat-y,
+        rgba(8,24,34,0.94);
+      box-shadow: 0 0 14px rgba(96,208,255,0.2);
+      transform: translateY(-50%);
+    }
+
+    .chat-resize-handle:hover::before,
+    .chat-resize-handle:focus-visible::before,
+    .history-side-panel.is-resizing-chat .chat-resize-handle::before {
+      width: 3px;
+      background: var(--accent-glow);
+      box-shadow: 0 0 14px rgba(45,212,191,0.54);
+    }
+
+    .history-side-panel.is-resizing-chat,
+    .history-side-panel.is-resizing-chat * {
+      cursor: col-resize !important;
+      user-select: none !important;
     }
 
     .chat-thread {
@@ -6249,8 +6273,6 @@
         overflow-x: visible;
         padding-bottom: 0;
       }
-      .history-side-panel[data-chat-size="compact"],
-      .history-side-panel[data-chat-size="expanded"] { grid-template-columns: 1fr; }
       .periodic-index-panel,
       .periodic-workbench > .periodic-wrap,
       .history-chat-panel {
@@ -6265,6 +6287,10 @@
       }
 
       .independent-size-controls {
+        display: none;
+      }
+
+      .chat-resize-handle {
         display: none;
       }
       .model-element-panel { min-height: 460px; }
@@ -7195,7 +7221,7 @@
           <button class="flow-tab" type="button" data-page-tab="report" data-i18n="flowReport">报告</button>
         </div>
         <div class="milestone-stage">
-          <div class="history-side-panel" id="historySidePanel" data-chat-size="default">
+          <div class="history-side-panel" id="historySidePanel">
             <div class="history-cube-panel">
               <div>
                 <h3 data-i18n="historyCubeTitle">材料魔方</h3>
@@ -7244,6 +7270,7 @@
               <div class="cube-readout" id="cubeReadout" data-i18n="cubeReadoutDefault">点击魔方的一个面查看对应材料家族。</div>
             </div>
             <div class="history-chat-panel" id="historyChatPanel">
+              <div class="chat-resize-handle" id="chatResizeHandle" role="separator" aria-orientation="vertical" aria-label="拖动调整对话框宽度" title="拖动调整对话框宽度" tabindex="0"></div>
               <div class="chat-panel-head">
                 <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
                 <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
@@ -7254,10 +7281,6 @@
                   <option value="llama-3.1-70b">Llama</option>
                   <option value="arpes-rules-preview">ARPES 本地规则</option>
                 </select>
-                <div class="chat-size-controls" aria-label="对话框尺寸">
-                  <button id="chatShrinkBtn" type="button" aria-label="缩小对话框" title="缩小对话框">−</button>
-                  <button id="chatExpandBtn" type="button" aria-label="放大对话框" title="放大对话框">+</button>
-                </div>
               </div>
               <div class="chat-thread" id="chatThread" aria-live="polite"></div>
               <div class="chat-table-wrap" id="chatTableWrap" style="display:none;"></div>
@@ -8308,8 +8331,7 @@
         chatSendBtn: "发送",
         chatMakeTableBtn: "生成表格",
         chatClearBtn: "清空",
-        chatShrinkBtn: "缩小对话框",
-        chatExpandBtn: "放大对话框",
+        chatResizeHandle: "拖动调整对话框宽度",
         chatUserLabel: "用户",
         chatAssistantLabel: "对话框",
         chatWelcome: "可以点击魔方材料点，也可以直接提问。我会基于当前材料库、免费 ARPES 题录、个人数据和页面筛选生成回答。",
@@ -8957,8 +8979,7 @@
         chatSendBtn: "Send",
         chatMakeTableBtn: "Make table",
         chatClearBtn: "Clear",
-        chatShrinkBtn: "Shrink chat",
-        chatExpandBtn: "Enlarge chat",
+        chatResizeHandle: "Drag to resize the chat panel",
         chatUserLabel: "User",
         chatAssistantLabel: "Chat platform",
         chatWelcome: "Click a cube material point or ask directly. I will answer from the current materials, free ARPES metadata, personal data, and page filters.",
@@ -9553,7 +9574,7 @@
         applyCubeViewMode();
       }
       renderPeriodicTable();
-      applyChatPanelSize(chatPanelSize);
+      applyChatPanelWidth(chatPanelWidth, { persist: false });
       renderModelMixture();
       highlightPeriodicTable();
       renderFloatingComparison();
@@ -9633,7 +9654,7 @@
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
     const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v2";
-    const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-size-v1";
+    const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-width-v3";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
     // ===== DOM 引用 =====
@@ -9760,8 +9781,8 @@
     const chatClearBtn = $("#chatClearBtn");
     const chatTableWrap = $("#chatTableWrap");
     const historySidePanel = $("#historySidePanel");
-    const chatShrinkBtn = $("#chatShrinkBtn");
-    const chatExpandBtn = $("#chatExpandBtn");
+    const historyChatPanel = $("#historyChatPanel");
+    const chatResizeHandle = $("#chatResizeHandle");
     let activeAppPage = "module-select";
     let pendingWorkbenchUser = null;
     let loginInitialized = false;
@@ -13086,46 +13107,102 @@
       renderModelMixture();
     }
 
-    const CHAT_PANEL_SIZES = ["compact", "default", "expanded"];
-    let chatPanelSize = (() => {
+    const CHAT_PANEL_MIN_WIDTH = 300;
+    const CHAT_CUBE_MIN_WIDTH = 360;
+    let chatPanelWidth = (() => {
       try {
-        const saved = localStorage.getItem(CHAT_PANEL_SIZE_STORAGE_KEY) || "default";
-        return CHAT_PANEL_SIZES.includes(saved) ? saved : "default";
+        const saved = Number(localStorage.getItem(CHAT_PANEL_SIZE_STORAGE_KEY));
+        return Number.isFinite(saved) && saved > 0 ? saved : null;
       } catch {
-        return "default";
+        return null;
       }
     })();
 
-    function applyChatPanelSize(size = chatPanelSize) {
-      if (!historySidePanel) return;
-      chatPanelSize = CHAT_PANEL_SIZES.includes(size) ? size : "default";
-      historySidePanel.dataset.chatSize = chatPanelSize;
-      const index = CHAT_PANEL_SIZES.indexOf(chatPanelSize);
-      if (chatShrinkBtn) {
-        chatShrinkBtn.disabled = index === 0;
-        chatShrinkBtn.title = t("chatShrinkBtn");
-        chatShrinkBtn.setAttribute("aria-label", t("chatShrinkBtn"));
-      }
-      if (chatExpandBtn) {
-        chatExpandBtn.disabled = index === CHAT_PANEL_SIZES.length - 1;
-        chatExpandBtn.title = t("chatExpandBtn");
-        chatExpandBtn.setAttribute("aria-label", t("chatExpandBtn"));
-      }
-      try { localStorage.setItem(CHAT_PANEL_SIZE_STORAGE_KEY, chatPanelSize); } catch {}
+    function chatPanelWidthBounds() {
+      if (!historySidePanel) return { min: CHAT_PANEL_MIN_WIDTH, max: CHAT_PANEL_MIN_WIDTH, ready: false };
+      const totalWidth = historySidePanel.getBoundingClientRect().width;
+      const gap = Number.parseFloat(getComputedStyle(historySidePanel).columnGap) || 12;
+      const ready = totalWidth >= CHAT_PANEL_MIN_WIDTH + CHAT_CUBE_MIN_WIDTH + gap;
+      return {
+        min: CHAT_PANEL_MIN_WIDTH,
+        max: Math.max(CHAT_PANEL_MIN_WIDTH, totalWidth - gap - CHAT_CUBE_MIN_WIDTH),
+        ready
+      };
     }
 
-    function changeChatPanelSize(step) {
-      const currentIndex = CHAT_PANEL_SIZES.indexOf(chatPanelSize);
-      const nextIndex = Math.max(0, Math.min(CHAT_PANEL_SIZES.length - 1, currentIndex + step));
-      applyChatPanelSize(CHAT_PANEL_SIZES[nextIndex]);
+    function applyChatPanelWidth(width = chatPanelWidth, { persist = true } = {}) {
+      if (!historySidePanel || !historyChatPanel) return;
+      const mobile = window.matchMedia("(max-width: 980px)").matches;
+      if (mobile) {
+        historySidePanel.style.removeProperty("grid-template-columns");
+        return;
+      }
+      const bounds = chatPanelWidthBounds();
+      if (!bounds.ready) return;
+      const defaultWidth = (bounds.min + bounds.max) / 2;
+      const requested = width == null || !Number.isFinite(Number(width)) ? defaultWidth : Number(width);
+      chatPanelWidth = Math.round(Math.max(bounds.min, Math.min(bounds.max, requested)));
+      historySidePanel.style.gridTemplateColumns = `minmax(${CHAT_CUBE_MIN_WIDTH}px, 1fr) ${chatPanelWidth}px`;
+      if (chatResizeHandle) {
+        chatResizeHandle.title = t("chatResizeHandle");
+        chatResizeHandle.setAttribute("aria-label", t("chatResizeHandle"));
+        chatResizeHandle.setAttribute("aria-valuemin", String(Math.round(bounds.min)));
+        chatResizeHandle.setAttribute("aria-valuemax", String(Math.round(bounds.max)));
+        chatResizeHandle.setAttribute("aria-valuenow", String(chatPanelWidth));
+      }
+      if (persist) {
+        try { localStorage.setItem(CHAT_PANEL_SIZE_STORAGE_KEY, String(chatPanelWidth)); } catch {}
+      }
     }
 
     function setupChatPanelSizing() {
-      if (!historySidePanel || historySidePanel.dataset.sizeBound === "true") return;
+      if (!historySidePanel || !historyChatPanel || !chatResizeHandle || historySidePanel.dataset.sizeBound === "true") return;
       historySidePanel.dataset.sizeBound = "true";
-      chatShrinkBtn?.addEventListener("click", () => changeChatPanelSize(-1));
-      chatExpandBtn?.addEventListener("click", () => changeChatPanelSize(1));
-      applyChatPanelSize(chatPanelSize);
+      let dragState = null;
+      const startResize = event => {
+        if (window.matchMedia("(max-width: 980px)").matches || (event.button !== undefined && event.button !== 0)) return;
+        dragState = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startWidth: historyChatPanel.getBoundingClientRect().width
+        };
+        historySidePanel.classList.add("is-resizing-chat");
+        chatResizeHandle.setPointerCapture?.(event.pointerId);
+        event.preventDefault();
+      };
+      const resize = event => {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+        const deltaX = event.clientX - dragState.startX;
+        applyChatPanelWidth(dragState.startWidth - deltaX, { persist: false });
+      };
+      const stopResize = event => {
+        if (!dragState || (event.pointerId !== undefined && event.pointerId !== dragState.pointerId)) return;
+        dragState = null;
+        historySidePanel.classList.remove("is-resizing-chat");
+        applyChatPanelWidth(chatPanelWidth, { persist: true });
+      };
+      chatResizeHandle.addEventListener("pointerdown", startResize);
+      window.addEventListener("pointermove", resize);
+      window.addEventListener("pointerup", stopResize);
+      window.addEventListener("pointercancel", stopResize);
+      chatResizeHandle.addEventListener("lostpointercapture", stopResize);
+      chatResizeHandle.addEventListener("keydown", event => {
+        const bounds = chatPanelWidthBounds();
+        let nextWidth = chatPanelWidth ?? historyChatPanel.getBoundingClientRect().width;
+        if (event.key === "ArrowLeft") nextWidth += 24;
+        else if (event.key === "ArrowRight") nextWidth -= 24;
+        else if (event.key === "Home") nextWidth = bounds.min;
+        else if (event.key === "End") nextWidth = bounds.max;
+        else return;
+        event.preventDefault();
+        applyChatPanelWidth(nextWidth, { persist: true });
+      });
+      window.addEventListener("resize", () => applyChatPanelWidth(chatPanelWidth, { persist: false }));
+      if ("ResizeObserver" in window) {
+        const resizeObserver = new ResizeObserver(() => applyChatPanelWidth(chatPanelWidth, { persist: false }));
+        resizeObserver.observe(historySidePanel);
+      }
+      applyChatPanelWidth(chatPanelWidth, { persist: false });
     }
 
     function curatedArticles() {
@@ -13522,6 +13599,7 @@
         requestAnimationFrame(() => {
           renderOverview();
           ensureHistoryCubeReady();
+          applyChatPanelWidth(chatPanelWidth, { persist: false });
         });
       }
       if (!options.preserveScroll) {
