@@ -2425,16 +2425,27 @@
     }
 
     .periodic-workbench {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      display: flex;
       gap: 14px;
-      align-items: stretch;
+      align-items: flex-start;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      padding-bottom: 6px;
     }
 
     .periodic-workbench > .periodic-index-panel { order: 1; }
     .periodic-workbench > .periodic-wrap { order: 2; }
 
+    .periodic-workbench > .periodic-index-panel,
+    .periodic-workbench > .periodic-wrap {
+      flex: 0 0 auto;
+      width: calc((100% - 14px) / 2);
+      max-width: min(920px, calc(100vw - 72px));
+      box-sizing: border-box;
+    }
+
     .periodic-index-panel {
+      position: relative;
       border: 1px solid var(--line);
       border-radius: 12px;
       background:
@@ -2451,6 +2462,7 @@
     }
 
     .periodic-workbench > .periodic-wrap {
+      position: relative;
       min-width: 360px;
       align-content: start;
       border: 1px solid var(--line);
@@ -2459,6 +2471,41 @@
       background: rgba(10,18,28,0.7);
       resize: horizontal;
       overflow: auto;
+    }
+
+    .independent-size-controls {
+      position: sticky;
+      top: 0;
+      z-index: 12;
+      justify-self: end;
+      width: max-content;
+      margin: 0 0 8px auto;
+      display: grid;
+      grid-template-columns: repeat(3, 30px);
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid rgba(96,208,255,0.24);
+      border-radius: 7px;
+      background: rgba(7,16,25,0.9);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.24);
+      backdrop-filter: blur(8px);
+    }
+
+    .independent-size-controls button {
+      width: 30px;
+      min-width: 30px;
+      height: 30px;
+      min-height: 30px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 5px;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .independent-size-controls button[data-panel-size-action="reset"] {
+      font-size: 14px;
     }
 
     .periodic-module-stack {
@@ -6146,14 +6193,24 @@
       }
       .toc-list { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
       .metric-grid, .layout-two, .form-grid, .overview-visual, .source-map, .figure-strip, .milestone-stage, .history-side-panel, .periodic-workbench, .element-history-workbench, .model-lab-layout, .flow-tabs, .module-select-grid, .login-card .form-grid { grid-template-columns: 1fr; }
+      .periodic-workbench {
+        display: grid;
+        overflow-x: visible;
+        padding-bottom: 0;
+      }
       .history-side-panel[data-chat-size="compact"],
       .history-side-panel[data-chat-size="expanded"] { grid-template-columns: 1fr; }
       .periodic-index-panel,
       .periodic-workbench > .periodic-wrap,
       .history-chat-panel {
         min-width: 0;
-        width: 100%;
+        width: 100% !important;
+        max-width: none;
         resize: none;
+      }
+
+      .independent-size-controls {
+        display: none;
       }
       .model-element-panel { min-height: 460px; }
       .model-element-palette { max-height: 360px; }
@@ -7153,10 +7210,20 @@
           <button class="flow-tab" type="button" data-page-tab="report" data-i18n="flowReport">报告</button>
         </div>
         <div class="periodic-workbench">
-          <div class="periodic-wrap">
+          <div class="periodic-wrap" data-independent-size-panel="periodic">
+            <div class="independent-size-controls" role="group" aria-label="元素周期表尺寸 / Periodic table size">
+              <button type="button" data-panel-size-target="periodic" data-panel-size-action="shrink" aria-label="缩小元素周期表 / Shrink periodic table" title="缩小元素周期表 / Shrink periodic table">−</button>
+              <button type="button" data-panel-size-target="periodic" data-panel-size-action="reset" aria-label="重置元素周期表尺寸 / Reset periodic table size" title="重置元素周期表尺寸 / Reset periodic table size">↺</button>
+              <button type="button" data-panel-size-target="periodic" data-panel-size-action="grow" aria-label="放大元素周期表 / Enlarge periodic table" title="放大元素周期表 / Enlarge periodic table">+</button>
+            </div>
             <div class="periodic" id="periodicTable"></div>
           </div>
-          <div class="periodic-index-panel">
+          <div class="periodic-index-panel" data-independent-size-panel="models">
+            <div class="independent-size-controls" role="group" aria-label="模型合集尺寸 / Model collection size">
+              <button type="button" data-panel-size-target="models" data-panel-size-action="shrink" aria-label="缩小模型合集 / Shrink model collection" title="缩小模型合集 / Shrink model collection">−</button>
+              <button type="button" data-panel-size-target="models" data-panel-size-action="reset" aria-label="重置模型合集尺寸 / Reset model collection size" title="重置模型合集尺寸 / Reset model collection size">↺</button>
+              <button type="button" data-panel-size-target="models" data-panel-size-action="grow" aria-label="放大模型合集 / Enlarge model collection" title="放大模型合集 / Enlarge model collection">+</button>
+            </div>
             <div class="roundtable-panel" aria-label="Module round table">
               <div class="roundtable-surface"></div>
               <button class="round-module one active" type="button" data-ai-model="gpt-4.1-mini">
@@ -9450,6 +9517,7 @@
     const ARTICLE_IMPORT_CHUNK_SIZE = 125;
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
+    const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v1";
     const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-size-v1";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
@@ -13498,6 +13566,74 @@
         feature: "gap, Fermi surface, q-dependent"
       }
     };
+
+    function loadPeriodicPanelSizes() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(PERIODIC_PANEL_SIZE_STORAGE_KEY) || "{}");
+        return stored && typeof stored === "object" ? stored : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function savePeriodicPanelSizes(sizes) {
+      localStorage.setItem(PERIODIC_PANEL_SIZE_STORAGE_KEY, JSON.stringify(sizes));
+    }
+
+    function setupIndependentPanelSizing() {
+      const workbench = document.querySelector(".periodic-workbench");
+      if (!workbench || workbench.dataset.independentSizingBound === "true") return;
+      workbench.dataset.independentSizingBound = "true";
+      const panels = {
+        models: workbench.querySelector('[data-independent-size-panel="models"]'),
+        periodic: workbench.querySelector('[data-independent-size-panel="periodic"]')
+      };
+      const sizes = loadPeriodicPanelSizes();
+      const widthBounds = () => ({
+        min: 360,
+        max: Math.max(360, Math.min(920, window.innerWidth - 72))
+      });
+      const applyWidth = (name, width, persist = true) => {
+        const panel = panels[name];
+        if (!panel) return;
+        const bounds = widthBounds();
+        const nextWidth = Math.round(Math.max(bounds.min, Math.min(bounds.max, Number(width) || bounds.min)));
+        panel.style.width = `${nextWidth}px`;
+        if (persist) {
+          sizes[name] = nextWidth;
+          savePeriodicPanelSizes(sizes);
+        }
+      };
+      Object.entries(sizes).forEach(([name, width]) => {
+        if (panels[name] && Number.isFinite(Number(width))) applyWidth(name, width, false);
+      });
+      workbench.querySelectorAll("[data-panel-size-action]").forEach(button => {
+        button.addEventListener("click", () => {
+          const name = button.dataset.panelSizeTarget;
+          const panel = panels[name];
+          if (!panel) return;
+          const action = button.dataset.panelSizeAction;
+          if (action === "reset") {
+            delete sizes[name];
+            panel.style.removeProperty("width");
+            savePeriodicPanelSizes(sizes);
+            return;
+          }
+          const step = action === "grow" ? 72 : -72;
+          applyWidth(name, panel.getBoundingClientRect().width + step);
+        });
+      });
+      Object.entries(panels).forEach(([name, panel]) => {
+        panel?.addEventListener("pointerup", event => {
+          if (event.target.closest?.(".independent-size-controls") || window.matchMedia("(max-width: 980px)").matches) return;
+          const width = Math.round(panel.getBoundingClientRect().width);
+          if (Math.abs(width - Number(sizes[name] || width)) > 1 || !sizes[name]) {
+            sizes[name] = width;
+            savePeriodicPanelSizes(sizes);
+          }
+        });
+      });
+    }
 
     function setupRoundtableModules() {
       const buttons = document.querySelectorAll(".round-module");
@@ -21734,6 +21870,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     installModelHub();
     initAiConfigForm();
     initScienceOneTools();
+    setupIndependentPanelSizing();
     setupRoundtableModules();
     setupTocScrollSpy();
     initFloatingComparePanel();
