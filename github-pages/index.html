@@ -2459,7 +2459,7 @@
       display: grid;
       gap: 12px;
       align-content: start;
-      min-height: 720px;
+      min-height: 860px;
       min-width: 360px;
       resize: horizontal;
       overflow: auto;
@@ -2541,7 +2541,7 @@
     .roundtable-panel {
       position: relative;
       width: 100%;
-      min-height: 640px;
+      min-height: 760px;
       aspect-ratio: 4 / 5;
       border: 1px solid rgba(96,208,255,0.22);
       border-radius: 22px;
@@ -2589,7 +2589,7 @@
 
     .roundtable-surface {
       position: absolute;
-      inset: 128px 24px 132px;
+      inset: 128px 24px 252px;
       border: 1px solid rgba(255,255,255,0.28);
       border-radius: 50%;
       background:
@@ -2835,10 +2835,55 @@
 
     .round-module.one { top: 42px; right: 24px; transform: translateZ(18px) scale(0.94); }
     .round-module.two { top: 42px; left: 24px; transform: translateZ(18px) scale(0.94); }
-    .round-module.three { top: 278px; left: 10px; transform: translateZ(54px) rotateY(-6deg); }
-    .round-module.four { top: 278px; right: 10px; transform: translateZ(54px) rotateY(6deg); }
-    .round-module.five { bottom: 48px; left: 26px; transform: translateZ(92px) scale(1.05) rotateY(-8deg); }
-    .round-module.six { bottom: 48px; right: 26px; transform: translateZ(92px) scale(1.05) rotateY(8deg); }
+    .round-module.three { top: 278px; left: 14px; transform: translateZ(54px) rotateY(-6deg); }
+    .round-module.four { top: 278px; right: 14px; transform: translateZ(54px) rotateY(6deg); }
+    .round-module.five { bottom: 172px; left: 26px; transform: translateZ(92px) scale(1.05) rotateY(-8deg); }
+    .round-module.six { bottom: 172px; right: 26px; transform: translateZ(92px) scale(1.05) rotateY(8deg); }
+
+    .round-module.scienceone-tool {
+      z-index: 6;
+      width: 110px;
+      height: 70px;
+    }
+
+    .round-module.scienceone-tool .module-cube {
+      transform: rotateX(-14deg) rotateY(-14deg);
+    }
+
+    .round-module.scienceone-tool .module-cube-face.front {
+      border-color: rgba(105,240,210,0.84);
+      background:
+        linear-gradient(180deg, rgba(20,184,166,0.46), rgba(6,28,36,0.96)),
+        radial-gradient(circle at 50% 8%, rgba(222,255,248,0.4), transparent 30%);
+      box-shadow: inset 0 0 22px rgba(45,212,191,0.24), 0 0 18px rgba(20,184,166,0.2);
+    }
+
+    .round-module.scienceone-tool .round-module-model {
+      font-size: 9px;
+      text-transform: none;
+    }
+
+    .round-module.scienceone-tool .round-module-role {
+      color: rgba(153,246,228,0.86);
+    }
+
+    .round-module.scienceone-one {
+      bottom: 70px;
+      left: 24px;
+      transform: translateZ(116px) scale(0.82) rotateY(-4deg);
+    }
+
+    .round-module.scienceone-two {
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%) translateZ(120px) scale(0.82);
+    }
+
+    .round-module.scienceone-three {
+      right: 24px;
+      bottom: 70px;
+      transform: translateZ(116px) scale(0.82) rotateY(4deg);
+    }
 
     .round-module.active,
     .round-module:hover {
@@ -6559,15 +6604,15 @@
       }
 
       .roundtable-panel {
-        min-height: 440px;
+        min-height: 620px;
       }
 
       .roundtable-surface {
-        inset: 66px 22px 62px;
+        inset: 126px 22px 188px;
       }
 
       .roundtable-center {
-        top: 104px;
+        top: 180px;
         width: min(160px, 46%);
         min-height: 220px;
         padding: 6px;
@@ -6619,10 +6664,41 @@
 
       .round-module.one { top: 28px; right: 26px; }
       .round-module.two { top: 28px; left: 26px; }
-      .round-module.three { top: 136px; left: 6px; }
-      .round-module.four { top: 136px; right: 6px; }
-      .round-module.five { bottom: 30px; left: 38px; }
-      .round-module.six { bottom: 30px; right: 38px; }
+      .round-module.three { top: 136px; left: 10px; }
+      .round-module.four { top: 136px; right: 10px; }
+      .round-module.five { bottom: 134px; left: 38px; }
+      .round-module.six { bottom: 134px; right: 38px; }
+
+      .round-module.scienceone-tool {
+        width: 92px;
+        height: 58px;
+      }
+
+      .round-module.scienceone-tool .round-module-model {
+        font-size: 8px;
+      }
+
+      .round-module.scienceone-tool .round-module-role {
+        font-size: 7px;
+      }
+
+      .round-module.scienceone-one {
+        bottom: 54px;
+        left: 10px;
+        transform: translateZ(100px) scale(0.72);
+      }
+
+      .round-module.scienceone-two {
+        bottom: 54px;
+        left: 50%;
+        transform: translateX(-50%) translateZ(104px) scale(0.72);
+      }
+
+      .round-module.scienceone-three {
+        right: 10px;
+        bottom: 54px;
+        transform: translateZ(100px) scale(0.72);
+      }
 
       .periodic {
         min-width: 740px;
@@ -7274,6 +7350,27 @@
               <button class="round-module six" type="button" data-ai-model="arpes-rules-preview">
                 <span class="module-cube">
                   <span class="module-cube-face front"><span><span class="round-module-model">ARPES</span><span class="round-module-role">rule preview</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
+              </button>
+              <button class="round-module scienceone-tool scienceone-one" type="button" data-scienceone-launch="crystal" aria-label="打开 ScienceOne CrystalStructureGen / Open ScienceOne CrystalStructureGen">
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableCrystal">晶体生成</span><span class="round-module-role">ScienceOne</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
+              </button>
+              <button class="round-module scienceone-tool scienceone-two" type="button" data-scienceone-launch="qe" aria-label="打开 ScienceOne Quantum Espresso / Open ScienceOne Quantum Espresso">
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableQe">量子计算</span><span class="round-module-role">ScienceOne</span></span></span>
+                  <span class="module-cube-face top"></span>
+                  <span class="module-cube-face right"></span>
+                </span>
+              </button>
+              <button class="round-module scienceone-tool scienceone-three" type="button" data-scienceone-launch="band" aria-label="打开 ScienceOne 能带查询 / Open ScienceOne band query">
+                <span class="module-cube">
+                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableBand">能带查询</span><span class="round-module-role">ScienceOne</span></span></span>
                   <span class="module-cube-face top"></span>
                   <span class="module-cube-face right"></span>
                 </span>
@@ -8291,6 +8388,10 @@
         modelReadyToast: "计算模型接口已就绪",
         scienceOneToolsTitle: "ScienceOne 科学工具",
         scienceOneToolsHint: "晶体结构生成、Quantum Espresso 作业和 Materials Project 能带查询。",
+        scienceOneRoundtableCrystal: "晶体生成",
+        scienceOneRoundtableQe: "量子计算",
+        scienceOneRoundtableBand: "能带查询",
+        scienceOneRoundtableOpened: "已打开 ScienceOne 工具",
         scienceOneProxyNeeded: "需要代理地址",
         scienceOneProxyReady: "代理已配置",
         scienceOneCrystalTab: "晶体结构",
@@ -8936,6 +9037,10 @@
         modelReadyToast: "Computation model interface is ready",
         scienceOneToolsTitle: "ScienceOne Scientific Tools",
         scienceOneToolsHint: "Crystal structure generation, Quantum Espresso jobs, and Materials Project band-structure queries.",
+        scienceOneRoundtableCrystal: "Crystal Gen",
+        scienceOneRoundtableQe: "Quantum ESP",
+        scienceOneRoundtableBand: "Band Query",
+        scienceOneRoundtableOpened: "ScienceOne tool opened",
         scienceOneProxyNeeded: "Proxy URL required",
         scienceOneProxyReady: "Proxy configured",
         scienceOneCrystalTab: "Crystal Structure",
@@ -13665,6 +13770,10 @@
             selectRoundtableAiModel(btn.dataset.aiModel, center);
             return;
           }
+          if (btn.dataset.scienceoneLaunch) {
+            openRoundtableScienceOneTool(btn.dataset.scienceoneLaunch, center);
+            return;
+          }
           const targetId = btn.dataset.moduleTarget;
           const [titleKey, hintKey] = moduleHints[targetId] || ["moduleMaterialIndex", "moduleMaterialIndexHint"];
           updateRoundtableCenterStatus(center, t(titleKey), t(hintKey));
@@ -13680,6 +13789,37 @@
       });
       const activeModel = [...buttons].find(btn => btn.classList.contains("active") && btn.dataset.aiModel)?.dataset.aiModel;
       if (activeModel) renderRoundtableAiCenter(activeModel, center);
+    }
+
+    function openRoundtableScienceOneTool(panelName, center) {
+      const tools = {
+        crystal: {
+          title: t("scienceOneCrystalTab"),
+          zh: "根据晶格文件、元素和分数坐标生成晶体结构。",
+          en: "Generate a crystal structure from a lattice file, species, and fractional coordinates."
+        },
+        qe: {
+          title: "Quantum Espresso",
+          zh: "提交 SCF、结构优化、分子动力学或能带计算任务。",
+          en: "Submit SCF, relaxation, molecular-dynamics, or band calculations."
+        },
+        band: {
+          title: t("scienceOneBandTab"),
+          zh: "查询 Materials Project 的带隙、费米能级和磁性数据。",
+          en: "Query Materials Project band gaps, Fermi levels, and magnetic properties."
+        }
+      };
+      const tool = tools[panelName] || tools.crystal;
+      updateRoundtableCenterStatus(center, tool.title, `ScienceOne · ${currentLang === "zh" ? tool.zh : tool.en}`);
+      showAppPage("model");
+      showScienceOnePanel(panelName in tools ? panelName : "crystal");
+      requestAnimationFrame(() => {
+        const scienceOneSection = document.querySelector(".scienceone-tools");
+        const activeTab = document.querySelector(`[data-scienceone-tab="${CSS.escape(panelName)}"]`);
+        activeTab?.focus({ preventScroll: true });
+        scienceOneSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      showToast(`${t("scienceOneRoundtableOpened")} · ${tool.title}`);
     }
 
     function selectRoundtableAiModel(modelName, center) {
