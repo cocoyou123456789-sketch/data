@@ -2444,6 +2444,10 @@
       box-sizing: border-box;
     }
 
+    .periodic-workbench > .periodic-index-panel {
+      width: 480px;
+    }
+
     .periodic-index-panel {
       position: relative;
       border: 1px solid var(--line);
@@ -2455,7 +2459,7 @@
       display: grid;
       gap: 12px;
       align-content: start;
-      min-height: 620px;
+      min-height: 720px;
       min-width: 360px;
       resize: horizontal;
       overflow: auto;
@@ -2536,7 +2540,9 @@
 
     .roundtable-panel {
       position: relative;
-      min-height: 500px;
+      width: 100%;
+      min-height: 640px;
+      aspect-ratio: 4 / 5;
       border: 1px solid rgba(96,208,255,0.22);
       border-radius: 22px;
       background:
@@ -2583,7 +2589,7 @@
 
     .roundtable-surface {
       position: absolute;
-      inset: 76px 30px 72px;
+      inset: 128px 24px 132px;
       border: 1px solid rgba(255,255,255,0.28);
       border-radius: 50%;
       background:
@@ -2622,10 +2628,10 @@
 
     .roundtable-center {
       position: absolute;
-      top: 98px;
+      top: 180px;
       left: 50%;
-      width: min(226px, 46%);
-      min-height: 268px;
+      width: min(220px, 44%);
+      min-height: 282px;
       transform: translateX(-50%) translateZ(118px);
       display: grid;
       grid-template-rows: auto minmax(0, 1fr);
@@ -2827,12 +2833,12 @@
       box-shadow: inset 0 0 20px rgba(96,208,255,0.34), 0 0 18px rgba(96,208,255,0.5);
     }
 
-    .round-module.one { top: 32px; right: 28px; transform: translateZ(18px) scale(0.94); }
-    .round-module.two { top: 32px; left: 28px; transform: translateZ(18px) scale(0.94); }
-    .round-module.three { top: 146px; left: 8px; transform: translateZ(54px) rotateY(-6deg); }
-    .round-module.four { top: 146px; right: 8px; transform: translateZ(54px) rotateY(6deg); }
-    .round-module.five { bottom: 24px; left: 42px; transform: translateZ(92px) scale(1.05) rotateY(-8deg); }
-    .round-module.six { bottom: 24px; right: 42px; transform: translateZ(92px) scale(1.05) rotateY(8deg); }
+    .round-module.one { top: 42px; right: 24px; transform: translateZ(18px) scale(0.94); }
+    .round-module.two { top: 42px; left: 24px; transform: translateZ(18px) scale(0.94); }
+    .round-module.three { top: 278px; left: 10px; transform: translateZ(54px) rotateY(-6deg); }
+    .round-module.four { top: 278px; right: 10px; transform: translateZ(54px) rotateY(6deg); }
+    .round-module.five { bottom: 48px; left: 26px; transform: translateZ(92px) scale(1.05) rotateY(-8deg); }
+    .round-module.six { bottom: 48px; right: 26px; transform: translateZ(92px) scale(1.05) rotateY(8deg); }
 
     .round-module.active,
     .round-module:hover {
@@ -6209,6 +6215,10 @@
         resize: none;
       }
 
+      .periodic-index-panel {
+        min-height: 0;
+      }
+
       .independent-size-controls {
         display: none;
       }
@@ -6549,7 +6559,7 @@
       }
 
       .roundtable-panel {
-        min-height: 420px;
+        min-height: 440px;
       }
 
       .roundtable-surface {
@@ -6611,8 +6621,8 @@
       .round-module.two { top: 28px; left: 26px; }
       .round-module.three { top: 136px; left: 6px; }
       .round-module.four { top: 136px; right: 6px; }
-      .round-module.five { bottom: 24px; left: 38px; }
-      .round-module.six { bottom: 24px; right: 38px; }
+      .round-module.five { bottom: 30px; left: 38px; }
+      .round-module.six { bottom: 30px; right: 38px; }
 
       .periodic {
         min-width: 740px;
@@ -9517,7 +9527,7 @@
     const ARTICLE_IMPORT_CHUNK_SIZE = 125;
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
-    const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v1";
+    const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v2";
     const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-size-v1";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
