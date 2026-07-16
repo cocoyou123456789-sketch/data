@@ -1,0 +1,9 @@
+[build]
+  publish = "github-pages"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/scienceone"
+  to = "/.netlify/functions/scienceone"
+  status = 200
+  force = true
