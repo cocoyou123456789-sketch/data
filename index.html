@@ -4516,6 +4516,235 @@
       gap: 10px;
     }
 
+    .scienceone-tools {
+      display: grid;
+      gap: 12px;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .scienceone-tools-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .scienceone-tools-head > div {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .scienceone-tools-head h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    .scienceone-tools-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .scienceone-connection-status {
+      flex: 0 0 auto;
+      min-width: 116px;
+      min-height: 32px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.025);
+      font-size: 11px;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .scienceone-connection-status[data-state="ready"] {
+      border-color: rgba(45,212,191,0.5);
+      color: var(--accent-glow);
+      background: rgba(15,118,110,0.12);
+    }
+
+    .scienceone-connection-status[data-state="error"] {
+      border-color: rgba(248,113,113,0.52);
+      color: #fca5a5;
+      background: rgba(127,29,29,0.16);
+    }
+
+    .scienceone-tool-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .scienceone-tool-tab {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #111b27;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .scienceone-tool-tab[aria-selected="true"] {
+      border-color: rgba(45,212,191,0.72);
+      background: rgba(15,118,110,0.2);
+      color: #e8fffc;
+      box-shadow: inset 0 -2px 0 var(--accent-glow);
+    }
+
+    .scienceone-tool-panel {
+      display: none;
+      min-width: 0;
+    }
+
+    .scienceone-tool-panel.active {
+      display: grid;
+      gap: 10px;
+    }
+
+    .scienceone-tool-panel form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .scienceone-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .scienceone-form-grid label {
+      min-width: 0;
+      display: grid;
+      align-content: start;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .scienceone-form-grid input:not([type="range"]):not([type="checkbox"]),
+    .scienceone-form-grid select {
+      height: 38px;
+      min-height: 38px;
+    }
+
+    .scienceone-form-grid .span-all {
+      grid-column: 1 / -1;
+    }
+
+    .scienceone-form-grid .scienceone-checkbox-label {
+      grid-template-columns: 18px minmax(0, 1fr);
+      align-items: center;
+      justify-content: start;
+    }
+
+    .scienceone-checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--accent-glow);
+    }
+
+    .scienceone-form-grid textarea {
+      width: 100%;
+      min-height: 78px;
+      resize: vertical;
+    }
+
+    .scienceone-priority-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 34px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scienceone-priority-row output {
+      color: var(--accent-glow);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .scienceone-form-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scienceone-form-actions button[aria-busy="true"] {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
+    .scienceone-result {
+      min-height: 76px;
+      max-height: 330px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #080e16;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .scienceone-result[data-state="success"] {
+      border-color: rgba(45,212,191,0.44);
+    }
+
+    .scienceone-result[data-state="error"] {
+      border-color: rgba(248,113,113,0.46);
+      color: #fecaca;
+    }
+
+    .scienceone-result pre {
+      margin: 6px 0 0;
+      color: #cfe8ef;
+      font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .scienceone-result-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .scienceone-result-links a {
+      color: var(--accent-glow);
+      overflow-wrap: anywhere;
+    }
+
+    .scienceone-endpoint-config {
+      border-top: 1px solid var(--line);
+      padding-top: 9px;
+    }
+
+    .scienceone-endpoint-config summary {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 720;
+      cursor: pointer;
+    }
+
+    .scienceone-endpoint-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
     .history-side-panel[data-chat-size="compact"] {
       grid-template-columns: minmax(560px, 1.55fr) minmax(300px, 0.55fr);
     }
@@ -5928,6 +6157,8 @@
       }
       .model-element-panel { min-height: 460px; }
       .model-element-palette { max-height: 360px; }
+      .scienceone-tools-head { align-items: stretch; flex-direction: column; }
+      .scienceone-connection-status { align-self: flex-start; }
       .login-layout {
         grid-template-columns: 1fr;
         min-height: 0;
@@ -6154,8 +6385,24 @@
       .data-library-grid,
       .cube-controls,
       .model-control-grid,
-      .model-status-grid {
+      .model-status-grid,
+      .scienceone-form-grid {
         grid-template-columns: 1fr;
+      }
+
+      .scienceone-form-grid .span-all { grid-column: auto; }
+
+      .scienceone-tool-tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .scienceone-endpoint-row {
+        grid-template-columns: 1fr;
+      }
+
+      .scienceone-form-actions {
+        align-items: stretch;
+        flex-direction: column;
       }
 
       .cube-viewport {
@@ -7495,6 +7742,144 @@
             </aside>
           </div>
           <div class="model-output" id="modelOutput" data-i18n="modelOutputDefault">等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。</div>
+          <section class="scienceone-tools" aria-labelledby="scienceOneToolsTitle">
+            <div class="scienceone-tools-head">
+              <div>
+                <h3 id="scienceOneToolsTitle" data-i18n="scienceOneToolsTitle">ScienceOne 科学工具</h3>
+                <p data-i18n="scienceOneToolsHint">晶体结构生成、Quantum Espresso 作业和 Materials Project 能带查询。</p>
+              </div>
+              <span class="scienceone-connection-status" id="scienceOneConnectionStatus" data-state="idle" data-i18n="scienceOneProxyNeeded">需要代理地址</span>
+            </div>
+
+            <div class="scienceone-tool-tabs" role="tablist" aria-label="ScienceOne tools">
+              <button class="scienceone-tool-tab" id="scienceOneCrystalTab" type="button" role="tab" aria-selected="true" aria-controls="scienceOneCrystalPanel" data-scienceone-tab="crystal" data-i18n="scienceOneCrystalTab">晶体结构</button>
+              <button class="scienceone-tool-tab" id="scienceOneQeTab" type="button" role="tab" aria-selected="false" aria-controls="scienceOneQePanel" data-scienceone-tab="qe">Quantum Espresso</button>
+              <button class="scienceone-tool-tab" id="scienceOneBandTab" type="button" role="tab" aria-selected="false" aria-controls="scienceOneBandPanel" data-scienceone-tab="band" data-i18n="scienceOneBandTab">电子能带</button>
+            </div>
+
+            <div class="scienceone-tool-panel active" id="scienceOneCrystalPanel" role="tabpanel" aria-labelledby="scienceOneCrystalTab" data-scienceone-panel="crystal">
+              <form id="scienceOneCrystalForm">
+                <div class="scienceone-form-grid">
+                  <label class="span-all" data-label-i18n="scienceOneLatticeUrlLabel">Lattice pickle 文件 URL
+                    <input id="scienceOneLatticeUrl" type="url" inputmode="url" autocomplete="off" required placeholder="https://.../lattice.pkl">
+                  </label>
+                  <label data-label-i18n="scienceOneSpeciesLabel">元素列表
+                    <input id="scienceOneSpecies" autocomplete="off" required placeholder="Fe, O">
+                  </label>
+                  <label data-label-i18n="scienceOneCoordsLabel">分数坐标 JSON
+                    <textarea id="scienceOneCoords" required spellcheck="false" placeholder="[[0,0,0],[0.5,0.5,0.5]]"></textarea>
+                  </label>
+                </div>
+                <div class="scienceone-form-actions">
+                  <button class="primary" type="submit" data-scienceone-submit="crystal_structure" data-i18n="scienceOneGenerateCrystal">生成晶体结构</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="scienceone-tool-panel" id="scienceOneQePanel" role="tabpanel" aria-labelledby="scienceOneQeTab" data-scienceone-panel="qe" hidden>
+              <form id="scienceOneQeForm">
+                <div class="scienceone-form-grid">
+                  <label data-label-i18n="scienceOneCalculationLabel">计算类型
+                    <select id="scienceOneCalculationType" required>
+                      <option value="scf">SCF</option>
+                      <option value="relax">Relax</option>
+                      <option value="md">Molecular dynamics</option>
+                      <option value="nscf">NSCF</option>
+                      <option value="band">Band</option>
+                    </select>
+                  </label>
+                  <label data-label-i18n="scienceOnePriorityLabel">优先级
+                    <span class="scienceone-priority-row">
+                      <input id="scienceOnePriority" type="range" min="1" max="10" step="1" value="5">
+                      <output id="scienceOnePriorityOutput" for="scienceOnePriority">5</output>
+                    </span>
+                  </label>
+                  <label class="span-all" data-label-i18n="scienceOneInputUrlLabel">Quantum Espresso INPUT 文件 URL
+                    <input id="scienceOneInputUrl" type="url" inputmode="url" autocomplete="off" required placeholder="https://.../calculation.in">
+                  </label>
+                  <label class="span-all" data-label-i18n="scienceOnePseudoUrlsLabel">赝势文件 URL（每行一个）
+                    <textarea id="scienceOnePseudoUrls" required spellcheck="false" placeholder="https://.../Fe.UPF&#10;https://.../Se.UPF"></textarea>
+                  </label>
+                </div>
+                <div class="scienceone-form-actions">
+                  <button class="primary" type="submit" data-scienceone-submit="quantum_espresso" data-i18n="scienceOneSubmitQe">提交 Quantum Espresso 作业</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="scienceone-tool-panel" id="scienceOneBandPanel" role="tabpanel" aria-labelledby="scienceOneBandTab" data-scienceone-panel="band" hidden>
+              <form id="scienceOneBandForm">
+                <div class="scienceone-form-grid">
+                  <label data-label-i18n="scienceOneBandGapMinLabel">最小带隙 (eV)
+                    <input id="scienceOneBandGapMin" type="number" step="0.01" placeholder="1.0">
+                  </label>
+                  <label data-label-i18n="scienceOneBandGapMaxLabel">最大带隙 (eV)
+                    <input id="scienceOneBandGapMax" type="number" step="0.01" placeholder="2.5">
+                  </label>
+                  <label data-label-i18n="scienceOneFermiMinLabel">最小费米能级 (eV)
+                    <input id="scienceOneFermiMin" type="number" step="0.01" placeholder="-1">
+                  </label>
+                  <label data-label-i18n="scienceOneFermiMaxLabel">最大费米能级 (eV)
+                    <input id="scienceOneFermiMax" type="number" step="0.01" placeholder="1">
+                  </label>
+                  <label data-label-i18n="scienceOneDirectGapLabel">直接带隙
+                    <select id="scienceOneDirectGap">
+                      <option value="" data-i18n="scienceOneAnyOption">不限</option>
+                      <option value="true" data-i18n="scienceOneYesOption">是</option>
+                      <option value="false" data-i18n="scienceOneNoOption">否</option>
+                    </select>
+                  </label>
+                  <label data-label-i18n="scienceOneMetalLabel">金属
+                    <select id="scienceOneMetal">
+                      <option value="" data-i18n="scienceOneAnyOption">不限</option>
+                      <option value="true" data-i18n="scienceOneYesOption">是</option>
+                      <option value="false" data-i18n="scienceOneNoOption">否</option>
+                    </select>
+                  </label>
+                  <label data-label-i18n="scienceOneMagneticLabel">磁性排序
+                    <select id="scienceOneMagneticOrdering">
+                      <option value="" data-i18n="scienceOneAnyOption">不限</option>
+                      <option value="FM">FM</option>
+                      <option value="AFM">AFM</option>
+                      <option value="FiM">FiM</option>
+                      <option value="NM">NM</option>
+                      <option value="Unknown">Unknown</option>
+                    </select>
+                  </label>
+                  <label data-label-i18n="scienceOnePathTypeLabel">K 路径
+                    <select id="scienceOnePathType">
+                      <option value="" data-i18n="scienceOneAnyOption">不限</option>
+                      <option value="setyawan_curtarolo">Setyawan-Curtarolo</option>
+                      <option value="hinuma">Hinuma</option>
+                    </select>
+                  </label>
+                  <label data-label-i18n="scienceOneChunkSizeLabel">每块数量
+                    <input id="scienceOneChunkSize" type="number" min="1" max="500" step="1" value="50">
+                  </label>
+                  <label data-label-i18n="scienceOneNumChunksLabel">数据块数
+                    <input id="scienceOneNumChunks" type="number" min="1" max="20" step="1" value="1">
+                  </label>
+                  <label data-label-i18n="scienceOneFieldsLabel">返回字段
+                    <input id="scienceOneFields" autocomplete="off" value="material_id,band_gap,efermi,is_metal">
+                  </label>
+                  <label class="span-all scienceone-checkbox-label"><input id="scienceOneAllFields" type="checkbox"><span data-i18n="scienceOneAllFieldsLabel">返回所有可用字段</span></label>
+                </div>
+                <div class="scienceone-form-actions">
+                  <button class="primary" type="submit" data-scienceone-submit="band_structure" data-i18n="scienceOneQueryBand">查询能带数据</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="scienceone-result" id="scienceOneResult" data-state="idle" aria-live="polite" data-i18n="scienceOneResultIdle">等待 ScienceOne 工具输入。</div>
+
+            <details class="scienceone-endpoint-config">
+              <summary data-i18n="scienceOneConnectionTitle">ScienceOne 代理连接</summary>
+              <div class="scienceone-endpoint-row">
+                <input id="scienceOneEndpointInput" type="url" inputmode="url" autocomplete="off" data-i18n-placeholder="scienceOneEndpointPlaceholder" placeholder="https://your-site.example/api/scienceone">
+                <button id="scienceOneSaveEndpointBtn" type="button" data-i18n="scienceOneSaveEndpoint">保存连接</button>
+              </div>
+            </details>
+          </section>
           <details class="model-advanced-config">
             <summary data-i18n="modelAdvancedTitle">模型与 AI 接口设置</summary>
             <div class="model-advanced-body">
@@ -7827,6 +8212,47 @@
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
+        scienceOneToolsTitle: "ScienceOne 科学工具",
+        scienceOneToolsHint: "晶体结构生成、Quantum Espresso 作业和 Materials Project 能带查询。",
+        scienceOneProxyNeeded: "需要代理地址",
+        scienceOneProxyReady: "代理已配置",
+        scienceOneCrystalTab: "晶体结构",
+        scienceOneBandTab: "电子能带",
+        scienceOneLatticeUrlLabel: "Lattice pickle 文件 URL",
+        scienceOneSpeciesLabel: "元素列表",
+        scienceOneCoordsLabel: "分数坐标 JSON",
+        scienceOneGenerateCrystal: "生成晶体结构",
+        scienceOneCalculationLabel: "计算类型",
+        scienceOnePriorityLabel: "优先级",
+        scienceOneInputUrlLabel: "Quantum Espresso INPUT 文件 URL",
+        scienceOnePseudoUrlsLabel: "赝势文件 URL（每行一个）",
+        scienceOneSubmitQe: "提交 Quantum Espresso 作业",
+        scienceOneBandGapMinLabel: "最小带隙 (eV)",
+        scienceOneBandGapMaxLabel: "最大带隙 (eV)",
+        scienceOneFermiMinLabel: "最小费米能级 (eV)",
+        scienceOneFermiMaxLabel: "最大费米能级 (eV)",
+        scienceOneDirectGapLabel: "直接带隙",
+        scienceOneMetalLabel: "金属",
+        scienceOneMagneticLabel: "磁性排序",
+        scienceOnePathTypeLabel: "K 路径",
+        scienceOneChunkSizeLabel: "每块数量",
+        scienceOneNumChunksLabel: "数据块数",
+        scienceOneFieldsLabel: "返回字段",
+        scienceOneAllFieldsLabel: "返回所有可用字段",
+        scienceOneAnyOption: "不限",
+        scienceOneYesOption: "是",
+        scienceOneNoOption: "否",
+        scienceOneQueryBand: "查询能带数据",
+        scienceOneResultIdle: "等待 ScienceOne 工具输入。",
+        scienceOneConnectionTitle: "ScienceOne 代理连接",
+        scienceOneEndpointPlaceholder: "https://你的后端站点/api/scienceone",
+        scienceOneSaveEndpoint: "保存连接",
+        scienceOneEndpointSaved: "ScienceOne 代理连接已保存",
+        scienceOneEndpointMissing: "请先填写 ScienceOne 代理地址。",
+        scienceOneRequesting: "正在调用 ScienceOne...",
+        scienceOneRequestSuccess: "ScienceOne 调用成功",
+        scienceOneRequestFailed: "ScienceOne 调用失败",
+        scienceOneResultLink: "打开结果文件",
         reportToast: "调研报告已生成",
         reportPdfToast: "PDF 打印版已打开，可选择 Save as PDF",
         tocSearch: "检索与主题",
@@ -8431,6 +8857,47 @@
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
+        scienceOneToolsTitle: "ScienceOne Scientific Tools",
+        scienceOneToolsHint: "Crystal structure generation, Quantum Espresso jobs, and Materials Project band-structure queries.",
+        scienceOneProxyNeeded: "Proxy URL required",
+        scienceOneProxyReady: "Proxy configured",
+        scienceOneCrystalTab: "Crystal Structure",
+        scienceOneBandTab: "Electronic Bands",
+        scienceOneLatticeUrlLabel: "Lattice pickle file URL",
+        scienceOneSpeciesLabel: "Species",
+        scienceOneCoordsLabel: "Fractional coordinates JSON",
+        scienceOneGenerateCrystal: "Generate Crystal Structure",
+        scienceOneCalculationLabel: "Calculation Type",
+        scienceOnePriorityLabel: "Priority",
+        scienceOneInputUrlLabel: "Quantum Espresso INPUT file URL",
+        scienceOnePseudoUrlsLabel: "Pseudopotential URLs (one per line)",
+        scienceOneSubmitQe: "Submit Quantum Espresso Job",
+        scienceOneBandGapMinLabel: "Minimum Band Gap (eV)",
+        scienceOneBandGapMaxLabel: "Maximum Band Gap (eV)",
+        scienceOneFermiMinLabel: "Minimum Fermi Level (eV)",
+        scienceOneFermiMaxLabel: "Maximum Fermi Level (eV)",
+        scienceOneDirectGapLabel: "Direct Gap",
+        scienceOneMetalLabel: "Metal",
+        scienceOneMagneticLabel: "Magnetic Ordering",
+        scienceOnePathTypeLabel: "K Path",
+        scienceOneChunkSizeLabel: "Chunk Size",
+        scienceOneNumChunksLabel: "Number of Chunks",
+        scienceOneFieldsLabel: "Return Fields",
+        scienceOneAllFieldsLabel: "Return all available fields",
+        scienceOneAnyOption: "Any",
+        scienceOneYesOption: "Yes",
+        scienceOneNoOption: "No",
+        scienceOneQueryBand: "Query Band Data",
+        scienceOneResultIdle: "Waiting for ScienceOne tool input.",
+        scienceOneConnectionTitle: "ScienceOne Proxy Connection",
+        scienceOneEndpointPlaceholder: "https://your-backend.example/api/scienceone",
+        scienceOneSaveEndpoint: "Save Connection",
+        scienceOneEndpointSaved: "ScienceOne proxy connection saved",
+        scienceOneEndpointMissing: "Enter a ScienceOne proxy URL first.",
+        scienceOneRequesting: "Calling ScienceOne...",
+        scienceOneRequestSuccess: "ScienceOne call succeeded",
+        scienceOneRequestFailed: "ScienceOne call failed",
+        scienceOneResultLink: "Open result file",
         reportToast: "Research report generated",
         reportPdfToast: "PDF print view opened; choose Save as PDF",
         tocSearch: "Search & Topic",
@@ -8910,6 +9377,7 @@
       renderFloatingComparison();
       renderFloatingFigureComparison();
       renderModelRegistry();
+      updateScienceOneConnectionStatus();
       renderToc();
       if (magicBookScreen && !magicBookScreen.hidden) {
         setMagicBookPrimary(magicBookMode === "toc" ? "magicBookChoosePage" : "magicBookOpenCatalog");
@@ -8981,6 +9449,7 @@
     const ARTICLE_IMPORT_PREVIEW_LIMIT = 60000;
     const ARTICLE_IMPORT_CHUNK_SIZE = 125;
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
+    const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
     const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-size-v1";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
@@ -9071,6 +9540,15 @@
     const aiKeyInput = $("#aiKeyInput");
     const aiSaveConfigBtn = $("#aiSaveConfigBtn");
     const aiClearConfigBtn = $("#aiClearConfigBtn");
+    const scienceOneConnectionStatus = $("#scienceOneConnectionStatus");
+    const scienceOneResult = $("#scienceOneResult");
+    const scienceOneEndpointInput = $("#scienceOneEndpointInput");
+    const scienceOneSaveEndpointBtn = $("#scienceOneSaveEndpointBtn");
+    const scienceOneCrystalForm = $("#scienceOneCrystalForm");
+    const scienceOneQeForm = $("#scienceOneQeForm");
+    const scienceOneBandForm = $("#scienceOneBandForm");
+    const scienceOnePriority = $("#scienceOnePriority");
+    const scienceOnePriorityOutput = $("#scienceOnePriorityOutput");
     const historyCube = $("#historyCube");
     const cubeViewport = $("#cubeViewport");
     const cubeResetBtn = $("#cubeResetBtn");
@@ -14709,6 +15187,240 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         <strong style="color:var(--accent-glow);">${esc(t("modelResultTitle"))}</strong><br>
         ${resultLines.map(line => esc(line)).join("<br>")}
       `;
+    }
+
+    function loadScienceOneConfig() {
+      try { return JSON.parse(localStorage.getItem(SCIENCEONE_CONFIG_STORAGE_KEY) || "{}"); }
+      catch { return {}; }
+    }
+
+    function defaultScienceOneEndpoint() {
+      const host = window.location.hostname || "";
+      if (window.location.protocol === "file:" || !host || host.includes("github.io")) return "";
+      return "/api/scienceone";
+    }
+
+    function configuredScienceOneEndpoint() {
+      return String(loadScienceOneConfig().endpoint || defaultScienceOneEndpoint()).trim();
+    }
+
+    function updateScienceOneConnectionStatus() {
+      if (!scienceOneConnectionStatus) return;
+      const ready = Boolean(configuredScienceOneEndpoint());
+      scienceOneConnectionStatus.dataset.state = ready ? "ready" : "idle";
+      scienceOneConnectionStatus.textContent = ready ? t("scienceOneProxyReady") : t("scienceOneProxyNeeded");
+    }
+
+    function saveScienceOneEndpoint() {
+      const endpoint = String(scienceOneEndpointInput?.value || "").trim();
+      if (endpoint) {
+        let parsed;
+        try { parsed = new URL(endpoint, window.location.href); }
+        catch { throw new Error(t("scienceOneEndpointMissing")); }
+        if (!["http:", "https:"].includes(parsed.protocol)) throw new Error(t("scienceOneEndpointMissing"));
+      }
+      localStorage.setItem(SCIENCEONE_CONFIG_STORAGE_KEY, JSON.stringify({ endpoint }));
+      updateScienceOneConnectionStatus();
+      showToast(t("scienceOneEndpointSaved"));
+    }
+
+    function splitScienceOneList(value) {
+      const text = String(value || "").trim();
+      if (!text) return [];
+      if (text.startsWith("[")) {
+        const parsed = JSON.parse(text);
+        if (!Array.isArray(parsed)) throw new Error("Expected a JSON array.");
+        return parsed.map(item => String(item || "").trim()).filter(Boolean);
+      }
+      return text.split(/[\n,]+/).map(item => item.trim()).filter(Boolean);
+    }
+
+    function scienceOneOptionalNumber(id) {
+      const value = String($(id)?.value || "").trim();
+      return value === "" ? undefined : Number(value);
+    }
+
+    function scienceOneOptionalBoolean(id) {
+      const value = String($(id)?.value || "").trim();
+      return value === "" ? undefined : value === "true";
+    }
+
+    function buildScienceOnePayload(tool) {
+      if (tool === "crystal_structure") {
+        let coords;
+        try { coords = JSON.parse($("#scienceOneCoords")?.value || "[]"); }
+        catch { throw new Error(currentLang === "zh" ? "分数坐标必须是有效的 JSON 数组。" : "Fractional coordinates must be a valid JSON array."); }
+        return {
+          Lattice_pickle_file_url: $("#scienceOneLatticeUrl")?.value || "",
+          species: splitScienceOneList($("#scienceOneSpecies")?.value),
+          coords
+        };
+      }
+      if (tool === "quantum_espresso") {
+        return {
+          calculation_type: $("#scienceOneCalculationType")?.value || "scf",
+          input_url: $("#scienceOneInputUrl")?.value || "",
+          pseudo_urls: splitScienceOneList($("#scienceOnePseudoUrls")?.value),
+          priority: Number(scienceOnePriority?.value || 1)
+        };
+      }
+      const payload = {
+        all_fields: Boolean($("#scienceOneAllFields")?.checked)
+      };
+      const numberFields = {
+        band_gap_min: "#scienceOneBandGapMin",
+        band_gap_max: "#scienceOneBandGapMax",
+        efermi_min: "#scienceOneFermiMin",
+        efermi_max: "#scienceOneFermiMax",
+        chunk_size: "#scienceOneChunkSize",
+        num_chunks: "#scienceOneNumChunks"
+      };
+      Object.entries(numberFields).forEach(([field, selector]) => {
+        const value = scienceOneOptionalNumber(selector);
+        if (value !== undefined) payload[field] = value;
+      });
+      const directGap = scienceOneOptionalBoolean("#scienceOneDirectGap");
+      const isMetal = scienceOneOptionalBoolean("#scienceOneMetal");
+      if (directGap !== undefined) payload.is_gap_direct = directGap;
+      if (isMetal !== undefined) payload.is_metal = isMetal;
+      const magneticOrdering = String($("#scienceOneMagneticOrdering")?.value || "").trim();
+      const pathType = String($("#scienceOnePathType")?.value || "").trim();
+      const fields = String($("#scienceOneFields")?.value || "").trim();
+      if (magneticOrdering) payload.magnetic_ordering = magneticOrdering;
+      if (pathType) payload.path_type = pathType;
+      if (fields && !payload.all_fields) payload.fields = fields;
+      return payload;
+    }
+
+    function scienceOneResultLinks(value, found = []) {
+      if (found.length >= 6 || value === null || value === undefined) return found;
+      if (typeof value === "string" && /^https:\/\//i.test(value)) {
+        found.push(value);
+      } else if (Array.isArray(value)) {
+        value.forEach(item => scienceOneResultLinks(item, found));
+      } else if (typeof value === "object") {
+        Object.values(value).forEach(item => scienceOneResultLinks(item, found));
+      }
+      return uniq(found).slice(0, 6);
+    }
+
+    function renderScienceOneResult(resultState, title, value) {
+      if (!scienceOneResult) return;
+      scienceOneResult.dataset.state = resultState;
+      scienceOneResult.replaceChildren();
+      const heading = document.createElement("strong");
+      heading.textContent = title;
+      scienceOneResult.appendChild(heading);
+      if (value !== undefined) {
+        const pre = document.createElement("pre");
+        const text = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+        pre.textContent = String(text || "").slice(0, 40_000);
+        scienceOneResult.appendChild(pre);
+        const links = scienceOneResultLinks(value);
+        if (links.length) {
+          const linkWrap = document.createElement("div");
+          linkWrap.className = "scienceone-result-links";
+          links.forEach((href, index) => {
+            const link = document.createElement("a");
+            link.href = href;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = links.length === 1 ? t("scienceOneResultLink") : `${t("scienceOneResultLink")} ${index + 1}`;
+            linkWrap.appendChild(link);
+          });
+          scienceOneResult.appendChild(linkWrap);
+        }
+      }
+    }
+
+    async function submitScienceOneTool(tool, form) {
+      if (!form?.reportValidity()) return;
+      const endpoint = configuredScienceOneEndpoint();
+      if (!endpoint) {
+        renderScienceOneResult("error", t("scienceOneRequestFailed"), t("scienceOneEndpointMissing"));
+        scienceOneEndpointInput?.focus();
+        return;
+      }
+      const submitButton = form.querySelector("[data-scienceone-submit]");
+      let payload;
+      try { payload = buildScienceOnePayload(tool); }
+      catch (error) {
+        renderScienceOneResult("error", t("scienceOneRequestFailed"), error.message);
+        return;
+      }
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.setAttribute("aria-busy", "true");
+      }
+      renderScienceOneResult("idle", t("scienceOneRequesting"), payload);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tool, payload })
+        });
+        const text = await response.text();
+        let data;
+        try { data = text ? JSON.parse(text) : {}; }
+        catch { data = { raw: text }; }
+        if (!response.ok || data.ok === false) {
+          const error = new Error(data.error || `HTTP ${response.status}`);
+          error.details = data.details;
+          throw error;
+        }
+        renderScienceOneResult("success", t("scienceOneRequestSuccess"), data.upstream ?? data);
+      } catch (error) {
+        renderScienceOneResult("error", t("scienceOneRequestFailed"), {
+          error: error?.message || String(error),
+          details: error?.details || null
+        });
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.removeAttribute("aria-busy");
+        }
+      }
+    }
+
+    function showScienceOnePanel(panelName) {
+      $$('[data-scienceone-tab]').forEach(tab => {
+        tab.setAttribute("aria-selected", tab.dataset.scienceoneTab === panelName ? "true" : "false");
+      });
+      $$('[data-scienceone-panel]').forEach(panel => {
+        const active = panel.dataset.scienceonePanel === panelName;
+        panel.classList.toggle("active", active);
+        panel.hidden = !active;
+      });
+      if (panelName === "crystal" && !$("#scienceOneSpecies")?.value.trim() && state.modelElements.length) {
+        $("#scienceOneSpecies").value = uniq(state.modelElements).join(", ");
+      }
+    }
+
+    function initScienceOneTools() {
+      if (scienceOneEndpointInput) scienceOneEndpointInput.value = configuredScienceOneEndpoint();
+      updateScienceOneConnectionStatus();
+      $$('[data-scienceone-tab]').forEach(tab => {
+        tab.addEventListener("click", () => showScienceOnePanel(tab.dataset.scienceoneTab || "crystal"));
+      });
+      scienceOneCrystalForm?.addEventListener("submit", event => {
+        event.preventDefault();
+        submitScienceOneTool("crystal_structure", scienceOneCrystalForm);
+      });
+      scienceOneQeForm?.addEventListener("submit", event => {
+        event.preventDefault();
+        submitScienceOneTool("quantum_espresso", scienceOneQeForm);
+      });
+      scienceOneBandForm?.addEventListener("submit", event => {
+        event.preventDefault();
+        submitScienceOneTool("band_structure", scienceOneBandForm);
+      });
+      scienceOnePriority?.addEventListener("input", () => {
+        if (scienceOnePriorityOutput) scienceOnePriorityOutput.textContent = scienceOnePriority.value;
+      });
+      scienceOneSaveEndpointBtn?.addEventListener("click", () => {
+        try { saveScienceOneEndpoint(); }
+        catch (error) { renderScienceOneResult("error", t("scienceOneRequestFailed"), error.message); }
+      });
     }
 
     function loadAiConfig() {
@@ -21021,6 +21733,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     // ===== 启动页面 =====
     installModelHub();
     initAiConfigForm();
+    initScienceOneTools();
     setupRoundtableModules();
     setupTocScrollSpy();
     initFloatingComparePanel();
