@@ -5246,6 +5246,230 @@
       border-radius: 10px;
     }
 
+    .material-directory {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .material-directory-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .material-directory-head h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+    }
+
+    .material-directory-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .material-directory-all {
+      min-width: 136px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .material-directory-all strong {
+      color: var(--accent-glow);
+      font-size: 12px;
+    }
+
+    .material-directory-all.active {
+      border-color: var(--accent-glow);
+      background: rgba(20, 184, 166, 0.12);
+      color: #f8fafc;
+    }
+
+    .material-directory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+    }
+
+    .material-directory-item {
+      --family-accent: #2dd4bf;
+      position: relative;
+      min-height: 98px;
+      padding: 12px 12px 11px 15px;
+      display: grid;
+      align-content: space-between;
+      gap: 9px;
+      overflow: hidden;
+      text-align: left;
+      border-radius: 8px;
+      background: #111923;
+    }
+
+    .material-directory-item:nth-child(6n + 2) { --family-accent: #60a5fa; }
+    .material-directory-item:nth-child(6n + 3) { --family-accent: #fbbf24; }
+    .material-directory-item:nth-child(6n + 4) { --family-accent: #f87171; }
+    .material-directory-item:nth-child(6n + 5) { --family-accent: #a78bfa; }
+    .material-directory-item:nth-child(6n + 6) { --family-accent: #4ade80; }
+
+    .material-directory-item::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px;
+      background: var(--family-accent);
+    }
+
+    .material-directory-item:hover,
+    .material-directory-item.active {
+      border-color: var(--family-accent);
+      background: #15202b;
+      transform: none;
+    }
+
+    .material-directory-item:focus-visible {
+      outline: 2px solid var(--family-accent);
+      outline-offset: 2px;
+    }
+
+    .material-directory-item-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .material-directory-item strong {
+      color: #f8fafc;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .material-directory-count {
+      flex: 0 0 auto;
+      color: var(--family-accent);
+      font-size: 11px;
+      font-weight: 760;
+    }
+
+    .material-directory-examples {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .material-directory-open {
+      color: var(--family-accent);
+      font-size: 11px;
+      font-weight: 720;
+    }
+
+    .material-directory-selection {
+      margin: 4px 0 10px;
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .material-directory-selection[hidden] {
+      display: none;
+    }
+
+    .material-directory-selection > div {
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+    }
+
+    .material-directory-kicker {
+      color: var(--accent-glow);
+      font-size: 10px;
+      font-weight: 780;
+      text-transform: uppercase;
+    }
+
+    .material-directory-selection strong {
+      color: #f8fafc;
+      font-size: 14px;
+    }
+
+    .material-directory-prompt {
+      min-height: 104px;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .material-table-wrap[hidden],
+    .material-directory-prompt[hidden] {
+      display: none;
+    }
+
+    .materials-table {
+      min-width: 760px;
+    }
+
+    .materials-table th,
+    .materials-table td {
+      padding: 11px 10px;
+    }
+
+    .material-table-name {
+      display: grid;
+      gap: 2px;
+      min-width: 128px;
+    }
+
+    .material-table-name strong {
+      color: #f8fafc;
+    }
+
+    .material-table-family {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .material-focus-list {
+      max-width: 280px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .material-focus-chip {
+      padding: 3px 7px;
+      color: #cbd5e1;
+      font-size: 11px;
+      line-height: 1.25;
+      border: 1px solid #2a3949;
+      border-radius: 999px;
+      background: #121c27;
+    }
+
+    .material-focus-more {
+      color: var(--muted);
+      border-style: dashed;
+    }
+
     .form-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -6748,6 +6972,55 @@
         min-height: 0;
       }
 
+      .material-directory-head,
+      .material-directory-selection {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .material-directory-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .material-directory-item {
+        min-height: 88px;
+      }
+
+      .material-directory-selection > div {
+        display: grid;
+        gap: 4px;
+      }
+
+      .materials-table {
+        min-width: 0;
+        table-layout: fixed;
+      }
+
+      .materials-table th:nth-child(4),
+      .materials-table td:nth-child(4),
+      .materials-table th:nth-child(6),
+      .materials-table td:nth-child(6),
+      .materials-table th:nth-child(7),
+      .materials-table td:nth-child(7) {
+        display: none;
+      }
+
+      .materials-table th:nth-child(1) { width: 42px; }
+      .materials-table th:nth-child(2) { width: 35%; }
+      .materials-table th:nth-child(3) { width: 25%; }
+
+      .materials-table td {
+        overflow-wrap: anywhere;
+      }
+
+      .materials-table td:nth-child(5) .muted {
+        display: none;
+      }
+
+      .material-table-name {
+        min-width: 0;
+      }
+
       .table-wrap {
         margin: 0 -12px;
         border-left: 0;
@@ -7515,19 +7788,40 @@
           <div class="compare-grid" id="compareGrid"></div>
           <button id="clearCompareBtn" style="margin-top:8px;" data-i18n="clearCompareBtn">清除对比</button>
         </div>
-        <div class="table-wrap">
-          <table>
+        <div class="material-directory" aria-labelledby="materialDirectoryTitle">
+          <div class="material-directory-head">
+            <div>
+              <h3 id="materialDirectoryTitle" data-i18n="materialDirectoryTitle">材料目录</h3>
+              <p data-i18n="materialDirectoryHint">先选择材料家族，再查看该类别中的材料。</p>
+            </div>
+            <button class="material-directory-all" id="materialDirectoryAllBtn" type="button">
+              <span data-i18n="materialDirectoryAll">全部材料</span>
+              <strong id="materialDirectoryAllCount">0</strong>
+            </button>
+          </div>
+          <div class="material-directory-grid" id="materialDirectoryGrid"></div>
+        </div>
+        <div class="material-directory-selection" id="materialDirectorySelection" hidden>
+          <div>
+            <span class="material-directory-kicker" data-i18n="materialDirectoryCurrent">当前目录</span>
+            <strong id="materialDirectorySelectionName"></strong>
+            <span class="muted" id="materialDirectorySelectionCount"></span>
+          </div>
+          <button id="materialDirectoryBackBtn" type="button" data-i18n="materialDirectoryBack">返回目录</button>
+        </div>
+        <div class="material-directory-prompt" id="materialDirectoryPrompt" data-i18n="materialDirectoryPrompt">
+          点击上方一个材料家族，查看其中的材料。
+        </div>
+        <div class="table-wrap material-table-wrap" id="materialsTableWrap" hidden>
+          <table class="materials-table">
             <thead>
               <tr>
                 <th data-i18n="selectCol">选择</th>
-                <th data-i18n="familyCol">家族</th>
                 <th data-i18n="materialCol">材料</th>
                 <th data-i18n="elementsCol">元素</th>
                 <th data-i18n="discoveredCol">发现年份</th>
                 <th id="topicMeasureHead" data-i18n="tcCol">Tc (K)</th>
                 <th data-i18n="arpesCol">ARPES 特性</th>
-                <th data-i18n="qCol">q-dependent</th>
-                <th data-i18n="photonCol">光子/ARPES 备注</th>
                 <th data-i18n="statusCol">状态</th>
               </tr>
             </thead>
@@ -8511,8 +8805,15 @@
         materialsTitle: "🧪 超导材料表",
         twoDMaterialsTitle: "🧪 二维材料表",
         materialsStatus: "等待中",
+        materialDirectoryTitle: "材料目录",
+        materialDirectoryHint: "先选择材料家族，再查看该类别中的材料。",
+        materialDirectoryAll: "全部材料",
+        materialDirectoryCurrent: "当前目录",
+        materialDirectoryBack: "返回目录",
+        materialDirectoryPrompt: "点击上方一个材料家族，查看其中的材料。",
+        materialDirectoryOpen: "查看材料 →",
         detailTitle: "📋 材料详情",
-        detailHint: "点击材料表中的一行查看详情。",
+        detailHint: "先选择材料家族，再点击材料行查看详情。",
         articleTitle: "📄 文章数据 (公共共享库)",
         articleLoading: "加载文章中...",
         wosWorkflowTitle: "🧭 WoS / Scholar 批量导入流程",
@@ -9160,8 +9461,15 @@
         materialsTitle: "🧪 Superconducting Materials",
         twoDMaterialsTitle: "🧪 2D Materials",
         materialsStatus: "Waiting",
+        materialDirectoryTitle: "Materials Directory",
+        materialDirectoryHint: "Choose a material family, then inspect the materials in that category.",
+        materialDirectoryAll: "All materials",
+        materialDirectoryCurrent: "Current directory",
+        materialDirectoryBack: "Back to directory",
+        materialDirectoryPrompt: "Choose a material family above to view its materials.",
+        materialDirectoryOpen: "View materials →",
         detailTitle: "📋 Material Details",
-        detailHint: "Click a row in the materials table for details.",
+        detailHint: "Choose a material family, then click a material row for details.",
         articleTitle: "📄 Article Data (public shared library)",
         articleLoading: "Loading articles...",
         wosWorkflowTitle: "🧭 WoS / Scholar Bulk Import Workflow",
@@ -9588,6 +9896,7 @@
       chatMessages: [],
       chatTableRows: [],
       modelElements: [],
+      materialDirectorySelection: "",
       topic: "sc"
     };
 
@@ -9756,6 +10065,15 @@
     const familyChips = $("#familyChips");
     const tableStatus = $("#tableStatus");
     const materialsBody = $("#materialsBody");
+    const materialDirectoryGrid = $("#materialDirectoryGrid");
+    const materialDirectoryAllBtn = $("#materialDirectoryAllBtn");
+    const materialDirectoryAllCount = $("#materialDirectoryAllCount");
+    const materialDirectorySelection = $("#materialDirectorySelection");
+    const materialDirectorySelectionName = $("#materialDirectorySelectionName");
+    const materialDirectorySelectionCount = $("#materialDirectorySelectionCount");
+    const materialDirectoryBackBtn = $("#materialDirectoryBackBtn");
+    const materialDirectoryPrompt = $("#materialDirectoryPrompt");
+    const materialsTableWrap = $("#materialsTableWrap");
     const detailPanel = $("#detailPanel");
     const sourceStatus = $("#sourceStatus");
     const historyInteractiveChart = $("#historyInteractiveChart");
@@ -11501,6 +11819,7 @@
       figShowLimit = 12;
       showFigureCandidates = false;
       state.compareSet.clear();
+      state.materialDirectorySelection = "";
       renderFamilyFilter();
       renderFamilyChips();
       renderPeriodicTable();
@@ -11529,6 +11848,7 @@
       figFilterType = "all";
       figShowLimit = 12;
       showFigureCandidates = false;
+      state.materialDirectorySelection = "";
       renderFigureFilterControls();
       state.compareSet.clear();
       updateCompareUI();
@@ -16191,21 +16511,167 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       `).join("");
     }
 
-    // ===== 材料表 =====
+    // ===== 材料目录与表格 =====
+    const MATERIAL_DIRECTORY_ALL = "__all__";
+
+    function materialDirectoryKey(row) {
+      if (state.topic === "2d") {
+        const category = twoDCategoryForFamily(row.family);
+        if (category) return twoDCategoryId(category);
+      }
+      return row.family || "other";
+    }
+
+    function materialDirectoryLabel(key, row) {
+      if (state.topic === "2d") {
+        const category = twoDCategoryById(key) || twoDCategoryForFamily(row?.family);
+        if (category) return localizedCategoryValue(category, "category");
+      }
+      return familyName(row?.family || key);
+    }
+
+    function formatMaterialCount(count) {
+      return currentLang === "zh"
+        ? `${count} 个材料`
+        : `${count} material${count === 1 ? "" : "s"}`;
+    }
+
+    function materialDirectoryGroups(rows) {
+      const grouped = new Map();
+      rows.forEach((row, index) => {
+        const key = materialDirectoryKey(row);
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            key,
+            name: materialDirectoryLabel(key, row),
+            rows: [],
+            examples: []
+          });
+        }
+        const group = grouped.get(key);
+        group.rows.push({ row, index });
+        const example = row.display_name || row.material;
+        if (example && !group.examples.includes(example)) group.examples.push(example);
+      });
+      const order = new Map(topicFamilyOptions().map((option, index) => [option.id, index]));
+      return [...grouped.values()].sort((a, b) => {
+        const aOrder = order.has(a.key) ? order.get(a.key) : Number.MAX_SAFE_INTEGER;
+        const bOrder = order.has(b.key) ? order.get(b.key) : Number.MAX_SAFE_INTEGER;
+        return aOrder - bOrder || a.name.localeCompare(b.name);
+      });
+    }
+
+    function materialFocusHtml(row) {
+      const values = uniq([
+        ...(row.arpes_special_properties || []),
+        ...(row.q_dependent_observables || [])
+      ]).filter(Boolean);
+      if (!values.length) return `<span class="muted">-</span>`;
+      const visible = values.slice(0, 3);
+      const remaining = values.length - visible.length;
+      return `<div class="material-focus-list">
+        ${visible.map(value => `<span class="material-focus-chip">${esc(value)}</span>`).join("")}
+        ${remaining ? `<span class="material-focus-chip material-focus-more">+${remaining}</span>` : ""}
+      </div>`;
+    }
+
+    function selectMaterialDirectory(selection, options = {}) {
+      state.materialDirectorySelection = selection || "";
+      renderMaterialsTable();
+      if (options.scroll !== false && state.materialDirectorySelection) {
+        requestAnimationFrame(() => {
+          materialDirectorySelection?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
+    }
+
+    function renderMaterialDirectory(groups) {
+      if (!materialDirectoryGrid) return;
+      materialDirectoryAllCount.textContent = formatMaterialCount(state.filtered.length);
+      materialDirectoryAllBtn.classList.toggle("active", state.materialDirectorySelection === MATERIAL_DIRECTORY_ALL);
+      materialDirectoryAllBtn.setAttribute("aria-pressed", String(state.materialDirectorySelection === MATERIAL_DIRECTORY_ALL));
+      materialDirectoryAllBtn.disabled = state.filtered.length === 0;
+      materialDirectoryAllBtn.onclick = () => selectMaterialDirectory(MATERIAL_DIRECTORY_ALL);
+      materialDirectoryBackBtn.onclick = () => selectMaterialDirectory("", { scroll: false });
+
+      materialDirectoryGrid.innerHTML = groups.map(group => {
+        const active = state.materialDirectorySelection === group.key;
+        return `<button class="material-directory-item${active ? " active" : ""}" type="button"
+            data-material-directory="${esc(group.key)}" aria-pressed="${active}">
+          <span class="material-directory-item-top">
+            <strong>${esc(group.name)}</strong>
+            <span class="material-directory-count">${esc(formatMaterialCount(group.rows.length))}</span>
+          </span>
+          <span class="material-directory-examples">${esc(group.examples.slice(0, 4).join(" · "))}</span>
+          <span class="material-directory-open">${esc(t("materialDirectoryOpen"))}</span>
+        </button>`;
+      }).join("");
+
+      materialDirectoryGrid.querySelectorAll("[data-material-directory]").forEach(button => {
+        button.addEventListener("click", () => {
+          selectMaterialDirectory(button.dataset.materialDirectory || "");
+        });
+      });
+    }
+
     function renderMaterialsTable() {
-      tableStatus.textContent = `${state.filtered.length} ${t("rows")}`;
-      materialsBody.innerHTML = state.filtered.map((row, i) => {
-        const checked = state.compareSet.has(i) ? "checked" : "";
-        return `<tr class="clickable" data-index="${i}">
-          <td><input type="checkbox" class="compare-check" data-index="${i}" ${checked} onclick="event.stopPropagation();"></td>
-          <td>${esc(familyName(row.family))}</td>
-          <td><strong>${esc(row.display_name || row.material)}</strong><br><span class="muted">${esc(row.material)}</span></td>
+      const indexedRows = state.filtered.map((row, index) => ({ row, index }));
+      const groups = materialDirectoryGroups(state.filtered);
+      const selectionExists = groups.some(group => group.key === state.materialDirectorySelection);
+      if (!state.filtered.length || (
+        state.materialDirectorySelection &&
+        state.materialDirectorySelection !== MATERIAL_DIRECTORY_ALL &&
+        !selectionExists
+      )) {
+        state.materialDirectorySelection = "";
+      }
+
+      renderMaterialDirectory(groups);
+
+      const selectedGroup = groups.find(group => group.key === state.materialDirectorySelection);
+      const visibleRows = state.materialDirectorySelection === MATERIAL_DIRECTORY_ALL
+        ? indexedRows
+        : selectedGroup?.rows || [];
+      const hasSelection = Boolean(state.materialDirectorySelection && visibleRows.length);
+
+      tableStatus.textContent = hasSelection
+        ? formatMaterialCount(visibleRows.length)
+        : (currentLang === "zh"
+          ? `${groups.length} 类 · ${formatMaterialCount(state.filtered.length)}`
+          : `${groups.length} categories · ${formatMaterialCount(state.filtered.length)}`);
+
+      materialDirectorySelection.hidden = !hasSelection;
+      materialDirectoryPrompt.hidden = hasSelection;
+      materialsTableWrap.hidden = !hasSelection;
+      materialDirectoryPrompt.dataset.i18n = state.filtered.length ? "materialDirectoryPrompt" : "noMaterials";
+      materialDirectoryPrompt.textContent = t(materialDirectoryPrompt.dataset.i18n);
+
+      if (!hasSelection) {
+        materialsBody.innerHTML = "";
+        detailPanel.innerHTML = `<div class="status">${t(state.filtered.length ? "detailHint" : "noMatch")}</div>`;
+        return;
+      }
+
+      materialDirectorySelectionName.textContent = state.materialDirectorySelection === MATERIAL_DIRECTORY_ALL
+        ? t("materialDirectoryAll")
+        : selectedGroup.name;
+      materialDirectorySelectionCount.textContent = formatMaterialCount(visibleRows.length);
+
+      materialsBody.innerHTML = visibleRows.map(({ row, index }) => {
+        const checked = state.compareSet.has(index) ? "checked" : "";
+        return `<tr class="clickable" data-index="${index}">
+          <td><input type="checkbox" class="compare-check" data-index="${index}" ${checked} onclick="event.stopPropagation();"></td>
+          <td>
+            <span class="material-table-name">
+              <strong>${esc(row.display_name || row.material)}</strong>
+              <span class="muted">${esc(row.material)}</span>
+              <span class="material-table-family">${esc(familyName(row.family))}</span>
+            </span>
+          </td>
           <td>${chipsHtml(row.elements, "trusted")}</td>
           <td>${esc(row.synthesized_or_discovered)}</td>
           <td>${esc(topicMeasureValue(row))}<br><span class="muted">${esc(row.tc_note || row.phase_note || "")}</span></td>
-          <td>${listHtml(row.arpes_special_properties)}</td>
-          <td>${listHtml(row.q_dependent_observables)}</td>
-          <td>${esc(row.photon_arpes_notes)}</td>
+          <td>${materialFocusHtml(row)}</td>
           <td><span class="chip note">${esc(row.verification_status)}</span></td>
         </tr>`;
       }).join("");
@@ -16239,8 +16705,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         tr.classList.toggle("selected-row", state.compareSet.has(idx));
       });
 
-      if (state.filtered.length) showMaterialDetail(state.filtered[0]);
-      else detailPanel.innerHTML = `<div class="status">${t("noMatch")}</div>`;
+      showMaterialDetail(visibleRows[0].row);
     }
 
     function showMaterialDetail(row) {
