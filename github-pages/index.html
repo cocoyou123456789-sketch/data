@@ -129,7 +129,7 @@
 
     .flow-tabs {
       display: none;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 0;
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -1495,7 +1495,7 @@
       top: 0;
       z-index: 28;
       display: grid;
-      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
       border-top: 1px solid rgba(255,255,255,0.12);
       border-bottom: 1px solid rgba(96,208,255,0.2);
       background: #315184;
@@ -1595,7 +1595,7 @@
     }
 
     body[data-material-workspace="2d"] .top-menu-bar {
-      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
     }
 
     body[data-material-workspace="2d"] [data-page-tab="history"] {
@@ -2294,6 +2294,23 @@
 
     [data-app-page-section][hidden] {
       display: none !important;
+    }
+
+    #section-periodic {
+      order: 10;
+    }
+
+    #section-model {
+      order: 20;
+      scroll-margin-top: 72px;
+    }
+
+    #advancedLibrary {
+      order: 30;
+    }
+
+    .scienceone-tools {
+      scroll-margin-top: 72px;
     }
 
     /* === 周期表 === */
@@ -7446,7 +7463,6 @@
     <button class="top-menu-btn" type="button" data-page-tab="materials" data-i18n="topMenuMaterials">材料预测</button>
     <button class="top-menu-btn" type="button" data-page-tab="data" data-i18n="topMenuData">数据建模</button>
     <button class="top-menu-btn" type="button" data-page-tab="literature" data-i18n="topMenuLiterature">文献检索</button>
-    <button class="top-menu-btn" type="button" data-page-tab="model" data-i18n="topMenuModel">模型</button>
     <button class="top-menu-btn" type="button" data-page-tab="report" data-i18n="topMenuReport">分析报告</button>
   </nav>
 
@@ -7468,7 +7484,7 @@
             <span class="chip good" data-i18n="moduleOpen">进入模块</span>
           </button>
           <button class="module-select-card" type="button" data-page-tab="materials">
-            <span><strong data-i18n="topMenuMaterials">材料</strong><span data-i18n="moduleMaterialsHint">从周期表和材料索引进入超导材料、元素和家族。</span></span>
+            <span><strong data-i18n="topMenuMaterials">材料预测</strong><span data-i18n="moduleMaterialsHint">从周期表、材料目录、坩埚模型和 ScienceOne 工具完成材料预测。</span></span>
             <span class="chip good" data-i18n="moduleOpen">进入模块</span>
           </button>
           <button class="module-select-card" type="button" data-page-tab="data">
@@ -7477,10 +7493,6 @@
           </button>
           <button class="module-select-card" type="button" data-page-tab="literature">
             <span><strong data-i18n="topMenuLiterature">文献</strong><span data-i18n="modulePapersHint">检索 ARPES 文献、图谱、关键词和可信来源。</span></span>
-            <span class="chip good" data-i18n="moduleOpen">进入模块</span>
-          </button>
-          <button class="module-select-card" type="button" data-page-tab="model">
-            <span><strong data-i18n="topMenuModel">模型</strong><span data-i18n="moduleModelHint">把元素拖入模型中央的坩埚，组合材料并运行预测。</span></span>
             <span class="chip good" data-i18n="moduleOpen">进入模块</span>
           </button>
           <button class="module-select-card" type="button" data-page-tab="report">
@@ -7502,7 +7514,6 @@
           <button class="flow-tab" type="button" data-page-tab="materials" data-i18n="flowMaterialIndex">材料索引</button>
           <button class="flow-tab" type="button" data-page-tab="data" data-i18n="flowData">数据</button>
           <button class="flow-tab" type="button" data-page-tab="literature" data-i18n="flowLiterature">文献</button>
-          <button class="flow-tab" type="button" data-page-tab="model" data-i18n="flowModel">模型接口</button>
           <button class="flow-tab" type="button" data-page-tab="report" data-i18n="flowReport">报告</button>
         </div>
         <div class="milestone-stage">
@@ -7597,7 +7608,6 @@
           <button class="flow-tab active" type="button" data-page-tab="materials" data-i18n="flowMaterialIndex">材料索引</button>
           <button class="flow-tab" type="button" data-page-tab="data" data-i18n="flowData">数据</button>
           <button class="flow-tab" type="button" data-page-tab="literature" data-i18n="flowLiterature">文献</button>
-          <button class="flow-tab" type="button" data-page-tab="model" data-i18n="flowModel">模型接口</button>
           <button class="flow-tab" type="button" data-page-tab="report" data-i18n="flowReport">报告</button>
         </div>
         <div class="periodic-workbench">
@@ -8156,10 +8166,10 @@
     </section>
 
     <!-- ===== 模型接口 ===== -->
-    <section id="section-model" class="app-page" data-app-page="model" hidden>
+    <section id="section-model" class="app-page" data-app-page="materials" hidden>
       <div class="section-head">
-        <h2 data-i18n="modelInterfaceTitle">计算模型接口</h2>
-        <span class="status" data-i18n="modelInterfaceHint">预留 API：window.ARPESModelHub.registerModel(name, predictFn)</span>
+        <h2 data-i18n="modelInterfaceTitle">材料预测与计算工具</h2>
+        <span class="status" data-i18n="modelInterfaceHint">拖入元素组合材料，并使用规则预览或 ScienceOne 科学工具继续计算。</span>
       </div>
       <div class="content">
         <div class="model-interface">
@@ -8574,8 +8584,8 @@
         loginFeatureCubeHint: "旋转、缩放查看超导家族。",
         loginFeatureData: "个人数据",
         loginFeatureDataHint: "保存本机浏览器数据。",
-        loginFeatureModel: "模型接口",
-        loginFeatureModelHint: "预留计算模型输入输出。",
+        loginFeatureModel: "材料预测工具",
+        loginFeatureModelHint: "坩埚模型与科学工具已并入材料预测。",
         loginEmailRequired: "请输入有效 Email",
         loginPasswordRequired: "请输入密码",
         loginPasswordMismatch: "两次输入的密码不一致",
@@ -8634,7 +8644,7 @@
         moduleSelectTitle: "选择知识模块",
         moduleSelectHint: "登录后先选择要进入的工作区。",
         moduleHistoryHint: "查看超导 Tc、年份、压力与材料家族的 3D 历史图。",
-        moduleMaterialsHint: "从周期表和材料索引进入超导材料、元素和家族。",
+        moduleMaterialsHint: "从周期表、材料目录、坩埚模型和 ScienceOne 工具完成材料预测。",
         modulePapersHint: "检索 ARPES 文献、图谱、关键词和可信来源。",
         moduleDataHint: "导入 HDF5、记录个人实验数据并进行对比。",
         moduleModelHint: "把元素拖入模型中央的坩埚，组合材料并运行预测。",
@@ -8651,8 +8661,8 @@
         tocNote: "选择一个模块开始。",
         reportFormatLabel: "报告格式",
         generateReportBtn: "生成调研报告",
-        modelInterfaceTitle: "计算模型接口",
-        modelInterfaceHint: "预留 API：window.ARPESModelHub.registerModel(name, predictFn)",
+        modelInterfaceTitle: "材料预测与计算工具",
+        modelInterfaceHint: "拖入元素组合材料，并使用规则预览或 ScienceOne 科学工具继续计算。",
         modelProbeBtn: "检查接口",
         modelMaterialLabel: "材料 / 元素",
         modelTaskLabel: "任务",
@@ -8687,7 +8697,7 @@
         aiLocalStatus: "等待接入 AI",
         chatThinking: "正在根据当前数据生成回答...",
         chatAiFallback: "AI 接口暂时不可用，请在“材料预测”页检查模型与 AI 接口设置。",
-        chatNeedsAi: "AI 接口尚未连接，请在“模型”页选择智能体或配置接口。",
+        chatNeedsAi: "AI 接口尚未连接，请在“材料预测”页选择智能体或配置接口。",
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
@@ -9230,8 +9240,8 @@
         loginFeatureCubeHint: "Rotate and zoom superconducting families.",
         loginFeatureData: "Personal Data",
         loginFeatureDataHint: "Stored in this browser.",
-        loginFeatureModel: "Model Interface",
-        loginFeatureModelHint: "Reserved inputs and outputs for computation models.",
+        loginFeatureModel: "Material Prediction Tools",
+        loginFeatureModelHint: "The crucible model and scientific tools are integrated into Material Prediction.",
         loginEmailRequired: "Enter a valid email",
         loginPasswordRequired: "Enter a password",
         loginPasswordMismatch: "Passwords do not match",
@@ -9290,7 +9300,7 @@
         moduleSelectTitle: "Choose Knowledge Module",
         moduleSelectHint: "After login, choose the workspace you want to open first.",
         moduleHistoryHint: "View superconducting Tc, year, pressure, and family history in 3D.",
-        moduleMaterialsHint: "Enter superconducting materials, elements, and families from the periodic table.",
+        moduleMaterialsHint: "Use the periodic table, material directory, crucible model, and ScienceOne tools for material prediction.",
         modulePapersHint: "Search ARPES papers, figures, keywords, and trusted sources.",
         moduleDataHint: "Import HDF5, record personal experiment data, and compare entries.",
         moduleModelHint: "Drag elements into the model's central crucible, compose a material, and run a prediction.",
@@ -9307,8 +9317,8 @@
         tocNote: "Choose one module to start.",
         reportFormatLabel: "Report format",
         generateReportBtn: "Generate Report",
-        modelInterfaceTitle: "Computation Model Interface",
-        modelInterfaceHint: "Reserved API: window.ARPESModelHub.registerModel(name, predictFn)",
+        modelInterfaceTitle: "Material Prediction and Computation Tools",
+        modelInterfaceHint: "Combine elements in the crucible, then continue with the rule preview or ScienceOne tools.",
         modelProbeBtn: "Check Interface",
         modelMaterialLabel: "Material / Element",
         modelTaskLabel: "Task",
@@ -9343,7 +9353,7 @@
         aiLocalStatus: "Waiting for AI",
         chatThinking: "Generating an answer from the current data...",
         chatAiFallback: "The AI endpoint is unavailable. Check the model and AI settings on Material Prediction.",
-        chatNeedsAi: "No AI endpoint is connected. Select an agent or configure it on the Model page.",
+        chatNeedsAi: "No AI endpoint is connected. Select an agent or configure it on Material Prediction.",
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
@@ -13882,6 +13892,8 @@
     }
 
     function showAppPage(page = "history", options = {}) {
+      const requestedPage = page;
+      if (page === "model") page = "materials";
       if (state.topic === "2d" && page === "history") page = "materials";
       activeAppPage = page;
       appPages.forEach(section => {
@@ -13904,7 +13916,7 @@
         }).catch(() => {});
       }
       if (page === "data") renderLibrary().catch(() => {});
-      if (page === "model") renderModelMixture();
+      if (page === "materials") renderModelMixture();
       if (page === "history") {
         requestAnimationFrame(() => {
           renderOverview();
@@ -13913,7 +13925,9 @@
         });
       }
       if (!options.preserveScroll) {
-        const target = page === "module-select"
+        const target = requestedPage === "model"
+          ? document.querySelector("#section-model")
+          : page === "module-select"
           ? document.querySelector("#section-module-select")
           : page === "history"
             ? document.querySelector("#section-milestones")
@@ -13983,7 +13997,6 @@
         ["materials", `${t("topMenuMaterials")}${element}`],
         ["data", t("topMenuData")],
         ["literature", t("topMenuLiterature")],
-        ["model", t("topMenuModel")],
         ["report", t("topMenuReport")]
       ];
       tocList.innerHTML = items.map(([page, label]) =>
