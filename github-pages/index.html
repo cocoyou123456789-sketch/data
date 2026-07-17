@@ -2867,24 +2867,6 @@
       color: rgba(153,246,228,0.86);
     }
 
-    .round-module.scienceone-one {
-      bottom: 70px;
-      left: 24px;
-      transform: translateZ(116px) scale(0.82) rotateY(-4deg);
-    }
-
-    .round-module.scienceone-two {
-      bottom: 70px;
-      left: 50%;
-      transform: translateX(-50%) translateZ(120px) scale(0.82);
-    }
-
-    .round-module.scienceone-three {
-      right: 24px;
-      bottom: 70px;
-      transform: translateZ(116px) scale(0.82) rotateY(4deg);
-    }
-
     .round-module.active,
     .round-module:hover {
       color: #fff;
@@ -6717,24 +6699,6 @@
         font-size: 7px;
       }
 
-      .round-module.scienceone-one {
-        bottom: 54px;
-        left: 10px;
-        transform: translateZ(100px) scale(0.72);
-      }
-
-      .round-module.scienceone-two {
-        bottom: 54px;
-        left: 50%;
-        transform: translateX(-50%) translateZ(104px) scale(0.72);
-      }
-
-      .round-module.scienceone-three {
-        right: 10px;
-        bottom: 54px;
-        transform: translateZ(100px) scale(0.72);
-      }
-
       .periodic {
         min-width: 740px;
         width: 740px;
@@ -7285,9 +7249,6 @@
                 <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
                   <option value="gpt-4.1-mini">ChatGPT</option>
                   <option value="deepseek-r1">DeepSeek</option>
-                  <option value="claude-3-5-sonnet">Claude</option>
-                  <option value="gemini-1.5-pro">Gemini</option>
-                  <option value="llama-3.1-70b">Llama</option>
                   <option value="arpes-rules-preview">ARPES 本地规则</option>
                 </select>
               </div>
@@ -7351,23 +7312,23 @@
                   <span class="module-cube-face right"></span>
                 </span>
               </button>
-              <button class="round-module two" type="button" data-ai-model="claude-3-5-sonnet">
+              <button class="round-module two scienceone-tool" type="button" data-scienceone-launch="crystal" aria-label="打开 ScienceOne CrystalStructureGen / Open ScienceOne CrystalStructureGen">
                 <span class="module-cube">
-                  <span class="module-cube-face front"><span><span class="round-module-model">Claude</span><span class="round-module-role">long papers</span></span></span>
+                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableCrystal">晶体生成</span><span class="round-module-role">ScienceOne</span></span></span>
                   <span class="module-cube-face top"></span>
                   <span class="module-cube-face right"></span>
                 </span>
               </button>
-              <button class="round-module three" type="button" data-ai-model="gemini-1.5-pro">
+              <button class="round-module three scienceone-tool" type="button" data-scienceone-launch="qe" aria-label="打开 ScienceOne Quantum Espresso / Open ScienceOne Quantum Espresso">
                 <span class="module-cube">
-                  <span class="module-cube-face front"><span><span class="round-module-model">Gemini</span><span class="round-module-role">figures + data</span></span></span>
+                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableQe">量子计算</span><span class="round-module-role">ScienceOne</span></span></span>
                   <span class="module-cube-face top"></span>
                   <span class="module-cube-face right"></span>
                 </span>
               </button>
-              <button class="round-module four" type="button" data-ai-model="llama-3.1-70b">
+              <button class="round-module four scienceone-tool" type="button" data-scienceone-launch="band" aria-label="打开 ScienceOne 能带查询 / Open ScienceOne band query">
                 <span class="module-cube">
-                  <span class="module-cube-face front"><span><span class="round-module-model">Llama</span><span class="round-module-role">local model</span></span></span>
+                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableBand">能带查询</span><span class="round-module-role">ScienceOne</span></span></span>
                   <span class="module-cube-face top"></span>
                   <span class="module-cube-face right"></span>
                 </span>
@@ -7382,27 +7343,6 @@
               <button class="round-module six" type="button" data-ai-model="arpes-rules-preview">
                 <span class="module-cube">
                   <span class="module-cube-face front"><span><span class="round-module-model">ARPES</span><span class="round-module-role">rule preview</span></span></span>
-                  <span class="module-cube-face top"></span>
-                  <span class="module-cube-face right"></span>
-                </span>
-              </button>
-              <button class="round-module scienceone-tool scienceone-one" type="button" data-scienceone-launch="crystal" aria-label="打开 ScienceOne CrystalStructureGen / Open ScienceOne CrystalStructureGen">
-                <span class="module-cube">
-                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableCrystal">晶体生成</span><span class="round-module-role">ScienceOne</span></span></span>
-                  <span class="module-cube-face top"></span>
-                  <span class="module-cube-face right"></span>
-                </span>
-              </button>
-              <button class="round-module scienceone-tool scienceone-two" type="button" data-scienceone-launch="qe" aria-label="打开 ScienceOne Quantum Espresso / Open ScienceOne Quantum Espresso">
-                <span class="module-cube">
-                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableQe">量子计算</span><span class="round-module-role">ScienceOne</span></span></span>
-                  <span class="module-cube-face top"></span>
-                  <span class="module-cube-face right"></span>
-                </span>
-              </button>
-              <button class="round-module scienceone-tool scienceone-three" type="button" data-scienceone-launch="band" aria-label="打开 ScienceOne 能带查询 / Open ScienceOne band query">
-                <span class="module-cube">
-                  <span class="module-cube-face front"><span><span class="round-module-model" data-i18n="scienceOneRoundtableBand">能带查询</span><span class="round-module-role">ScienceOne</span></span></span>
                   <span class="module-cube-face top"></span>
                   <span class="module-cube-face right"></span>
                 </span>
@@ -8368,9 +8308,10 @@
         moduleReportHint: "汇总当前筛选、文献、数据和对话内容，导出调研报告。",
         moduleOpen: "进入模块",
         aiRoundtableTitle: "AI model roundtable",
-        aiRoundtableHint: "选择一个席位，把模型接口切换到对应 AI model。",
+        aiRoundtableHint: "点击席位直接打开模型对话或 ScienceOne 科学工具。",
         aiRoundtableSelected: "已连接模型席位：",
-        aiRoundtableEndpointHint: "模型名会随聊天请求发送到当前 AI endpoint；Claude/Gemini/Llama/DeepSeek 需要兼容这些模型名的代理服务。",
+        aiRoundtableOpened: "已打开模型对话：",
+        aiRoundtableEndpointHint: "GPT 和 DeepSeek 会通过当前 AI endpoint 调用；ARPES 本地规则无需外部 API。",
         advancedLibraryTitle: "高级资料库：文献图、数据、模板和导入工具",
         advancedLibraryHint: "默认折叠，保持主界面简洁",
         tocTitle: "模块",
@@ -9016,9 +8957,10 @@
         moduleReportHint: "Summarize filters, papers, data, and chat notes into a report.",
         moduleOpen: "Open Module",
         aiRoundtableTitle: "AI model roundtable",
-        aiRoundtableHint: "Choose a seat to switch the model interface to that AI model.",
+        aiRoundtableHint: "Click a seat to open a model chat or a ScienceOne scientific tool.",
         aiRoundtableSelected: "Connected model seat:",
-        aiRoundtableEndpointHint: "The model name is sent with chat requests to the current AI endpoint; Claude/Gemini/Llama/DeepSeek require a proxy that supports those model names.",
+        aiRoundtableOpened: "Model chat opened:",
+        aiRoundtableEndpointHint: "GPT and DeepSeek use the current AI endpoint; ARPES Rules works without an external API.",
         advancedLibraryTitle: "Advanced Library: paper figures, data, templates, and import tools",
         advancedLibraryHint: "Collapsed by default to keep the main interface simple",
         tocTitle: "Modules",
@@ -13732,27 +13674,6 @@
         task: "identify",
         feature: "ARPES summary, superconductivity, literature"
       },
-      "claude-3-5-sonnet": {
-        title: "Claude",
-        zh: "长文献阅读、综述段落和论文结构整理。",
-        en: "Long paper reading, review prose, and article structure.",
-        task: "identify",
-        feature: "long context, literature review, DOI"
-      },
-      "gemini-1.5-pro": {
-        title: "Gemini",
-        zh: "图表、多模态线索和数据-图谱对照。",
-        en: "Figures, multimodal clues, and data/plot alignment.",
-        task: "arpes",
-        feature: "figures, Fermi surface, band map"
-      },
-      "llama-3.1-70b": {
-        title: "Llama",
-        zh: "本地或开源模型席位，适合离线材料库问答。",
-        en: "Local or open-model seat for offline materials Q&A.",
-        task: "identify",
-        feature: "local LLM, private notes, HDF5"
-      },
       "deepseek-r1": {
         title: "DeepSeek",
         zh: "数学推理、代码检查和模型/数据处理流程。",
@@ -13854,7 +13775,7 @@
           buttons.forEach(node => node.classList.remove("active"));
           btn.classList.add("active");
           if (btn.dataset.aiModel) {
-            selectRoundtableAiModel(btn.dataset.aiModel, center);
+            openRoundtableAiModel(btn.dataset.aiModel, center);
             return;
           }
           if (btn.dataset.scienceoneLaunch) {
@@ -13909,7 +13830,17 @@
       showToast(`${t("scienceOneRoundtableOpened")} · ${tool.title}`);
     }
 
-    function selectRoundtableAiModel(modelName, center) {
+    function openRoundtableAiModel(modelName, center) {
+      const model = selectRoundtableAiModel(modelName, center, { notify: false });
+      showAppPage("history");
+      requestAnimationFrame(() => {
+        historyChatPanel?.scrollIntoView({ behavior: "smooth", block: "center" });
+        chatInput?.focus({ preventScroll: true });
+      });
+      showToast(`${t("aiRoundtableOpened")} ${model.title}`);
+    }
+
+    function selectRoundtableAiModel(modelName, center, options = {}) {
       const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-4.1-mini"];
       if (aiModelInput) aiModelInput.value = modelName;
       if (modelFeatureInput && !modelFeatureInput.value.trim()) modelFeatureInput.value = model.feature;
@@ -13926,7 +13857,8 @@
       });
       renderRoundtableAiCenter(modelName, center || document.querySelector(".roundtable-center"));
       renderModelRegistry();
-      showToast(`${t("aiRoundtableSelected")} ${model.title}`);
+      if (options.notify !== false) showToast(`${t("aiRoundtableSelected")} ${model.title}`);
+      return model;
     }
 
     function renderRoundtableAiCenter(modelName, center) {
