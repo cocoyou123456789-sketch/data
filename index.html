@@ -6217,9 +6217,16 @@
       min-height: 38px;
     }
     .hdf5-native-input {
-      max-width: 100%;
-      margin-top: 12px;
-      color: var(--muted);
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
     }
     .hdf5-reader-helper {
       display: grid;
@@ -6597,14 +6604,14 @@
       header > div:last-child {
         width: 100%;
         display: grid !important;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         align-items: stretch !important;
       }
 
       .header-actions {
         width: 100%;
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         justify-content: stretch;
       }
 
@@ -6612,9 +6619,39 @@
         width: 100%;
       }
 
+      .header-actions > .sound-bars {
+        display: none;
+      }
+
+      .header-actions > .lang-toggle {
+        grid-column: 1;
+      }
+
       .header-actions > .voice-command-wrap {
+        grid-column: 2;
         width: auto;
         justify-self: end;
+      }
+
+      .header-actions > .mini-control {
+        grid-column: 1;
+      }
+
+      #generateReportBtn {
+        grid-column: 2;
+      }
+
+      #workspaceCatalogBtn {
+        grid-column: 1;
+      }
+
+      #logoutBtn {
+        grid-column: 2;
+      }
+
+      .header-actions > a {
+        grid-column: 1 / -1;
+        justify-content: center;
       }
 
       .voice-command-btn {
@@ -6637,7 +6674,8 @@
       }
 
       .mini-control select {
-        min-width: 140px;
+        width: 76px;
+        min-width: 0;
         max-width: none;
       }
 
@@ -7451,7 +7489,7 @@
           <option value="md">MD</option>
         </select>
       </label>
-      <button class="primary" id="generateReportBtn" data-i18n="generateReportBtn" title="Generate the current research report in the selected format">生成调研报告</button>
+      <button class="primary" type="button" id="generateReportBtn" data-i18n="generateReportBtn" title="Generate the current research report in the selected format">生成调研报告</button>
       <button id="workspaceCatalogBtn" type="button" data-i18n="workspaceCatalogBtn" title="返回材料书架">切换材料界面</button>
       <button id="logoutBtn" type="button" data-i18n="logoutBtn" title="Return to the login screen">注销</button>
       <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">📦 GitHub</a>
@@ -8021,8 +8059,8 @@
             <span data-i18n="hdf5PxtHint">直接把 Igor/Scienta .pxt/.pxp/.ibw 拖到这里；网页会读取 wave、选择主谱图、生成预览并加入本地数据记录。</span>
             <code>Drop .pxt / .pxp / .ibw here for browser-side preview</code>
           </div>
-          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,.txt,.dat,.csv,.tsv,application/x-hdf5,application/octet-stream,application/zip,text/plain,text/csv" multiple>
-          <input class="hdf5-native-input" type="file" id="hdf5PackageInput" accept=".zip,.json,application/json,application/zip,image/png,image/jpeg,image/webp" multiple>
+          <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,.txt,.dat,.csv,.tsv,application/x-hdf5,application/octet-stream,application/zip,text/plain,text/csv" multiple tabindex="-1" aria-hidden="true">
+          <input class="hdf5-native-input" type="file" id="hdf5PackageInput" accept=".zip,.json,application/json,application/zip,image/png,image/jpeg,image/webp" multiple tabindex="-1" aria-hidden="true">
         </div>
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
@@ -8102,7 +8140,7 @@
             <label data-label-i18n="elementsField">元素
               <input id="ourElements" placeholder="Ni, Nd, Sr, O">
             </label>
-            <label data-label-i18n="tcField">Tc (K)
+            <label id="ourMeasureLabel" data-label-i18n="tcField">Tc (K)
               <input id="ourTc" type="number" step="0.01" placeholder="15">
             </label>
             <label data-label-i18n="regionField">地区 / 设施
@@ -8147,7 +8185,7 @@
                 <th data-i18n="materialCol">材料</th>
                 <th data-i18n="familyCol">家族</th>
                 <th data-i18n="elementsCol">元素</th>
-                <th data-i18n="tcCol">Tc (K)</th>
+                <th id="ourMeasureHead" data-i18n="tcCol">Tc (K)</th>
                 <th data-i18n="arpesCol">ARPES 特性</th>
                 <th data-i18n="qCol">q-dependent</th>
                 <th data-i18n="photonNotesCol">光子备注</th>
@@ -9071,6 +9109,7 @@
         familyField: "家族",
         elementsField: "元素",
         tcField: "Tc (K)",
+        twoDRecordMeasureField: "带隙 (eV)",
         regionField: "地区 / 设施",
         archiveField: "档案 ID / URL",
         figureField: "论文图表 URL",
@@ -9082,6 +9121,13 @@
         operationCol: "操作",
         dataLinksCol: "数据链接",
         materialPlaceholder: "例: Nd1-xSrxNiO2",
+        familyPlaceholder: "nickelate, cuprate, iron-based",
+        elementsPlaceholder: "Ni, Nd, Sr, O",
+        tcPlaceholder: "15",
+        twoDMaterialPlaceholder: "例: MoS2、石墨烯、h-BN",
+        twoDFamilyPlaceholder: "石墨烯、TMDs、h-BN",
+        twoDElementsPlaceholder: "Mo, S / B, N / C",
+        twoDMeasurePlaceholder: "1.8",
         regionPlaceholder: "上海 SSRF, 北京 BSRF, NSRRC",
         figurePlaceholder: "文章图表链接",
         originalDataPlaceholder: "补充数据、仓库链接",
@@ -9140,6 +9186,7 @@
         voiceEditLabel: "修改识别结果",
         voiceCorrectionTitle: "修改识别结果",
         voiceCorrectionPlaceholder: "识别结果或手动输入指令",
+        voiceCorrectionInputLabel: "语音识别结果",
         voiceCorrectionRun: "执行",
         voiceCorrectionRetry: "重说",
         voiceCorrectionClose: "关闭",
@@ -9727,6 +9774,7 @@
         familyField: "Family",
         elementsField: "Elements",
         tcField: "Tc (K)",
+        twoDRecordMeasureField: "Band gap (eV)",
         regionField: "Region / Facility",
         archiveField: "Archive ID / URL",
         figureField: "Paper Figure URL",
@@ -9738,6 +9786,13 @@
         operationCol: "Action",
         dataLinksCol: "Data Links",
         materialPlaceholder: "e.g. Nd1-xSrxNiO2",
+        familyPlaceholder: "nickelate, cuprate, iron-based",
+        elementsPlaceholder: "Ni, Nd, Sr, O",
+        tcPlaceholder: "15",
+        twoDMaterialPlaceholder: "e.g. MoS2, graphene, h-BN",
+        twoDFamilyPlaceholder: "graphene, TMDs, h-BN",
+        twoDElementsPlaceholder: "Mo, S / B, N / C",
+        twoDMeasurePlaceholder: "1.8",
         regionPlaceholder: "SSRF, BSRF, NSRRC, ALS",
         figurePlaceholder: "Paper figure link",
         originalDataPlaceholder: "Supplementary data or repository link",
@@ -9796,6 +9851,7 @@
         voiceEditLabel: "Edit recognized command",
         voiceCorrectionTitle: "Edit recognized command",
         voiceCorrectionPlaceholder: "Recognized text or a manual command",
+        voiceCorrectionInputLabel: "Recognized voice command",
         voiceCorrectionRun: "Run",
         voiceCorrectionRetry: "Try again",
         voiceCorrectionClose: "Close",
@@ -10630,9 +10686,23 @@
       if (importMetricFigures) importMetricFigures.textContent = loading ? "..." : "0";
     }
 
+    function renderArticleViews() {
+      renderArticles();
+      renderKeywordChips();
+      updateImportMetrics();
+      renderFigureGallery();
+    }
+
     async function ensureArticlesLoaded(options = {}) {
-      if (articlesLoaded) return state.articles || [];
-      if (articlesLoadingPromise) return articlesLoadingPromise;
+      if (articlesLoaded) {
+        if (options.render !== false) renderArticleViews();
+        return state.articles || [];
+      }
+      if (articlesLoadingPromise) {
+        const articles = await articlesLoadingPromise;
+        if (options.render !== false) renderArticleViews();
+        return articles;
+      }
       setArticleDeferredUi(true);
       articlesLoadingPromise = (async () => {
         state.articles = await loadAllArticles();
@@ -10640,11 +10710,7 @@
         articlesLoadingPromise = null;
         articleMetricsDirty = true;
         if (options.render !== false) {
-          renderArticles();
-          renderKeywordChips();
-          updateImportMetrics();
-          renderFigureGallery();
-          renderFloatingFigureComparison();
+          renderArticleViews();
         }
         return state.articles;
       })().catch(error => {
@@ -11665,6 +11731,9 @@
     }
 
     function updateVoiceControlLanguage() {
+      if (voiceCorrectionInput) {
+        voiceCorrectionInput.setAttribute("aria-label", t("voiceCorrectionInputLabel"));
+      }
       if (voiceCorrectionBtn) {
         voiceCorrectionBtn.title = t("voiceEditLabel");
         voiceCorrectionBtn.setAttribute("aria-label", t("voiceEditLabel"));
@@ -11875,6 +11944,7 @@
       renderModelMixture();
       updateTopicUI();
       applyFilters();
+      renderOurData();
       renderToc();
       if (options.dance) {
         dancePeriodicTable();
@@ -12890,6 +12960,21 @@
       if (familyHint) familyHint.textContent = meta.familyHint;
       if (materialsTitle) materialsTitle.textContent = meta.materialsTitle;
       if (topicMeasureHead) topicMeasureHead.textContent = meta.measureCol;
+      const ourMeasureLabel = document.querySelector("#ourMeasureLabel");
+      const ourMeasureHead = document.querySelector("#ourMeasureHead");
+      const ourMeasureKey = isTwoD ? "twoDRecordMeasureField" : "tcField";
+      if (ourMeasureLabel) {
+        ourMeasureLabel.dataset.labelI18n = ourMeasureKey;
+        setLeadingText(ourMeasureLabel, t(ourMeasureKey));
+      }
+      if (ourMeasureHead) {
+        ourMeasureHead.dataset.i18n = ourMeasureKey;
+        ourMeasureHead.textContent = t(ourMeasureKey);
+      }
+      if (ourFields.material) ourFields.material.placeholder = t(isTwoD ? "twoDMaterialPlaceholder" : "materialPlaceholder");
+      if (ourFields.family) ourFields.family.placeholder = t(isTwoD ? "twoDFamilyPlaceholder" : "familyPlaceholder");
+      if (ourFields.elements) ourFields.elements.placeholder = t(isTwoD ? "twoDElementsPlaceholder" : "elementsPlaceholder");
+      if (ourFields.tc) ourFields.tc.placeholder = t(isTwoD ? "twoDMeasurePlaceholder" : "tcPlaceholder");
       if (loadStatus && state.db) loadStatus.textContent = `${state.db.materials.length} ${t("seedMaterials")}`;
       renderTwoDCategoryPanel();
       renderFigureFilterControls();
@@ -14516,29 +14601,35 @@
 
     function downloadBlob(content, type, filename) {
       const blob = new Blob(["\ufeff", content], { type });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
+      a.href = url;
       a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(a.href);
+      a.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1500);
     }
 
     function collectReportData() {
       const user = loadUser();
       const selected = state.filtered || [];
+      const topicArticleRows = topicArticles();
       const articleRows = filteredArticles ? filteredArticles() : (state.articles || []);
-      const figureCount = (state.articles || []).reduce((sum, article) => sum + (article.figures || []).length, 0);
+      const figureCount = topicArticleRows.reduce((sum, article) => sum + (article.figures || []).length, 0);
       const generatedAt = new Date().toLocaleString(currentLang === "zh" ? "zh-CN" : "en-US");
       return {
         user,
         selected,
         articleRows,
+        articleCount: topicArticleRows.length,
         figureCount,
-        personalRows: state.ourData || [],
+        personalRows: (state.ourData || []).filter(record => ourDataTopic(record) === state.topic),
         chatMessages: state.chatMessages || [],
         chatTableRows: state.chatTableRows || [],
         generatedAt,
-        topic: "sc",
+        topic: state.topic,
         selectedElement: state.selectedElement || "none",
         searchTerm: searchInput.value || "none"
       };
@@ -14546,11 +14637,19 @@
 
     function buildReportHtml(data, mode = "doc") {
       const zh = currentLang === "zh";
+      const isTwoD = data.topic === "2d";
+      const reportTitle = isTwoD
+        ? (zh ? "ARPES 二维材料调研报告" : "ARPES 2D Materials Research Report")
+        : (zh ? "ARPES 超导材料调研报告" : "ARPES Superconductivity Research Report");
+      const topicLabel = isTwoD
+        ? (zh ? "二维材料" : "2D materials")
+        : (zh ? "超导材料" : "Superconductivity");
+      const measureLabel = isTwoD ? (zh ? "带隙 (eV)" : "Band gap (eV)") : t("chatTableTc");
       const materialRows = data.selected.slice(0, 20).map(row => `
         <tr>
           <td>${esc(displayMaterialName(row))}</td>
           <td>${esc(displayFamilyName(row.family))}</td>
-          <td>${esc(String(row.transition_temperature_K ?? row.tc_K ?? "n/a"))}</td>
+          <td>${esc(String(isTwoD ? (row.bandgap_eV ?? row.band_gap_eV ?? "n/a") : (row.transition_temperature_K ?? row.tc_K ?? "n/a")))}</td>
           <td>${esc((row.elements || []).join(", "))}</td>
           <td>${esc(localizeArpesText(row.arpes || row.arpes_features || (row.arpes_special_properties || []).join("；")))}</td>
         </tr>`).join("");
@@ -14569,7 +14668,7 @@
         <html>
         <head>
           <meta charset="utf-8">
-          <title>${zh ? "ARPES 超导材料调研报告" : "ARPES Superconductivity Research Report"}</title>
+          <title>${reportTitle}</title>
           <style>
             body { font-family: Arial, "Microsoft YaHei", sans-serif; color: #1f2937; line-height: 1.45; }
             ${mode === "pdf" ? "body { max-width: 960px; margin: 28px auto; padding: 0 22px; } @page { margin: 14mm; }" : ""}
@@ -14582,24 +14681,24 @@
           </style>
         </head>
         <body>
-          <h1>${zh ? "ARPES 超导材料调研报告" : "ARPES Superconductivity Research Report"}</h1>
+          <h1>${reportTitle}</h1>
           <p class="meta">${zh ? "生成时间" : "Generated"}: ${esc(data.generatedAt)}<br>
           ${zh ? "用户" : "User"}: ${esc(data.user.name || "ARPES user")}<br>
           ${zh ? "课题组" : "Group"}: ${esc(data.user.group || "")}<br>
-          ${zh ? "主题" : "Topic"}: ${esc(data.topic)}<br>
+          ${zh ? "主题" : "Topic"}: ${esc(topicLabel)}<br>
           ${zh ? "选中元素" : "Selected element"}: ${esc(data.selectedElement)}<br>
           ${zh ? "搜索词" : "Search term"}: ${esc(data.searchTerm)}</p>
           <h2>${zh ? "摘要" : "Summary"}</h2>
           <ul>
             <li>${zh ? "当前视图材料数" : "Materials in current view"}: ${data.selected.length}</li>
-            <li>${zh ? "文献记录数" : "Article records"}: ${(state.articles || []).length}</li>
+            <li>${zh ? "文献记录数" : "Article records"}: ${data.articleCount}</li>
             <li>${zh ? "关键词筛选后文献数" : "Articles after keyword filter"}: ${data.articleRows.length}</li>
             <li>${zh ? "已核验论文图数" : "Verified paper figures"}: ${data.figureCount}</li>
             <li>${zh ? "个人记录数" : "Personal records"}: ${data.personalRows.length}</li>
           </ul>
           <h2>${zh ? "代表材料" : "Representative Materials"}</h2>
           <table>
-            <thead><tr><th>${t("chatTableMaterial")}</th><th>${t("chatTableFamily")}</th><th>${t("chatTableTc")}</th><th>${t("chatTableElements")}</th><th>ARPES ${zh ? "备注" : "notes"}</th></tr></thead>
+            <thead><tr><th>${t("chatTableMaterial")}</th><th>${t("chatTableFamily")}</th><th>${measureLabel}</th><th>${t("chatTableElements")}</th><th>ARPES ${zh ? "备注" : "notes"}</th></tr></thead>
             <tbody>${materialRows || `<tr><td colspan='5'>${zh ? "当前没有选中材料。" : "No current material selection."}</td></tr>`}</tbody>
           </table>
           <h2>${zh ? "文献记录" : "Literature Records"}</h2>
@@ -14625,8 +14724,16 @@
 
     function buildReportMarkdown(data) {
       const zh = currentLang === "zh";
+      const isTwoD = data.topic === "2d";
+      const reportTitle = isTwoD
+        ? (zh ? "ARPES 二维材料调研报告" : "ARPES 2D Materials Research Report")
+        : (zh ? "ARPES 超导材料调研报告" : "ARPES Superconductivity Research Report");
+      const topicLabel = isTwoD
+        ? (zh ? "二维材料" : "2D materials")
+        : (zh ? "超导材料" : "Superconductivity");
+      const measureLabel = isTwoD ? (zh ? "带隙 (eV)" : "Band gap (eV)") : t("chatTableTc");
       const materialLines = data.selected.slice(0, 20).map(row =>
-        `| ${displayMaterialName(row)} | ${displayFamilyName(row.family)} | ${row.transition_temperature_K ?? row.tc_K ?? "n/a"} | ${(row.elements || []).join(", ")} | ${localizeArpesText(row.arpes || row.arpes_features || (row.arpes_special_properties || []).join("；"))} |`
+        `| ${displayMaterialName(row)} | ${displayFamilyName(row.family)} | ${isTwoD ? (row.bandgap_eV ?? row.band_gap_eV ?? "n/a") : (row.transition_temperature_K ?? row.tc_K ?? "n/a")} | ${(row.elements || []).join(", ")} | ${localizeArpesText(row.arpes || row.arpes_features || (row.arpes_special_properties || []).join("；"))} |`
       ).join("\n");
       const articleLines = data.articleRows.slice(0, 25).map((article, index) =>
         `${index + 1}. ${article.year || ""} ${article.title || ""}${article.doi ? ` DOI: ${article.doi}` : ""}`
@@ -14638,26 +14745,26 @@
       const chatTableLines = data.chatTableRows.map(row =>
         `| ${row.material} | ${row.family} | ${row.tc} | ${row.elements} | ${row.arpes} | ${row.papers} |`
       ).join("\n");
-      return `# ${zh ? "ARPES 超导材料调研报告" : "ARPES Superconductivity Research Report"}
+      return `# ${reportTitle}
 
 ${zh ? "生成时间" : "Generated"}: ${data.generatedAt}
 ${zh ? "用户" : "User"}: ${data.user.name || "ARPES user"}
 ${zh ? "课题组" : "Group"}: ${data.user.group || ""}
-${zh ? "主题" : "Topic"}: ${data.topic}
+${zh ? "主题" : "Topic"}: ${topicLabel}
 ${zh ? "选中元素" : "Selected element"}: ${data.selectedElement}
 ${zh ? "搜索词" : "Search term"}: ${data.searchTerm}
 
 ## ${zh ? "摘要" : "Summary"}
 
 - ${zh ? "当前视图材料数" : "Materials in current view"}: ${data.selected.length}
-- ${zh ? "文献记录数" : "Article records"}: ${(state.articles || []).length}
+- ${zh ? "文献记录数" : "Article records"}: ${data.articleCount}
 - ${zh ? "关键词筛选后文献数" : "Articles after keyword filter"}: ${data.articleRows.length}
 - ${zh ? "已核验论文图数" : "Verified paper figures"}: ${data.figureCount}
 - ${zh ? "个人记录数" : "Personal records"}: ${data.personalRows.length}
 
 ## ${zh ? "代表材料" : "Representative Materials"}
 
-| ${t("chatTableMaterial")} | ${t("chatTableFamily")} | ${t("chatTableTc")} | ${t("chatTableElements")} | ARPES ${zh ? "备注" : "notes"} |
+| ${t("chatTableMaterial")} | ${t("chatTableFamily")} | ${measureLabel} | ${t("chatTableElements")} | ARPES ${zh ? "备注" : "notes"} |
 | --- | --- | --- | --- | --- |
 ${materialLines || `| ${zh ? "当前没有选中材料。" : "No current material selection."} | | | | |`}
 
@@ -14687,9 +14794,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     async function generateResearchReport() {
+      const format = reportFormatSelect?.value || "pdf";
+      const printWindow = format === "pdf" ? window.open("", "_blank") : null;
+      if (printWindow) {
+        const loadingTitle = currentLang === "zh" ? "正在生成调研报告…" : "Generating research report…";
+        printWindow.document.open();
+        printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${loadingTitle}</title></head><body style="font-family:Arial,sans-serif;padding:32px">${loadingTitle}</body></html>`);
+        printWindow.document.close();
+      }
       await ensureArticlesLoaded({ render: true }).catch(() => {});
       const data = collectReportData();
-      const format = reportFormatSelect?.value || "pdf";
       if (format === "doc") {
         downloadBlob(buildReportHtml(data, "doc"), "application/msword;charset=utf-8", reportFilename("doc"));
         showToast(t("reportToast"));
@@ -14700,9 +14814,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         downloadBlob(buildReportMarkdown(data), "text/markdown;charset=utf-8", reportFilename("md"));
         showToast(t("reportToast"));
       } else {
-        const printWindow = window.open("", "_blank");
         const html = buildReportHtml(data, "pdf");
-        if (printWindow) {
+        if (printWindow && !printWindow.closed) {
           printWindow.document.open();
           printWindow.document.write(html);
           printWindow.document.close();
@@ -14752,7 +14865,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       updateSelectedElement();
       renderMetrics();
       renderMaterialsTable();
-      renderArticles();
+      if (articlesLoaded) renderArticleViews();
+      else renderArticles();
       highlightPeriodicTable();
       renderElementHistoryWorkbench();
       if (activeAppPage === "history" || activeAppPage === "literature") renderOverview();
@@ -17348,13 +17462,24 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
     }
 
+    function ourDataTopic(record) {
+      return record?.topic === "2d" ? "2d" : "sc";
+    }
+
+    function currentOurData() {
+      return (state.ourData || []).filter(record => ourDataTopic(record) === state.topic);
+    }
+
     function saveOurData(options = {}) {
+      const measure = ourFields.tc.value ? Number(ourFields.tc.value) : null;
       const record = {
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        topic: state.topic,
         material: ourFields.material.value.trim(),
         family: ourFields.family.value.trim(),
         elements: ourFields.elements.value.split(/[,\s]+/).map(s => s.trim()).filter(Boolean),
-        tc: ourFields.tc.value ? Number(ourFields.tc.value) : null,
+        tc: state.topic === "2d" ? null : measure,
+        bandgap_eV: state.topic === "2d" ? measure : null,
         region: ourFields.region.value.trim(),
         archive: ourFields.archive.value.trim(),
         figure: ourFields.figure.value.trim(),
@@ -17386,18 +17511,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function renderOurData() {
-      ourDataStatus.textContent = `${state.ourData.length} ${t("records")}`;
-      if (!state.ourData.length) {
+      const records = currentOurData();
+      ourDataStatus.textContent = `${records.length} ${t("records")}`;
+      if (!records.length) {
         ourDataBody.innerHTML = `<tr><td colspan="10" class="muted">${t("noPersonalRecords")}</td></tr>`;
         renderFloatingComparison();
         return;
       }
-      ourDataBody.innerHTML = state.ourData.map(rec => `
+      ourDataBody.innerHTML = records.map(rec => `
         <tr>
           <td><strong>${esc(rec.material)}</strong></td>
           <td>${esc(rec.family || "-")}</td>
           <td>${chipsHtml(rec.elements || [], "trusted")}</td>
-          <td>${rec.tc == null ? "-" : esc(rec.tc)}</td>
+          <td>${state.topic === "2d"
+            ? (rec.bandgap_eV == null ? "-" : esc(rec.bandgap_eV))
+            : (rec.tc == null ? "-" : esc(rec.tc))}</td>
           <td>${esc(rec.special || "-")}</td>
           <td>${esc(rec.q || "-")}</td>
           <td>${esc(rec.photon || "-")}</td>
@@ -17472,10 +17600,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (recordFamily && rowFamily) {
         if (rowFamily.includes(recordFamily) || recordFamily.includes(rowFamily)) score += 4;
       }
-      const recordTc = Number(record.tc);
-      const rowTc = Number(row.transition_temperature_K);
-      if (Number.isFinite(recordTc) && Number.isFinite(rowTc)) {
-        const delta = Math.abs(recordTc - rowTc);
+      const isTwoDRecord = ourDataTopic(record) === "2d";
+      const recordMeasure = Number(isTwoDRecord ? record.bandgap_eV : record.tc);
+      const rowMeasure = Number(isTwoDRecord ? row.bandgap_eV : row.transition_temperature_K);
+      if (Number.isFinite(recordMeasure) && Number.isFinite(rowMeasure)) {
+        const delta = Math.abs(recordMeasure - rowMeasure);
         if (delta < 1) score += 5;
         else if (delta < 5) score += 3.5;
         else if (delta < 15) score += 2;
@@ -17517,8 +17646,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function renderFloatingComparison(options = {}) {
       if (!floatingComparePanel || !floatingCompareBody) return;
       if (!(state.floatingDataIds instanceof Set)) state.floatingDataIds = new Set();
-      const records = state.ourData.filter(rec => state.floatingDataIds.has(rec.id));
-      const validIds = new Set(records.map(rec => rec.id));
+      const pinnedRecords = state.ourData.filter(rec => state.floatingDataIds.has(rec.id));
+      const records = pinnedRecords.filter(rec => ourDataTopic(rec) === state.topic);
+      const validIds = new Set(pinnedRecords.map(rec => rec.id));
       let changed = false;
       for (const id of [...state.floatingDataIds]) {
         if (!validIds.has(id)) {
@@ -17549,7 +17679,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
                   <span class="chip trusted">${esc(Number(score).toFixed(1))}</span>
                 </div>
                 <div class="floating-record-meta">
-                  ${esc(displayFamilyName(row.family))} · Tc ${esc(row.transition_temperature_K ?? "-")} K<br>
+                  ${esc(displayFamilyName(row.family))} · ${state.topic === "2d"
+                    ? `${esc(currentLang === "zh" ? "带隙" : "Gap")} ${esc(topicMeasureValue(row))}`
+                    : `Tc ${esc(row.transition_temperature_K ?? "-")} K`}<br>
                   ${(row.elements || []).map(el => `<span class="chip">${esc(el)}</span>`).join(" ")}
                 </div>
                 <button type="button" data-floating-focus="${esc(row.display_name || row.material)}">${esc(currentLang === "zh" ? "在材料页查看" : "View in Materials")}</button>
@@ -17563,7 +17695,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
               <button type="button" data-floating-remove="${esc(rec.id)}">×</button>
             </div>
             <div class="floating-record-meta">
-              ${esc(rec.family || "-")} · Tc ${rec.tc == null ? "-" : esc(rec.tc)} K<br>
+              ${esc(rec.family || "-")} · ${ourDataTopic(rec) === "2d"
+                ? `${esc(currentLang === "zh" ? "带隙" : "Gap")} ${rec.bandgap_eV == null ? "-" : `${esc(rec.bandgap_eV)} eV`}`
+                : `Tc ${rec.tc == null ? "-" : esc(rec.tc)} K`}<br>
               ${(rec.elements || []).map(el => `<span class="chip good">${esc(el)}</span>`).join(" ")}
               ${rec.special ? `<br>${esc(rec.special)}` : ""}
               ${rec.q ? `<br>q: ${esc(rec.q)}` : ""}
@@ -18176,15 +18310,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function exportOurData() {
-      const blob = new Blob([JSON.stringify(state.ourData, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "arpes-superconductivity-our-data.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      const records = currentOurData();
+      const filename = state.topic === "2d"
+        ? "arpes-2d-materials-our-data.json"
+        : "arpes-superconductivity-our-data.json";
+      downloadBlob(JSON.stringify(records, null, 2), "application/json;charset=utf-8", filename);
       showToast(t("exportedToast"));
     }
 
@@ -18196,10 +18326,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         try {
           const data = JSON.parse(ev.target.result);
           if (!Array.isArray(data)) throw new Error("Not an array");
-          state.ourData = [...data, ...state.ourData];
+          const normalized = data.map(record => ({
+            ...record,
+            topic: record?.topic === "2d" || record?.topic === "sc" ? record.topic : state.topic
+          }));
+          state.ourData = [...normalized, ...state.ourData];
           persistOurData();
           renderOurData();
-          showToast(`${t("importedToast")} ${data.length} ${t("records")}`);
+          showToast(`${t("importedToast")} ${normalized.length} ${t("records")}`);
         } catch {
           showToast(t("invalidJSON"));
         }
@@ -18209,9 +18343,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function clearOurData() {
-      if (!state.ourData.length) return;
-      state.ourData = [];
-      state.floatingDataIds.clear();
+      const removedIds = new Set(currentOurData().map(record => record.id));
+      if (!removedIds.size) return;
+      state.ourData = state.ourData.filter(record => !removedIds.has(record.id));
+      removedIds.forEach(id => state.floatingDataIds.delete(id));
       persistOurData();
       persistFloatingCompareIds();
       renderOurData();
@@ -22355,7 +22490,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         <div style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:12px;" id="bandPlots"></div>
         <div class="toolbar" style="margin-top:8px;">
           <span class="muted">${t("highSymmetryHint")}</span>
-          <button id="exportBandDataBtn">${t("exportBandDataBtn")}</button>
+          <button id="exportBandDataBtn" type="button">${t("exportBandDataBtn")}</button>
         </div>`;
       const plotsDiv = document.querySelector("#bandPlots");
 
@@ -22375,11 +22510,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
       // 导出按钮
       document.querySelector("#exportBandDataBtn")?.addEventListener("click", () => {
-        const blob = new Blob([JSON.stringify(datasets, null, 2)], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "arpes-band-comparison.json";
-        a.click();
+        downloadBlob(
+          JSON.stringify(datasets, null, 2),
+          "application/json;charset=utf-8",
+          "arpes-band-comparison.json"
+        );
       });
     }
 
