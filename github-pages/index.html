@@ -929,6 +929,13 @@
       opacity: 0;
     }
 
+    .magic-book-screen.is-toc .magic-tome-shelf,
+    .magic-book-screen.is-flipping .magic-tome-shelf {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(-18px) scale(0.7);
+    }
+
     .magic-open-book:hover,
     .magic-open-book:focus-visible {
       transform: translateY(-6px) scale(1.015);
@@ -1331,7 +1338,7 @@
     }
 
     .magic-book-screen.is-opening .magic-open-book {
-      transform: translateY(-18px) scale(1.08) rotateX(4deg);
+      transform: translateY(10px) scale(1.02) rotateX(2deg);
     }
 
     .magic-book-screen.is-opening .magic-book-light {
@@ -1448,6 +1455,38 @@
       }
       .magic-hint {
         display: none;
+      }
+    }
+
+    @media (max-height: 480px) and (min-width: 721px) {
+      .magic-book-screen {
+        padding: 8px 14px;
+      }
+      .magic-book-stage {
+        height: calc(100vh - 16px);
+        min-height: 0;
+        gap: 6px;
+      }
+      .magic-book-copy {
+        gap: 2px;
+        margin-bottom: 0;
+      }
+      .magic-kicker {
+        padding: 3px 8px;
+        font-size: 10px;
+      }
+      .magic-book-copy h1 {
+        font-size: 26px;
+      }
+      .magic-book-copy p {
+        font-size: 11px;
+      }
+      .magic-open-book {
+        width: min(620px, 78vw, 82vh);
+      }
+      .magic-primary {
+        min-height: 36px;
+        padding: 7px 16px;
       }
     }
 
