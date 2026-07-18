@@ -7319,12 +7319,12 @@
                 <input id="loginGroup" autocomplete="organization" placeholder="NSRL / ARPES">
               </label>
             </div>
-            <span class="status" id="loginStatus"></span>
+            <span class="status" id="loginStatus" aria-live="polite"></span>
             <div class="login-entry-actions">
-              <button class="primary" id="loginBtn" data-i18n="loginBtn" title="Use local browser account access">进入工作台</button>
-              <button id="quickGuestLoginBtn" type="button" data-i18n="guestLoginBtn" title="Open the demo workbench without an account">以访客身份进入</button>
+              <button class="primary" id="quickGuestLoginBtn" type="button" data-i18n="guestLoginBtn" title="Open the workbench without an account">直接进入网站</button>
+              <button id="loginBtn" data-i18n="loginBtn" title="Use local browser account access">使用本机账号进入</button>
             </div>
-            <span class="status" data-i18n="loginPrivacy">本登录只保存在当前浏览器，用于个性化目录和报告署名。</span>
+            <span class="status" data-i18n="loginPrivacy">本机账号不会跨设备同步；换手机或电脑时可直接进入网站。</span>
           </div>
         </div>
       </div>
@@ -8565,10 +8565,10 @@
         confirmPasswordLabel: "确认密码",
         loginNameLabel: "姓名 / 用户",
         loginGroupLabel: "课题组 / 光源站",
-        loginBtn: "进入工作台",
+        loginBtn: "使用本机账号进入",
         createAccountBtn: "创建账号并进入",
-        guestLoginBtn: "以访客身份进入",
-        loginPrivacy: "本登录只保存在当前浏览器，用于个性化目录和报告署名。",
+        guestLoginBtn: "直接进入网站",
+        loginPrivacy: "本机账号不会跨设备同步；换手机或电脑时可直接进入网站。",
         loginUstcBadge: "NSRL · ARPES Lab Access",
         loginOfficialBadge: "NSRL 真实入口",
         loginUstcPanelTitle: "NSRL 登录",
@@ -9230,10 +9230,10 @@
         confirmPasswordLabel: "Confirm Password",
         loginNameLabel: "Name / User",
         loginGroupLabel: "Group / Beamline",
-        loginBtn: "Enter Workbench",
+        loginBtn: "Use Local Account",
         createAccountBtn: "Create Account & Enter",
-        guestLoginBtn: "Continue as Guest",
-        loginPrivacy: "This login is stored only in this browser for personalized contents and report authorship.",
+        guestLoginBtn: "Open Website",
+        loginPrivacy: "Local accounts do not sync across devices. On another phone or computer, use Open Website.",
         loginUstcBadge: "NSRL · ARPES Lab Access",
         loginOfficialBadge: "NSRL Real Access",
         loginUstcPanelTitle: "NSRL Login",
@@ -9877,7 +9877,37 @@
       }
     };
 
-    let currentLang = localStorage.getItem(LANG_STORAGE_KEY) || "zh";
+    const volatileStorage = new Map();
+
+    function safeStorageGet(key) {
+      try {
+        const value = window.localStorage.getItem(key);
+        if (value !== null) volatileStorage.set(key, value);
+        return value;
+      } catch {
+        return volatileStorage.has(key) ? volatileStorage.get(key) : null;
+      }
+    }
+
+    function safeStorageSet(key, value) {
+      const serialized = String(value);
+      volatileStorage.set(key, serialized);
+      try {
+        window.localStorage.setItem(key, serialized);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function safeStorageRemove(key) {
+      volatileStorage.delete(key);
+      try {
+        window.localStorage.removeItem(key);
+      } catch {}
+    }
+
+    let currentLang = safeStorageGet(LANG_STORAGE_KEY) || "zh";
     function t(key) {
       return (I18N[currentLang] && I18N[currentLang][key]) || (I18N["en"][key]) || key;
     }
@@ -9888,7 +9918,7 @@
 
     function switchLang(lang) {
       currentLang = lang;
-      localStorage.setItem(LANG_STORAGE_KEY, lang);
+      safeStorageSet(LANG_STORAGE_KEY, lang);
       document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
       // Update toggle buttons
       document.querySelectorAll(".lang-option").forEach(opt => {
@@ -10647,7 +10677,7 @@
 
     function loadStoredImportedArticles() {
       try {
-        const parsed = JSON.parse(localStorage.getItem(ARTICLE_IMPORT_STORAGE_KEY) || "[]");
+        const parsed = JSON.parse(safeStorageGet(ARTICLE_IMPORT_STORAGE_KEY) || "[]");
         return Array.isArray(parsed) ? parsed.filter(isRecentArticle) : [];
       } catch {
         return [];
@@ -10660,7 +10690,7 @@
         .filter(article => /(?:imported|wos_api_metadata|wos_imported_metadata|scholar_imported)/i.test(String(article.verification_status || "")))
         .map(sanitizeArticleForStorage);
       try {
-        localStorage.setItem(ARTICLE_IMPORT_STORAGE_KEY, JSON.stringify(imported));
+        safeStorageSet(ARTICLE_IMPORT_STORAGE_KEY, JSON.stringify(imported));
         return true;
       } catch (error) {
         showToast(currentLang === "zh"
@@ -12644,7 +12674,7 @@
       parseAndImportCurrentText({ label: currentLang === "zh" ? "导入了" : "Imported" });
     });
     resetArticlesBtn.addEventListener("click", async () => {
-      localStorage.removeItem(ARTICLE_IMPORT_STORAGE_KEY);
+      safeStorageRemove(ARTICLE_IMPORT_STORAGE_KEY);
       state.articles = await loadDefaultArticles();
       articlesLoaded = true;
       articlesLoadingPromise = null;
@@ -13516,7 +13546,7 @@
     const CHAT_CUBE_MIN_WIDTH = 360;
     let chatPanelWidth = (() => {
       try {
-        const saved = Number(localStorage.getItem(CHAT_PANEL_SIZE_STORAGE_KEY));
+        const saved = Number(safeStorageGet(CHAT_PANEL_SIZE_STORAGE_KEY));
         return Number.isFinite(saved) && saved > 0 ? saved : null;
       } catch {
         return null;
@@ -13556,7 +13586,7 @@
         chatResizeHandle.setAttribute("aria-valuenow", String(chatPanelWidth));
       }
       if (persist) {
-        try { localStorage.setItem(CHAT_PANEL_SIZE_STORAGE_KEY, String(chatPanelWidth)); } catch {}
+        safeStorageSet(CHAT_PANEL_SIZE_STORAGE_KEY, String(chatPanelWidth));
       }
     }
 
@@ -13835,7 +13865,7 @@
           account_mode: authMode === "signup" ? "created_local_account" : "local_signin",
           login_at: new Date().toISOString()
         };
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+        safeStorageSet(USER_STORAGE_KEY, JSON.stringify(user));
         loginPassword.value = "";
         if (confirmPassword) confirmPassword.value = "";
         loginStatus.textContent = "";
@@ -13864,7 +13894,7 @@
           account_mode: "nsrl_signin",
           login_at: new Date().toISOString()
         };
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+        safeStorageSet(USER_STORAGE_KEY, JSON.stringify(user));
         if (ustcLoginPassword) ustcLoginPassword.value = "";
         if (ustcLoginStatus) ustcLoginStatus.textContent = "";
         unlockWorkbench(user);
@@ -13879,7 +13909,7 @@
           account_mode: "guest",
           login_at: new Date().toISOString()
         };
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(guest));
+        safeStorageSet(USER_STORAGE_KEY, JSON.stringify(guest));
         unlockWorkbench(guest);
       };
       guestLoginBtn?.addEventListener("click", enterGuest);
@@ -13893,7 +13923,7 @@
           account_mode: "nsrl_preview",
           login_at: new Date().toISOString()
         };
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(guest));
+        safeStorageSet(USER_STORAGE_KEY, JSON.stringify(guest));
         unlockWorkbench(guest);
       });
       magicBookEnterBtn?.addEventListener("click", openMagicBookCatalog);
@@ -13951,12 +13981,12 @@
     }
 
     function loadUser() {
-      try { return JSON.parse(localStorage.getItem(USER_STORAGE_KEY) || "{}"); }
+      try { return JSON.parse(safeStorageGet(USER_STORAGE_KEY) || "{}"); }
       catch { return {}; }
     }
 
     function logoutWorkbench() {
-      localStorage.removeItem(USER_STORAGE_KEY);
+      safeStorageRemove(USER_STORAGE_KEY);
       pendingWorkbenchUser = null;
       document.body.classList.add("locked");
       document.body.classList.remove("magic-active");
@@ -14149,7 +14179,7 @@
 
     function loadPeriodicPanelSizes() {
       try {
-        const stored = JSON.parse(localStorage.getItem(PERIODIC_PANEL_SIZE_STORAGE_KEY) || "{}");
+        const stored = JSON.parse(safeStorageGet(PERIODIC_PANEL_SIZE_STORAGE_KEY) || "{}");
         return stored && typeof stored === "object" ? stored : {};
       } catch {
         return {};
@@ -14157,7 +14187,7 @@
     }
 
     function savePeriodicPanelSizes(sizes) {
-      localStorage.setItem(PERIODIC_PANEL_SIZE_STORAGE_KEY, JSON.stringify(sizes));
+      safeStorageSet(PERIODIC_PANEL_SIZE_STORAGE_KEY, JSON.stringify(sizes));
     }
 
     function setupIndependentPanelSizing() {
@@ -14303,7 +14333,7 @@
       if (modelFeatureInput && !modelFeatureInput.value.trim()) modelFeatureInput.value = model.feature;
       if (modelTaskSelect) modelTaskSelect.value = model.task;
       const cfg = loadAiConfig();
-      localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      safeStorageSet(AI_CONFIG_STORAGE_KEY, JSON.stringify({
         ...cfg,
         endpoint: cfg.endpoint || defaultAiEndpoint(),
         model: modelName
@@ -15981,7 +16011,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function loadScienceOneConfig() {
-      try { return JSON.parse(localStorage.getItem(SCIENCEONE_CONFIG_STORAGE_KEY) || "{}"); }
+      try { return JSON.parse(safeStorageGet(SCIENCEONE_CONFIG_STORAGE_KEY) || "{}"); }
       catch { return {}; }
     }
 
@@ -16010,7 +16040,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         catch { throw new Error(t("scienceOneEndpointMissing")); }
         if (!["http:", "https:"].includes(parsed.protocol)) throw new Error(t("scienceOneEndpointMissing"));
       }
-      localStorage.setItem(SCIENCEONE_CONFIG_STORAGE_KEY, JSON.stringify({ endpoint }));
+      safeStorageSet(SCIENCEONE_CONFIG_STORAGE_KEY, JSON.stringify({ endpoint }));
       updateScienceOneConnectionStatus();
       showToast(t("scienceOneEndpointSaved"));
     }
@@ -16215,7 +16245,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function loadAiConfig() {
-      try { return JSON.parse(localStorage.getItem(AI_CONFIG_STORAGE_KEY) || "{}"); }
+      try { return JSON.parse(safeStorageGet(AI_CONFIG_STORAGE_KEY) || "{}"); }
       catch { return {}; }
     }
 
@@ -16251,13 +16281,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         model: (aiModelInput?.value || "").trim(),
         apiKey: (aiKeyInput?.value || "").trim()
       };
-      localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(cfg));
+      safeStorageSet(AI_CONFIG_STORAGE_KEY, JSON.stringify(cfg));
       renderModelRegistry();
       showToast(t("aiConfigSaved"));
     }
 
     function clearAiConfig() {
-      localStorage.removeItem(AI_CONFIG_STORAGE_KEY);
+      safeStorageRemove(AI_CONFIG_STORAGE_KEY);
       if (aiEndpointInput) aiEndpointInput.value = "";
       if (aiModelInput) aiModelInput.value = "";
       if (aiKeyInput) aiKeyInput.value = "";
@@ -17415,17 +17445,17 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     // ===== Our Data =====
     function loadOurData() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+      try { return JSON.parse(safeStorageGet(STORAGE_KEY) || "[]"); }
       catch { return []; }
     }
 
     function persistOurData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.ourData));
+      safeStorageSet(STORAGE_KEY, JSON.stringify(state.ourData));
     }
 
     function loadFloatingCompareIds() {
       try {
-        const raw = JSON.parse(localStorage.getItem(FLOATING_COMPARE_STORAGE_KEY) || "[]");
+        const raw = JSON.parse(safeStorageGet(FLOATING_COMPARE_STORAGE_KEY) || "[]");
         return new Set(Array.isArray(raw) ? raw : []);
       } catch {
         return new Set();
@@ -17433,12 +17463,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function persistFloatingCompareIds() {
-      localStorage.setItem(FLOATING_COMPARE_STORAGE_KEY, JSON.stringify([...state.floatingDataIds]));
+      safeStorageSet(FLOATING_COMPARE_STORAGE_KEY, JSON.stringify([...state.floatingDataIds]));
     }
 
     function loadFloatingFigures() {
       try {
-        const raw = JSON.parse(localStorage.getItem(FLOATING_FIGURE_STORAGE_KEY) || "[]");
+        const raw = JSON.parse(safeStorageGet(FLOATING_FIGURE_STORAGE_KEY) || "[]");
         if (!Array.isArray(raw)) return [];
         return raw
           .filter(item => item && typeof item.src === "string" && item.src.startsWith("data:image/"))
@@ -17453,7 +17483,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       for (let keep = figures.length; keep >= 1; keep--) {
         try {
           const kept = figures.slice(0, keep);
-          localStorage.setItem(FLOATING_FIGURE_STORAGE_KEY, JSON.stringify(kept));
+          safeStorageSet(FLOATING_FIGURE_STORAGE_KEY, JSON.stringify(kept));
           state.floatingFigures = kept;
           return;
         } catch (error) {
@@ -17722,7 +17752,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function applyFloatingComparePosition() {
       if (!floatingComparePanel || window.matchMedia("(max-width: 720px)").matches) return;
       try {
-        const pos = JSON.parse(localStorage.getItem(FLOATING_COMPARE_POSITION_KEY) || "{}");
+        const pos = JSON.parse(safeStorageGet(FLOATING_COMPARE_POSITION_KEY) || "{}");
         if (!Number.isFinite(pos.left) || !Number.isFinite(pos.top)) return;
         const width = floatingComparePanel.offsetWidth || 420;
         const height = floatingComparePanel.offsetHeight || 360;
@@ -17738,7 +17768,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function persistFloatingComparePosition() {
       if (!floatingComparePanel || floatingComparePanel.hidden) return;
       const rect = floatingComparePanel.getBoundingClientRect();
-      localStorage.setItem(FLOATING_COMPARE_POSITION_KEY, JSON.stringify({ left: rect.left, top: rect.top }));
+      safeStorageSet(FLOATING_COMPARE_POSITION_KEY, JSON.stringify({ left: rect.left, top: rect.top }));
     }
 
     function initFloatingComparePanel() {
@@ -17842,7 +17872,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function applyFloatingImageWindowPosition() {
       if (!floatingFigureLightbox || window.matchMedia("(max-width: 720px)").matches) return;
       let saved = null;
-      try { saved = JSON.parse(localStorage.getItem(FLOATING_IMAGE_WINDOW_POSITION_KEY) || "null"); }
+      try { saved = JSON.parse(safeStorageGet(FLOATING_IMAGE_WINDOW_POSITION_KEY) || "null"); }
       catch { saved = null; }
       const fallback = {
         width: Math.min(1180, Math.max(620, window.innerWidth * 0.72)),
@@ -17865,7 +17895,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function persistFloatingImageWindowPosition() {
       if (!floatingFigureLightbox || floatingFigureLightbox.hidden) return;
       const rect = floatingFigureLightbox.getBoundingClientRect();
-      localStorage.setItem(FLOATING_IMAGE_WINDOW_POSITION_KEY, JSON.stringify({
+      safeStorageSet(FLOATING_IMAGE_WINDOW_POSITION_KEY, JSON.stringify({
         left: rect.left,
         top: rect.top,
         width: rect.width,
@@ -18052,7 +18082,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function applyFloatingFigurePosition() {
       if (!floatingFigurePanel || window.matchMedia("(max-width: 720px)").matches) return;
       try {
-        const pos = JSON.parse(localStorage.getItem(FLOATING_FIGURE_POSITION_KEY) || "{}");
+        const pos = JSON.parse(safeStorageGet(FLOATING_FIGURE_POSITION_KEY) || "{}");
         const minWidth = 420;
         const minHeight = 320;
         const maxWidth = Math.max(minWidth, window.innerWidth - 16);
@@ -18078,7 +18108,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function persistFloatingFigurePosition() {
       if (!floatingFigurePanel || floatingFigurePanel.hidden) return;
       const rect = floatingFigurePanel.getBoundingClientRect();
-      localStorage.setItem(FLOATING_FIGURE_POSITION_KEY, JSON.stringify({
+      safeStorageSet(FLOATING_FIGURE_POSITION_KEY, JSON.stringify({
         left: rect.left,
         top: rect.top,
         width: rect.width,
