@@ -3063,12 +3063,38 @@
       color: #dffaff;
       font-size: 10px;
       line-height: 1.25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
     }
 
     .roundtable-center .periodic-crucible-panel h3 span {
       margin-left: 4px;
       color: var(--accent-glow);
       font-size: 9px;
+    }
+
+    .roundtable-crucible-clear {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      min-height: 24px;
+      margin-left: auto;
+      padding: 0;
+      border-color: rgba(248,113,113,0.46);
+      background: rgba(69,10,10,0.7);
+      color: #fecaca;
+      font-size: 15px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .roundtable-crucible-clear:hover,
+    .roundtable-crucible-clear:focus-visible {
+      border-color: rgba(248,113,113,0.9);
+      background: rgba(127,29,29,0.86);
+      color: #fff;
     }
 
     .roundtable-center .periodic-crucible-panel .crucible-visual {
@@ -3103,6 +3129,7 @@
     }
 
     .roundtable-crucible-token {
+      width: auto;
       min-width: 28px;
       min-height: 24px;
       padding: 2px 5px;
@@ -3115,11 +3142,37 @@
       font-weight: 820;
       line-height: 1;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      pointer-events: auto;
+      touch-action: manipulation;
     }
 
     .roundtable-crucible-token small {
       color: var(--accent-glow);
       font-size: 7px;
+    }
+
+    .crucible-token-remove {
+      display: inline-grid;
+      place-items: center;
+      width: 14px;
+      height: 14px;
+      border-left: 1px solid rgba(255,255,255,0.18);
+      color: #fca5a5;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .roundtable-crucible-token:hover,
+    .roundtable-crucible-token:focus-visible,
+    .model-element-token:hover,
+    .model-element-token:focus-visible {
+      border-color: rgba(248,113,113,0.88);
+      box-shadow: 0 0 0 2px rgba(248,113,113,0.13), 0 7px 18px rgba(0,0,0,0.32);
     }
 
     .roundtable-crucible-empty {
@@ -4744,6 +4797,7 @@
     }
 
     .model-element-token {
+      width: auto;
       min-width: 42px;
       min-height: 38px;
       padding: 5px 8px;
@@ -4758,6 +4812,9 @@
       font-size: 14px;
       font-weight: 820;
       box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+      cursor: pointer;
+      pointer-events: auto;
+      touch-action: manipulation;
     }
 
     .model-element-token small {
@@ -14679,15 +14736,17 @@
       container.innerHTML = counts.length
         ? counts.map(({ symbol, count }) => `
           <button class="roundtable-crucible-token" type="button" data-remove-roundtable-element="${esc(symbol)}"
-            title="${currentLang === "zh" ? "移除一个" : "Remove one"} ${esc(symbol)}">
-            ${esc(symbol)}${count > 1 ? `<small>×${count}</small>` : ""}
+            title="${currentLang === "zh" ? "点击移除一个" : "Click to remove one"} ${esc(symbol)}"
+            aria-label="${currentLang === "zh" ? "从坩埚移除一个" : "Remove one from crucible"} ${esc(symbol)}">
+            <span>${esc(symbol)}${count > 1 ? `<small>×${count}</small>` : ""}</span>
+            <span class="crucible-token-remove" aria-hidden="true">×</span>
           </button>
         `).join("")
         : `<span class="roundtable-crucible-empty">${esc(currentLang === "zh" ? "拖入，或点元素后点这里" : "Drag here, or select an element then tap here")}</span>`;
       container.querySelectorAll("[data-remove-roundtable-element]").forEach(button => {
         button.addEventListener("click", event => {
           event.stopPropagation();
-          removeModelElement(button.dataset.removeRoundtableElement);
+          removeModelElement(button.dataset.removeRoundtableElement, { announce: true });
         });
       });
     }
@@ -14731,13 +14790,18 @@
       modelCrucibleElements.innerHTML = counts.length
         ? counts.map(({ symbol, count }) => `
           <button class="model-element-token" type="button" data-remove-model-element="${esc(symbol)}"
-            title="${currentLang === "zh" ? "移除一个" : "Remove one"} ${esc(symbol)}">
-            ${esc(symbol)}${count > 1 ? `<small>×${count}</small>` : ""}
+            title="${currentLang === "zh" ? "点击移除一个" : "Click to remove one"} ${esc(symbol)}"
+            aria-label="${currentLang === "zh" ? "从坩埚移除一个" : "Remove one from crucible"} ${esc(symbol)}">
+            <span>${esc(symbol)}${count > 1 ? `<small>×${count}</small>` : ""}</span>
+            <span class="crucible-token-remove" aria-hidden="true">×</span>
           </button>
         `).join("")
         : `<span class="model-crucible-empty">${esc(t("modelCrucibleEmpty"))}</span>`;
       modelCrucibleElements.querySelectorAll("[data-remove-model-element]").forEach(button => {
-        button.addEventListener("click", () => removeModelElement(button.dataset.removeModelElement));
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          removeModelElement(button.dataset.removeModelElement, { announce: true });
+        });
       });
       if (modelMixtureSummary) {
         modelMixtureSummary.textContent = counts.length
@@ -14766,12 +14830,27 @@
       renderModelMixture();
     }
 
-    function removeModelElement(symbol) {
+    function removeModelElement(symbol, options = {}) {
       const index = state.modelElements.lastIndexOf(symbol);
-      if (index < 0) return;
+      if (index < 0) return false;
       state.modelElements.splice(index, 1);
       resetMixtureAiState();
       renderModelMixture();
+      if (options.announce) {
+        showToast(currentLang === "zh" ? `${symbol} 已从坩埚移除` : `${symbol} removed from the crucible`);
+      }
+      return true;
+    }
+
+    function clearModelElements(options = {}) {
+      if (!state.modelElements.length) return false;
+      state.modelElements = [];
+      resetMixtureAiState();
+      renderModelMixture();
+      if (options.announce) {
+        showToast(currentLang === "zh" ? "坩埚已清空" : "Crucible cleared");
+      }
+      return true;
     }
 
     function setupModelWorkbench() {
@@ -14929,15 +15008,11 @@
       });
       modelElementSearch?.addEventListener("input", renderModelElementPalette);
       modelClearElementsBtn?.addEventListener("click", () => {
-        state.modelElements = [];
-        resetMixtureAiState();
-        renderModelMixture();
+        clearModelElements({ announce: true });
       });
       mixtureAiAnalyzeBtn?.addEventListener("click", runCrucibleAiAnalysis);
       mixtureClearBtn?.addEventListener("click", () => {
-        state.modelElements = [];
-        resetMixtureAiState();
-        renderModelMixture();
+        clearModelElements({ announce: true });
       });
       mixtureScienceOneBtn?.addEventListener("click", () => {
         if (!state.modelElements.length) return;
@@ -16715,7 +16790,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const hasMixture = model.symbols.length > 0;
       const loading = state.mixtureAi?.status === "loading" && state.mixtureAi.signature === mixtureSignature();
       periodicCruciblePanel.innerHTML = `
-        <h3>${currentLang === "zh" ? "组合候选筛选" : "Composition Screening"} <span id="roundtableCrucibleFormula"></span></h3>
+        <h3>
+          ${currentLang === "zh" ? "组合候选筛选" : "Composition Screening"}
+          <span id="roundtableCrucibleFormula"></span>
+          ${hasMixture ? `
+            <button class="roundtable-crucible-clear" type="button" id="roundtableCrucibleClearBtn"
+              title="${currentLang === "zh" ? "清空坩埚" : "Clear crucible"}"
+              aria-label="${currentLang === "zh" ? "清空坩埚" : "Clear crucible"}">×</button>
+          ` : ""}
+        </h3>
         ${crucibleVisualHtml()}
         <div class="crucible-body">
           ${hasMixture ? `
@@ -16742,6 +16825,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       renderRoundtableCrucibleElements();
       renderMixtureAnalysis(model);
       $("#runCrucibleBtn")?.addEventListener("click", runCrucibleAiAnalysis);
+      $("#roundtableCrucibleClearBtn")?.addEventListener("click", event => {
+        event.stopPropagation();
+        clearModelElements({ announce: true });
+      });
     }
 
     function renderElementHistoryWorkbench() {
