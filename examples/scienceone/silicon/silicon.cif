@@ -1,0 +1,26 @@
+data_silicon_diamond_test
+_audit_creation_method              'ARPES ScienceOne test fixture'
+_chemical_formula_sum               'Si8'
+_cell_length_a                      5.431
+_cell_length_b                      5.431
+_cell_length_c                      5.431
+_cell_angle_alpha                   90
+_cell_angle_beta                    90
+_cell_angle_gamma                   90
+_space_group_name_H-M_alt           'P 1'
+_space_group_IT_number              1
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+Si1 Si 0.000 0.000 0.000
+Si2 Si 0.000 0.500 0.500
+Si3 Si 0.500 0.000 0.500
+Si4 Si 0.500 0.500 0.000
+Si5 Si 0.250 0.250 0.250
+Si6 Si 0.250 0.750 0.750
+Si7 Si 0.750 0.250 0.750
+Si8 Si 0.750 0.750 0.250

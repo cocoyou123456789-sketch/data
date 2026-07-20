@@ -4881,6 +4881,30 @@
       margin-top: 8px;
     }
 
+    .scienceone-account-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .scienceone-account-status {
+      flex: 1 1 260px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+
+    .scienceone-account-status[data-state="connected"] {
+      color: var(--accent-glow);
+    }
+
+    .scienceone-account-status[data-state="error"] {
+      color: #ff9c9c;
+    }
+
     .qe-workbench {
       display: grid;
       grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
@@ -7186,6 +7210,11 @@
         grid-template-columns: 1fr;
       }
 
+      .scienceone-account-row {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
       .scienceone-form-actions {
         align-items: stretch;
         flex-direction: column;
@@ -8885,6 +8914,12 @@
                 <input id="scienceOneEndpointInput" type="url" inputmode="url" autocomplete="off" data-i18n-placeholder="scienceOneEndpointPlaceholder" placeholder="https://your-site.example/api/scienceone">
                 <button id="scienceOneSaveEndpointBtn" type="button" data-i18n="scienceOneSaveEndpoint">保存连接</button>
               </div>
+              <div class="scienceone-account-row">
+                <span class="scienceone-account-status" id="scienceOneAccountStatus" data-state="idle" data-i18n="scienceOneAccountChecking">正在检查代理与账号状态...</span>
+                <button id="scienceOneTestEndpointBtn" type="button" data-i18n="scienceOneTestEndpoint">检查代理</button>
+                <button id="scienceOneAccountBtn" type="button" data-i18n="scienceOneConnectAccount">连接科技云账号</button>
+                <button id="scienceOneDisconnectBtn" type="button" hidden data-i18n="scienceOneDisconnectAccount">断开账号</button>
+              </div>
             </details>
           </section>
           <details class="model-advanced-config">
@@ -9227,6 +9262,18 @@
         scienceOneRoundtableOpened: "已打开 ScienceOne 工具",
         scienceOneProxyNeeded: "需要代理地址",
         scienceOneProxyReady: "代理已配置",
+        scienceOneProxyOnline: "代理在线",
+        scienceOneProxyOffline: "代理不可用",
+        scienceOneAccountChecking: "正在检查代理与账号状态...",
+        scienceOneAccountNotConfigured: "代理在线；账号登录应用尚未配置，工具仍可直接使用。",
+        scienceOneAccountNotConnected: "代理在线；科技云账号尚未连接。",
+        scienceOneAccountConnected: "科技云账号已连接",
+        scienceOneTestEndpoint: "检查代理",
+        scienceOneConnectAccount: "连接科技云账号",
+        scienceOneApplyAccount: "申请账号接入",
+        scienceOneDisconnectAccount: "断开账号",
+        scienceOneAccountDisconnected: "科技云账号已断开",
+        scienceOneAccountApplicationOpened: "已打开科技云 OIDC 应用申请页",
         scienceOneCrystalTab: "晶体结构",
         scienceOneBandTab: "电子能带",
         scienceOneLatticeUrlLabel: "Lattice pickle 文件 URL",
@@ -9306,6 +9353,7 @@
         scienceOneSaveEndpoint: "保存连接",
         scienceOneEndpointSaved: "ScienceOne 代理连接已保存",
         scienceOneEndpointMissing: "请先填写 ScienceOne 代理地址。",
+        scienceOneEndpointCheckFailed: "代理检查失败",
         scienceOneRequesting: "正在调用 ScienceOne...",
         scienceOneRequestSuccess: "ScienceOne 调用成功",
         scienceOneRequestFailed: "ScienceOne 调用失败",
@@ -9938,6 +9986,18 @@
         scienceOneRoundtableOpened: "ScienceOne tool opened",
         scienceOneProxyNeeded: "Proxy URL required",
         scienceOneProxyReady: "Proxy configured",
+        scienceOneProxyOnline: "Proxy online",
+        scienceOneProxyOffline: "Proxy unavailable",
+        scienceOneAccountChecking: "Checking proxy and account status...",
+        scienceOneAccountNotConfigured: "Proxy online; account login is not configured yet. The public tools remain available.",
+        scienceOneAccountNotConnected: "Proxy online; CSTCloud account is not connected.",
+        scienceOneAccountConnected: "CSTCloud account connected",
+        scienceOneTestEndpoint: "Test Proxy",
+        scienceOneConnectAccount: "Connect CSTCloud",
+        scienceOneApplyAccount: "Apply for Login",
+        scienceOneDisconnectAccount: "Disconnect",
+        scienceOneAccountDisconnected: "CSTCloud account disconnected",
+        scienceOneAccountApplicationOpened: "CSTCloud OIDC application page opened",
         scienceOneCrystalTab: "Crystal Structure",
         scienceOneBandTab: "Electronic Bands",
         scienceOneLatticeUrlLabel: "Lattice pickle file URL",
@@ -10017,6 +10077,7 @@
         scienceOneSaveEndpoint: "Save Connection",
         scienceOneEndpointSaved: "ScienceOne proxy connection saved",
         scienceOneEndpointMissing: "Enter a ScienceOne proxy URL first.",
+        scienceOneEndpointCheckFailed: "Proxy check failed",
         scienceOneRequesting: "Calling ScienceOne...",
         scienceOneRequestSuccess: "ScienceOne call succeeded",
         scienceOneRequestFailed: "ScienceOne call failed",
@@ -10622,6 +10683,7 @@
     const ARTICLE_IMPORT_CHUNK_SIZE = 125;
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
+    const SCIENCEONE_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/scienceone";
     const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v2";
     const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-width-v3";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
@@ -10717,6 +10779,10 @@
     const scienceOneResult = $("#scienceOneResult");
     const scienceOneEndpointInput = $("#scienceOneEndpointInput");
     const scienceOneSaveEndpointBtn = $("#scienceOneSaveEndpointBtn");
+    const scienceOneAccountStatus = $("#scienceOneAccountStatus");
+    const scienceOneTestEndpointBtn = $("#scienceOneTestEndpointBtn");
+    const scienceOneAccountBtn = $("#scienceOneAccountBtn");
+    const scienceOneDisconnectBtn = $("#scienceOneDisconnectBtn");
     const scienceOneCrystalForm = $("#scienceOneCrystalForm");
     const scienceOneQeForm = $("#scienceOneQeForm");
     const scienceOneBandForm = $("#scienceOneBandForm");
@@ -10752,6 +10818,7 @@
       crystal_structure: { file: null, lastResult: null },
       band_structure: { lastResult: null }
     };
+    let scienceOneHealth = null;
     const historyCube = $("#historyCube");
     const cubeViewport = $("#cubeViewport");
     const cubeResetBtn = $("#cubeResetBtn");
@@ -16621,7 +16688,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function defaultScienceOneEndpoint() {
       const host = window.location.hostname || "";
-      if (window.location.protocol === "file:" || !host || host.includes("github.io")) return "";
+      if (window.location.protocol === "file:" || !host || host.includes("github.io")) return SCIENCEONE_PUBLIC_PROXY;
       return "/api/scienceone";
     }
 
@@ -16629,11 +16696,127 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return String(loadScienceOneConfig().endpoint || defaultScienceOneEndpoint()).trim();
     }
 
+    function absoluteScienceOneEndpoint(path = "") {
+      const endpoint = configuredScienceOneEndpoint();
+      if (!endpoint) return "";
+      const base = new URL(endpoint, window.location.href).toString().replace(/\/+$/, "");
+      return `${base}${path}`;
+    }
+
     function updateScienceOneConnectionStatus() {
       if (!scienceOneConnectionStatus) return;
-      const ready = Boolean(configuredScienceOneEndpoint());
-      scienceOneConnectionStatus.dataset.state = ready ? "ready" : "idle";
-      scienceOneConnectionStatus.textContent = ready ? t("scienceOneProxyReady") : t("scienceOneProxyNeeded");
+      const endpointReady = Boolean(configuredScienceOneEndpoint());
+      const online = Boolean(scienceOneHealth?.ok);
+      scienceOneConnectionStatus.dataset.state = online ? "ready" : (endpointReady ? "idle" : "error");
+      scienceOneConnectionStatus.textContent = online
+        ? t("scienceOneProxyOnline")
+        : (endpointReady ? t("scienceOneProxyReady") : t("scienceOneProxyNeeded"));
+
+      const account = scienceOneHealth?.account;
+      if (!scienceOneAccountStatus) return;
+      if (account?.connected) {
+        const identity = account.profile?.name || account.profile?.preferred_username || account.profile?.email || "";
+        scienceOneAccountStatus.dataset.state = "connected";
+        scienceOneAccountStatus.textContent = `${t("scienceOneAccountConnected")}${identity ? ` · ${identity}` : ""}`;
+        if (scienceOneAccountBtn) scienceOneAccountBtn.hidden = true;
+        if (scienceOneDisconnectBtn) scienceOneDisconnectBtn.hidden = false;
+        return;
+      }
+      if (online && account?.configured) {
+        scienceOneAccountStatus.dataset.state = "idle";
+        scienceOneAccountStatus.textContent = t("scienceOneAccountNotConnected");
+        if (scienceOneAccountBtn) {
+          scienceOneAccountBtn.hidden = false;
+          scienceOneAccountBtn.textContent = t("scienceOneConnectAccount");
+          scienceOneAccountBtn.dataset.accountAction = "login";
+        }
+        if (scienceOneDisconnectBtn) scienceOneDisconnectBtn.hidden = true;
+        return;
+      }
+      if (online && account && !account.configured) {
+        scienceOneAccountStatus.dataset.state = "idle";
+        const callbackLabel = currentLang === "zh" ? "申请时填写回调地址" : "Registration callback";
+        scienceOneAccountStatus.textContent = `${t("scienceOneAccountNotConfigured")} ${callbackLabel}: ${account.callback_url}`;
+        if (scienceOneAccountBtn) {
+          scienceOneAccountBtn.hidden = false;
+          scienceOneAccountBtn.textContent = t("scienceOneApplyAccount");
+          scienceOneAccountBtn.dataset.accountAction = "apply";
+        }
+        if (scienceOneDisconnectBtn) scienceOneDisconnectBtn.hidden = true;
+        return;
+      }
+      scienceOneAccountStatus.dataset.state = endpointReady ? "idle" : "error";
+      scienceOneAccountStatus.textContent = endpointReady ? t("scienceOneAccountChecking") : t("scienceOneEndpointMissing");
+      if (scienceOneAccountBtn) {
+        scienceOneAccountBtn.hidden = false;
+        scienceOneAccountBtn.textContent = t("scienceOneConnectAccount");
+        scienceOneAccountBtn.dataset.accountAction = "check";
+      }
+      if (scienceOneDisconnectBtn) scienceOneDisconnectBtn.hidden = true;
+    }
+
+    async function probeScienceOneEndpoint(options = {}) {
+      const endpoint = configuredScienceOneEndpoint();
+      if (!endpoint) throw new Error(t("scienceOneEndpointMissing"));
+      if (scienceOneAccountStatus) {
+        scienceOneAccountStatus.dataset.state = "idle";
+        scienceOneAccountStatus.textContent = t("scienceOneAccountChecking");
+      }
+      try {
+        const response = await fetch(absoluteScienceOneEndpoint(), {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+          headers: { "Accept": "application/json" }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok || data.service !== "arpes-scienceone-proxy") {
+          throw new Error(data.error || `HTTP ${response.status}`);
+        }
+        scienceOneHealth = data;
+        updateScienceOneConnectionStatus();
+        if (options.toast) showToast(t("scienceOneProxyOnline"));
+        return data;
+      } catch (error) {
+        scienceOneHealth = null;
+        if (scienceOneConnectionStatus) {
+          scienceOneConnectionStatus.dataset.state = "error";
+          scienceOneConnectionStatus.textContent = t("scienceOneProxyOffline");
+        }
+        if (scienceOneAccountStatus) {
+          scienceOneAccountStatus.dataset.state = "error";
+          scienceOneAccountStatus.textContent = `${t("scienceOneEndpointCheckFailed")}: ${error?.message || String(error)}`;
+        }
+        throw error;
+      }
+    }
+
+    async function connectScienceOneAccount() {
+      const health = scienceOneHealth || await probeScienceOneEndpoint();
+      const account = health.account || {};
+      if (!account.configured) {
+        window.open(account.application_url || "https://aai.cstcloud.net/developer/oidcApply", "_blank", "noopener,noreferrer");
+        showToast(t("scienceOneAccountApplicationOpened"));
+        return;
+      }
+      const loginUrl = new URL(account.login_url || absoluteScienceOneEndpoint("/auth/login"));
+      const returnTo = new URL(window.location.href);
+      returnTo.searchParams.delete("scienceone_auth");
+      loginUrl.searchParams.set("return_to", returnTo.toString());
+      window.location.assign(loginUrl.toString());
+    }
+
+    async function disconnectScienceOneAccount() {
+      const response = await fetch(absoluteScienceOneEndpoint("/auth/logout"), {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: "{}"
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      scienceOneHealth = null;
+      await probeScienceOneEndpoint();
+      showToast(t("scienceOneAccountDisconnected"));
     }
 
     function saveScienceOneEndpoint() {
@@ -16645,8 +16828,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (!["http:", "https:"].includes(parsed.protocol)) throw new Error(t("scienceOneEndpointMissing"));
       }
       safeStorageSet(SCIENCEONE_CONFIG_STORAGE_KEY, JSON.stringify({ endpoint }));
+      scienceOneHealth = null;
       updateScienceOneConnectionStatus();
       showToast(t("scienceOneEndpointSaved"));
+      probeScienceOneEndpoint().catch(() => {});
     }
 
     function splitScienceOneList(value) {
@@ -17129,6 +17314,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       try {
         const response = await fetch(endpoint, {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ tool, payload })
         });
@@ -17254,10 +17440,32 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           setScienceOneResultValue(tool, value);
         }
       });
+      scienceOneTestEndpointBtn?.addEventListener("click", () => {
+        probeScienceOneEndpoint({ toast: true }).catch(error => showToast(error?.message || String(error)));
+      });
+      scienceOneAccountBtn?.addEventListener("click", () => {
+        connectScienceOneAccount().catch(error => {
+          if (scienceOneAccountStatus) {
+            scienceOneAccountStatus.dataset.state = "error";
+            scienceOneAccountStatus.textContent = error?.message || String(error);
+          }
+          showToast(error?.message || String(error));
+        });
+      });
+      scienceOneDisconnectBtn?.addEventListener("click", () => {
+        disconnectScienceOneAccount().catch(error => showToast(error?.message || String(error)));
+      });
       renderScienceOneCrystalFile();
       renderScienceOneToolEmpty("crystal_structure");
       renderScienceOneQeEmpty();
       renderScienceOneToolEmpty("band_structure");
+      const authResult = new URLSearchParams(window.location.search).get("scienceone_auth");
+      probeScienceOneEndpoint({ toast: authResult === "connected" }).finally(() => {
+        if (authResult !== "connected") return;
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete("scienceone_auth");
+        window.history.replaceState({}, "", cleanUrl);
+      }).catch(() => {});
     }
 
     function loadAiConfig() {

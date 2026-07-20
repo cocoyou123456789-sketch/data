@@ -1,0 +1,15 @@
+{
+  "tool": "band_structure",
+  "payload": {
+    "band_gap_min": 0.5,
+    "band_gap_max": 2.0,
+    "is_gap_direct": false,
+    "is_metal": false,
+    "magnetic_ordering": "NM",
+    "path_type": "setyawan_curtarolo",
+    "chunk_size": 20,
+    "num_chunks": 1,
+    "all_fields": false,
+    "fields": "material_id,band_gap,efermi,is_metal,is_gap_direct"
+  }
+}

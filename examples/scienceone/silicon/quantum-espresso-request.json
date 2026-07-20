@@ -1,0 +1,11 @@
+{
+  "tool": "quantum_espresso",
+  "payload": {
+    "calculation_type": "scf",
+    "input_url": "https://arpes-materials-explorer-cocoyou.netlify.app/examples/scienceone/silicon/silicon-scf.in",
+    "pseudo_urls": [
+      "https://arpes-materials-explorer-cocoyou.netlify.app/examples/scienceone/silicon/Si.pz-vbc.UPF"
+    ],
+    "priority": 5
+  }
+}

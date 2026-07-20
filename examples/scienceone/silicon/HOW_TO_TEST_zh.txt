@@ -1,0 +1,39 @@
+这是一套用于检查 ScienceOne 三个入口的硅测试数据，不是论文文件。
+
+1. 晶体结构
+上传文件：silicon-cubic-5.431.pkl
+公开 URL：
+https://arpes-materials-explorer-cocoyou.netlify.app/examples/scienceone/silicon/silicon-cubic-5.431.pkl
+
+元素列表：
+Si, Si, Si, Si, Si, Si, Si, Si
+
+分数坐标：
+[[0,0,0],[0,0.5,0.5],[0.5,0,0.5],[0.5,0.5,0],[0.25,0.25,0.25],[0.25,0.75,0.75],[0.75,0.25,0.75],[0.75,0.75,0.25]]
+
+这个入口把晶格、元素和原子坐标组合成完整晶体结构。
+silicon-diamond-structure.pkl 是成功运行后的输出示例，不是这里的输入。
+
+2. Quantum Espresso
+计算类型：SCF
+优先级：5
+
+INPUT 文件：silicon-scf.in
+公开 URL：
+https://arpes-materials-explorer-cocoyou.netlify.app/examples/scienceone/silicon/silicon-scf.in
+
+赝势文件：Si.pz-vbc.UPF
+公开 URL：
+https://arpes-materials-explorer-cocoyou.netlify.app/examples/scienceone/silicon/Si.pz-vbc.UPF
+
+这个入口提交一次硅的第一性原理自洽计算。INPUT 文件中引用的赝势名称
+Si.pz-vbc.UPF 与上传文件完全一致。
+
+3. 电子能带
+这个入口不上传文件，只填写带隙、金属性、磁性和返回字段等筛选条件。
+band-query-request.json 中提供了示例条件。
+
+注意：
+- 网页里的本地文件框只做格式确认。
+- ScienceOne 接口真正读取的是旁边填写的公开 HTTPS URL。
+- 这套数据用于接口测试，不是可直接用于论文的收敛计算结果。
