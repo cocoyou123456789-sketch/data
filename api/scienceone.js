@@ -3,7 +3,7 @@ const { RequestError, runScienceOneTool } = require("../lib/scienceone-tools");
 const BASE_ALLOWED_ORIGINS = new Set([
   "null",
   "https://cocoyou123456789-sketch.github.io",
-  "https://sunny-clafoutis-5748cb.netlify.app",
+  "https://arpes-materials-explorer-cocoyou.netlify.app",
   "http://localhost:3000",
   "http://localhost:5173",
   "http://127.0.0.1:3000",

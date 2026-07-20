@@ -7,3 +7,9 @@
   to = "/.netlify/functions/scienceone"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/scienceone/*"
+  to = "/.netlify/functions/scienceone/:splat"
+  status = 200
+  force = true
