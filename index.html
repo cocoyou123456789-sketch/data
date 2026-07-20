@@ -2318,6 +2318,7 @@
       overflow-x: hidden;
       padding-bottom: 4px;
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       justify-items: center;
       gap: 10px;
     }
@@ -2540,6 +2541,139 @@
       background: rgba(10,18,28,0.7);
       resize: horizontal;
       overflow: auto;
+    }
+
+    .multi-model-predictions {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      justify-self: stretch;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      border-top: 1px solid rgba(96,208,255,0.18);
+      padding-top: 12px;
+    }
+
+    .multi-model-prediction-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .multi-model-prediction-head h3 {
+      margin: 0 0 3px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .multi-model-prediction-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .multi-model-prediction-formula {
+      flex: 0 0 auto;
+      max-width: 46%;
+      border: 1px solid rgba(45,212,191,0.3);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--accent-glow);
+      background: rgba(20,184,166,0.08);
+      font-size: 10px;
+      font-weight: 760;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .multi-model-prediction-list {
+      display: grid;
+      border-block: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .multi-model-prediction-row {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(106px, 0.34fr) minmax(0, 1fr);
+      gap: 12px;
+      padding: 10px 4px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .multi-model-prediction-row:first-child {
+      border-top: 0;
+    }
+
+    .multi-model-prediction-identity {
+      min-width: 0;
+      display: grid;
+      align-content: start;
+      gap: 4px;
+    }
+
+    .multi-model-prediction-identity strong {
+      color: var(--ink);
+      font-size: 11px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .multi-model-prediction-kind {
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.25;
+    }
+
+    .multi-model-prediction-status {
+      width: fit-content;
+      max-width: 100%;
+      border: 1px solid rgba(121,145,166,0.28);
+      border-radius: 999px;
+      padding: 2px 6px;
+      color: rgba(202,220,232,0.76);
+      background: rgba(121,145,166,0.07);
+      font-size: 8px;
+      font-weight: 760;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .multi-model-prediction-row[data-state="ready"] .multi-model-prediction-status {
+      border-color: rgba(45,212,191,0.4);
+      color: var(--accent-glow);
+      background: rgba(20,184,166,0.1);
+    }
+
+    .multi-model-prediction-row[data-state="running"] .multi-model-prediction-status {
+      border-color: rgba(240,192,64,0.4);
+      color: #f4d778;
+      background: rgba(240,192,64,0.08);
+    }
+
+    .multi-model-prediction-copy {
+      min-width: 0;
+      display: grid;
+      align-content: start;
+      gap: 5px;
+    }
+
+    .multi-model-prediction-copy p {
+      margin: 0;
+      color: rgba(219,234,243,0.88);
+      font-size: 10px;
+      line-height: 1.48;
+      overflow-wrap: anywhere;
+    }
+
+    .multi-model-prediction-meta {
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.35;
     }
 
     .independent-size-controls {
@@ -3510,6 +3644,20 @@
     }
 
     @media (max-width: 760px) {
+      .multi-model-prediction-head {
+        display: grid;
+      }
+
+      .multi-model-prediction-formula {
+        max-width: 100%;
+        text-align: left;
+      }
+
+      .multi-model-prediction-row {
+        grid-template-columns: minmax(94px, 0.28fr) minmax(0, 1fr);
+        gap: 9px;
+      }
+
       .mixture-verdict-grid,
       .mixture-result-grid {
         grid-template-columns: 1fr;
@@ -8313,6 +8461,16 @@
               <button type="button" data-panel-size-target="periodic" data-panel-size-action="grow" aria-label="放大元素周期表 / Enlarge periodic table" title="放大元素周期表 / Enlarge periodic table">+</button>
             </div>
             <div class="periodic" id="periodicTable"></div>
+            <section class="multi-model-predictions" id="multiModelPredictions" aria-labelledby="multiModelPredictionTitle">
+              <div class="multi-model-prediction-head">
+                <div>
+                  <h3 id="multiModelPredictionTitle">多模型预测</h3>
+                  <p id="multiModelPredictionHint">各模型针对当前元素组合给出独立的预览或验证任务。</p>
+                </div>
+                <span class="multi-model-prediction-formula" id="multiModelPredictionFormula">等待元素</span>
+              </div>
+              <div class="multi-model-prediction-list" id="multiModelPredictionList" aria-live="polite"></div>
+            </section>
           </div>
           <div class="periodic-index-panel" data-independent-size-panel="models">
             <div class="independent-size-controls" role="group" aria-label="模型合集尺寸 / Model collection size">
@@ -11177,6 +11335,10 @@
     const loadStatus = $("#loadStatus");
     const metrics = $("#metrics");
     const periodicTable = $("#periodicTable");
+    const multiModelPredictionTitle = $("#multiModelPredictionTitle");
+    const multiModelPredictionHint = $("#multiModelPredictionHint");
+    const multiModelPredictionFormula = $("#multiModelPredictionFormula");
+    const multiModelPredictionList = $("#multiModelPredictionList");
     const elementPanel = $("#elementPanel");
     const elementHistoryWorkbench = $("#elementHistoryWorkbench");
     const periodicCruciblePanel = $("#periodicCruciblePanel");
@@ -14723,6 +14885,171 @@
       };
     }
 
+    function compactModelPrediction(value, limit = 190) {
+      const clean = String(value || "")
+        .replace(/[`*_#>|]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      return clean.length > limit ? `${clean.slice(0, limit - 1).trimEnd()}…` : clean;
+    }
+
+    function scienceOnePredictionConnection() {
+      const zh = currentLang === "zh";
+      const endpointReady = Boolean(configuredScienceOneEndpoint());
+      const online = Boolean(scienceOneHealth?.ok);
+      const connected = Boolean(scienceOneHealth?.account?.connected);
+      if (connected) return { state: "ready", label: zh ? "账号已连接" : "Account connected" };
+      if (online) return { state: "ready", label: zh ? "代理在线" : "Proxy online" };
+      if (endpointReady) return { state: "idle", label: zh ? "代理待检查" : "Proxy unchecked" };
+      return { state: "idle", label: zh ? "需要代理" : "Proxy required" };
+    }
+
+    function multiModelPredictionRows(model) {
+      const zh = currentLang === "zh";
+      const hasElements = model.symbols.length > 0;
+      const hasComposition = model.symbols.length >= 2;
+      const formula = model.formula || model.symbols.join("–");
+      const pathway = model.pathways[0];
+      const nearest = model.nearestMatches[0]?.row;
+      const currentAi = state.mixtureAi?.signature === mixtureSignature() ? state.mixtureAi : null;
+      const scienceOne = scienceOnePredictionConnection();
+
+      let gptState = "idle";
+      let gptStatus = zh ? "待运行" : "Ready to run";
+      let gptPrediction = zh
+        ? "加入至少两种元素后，这里显示综合材料假设；运行 AI 后会替换为实际返回摘要。"
+        : "Add at least two elements to build a material hypothesis; an actual AI response replaces this preview after a run.";
+      if (hasElements) gptPrediction = compactModelPrediction(model.summary);
+      if (currentAi?.status === "loading") {
+        gptState = "running";
+        gptStatus = zh ? "分析中" : "Analyzing";
+      } else if (currentAi?.status === "done" && currentAi.source === "server-ai") {
+        gptState = "ready";
+        gptStatus = zh ? "已返回" : "Returned";
+        gptPrediction = compactModelPrediction(currentAi.answer) || gptPrediction;
+      } else if (currentAi?.status === "done") {
+        gptStatus = zh ? "本地回退" : "Local fallback";
+      }
+
+      const deepSeekPrediction = !hasComposition
+        ? (zh
+          ? "等待完整组合。该席位用于规划结构搜索、数值计算和代码处理路线。"
+          : "Awaiting a composition. This seat plans structure searches, numerical calculations, and code workflows.")
+        : (zh
+          ? `${formula}：${pathway?.conditions || "先枚举化学计量和候选结构"}；随后依次检查形成能、电子结构、声子和耦合。`
+          : `${formula}: ${pathway?.conditions || "enumerate stoichiometries and candidate structures first"}; then evaluate formation energy, electronic structure, phonons, and coupling.`);
+
+      const arpesPrediction = !hasElements
+        ? (zh
+          ? "等待元素。ARPES 本地规则无需外部 API。"
+          : "Awaiting elements. The local ARPES rules do not require an external API.")
+        : (zh
+          ? `${model.classificationLabel}；探索排序 ${model.score}/100（非概率），证据为${model.evidenceLabel}。确认体超导后再检查费米面、能隙和竞争序。`
+          : `${model.classificationLabel}; exploration rank ${model.score}/100 (not a probability), with ${model.evidenceLabel}. After bulk confirmation, inspect Fermi surfaces, gaps, and competing orders.`);
+
+      const crystalPrediction = !hasComposition
+        ? (zh
+          ? "等待至少两种元素，用于准备候选晶格、元素列表和分数坐标。"
+          : "Add at least two elements to prepare candidate lattices, species, and fractional coordinates.")
+        : (zh
+          ? `${formula} 目前只有元素与比例提示；需先枚举合理晶格和原子坐标，再交给 CrystalStructureGen 生成结构。`
+          : `${formula} currently provides only elements and a ratio hint; enumerate a plausible lattice and atomic coordinates before CrystalStructureGen.`);
+
+      const qePrediction = !hasComposition
+        ? (zh
+          ? "等待组合和候选结构。Quantum Espresso 不能只凭元素列表直接给出结果。"
+          : "Awaiting a composition and candidate structure. Quantum Espresso cannot run from an element list alone.")
+        : (zh
+          ? `${formula} 建议流程：relax → SCF → bands/phonons；还需要 INPUT 文件、赝势和明确晶体结构。`
+          : `${formula} suggested flow: relax → SCF → bands/phonons; an INPUT file, pseudopotentials, and a defined crystal structure are still required.`);
+
+      const bandPrediction = !hasComposition
+        ? (zh
+          ? "等待材料组合，用于建立 Materials Project 能带查询条件。"
+          : "Awaiting a material composition to prepare Materials Project band-query filters.")
+        : (zh
+          ? `${formula} 可先检索带隙、金属性、费米能级和磁序；${nearest ? `本地最近邻为 ${nearest.display_name || nearest.material}。` : "当前尚无可直接查询的 Materials Project ID。"}`
+          : `${formula} can be screened by gap, metallicity, Fermi level, and magnetic ordering; ${nearest ? `the nearest local seed is ${nearest.display_name || nearest.material}.` : "no directly queryable Materials Project ID is available yet."}`);
+
+      return [
+        {
+          name: "GPT",
+          kind: zh ? "综合材料假设" : "Material synthesis",
+          state: gptState,
+          status: hasComposition ? gptStatus : (zh ? "等待组合" : "Awaiting composition"),
+          prediction: gptPrediction,
+          meta: zh ? "实际 AI 结果仅在运行后显示" : "Actual AI output appears only after a run"
+        },
+        {
+          name: "DeepSeek",
+          kind: zh ? "计算路线" : "Computation route",
+          state: hasComposition ? "ready" : "idle",
+          status: hasComposition ? (zh ? "任务建议" : "Task preview") : (zh ? "等待组合" : "Awaiting composition"),
+          prediction: deepSeekPrediction,
+          meta: zh ? "这是任务规划，不是已完成计算" : "This is task planning, not a completed calculation"
+        },
+        {
+          name: "ARPES Rules",
+          kind: zh ? "实验可观测量" : "Experimental observables",
+          state: hasElements ? "ready" : "idle",
+          status: hasElements ? (zh ? "本地结果" : "Local result") : (zh ? "等待元素" : "Awaiting elements"),
+          prediction: arpesPrediction,
+          meta: zh ? "本地证据规则 · 无需 API" : "Local evidence rules · no API required"
+        },
+        {
+          name: "CrystalStructureGen",
+          kind: zh ? "晶体结构" : "Crystal structure",
+          state: hasComposition ? scienceOne.state : "idle",
+          status: scienceOne.label,
+          prediction: crystalPrediction,
+          meta: zh ? "ScienceOne 验证任务 · 尚未提交" : "ScienceOne validation task · not submitted"
+        },
+        {
+          name: "Quantum Espresso",
+          kind: zh ? "第一性原理计算" : "First-principles calculation",
+          state: hasComposition ? scienceOne.state : "idle",
+          status: scienceOne.label,
+          prediction: qePrediction,
+          meta: zh ? "ScienceOne 验证任务 · 尚未提交" : "ScienceOne validation task · not submitted"
+        },
+        {
+          name: zh ? "电子能带查询" : "Band Query",
+          kind: "Materials Project",
+          state: hasComposition ? scienceOne.state : "idle",
+          status: scienceOne.label,
+          prediction: bandPrediction,
+          meta: zh ? "ScienceOne 数据库任务 · 尚未查询" : "ScienceOne database task · not queried"
+        }
+      ];
+    }
+
+    function renderMultiModelPredictions(model = predictMixturePotential()) {
+      if (!multiModelPredictionList) return;
+      const zh = currentLang === "zh";
+      if (multiModelPredictionTitle) multiModelPredictionTitle.textContent = zh ? "多模型预测" : "Multi-model Predictions";
+      if (multiModelPredictionHint) {
+        multiModelPredictionHint.textContent = zh
+          ? "同一元素组合的独立预览与验证任务；未运行的外部模型不会伪装成结果。"
+          : "Independent previews and validation tasks for one composition; unrun external models are never shown as results.";
+      }
+      if (multiModelPredictionFormula) {
+        multiModelPredictionFormula.textContent = model.formula || (zh ? "等待元素" : "Awaiting elements");
+      }
+      multiModelPredictionList.innerHTML = multiModelPredictionRows(model).map(row => `
+        <article class="multi-model-prediction-row" data-state="${esc(row.state)}">
+          <div class="multi-model-prediction-identity">
+            <strong>${esc(row.name)}</strong>
+            <span class="multi-model-prediction-kind">${esc(row.kind)}</span>
+            <span class="multi-model-prediction-status">${esc(row.status)}</span>
+          </div>
+          <div class="multi-model-prediction-copy">
+            <p>${esc(row.prediction)}</p>
+            <span class="multi-model-prediction-meta">${esc(row.meta)}</span>
+          </div>
+        </article>
+      `).join("");
+    }
+
     function renderRoundtableCrucibleElements() {
       if (!periodicCruciblePanel) return;
       const container = periodicCruciblePanel.querySelector(".roundtable-crucible-elements");
@@ -14994,6 +15321,29 @@
         });
         periodicCruciblePanel.addEventListener("click", event => {
           if (event.target.closest("button, a, input, select, textarea")) return;
+          const hitButton = [...periodicCruciblePanel.querySelectorAll("button")].find(button => {
+            const rect = button.getBoundingClientRect();
+            return event.clientX >= rect.left && event.clientX <= rect.right
+              && event.clientY >= rect.top && event.clientY <= rect.bottom;
+          });
+          if (hitButton?.dataset.removeRoundtableElement) {
+            event.preventDefault();
+            event.stopPropagation();
+            removeModelElement(hitButton.dataset.removeRoundtableElement, { announce: true });
+            return;
+          }
+          if (hitButton?.id === "roundtableCrucibleClearBtn") {
+            event.preventDefault();
+            event.stopPropagation();
+            clearModelElements({ announce: true });
+            return;
+          }
+          if (hitButton?.id === "runCrucibleBtn") {
+            event.preventDefault();
+            event.stopPropagation();
+            if (!hitButton.disabled) runCrucibleAiAnalysis();
+            return;
+          }
           addSelectedElementToCrucible();
         });
         periodicCruciblePanel.addEventListener("keydown", event => {
@@ -16824,6 +17174,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       `;
       renderRoundtableCrucibleElements();
       renderMixtureAnalysis(model);
+      renderMultiModelPredictions(model);
       $("#runCrucibleBtn")?.addEventListener("click", runCrucibleAiAnalysis);
       $("#roundtableCrucibleClearBtn")?.addEventListener("click", event => {
         event.stopPropagation();
@@ -17842,6 +18193,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       scienceOneConnectionStatus.textContent = online
         ? t("scienceOneProxyOnline")
         : (endpointReady ? t("scienceOneProxyReady") : t("scienceOneProxyNeeded"));
+      renderMultiModelPredictions();
 
       const account = scienceOneHealth?.account;
       if (!scienceOneAccountStatus) return;
