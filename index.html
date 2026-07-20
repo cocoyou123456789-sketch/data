@@ -2361,14 +2361,15 @@
       min-width: 0;
       transition: all 0.25s;
       position: relative;
+      touch-action: pan-x pan-y pinch-zoom;
+      cursor: grab;
     }
 
     .element-cell.available {
       background: var(--accent-soft);
       border-color: #2a7a72;
-      touch-action: none;
     }
-    .element-cell.available:hover {
+    .element-cell:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(15,118,110,0.3);
       z-index: 2;
@@ -2383,6 +2384,7 @@
     .element-cell.pointer-dragging {
       opacity: 0.58;
       transform: scale(0.94);
+      cursor: grabbing;
     }
     .element-drag-ghost {
       position: fixed;
@@ -2401,10 +2403,17 @@
       pointer-events: none;
       transform: translate(-50%, -50%);
     }
-    .element-cell.disabled {
+    .element-cell.unseeded {
       background: var(--disabled);
       color: var(--disabled-ink);
-      cursor: default;
+      border-style: dashed;
+      border-color: rgba(121,145,166,0.34);
+    }
+    .element-cell.unseeded:hover {
+      color: rgba(224,238,247,0.86);
+      border-color: rgba(96,208,255,0.56);
+      background: rgba(35,48,64,0.94);
+      box-shadow: 0 6px 20px rgba(96,208,255,0.13);
     }
 
     /* === 多种跳舞动画 === */
@@ -3242,6 +3251,222 @@
       height: 100%;
       width: var(--score, 0%);
       background: linear-gradient(90deg, var(--accent-glow), #f0c040);
+    }
+
+    .mixture-analysis-panel {
+      display: grid;
+      gap: 14px;
+      border: 1px solid rgba(45,212,191,0.3);
+      border-radius: 12px;
+      padding: 16px;
+      background:
+        radial-gradient(circle at 86% 0%, rgba(45,212,191,0.1), transparent 30%),
+        linear-gradient(145deg, rgba(9,24,33,0.96), rgba(8,15,24,0.98));
+      box-shadow: inset 0 1px rgba(255,255,255,0.035);
+    }
+
+    .mixture-analysis-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .mixture-analysis-head h3 {
+      margin: 3px 0 4px;
+      color: var(--ink);
+      font-size: 18px;
+    }
+
+    .mixture-analysis-head p {
+      max-width: 780px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .mixture-analysis-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mixture-analysis-body {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mixture-empty-state {
+      min-height: 112px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed rgba(96,208,255,0.24);
+      border-radius: 10px;
+      padding: 20px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.55;
+    }
+
+    .mixture-verdict-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.8fr) repeat(3, minmax(120px, 0.4fr));
+      gap: 10px;
+    }
+
+    .mixture-verdict-card,
+    .mixture-metric-card,
+    .mixture-result-section,
+    .mixture-ai-output {
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.026);
+      padding: 12px;
+    }
+
+    .mixture-verdict-card {
+      display: grid;
+      gap: 8px;
+    }
+
+    .mixture-verdict-card strong {
+      color: #e8fffb;
+      font-size: 15px;
+    }
+
+    .mixture-verdict-card p,
+    .mixture-metric-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .mixture-metric-card {
+      display: grid;
+      align-content: start;
+      gap: 5px;
+    }
+
+    .mixture-metric-card span {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .mixture-metric-card strong {
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .mixture-result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mixture-result-section {
+      display: grid;
+      gap: 9px;
+      align-content: start;
+    }
+
+    .mixture-result-section h4,
+    .mixture-ai-output h4 {
+      margin: 0;
+      color: var(--accent-glow);
+      font-size: 13px;
+    }
+
+    .mixture-candidate-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .mixture-candidate-card {
+      display: grid;
+      gap: 4px;
+      border-left: 3px solid rgba(45,212,191,0.62);
+      border-radius: 0 8px 8px 0;
+      padding: 8px 9px;
+      background: rgba(20,184,166,0.055);
+    }
+
+    .mixture-candidate-card strong {
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .mixture-candidate-card span,
+    .mixture-candidate-card small {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .mixture-warning-list,
+    .mixture-validation-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .mixture-ai-output {
+      display: grid;
+      gap: 8px;
+      border-color: rgba(96,208,255,0.24);
+    }
+
+    .mixture-ai-output[data-state="loading"] {
+      border-color: rgba(45,212,191,0.52);
+      box-shadow: inset 0 0 22px rgba(20,184,166,0.08);
+    }
+
+    .mixture-ai-output pre {
+      max-height: 360px;
+      margin: 0;
+      overflow: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: rgba(226,246,252,0.88);
+      font: 11px/1.58 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .mixture-source-badge {
+      width: fit-content;
+      border: 1px solid rgba(96,208,255,0.3);
+      border-radius: 999px;
+      padding: 3px 7px;
+      color: rgba(204,242,255,0.84);
+      background: rgba(96,208,255,0.07);
+      font-size: 9px;
+    }
+
+    @media (max-width: 980px) {
+      .mixture-verdict-grid,
+      .mixture-result-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .mixture-verdict-grid,
+      .mixture-result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mixture-analysis-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+      }
     }
 
     /* === Overview 区域 === */
@@ -6923,6 +7148,13 @@
         resize: none;
       }
 
+      .periodic-workbench > .periodic-wrap {
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-inline: contain;
+        -webkit-overflow-scrolling: touch;
+      }
+
       .periodic-index-panel {
         min-height: 0;
       }
@@ -8086,17 +8318,34 @@
                     <div class="crucible-bubbles" aria-hidden="true"><span></span><span></span><span></span></div>
                     <div class="crucible-bowl" aria-hidden="true"></div>
                     <div class="roundtable-crucible-elements" aria-live="polite">
-                      <span class="roundtable-crucible-empty">把右侧元素拖进锅里</span>
+                      <span class="roundtable-crucible-empty">拖入，或点元素后点这里</span>
                     </div>
                   </div>
                   <div class="crucible-body">
-                    <p class="muted">拖入元素后生成材料组合与探索建议。</p>
+                    <p class="muted">拖入元素，或先点元素再点坩埚，生成组合与探索建议。</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <section class="mixture-analysis-panel" id="mixtureAnalysisPanel" aria-labelledby="mixtureAnalysisTitle">
+          <div class="mixture-analysis-head">
+            <div>
+              <span class="mixture-source-badge" id="mixtureAnalysisMode">本地证据预筛</span>
+              <h3 id="mixtureAnalysisTitle">多元素超导候选分析</h3>
+              <p id="mixtureAnalysisHint">拖入任意元素，或先点元素再点坩埚。系统会先检索已知材料和家族近邻，再由 AI（可用时）提出待验证假设；结果不是超导证明。</p>
+            </div>
+            <div class="mixture-analysis-actions">
+              <button class="primary" id="mixtureAiAnalyzeBtn" type="button" disabled>AI 深度分析</button>
+              <button id="mixtureScienceOneBtn" type="button" disabled>转到科学验证</button>
+              <button id="mixtureClearBtn" type="button" disabled>清空坩埚</button>
+            </div>
+          </div>
+          <div class="mixture-analysis-body" id="mixtureAnalysisBody" aria-live="polite">
+            <div class="mixture-empty-state">从右侧周期表拖入至少两种元素，触屏也可先点元素再点坩埚。绿色表示已有本地资料，灰色表示资料稀疏，但都可以参与筛选。</div>
+          </div>
+        </section>
       </div>
     </section>
 
@@ -9396,11 +9645,11 @@
         twoDCategorySummary: "总体来看，目前研究最广泛、应用前景最成熟的二维材料主要包括石墨烯、过渡金属二硫族化合物（如 MoS₂）、六方氮化硼、黑磷和 MXene。它们在电子器件、光电子、催化、能源存储、柔性电子和量子信息等领域均展现出重要潜力。",
         searchFilterTitle: "🔍 搜索与筛选",
         periodicTitle: "元素周期表",
-        periodicStatus: "点击元素筛选材料，也可拖入坩埚",
+        periodicStatus: "所有元素都可拖入坩埚 · 亮色有资料，灰色待验证",
         twoDPeriodicTitle: "二维材料元素图谱",
         selectElement: "👆 选择一个元素",
-        selectElementHint: "点击绿色元素查看相关超导材料家族和 ARPES 特性。灰色元素暂无超导数据。",
-        twoDSelectElementHint: "点击绿色元素查看相关二维材料、范德华家族、能带/谷/层数线索。灰色元素暂无二维材料种子数据。",
+        selectElementHint: "点击任意元素查看资料；绿色表示已有超导种子数据，灰色表示资料稀疏但仍可拖入坩埚分析。",
+        twoDSelectElementHint: "点击任意元素查看资料；绿色表示已有二维材料种子数据，灰色表示资料稀疏但仍可拖入坩埚分析。",
         familyTitle: "🧬 材料家族",
         familyHint: "点击标签快速筛选。当前以超导为主题。",
         twoDFamilyHint: "点击标签快速筛选。当前以二维材料、范德华层状材料和量子薄膜为主题。",
@@ -10120,11 +10369,11 @@
         twoDCategorySummary: "Overall, the most widely studied and more mature 2D material platforms include graphene, transition-metal dichalcogenides such as MoS2, hexagonal boron nitride, black phosphorus, and MXenes. They show major potential in electronics, optoelectronics, catalysis, energy storage, flexible devices, and quantum information.",
         searchFilterTitle: "🔍 Search & Filter",
         periodicTitle: "Periodic Table",
-        periodicStatus: "Click to filter, or drag an element into the crucible",
+        periodicStatus: "Every element is draggable · bright = local data, grey = explore",
         twoDPeriodicTitle: "2D Materials Element Map",
         selectElement: "👆 Select an Element",
-        selectElementHint: "Click a green element to see material families and ARPES properties. Grey = no data yet.",
-        twoDSelectElementHint: "Click a green element to inspect related 2D materials, van der Waals families, band/valley/layer clues. Grey = no 2D seed data yet.",
+        selectElementHint: "Click any element to inspect it. Bright cells have local superconductivity seed data; grey cells remain draggable for screening.",
+        twoDSelectElementHint: "Click any element to inspect it. Bright cells have local 2D seed data; grey cells remain draggable for screening.",
         familyTitle: "🧬 Material Families",
         familyHint: "Click a chip to filter. Current topic: superconductivity.",
         twoDFamilyHint: "Click a chip to filter. Current topic: 2D materials, van der Waals layers, and quantum thin films.",
@@ -10666,6 +10915,12 @@
       chatMessages: [],
       chatTableRows: [],
       modelElements: [],
+      mixtureAi: {
+        signature: "",
+        status: "idle",
+        answer: "",
+        source: ""
+      },
       materialDirectorySelection: "",
       topic: "sc"
     };
@@ -10684,6 +10939,7 @@
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
     const SCIENCEONE_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/scienceone";
+    const MATERIAL_PREDICT_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/material-predict";
     const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v2";
     const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-width-v3";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
@@ -10867,6 +11123,14 @@
     const elementPanel = $("#elementPanel");
     const elementHistoryWorkbench = $("#elementHistoryWorkbench");
     const periodicCruciblePanel = $("#periodicCruciblePanel");
+    const mixtureAnalysisPanel = $("#mixtureAnalysisPanel");
+    const mixtureAnalysisMode = $("#mixtureAnalysisMode");
+    const mixtureAnalysisTitle = $("#mixtureAnalysisTitle");
+    const mixtureAnalysisHint = $("#mixtureAnalysisHint");
+    const mixtureAnalysisBody = $("#mixtureAnalysisBody");
+    const mixtureAiAnalyzeBtn = $("#mixtureAiAnalyzeBtn");
+    const mixtureScienceOneBtn = $("#mixtureScienceOneBtn");
+    const mixtureClearBtn = $("#mixtureClearBtn");
     const familyPanel = $("#familyPanel");
     const familyChips = $("#familyChips");
     const tableStatus = $("#tableStatus");
@@ -13810,17 +14074,16 @@
         return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
       };
       const cleanup = () => {
-        if (!periodicPointerDrag) return;
-        periodicPointerDrag.cell?.classList.remove("pointer-dragging");
-        periodicPointerDrag.ghost?.remove();
+        periodicPointerDrag?.cell?.classList.remove("pointer-dragging");
+        periodicPointerDrag?.ghost?.remove();
         modelDropZone?.classList.remove("drag-over");
         modelCrucibleDrop?.classList.remove("drag-over");
         periodicCruciblePanel?.classList.remove("drag-over");
         periodicPointerDrag = null;
       };
       periodicTable.addEventListener("pointerdown", event => {
-        const cell = event.target.closest(".element-cell.available");
-        if (!cell || (event.pointerType === "mouse" && event.button !== 0)) return;
+        const cell = event.target.closest(".element-cell[data-symbol]");
+        if (!cell || event.pointerType === "touch" || (event.pointerType === "mouse" && event.button !== 0)) return;
         periodicPointerDrag = {
           cell,
           symbol: cell.dataset.symbol || "",
@@ -13874,8 +14137,11 @@
         showToast(currentLang === "zh" ? `${symbol} 已加入坩埚` : `${symbol} added to the crucible`);
       });
       periodicTable.addEventListener("pointercancel", cleanup);
+      periodicTable.addEventListener("lostpointercapture", cleanup);
+      window.addEventListener("blur", cleanup);
+      window.addEventListener("mouseup", cleanup);
       periodicTable.addEventListener("dragstart", event => {
-        const cell = event.target.closest(".element-cell.available");
+        const cell = event.target.closest(".element-cell[data-symbol]");
         const symbol = cell?.dataset.symbol || "";
         if (!cell || !symbol || !event.dataTransfer) return;
         event.dataTransfer.effectAllowed = "copy";
@@ -13885,9 +14151,7 @@
       });
       periodicTable.addEventListener("dragend", event => {
         event.target.closest(".element-cell")?.classList.remove("pointer-dragging");
-        modelDropZone?.classList.remove("drag-over");
-        modelCrucibleDrop?.classList.remove("drag-over");
-        periodicCruciblePanel?.classList.remove("drag-over");
+        cleanup();
       });
     }
 
@@ -13900,15 +14164,22 @@
       periodicTable.innerHTML = callout + periodicLayout.map(([sym, col, row], i) => {
         const meta = elementMeta[sym] || [sym, ""];
         const on = available.has(sym);
-        return `<button class="element-cell ${on ? "available" : "disabled"} ${state.selectedElement === sym ? "selected" : ""}"
+        const status = on
+          ? (currentLang === "zh" ? "已有本地资料，可点击或拖入坩埚" : "Local data available; click or drag into the crucible")
+          : (currentLang === "zh" ? "本地资料稀疏，仍可点击或拖入坩埚交给模型筛选" : "Sparse local data; still clickable and draggable for screening");
+        return `<button class="element-cell ${on ? "available" : "unseeded"} ${state.selectedElement === sym ? "selected" : ""}"
+          type="button"
           style="grid-column:${col};grid-row:${row};"
-          data-symbol="${esc(sym)}" ${on ? 'draggable="true"' : "disabled"}>
+          data-symbol="${esc(sym)}" draggable="true"
+          title="${esc(`${sym} · ${meta[0]} · ${status}`)}"
+          aria-label="${esc(`${sym} ${meta[0]}。${status}`)}"
+          data-evidence="${on ? "local" : "sparse"}">
           <span class="element-number">${esc(meta[1])}</span>
           <span class="element-symbol">${esc(sym)}</span>
           <span class="element-name">${esc(meta[0])}</span>
         </button>`;
       }).join("");
-      periodicTable.querySelectorAll(".element-cell.available").forEach(cell => {
+      periodicTable.querySelectorAll(".element-cell[data-symbol]").forEach(cell => {
         cell.addEventListener("click", () => {
           if (suppressPeriodicCellClick) return;
           state.selectedElement = cell.dataset.symbol;
@@ -13929,6 +14200,23 @@
     }
 
     const MODEL_MIXTURE_LIMIT = 18;
+    let mixtureAiAbortController = null;
+    const MIXTURE_ELEMENT_ROLES = Object.freeze({
+      noble: new Set(["He", "Ne", "Ar", "Kr", "Xe", "Rn", "Og"]),
+      radioactiveOrShortLived: new Set([
+        "Tc", "Pm", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf",
+        "Es", "Fm", "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh",
+        "Fl", "Mc", "Lv", "Ts", "Og"
+      ]),
+      transition: new Set([
+        "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Y", "Zr", "Nb", "Mo", "Tc", "Ru",
+        "Rh", "Pd", "Ag", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au"
+      ]),
+      rareEarth: new Set([
+        "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
+        "Th", "U"
+      ])
+    });
 
     function modelElementCounts() {
       const ordered = [];
@@ -13944,6 +14232,438 @@
       return modelElementCounts()
         .map(({ symbol, count }) => `${symbol}${count > 1 ? count : ""}`)
         .join("");
+    }
+
+    function mixtureSignature() {
+      return modelElementCounts().map(({ symbol, count }) => `${symbol}:${count}`).join("|");
+    }
+
+    function resetMixtureAiState() {
+      mixtureAiAbortController?.abort();
+      mixtureAiAbortController = null;
+      state.mixtureAi = {
+        signature: mixtureSignature(),
+        status: "idle",
+        answer: "",
+        source: ""
+      };
+    }
+
+    function superconductivityMaterialRows() {
+      const rows = state.topicDbs?.sc?.materials;
+      if (Array.isArray(rows)) return rows;
+      return Array.isArray(state.db?.materials) ? state.db.materials : [];
+    }
+
+    function superconductivityFamilyName(familyId) {
+      const family = (state.topicDbs?.sc?.families || []).find(item => item.id === familyId);
+      return family?.name || familyName(familyId);
+    }
+
+    function mixtureFamilyPathways(symbols) {
+      const selected = new Set(symbols);
+      const has = symbol => selected.has(symbol);
+      const hasAny = values => values.some(value => selected.has(value));
+      const pathways = [];
+      const add = (id, zhTitle, enTitle, zhPrototype, enPrototype, zhConditions, enConditions, zhReason, enReason) => {
+        if (pathways.some(item => item.id === id)) return;
+        pathways.push({
+          id,
+          title: currentLang === "zh" ? zhTitle : enTitle,
+          prototype: currentLang === "zh" ? zhPrototype : enPrototype,
+          conditions: currentLang === "zh" ? zhConditions : enConditions,
+          rationale: currentLang === "zh" ? zhReason : enReason
+        });
+      };
+
+      if (has("H") && symbols.length > 1) {
+        add(
+          "hydride",
+          "富氢高压结构搜索",
+          "Hydrogen-rich high-pressure search",
+          "XHₙ（n 与晶体结构均待搜索）",
+          "XHₙ (n and the crystal structure both require search)",
+          "通常需要把压力作为独立变量扫描",
+          "Treat pressure as an independent search variable",
+          "富氢体系可进入声子与结构稳定性筛选，但元素集合本身不能确定稳定化学式。",
+          "Hydrogen-rich systems can enter phonon and structural-stability screening, but the element set alone does not determine a stable formula."
+        );
+      }
+      if (has("Cu") && has("O")) {
+        add(
+          "cuprate",
+          "层状 Cu–O 家族类比",
+          "Layered Cu–O family analogue",
+          "AₘCuₙOₓ（A 为其余选中元素；比例待定）",
+          "AₘCuₙOₓ (A = other selected elements; ratios unresolved)",
+          "需要同时搜索载流子掺杂、氧含量与层状结构",
+          "Search carrier doping, oxygen content, and layered structures together",
+          "Cu–O 骨架与本地铜氧化物种子材料存在家族近邻。",
+          "The Cu–O framework has family neighbours in the local cuprate seed set."
+        );
+      }
+      if (has("Fe") && hasAny(["As", "P", "Se", "Te"])) {
+        add(
+          "iron-based",
+          "Fe–Pn/Ch 层状家族类比",
+          "Fe–Pn/Ch layered-family analogue",
+          "FePn / FeCh 与间隔层变体",
+          "FePn / FeCh and spacer-layer variants",
+          "比较化学计量、掺杂、压力与界面条件",
+          "Compare stoichiometry, doping, pressure, and interface conditions",
+          "选中元素包含铁基超导常见的 Fe–pnictogen/chalcogen 骨架。",
+          "The selection contains a Fe–pnictogen/chalcogen framework used by iron-based families."
+        );
+      }
+      if (has("Ni") && has("O")) {
+        add(
+          "nickelate",
+          "层状 Ni–O 家族类比",
+          "Layered Ni–O family analogue",
+          "R–Ni–O / A–Ni–O（结构与价态待定）",
+          "R–Ni–O / A–Ni–O (structure and valence unresolved)",
+          "需联合检查价态、氧缺位、外延应变或压力",
+          "Jointly inspect valence, oxygen vacancies, epitaxial strain, or pressure",
+          "Ni–O 组合可与本地镍酸盐种子条目比较，但不能据此推断确定 Tc。",
+          "Ni–O can be compared with local nickelate seeds, but this does not establish a Tc."
+        );
+      }
+      if (has("Mg") && has("B")) {
+        add(
+          "boride",
+          "硼化物 / MgB₂ 近邻",
+          "Boride / MgB₂ neighbourhood",
+          "Mg–B 化学计量与同构替位",
+          "Mg–B stoichiometry and isostructural substitution",
+          "优先核对相稳定性、电子-声子耦合与双带结构",
+          "Prioritize phase stability, electron–phonon coupling, and multiband structure",
+          "本地材料库包含 Mg–B 已知种子，但必须另行核对当前比例、结构与来源。",
+          "The local library contains an Mg–B seed, but the current ratio, structure, and source must be checked separately."
+        );
+      }
+      if (has("Nb") && hasAny(["Sn", "Ge", "Al", "N", "C"])) {
+        add(
+          "niobium-intermetallic",
+          "Nb 基金属间化合物路径",
+          "Nb-based intermetallic path",
+          "A15 / 氮化物 / 碳化物结构搜索",
+          "A15 / nitride / carbide structure search",
+          "比较有序相、缺陷、声子谱与电子-声子耦合",
+          "Compare ordered phases, defects, phonons, and electron–phonon coupling",
+          "Nb 基已知体系可为所选组合提供常规超导近邻。",
+          "Known Nb-based systems can provide conventional-superconductor neighbours for the selection."
+        );
+      }
+      if (
+        symbols.some(symbol => MIXTURE_ELEMENT_ROLES.transition.has(symbol))
+        && hasAny(["S", "Se", "Te"])
+      ) {
+        add(
+          "chalcogenide",
+          "过渡金属硫属化物路径",
+          "Transition-metal chalcogenide path",
+          "MX / MX₂ 与插层、薄层变体",
+          "MX / MX₂ plus intercalated or thin-layer variants",
+          "搜索层数、插层、CDW 竞争与压力效应",
+          "Search layer count, intercalation, CDW competition, and pressure effects",
+          "过渡金属与硫属元素组合可进入层状相和竞争序筛选。",
+          "Transition-metal/chalcogen combinations can enter layered-phase and competing-order screening."
+        );
+      }
+      if (
+        symbols.some(symbol => MIXTURE_ELEMENT_ROLES.rareEarth.has(symbol))
+        && symbols.some(symbol => MIXTURE_ELEMENT_ROLES.transition.has(symbol))
+        && hasAny(["In", "Si", "Ge", "Sn"])
+      ) {
+        add(
+          "heavy-fermion",
+          "f 电子金属间化合物路径",
+          "f-electron intermetallic path",
+          "R–T–Xₙ（化学计量与结构待定）",
+          "R–T–Xₙ (stoichiometry and structure unresolved)",
+          "检查磁性、杂化、重费米子能标与极低温输运",
+          "Inspect magnetism, hybridization, heavy-fermion energy scales, and low-temperature transport",
+          "稀土/锕系、过渡金属与 p 区元素的组合可与重费米子原型比较。",
+          "Rare-earth/actinide, transition-metal, and p-block combinations can be compared with heavy-fermion prototypes."
+        );
+      }
+      if (!pathways.length && symbols.length >= 2) {
+        add(
+          "open-search",
+          "开放式相图与结构枚举",
+          "Open phase-diagram and structure enumeration",
+          `${symbols.join("–")} 多化学计量搜索`,
+          `${symbols.join("–")} multi-stoichiometry search`,
+          "先做已知相检索，再枚举比例、晶体结构、压力和掺杂",
+          "Search known phases first, then enumerate ratios, structures, pressure, and doping",
+          "本地库没有可靠家族近邻；应把结果视为低证据假设，而不是负面结论。",
+          "The local library has no reliable family neighbour; treat this as a low-evidence hypothesis, not a negative conclusion."
+        );
+      }
+      return pathways.slice(0, 4);
+    }
+
+    function parseSimpleFormulaComposition(formula) {
+      const text = String(formula || "").trim().replace(/^\d+[A-Za-z]-/, "");
+      if (!text) return null;
+      const tokens = [...text.matchAll(/([A-Z][a-z]?)(\d*\.?\d*)/g)];
+      if (!tokens.length) return null;
+      const remainder = text
+        .replace(/([A-Z][a-z]?)(\d*\.?\d*)/g, "")
+        .replace(/[\s()[\]{}·]/g, "");
+      if (remainder) return null;
+      const composition = new Map();
+      for (const token of tokens) {
+        const symbol = token[1];
+        if (!periodicLayout.some(([candidate]) => candidate === symbol)) return null;
+        const amount = token[2] ? Number(token[2]) : 1;
+        if (!Number.isFinite(amount) || amount <= 0) return null;
+        composition.set(symbol, (composition.get(symbol) || 0) + amount);
+      }
+      return composition;
+    }
+
+    function normalizedStoichiometryDistance(counts, referenceComposition) {
+      if (!referenceComposition) return null;
+      const selectedComposition = new Map(counts.map(item => [item.symbol, Number(item.count) || 0]));
+      const symbols = new Set([...selectedComposition.keys(), ...referenceComposition.keys()]);
+      if (
+        symbols.size !== selectedComposition.size
+        || symbols.size !== referenceComposition.size
+        || [...symbols].some(symbol => !selectedComposition.has(symbol) || !referenceComposition.has(symbol))
+      ) return null;
+      const selectedTotal = [...selectedComposition.values()].reduce((sum, value) => sum + value, 0);
+      const referenceTotal = [...referenceComposition.values()].reduce((sum, value) => sum + value, 0);
+      if (!selectedTotal || !referenceTotal) return null;
+      const l1 = [...symbols].reduce((sum, symbol) => {
+        const selectedFraction = selectedComposition.get(symbol) / selectedTotal;
+        const referenceFraction = referenceComposition.get(symbol) / referenceTotal;
+        return sum + Math.abs(selectedFraction - referenceFraction);
+      }, 0);
+      return l1 / 2;
+    }
+
+    function hasGroundedFormulaSource(row) {
+      return Boolean(String(row?.source_note || "").trim())
+        && ["historical_reference", "literature_seed"].includes(String(row?.verification_status || ""));
+    }
+
+    function predictMixturePotential() {
+      const counts = modelElementCounts();
+      const symbols = counts.map(item => item.symbol);
+      const formula = modelMixtureFormula();
+      const rows = superconductivityMaterialRows();
+      const seedElements = new Set(rows.flatMap(row => row.elements || []));
+      const rankedMatches = rows.map(row => {
+        const rowSymbols = uniq(row.elements || []);
+        const rowSet = new Set(rowSymbols);
+        const intersection = symbols.filter(symbol => rowSet.has(symbol)).length;
+        const union = new Set([...symbols, ...rowSymbols]).size || 1;
+        const containsSelection = symbols.length > 0 && symbols.every(symbol => rowSet.has(symbol));
+        const sameElementSet = containsSelection && rowSymbols.length === symbols.length;
+        const stoichiometryDistance = sameElementSet
+          ? normalizedStoichiometryDistance(counts, parseSimpleFormulaComposition(row.material))
+          : null;
+        const sameStoichiometry = stoichiometryDistance !== null && stoichiometryDistance <= 0.02;
+        const groundedFormulaMatch = sameStoichiometry && hasGroundedFormulaSource(row);
+        return {
+          row,
+          intersection,
+          jaccard: intersection / union,
+          containsSelection,
+          sameElementSet,
+          stoichiometryDistance,
+          sameStoichiometry,
+          groundedFormulaMatch
+        };
+      }).filter(match => match.intersection > 0)
+        .sort((left, right) =>
+          Number(right.groundedFormulaMatch) - Number(left.groundedFormulaMatch)
+          || Number(right.sameStoichiometry) - Number(left.sameStoichiometry)
+          || Number(right.sameElementSet) - Number(left.sameElementSet)
+          || Number(right.containsSelection) - Number(left.containsSelection)
+          || right.jaccard - left.jaccard
+          || Number(right.row.transition_temperature_K || 0) - Number(left.row.transition_temperature_K || 0)
+        );
+      const groundedFormulaMatches = rankedMatches.filter(match => match.groundedFormulaMatch);
+      const sameStoichiometryMatches = rankedMatches.filter(match => match.sameStoichiometry && !match.groundedFormulaMatch);
+      const sameSpeciesMatches = rankedMatches.filter(match => match.sameElementSet && !match.sameStoichiometry);
+      const containingMatches = rankedMatches.filter(match => match.containsSelection && !match.sameElementSet);
+      const nearestMatches = rankedMatches.slice(0, 5);
+      const pathways = mixtureFamilyPathways(symbols);
+      const sparseSymbols = symbols.filter(symbol => !seedElements.has(symbol));
+      const nobleSymbols = symbols.filter(symbol => MIXTURE_ELEMENT_ROLES.noble.has(symbol));
+      const unstableSymbols = symbols.filter(symbol => MIXTURE_ELEMENT_ROLES.radioactiveOrShortLived.has(symbol));
+      const seedElementCoverage = symbols.length ? Math.round(((symbols.length - sparseSymbols.length) / symbols.length) * 100) : 0;
+      const bestJaccard = rankedMatches[0]?.jaccard || 0;
+
+      let score = symbols.length ? 10 : 0;
+      if (groundedFormulaMatches.length) score += 44;
+      else if (sameStoichiometryMatches.length) score += 32;
+      else if (sameSpeciesMatches.length) score += 22;
+      else if (containingMatches.length) score += 17;
+      else score += Math.round(bestJaccard * 16);
+      score += Math.min(16, pathways.length * 5);
+      if (symbols.length >= 2) score += 5;
+      if (nobleSymbols.length) score -= 38;
+      if (unstableSymbols.length) score -= 18;
+      score = Math.max(symbols.length ? 3 : 0, Math.min(94, Math.round(score)));
+
+      let classification = "insufficient_data";
+      let evidenceLevel = "none";
+      if (nobleSymbols.length) classification = "low_priority";
+      else if (groundedFormulaMatches.length) {
+        classification = "known_neighbour";
+        evidenceLevel = "grounded_same_formula";
+      } else if (sameStoichiometryMatches.length) {
+        classification = "plausible";
+        evidenceLevel = "same_formula_unverified";
+      } else if (sameSpeciesMatches.length) {
+        classification = "plausible";
+        evidenceLevel = "same_element_species";
+      } else if (containingMatches.length) {
+        classification = "plausible";
+        evidenceLevel = "subset_analogue";
+      } else if (pathways.length && bestJaccard >= 0.35) {
+        classification = "plausible";
+        evidenceLevel = "family_analogue";
+      } else if (pathways.length) {
+        classification = "speculative";
+        evidenceLevel = "rule_hypothesis";
+      }
+      const uncertainty = groundedFormulaMatches.length && !nobleSymbols.length && !unstableSymbols.length ? "medium" : "high";
+      const labels = currentLang === "zh"
+        ? {
+            known_neighbour: "已有来源支撑的同式近邻",
+            plausible: "值得进入下一轮验证",
+            speculative: "探索性假设",
+            low_priority: "当前筛选优先级较低",
+            insufficient_data: "证据不足"
+          }
+        : {
+            known_neighbour: "Source-grounded same-formula neighbour",
+            plausible: "Advance to the next validation stage",
+            speculative: "Exploratory hypothesis",
+            low_priority: "Low current screening priority",
+            insufficient_data: "Insufficient evidence"
+          };
+      const evidenceLabels = currentLang === "zh"
+        ? {
+            grounded_same_formula: "同化学计量且有来源支撑",
+            same_formula_unverified: "同化学计量，来源仍待核验",
+            same_element_species: "同元素种类，化学计量不同或未知",
+            subset_analogue: "数据库子集近邻",
+            family_analogue: "材料家族类比",
+            rule_hypothesis: "规则假设",
+            none: "暂无本地证据"
+          }
+        : {
+            grounded_same_formula: "Same stoichiometry with a grounded source",
+            same_formula_unverified: "Same stoichiometry; source still needs verification",
+            same_element_species: "Same element species; stoichiometry differs or is unknown",
+            subset_analogue: "Database subset neighbour",
+            family_analogue: "Material-family analogy",
+            rule_hypothesis: "Rule-based hypothesis",
+            none: "No local evidence"
+          };
+      const warnings = [];
+      if (symbols.length === 1) {
+        warnings.push(currentLang === "zh" ? "目前只有一种元素；再加入至少一种元素，才能分析组合路径。" : "Only one element is present; add at least one more to screen a composition path.");
+      }
+      if (sparseSymbols.length) {
+        warnings.push(currentLang === "zh"
+          ? `${sparseSymbols.join("、")} 在本地超导种子库中资料稀疏；灰色不等于不可行，只表示不确定性更高。`
+          : `${sparseSymbols.join(", ")} have sparse local superconductivity seed data. Grey does not mean impossible; it means higher uncertainty.`);
+      }
+      if (nobleSymbols.length) {
+        warnings.push(currentLang === "zh"
+          ? `${nobleSymbols.join("、")} 属于惰性/闭壳层元素，常规化合物筛选优先级很低；若继续，应明确非常规压力或基质条件。`
+          : `${nobleSymbols.join(", ")} are inert/closed-shell elements and rank low in ordinary compound screening; continuing requires explicit non-standard pressure or host conditions.`);
+      }
+      if (unstableSymbols.length) {
+        warnings.push(currentLang === "zh"
+          ? `${unstableSymbols.join("、")} 涉及放射性或短寿命核素；必须单独评估可获得性、辐射安全与实验许可。`
+          : `${unstableSymbols.join(", ")} involve radioactive or short-lived nuclides; availability, radiation safety, and authorization require separate review.`);
+      }
+      if (symbols.length) {
+        warnings.push(currentLang === "zh"
+          ? "元素集合不能唯一确定化学式、晶体结构或 Tc；重复拖入只作为化学计量提示。"
+          : "An element set does not uniquely determine formula, crystal structure, or Tc; repeated drops are only a stoichiometry hint.");
+      }
+      if (sameSpeciesMatches.length && !groundedFormulaMatches.length && !sameStoichiometryMatches.length) {
+        warnings.push(currentLang === "zh"
+          ? "已知近邻只共享元素种类，当前拖入比例与其化学计量不同或无法核对；不能据此继承已知材料的 Tc。"
+          : "Known neighbours share only the element species; the dragged ratio differs or cannot be checked, so their Tc cannot be transferred to this candidate.");
+      }
+
+      const bestKnown = nearestMatches[0];
+      const summary = !symbols.length
+        ? (currentLang === "zh"
+          ? "等待元素组合。绿色和灰色元素都可以拖入。"
+          : "Awaiting a composition. Both bright and grey elements are draggable.")
+        : (currentLang === "zh"
+          ? `${formula || symbols.join("–")} 的当前结论是“${labels[classification]}”。${
+              groundedFormulaMatches.length
+                ? `本地库找到 ${groundedFormulaMatches.length} 个同化学计量且有来源支撑的近邻。`
+                : sameStoichiometryMatches.length
+                  ? `本地库找到 ${sameStoichiometryMatches.length} 个同化学计量条目，但来源仍需核验。`
+                  : sameSpeciesMatches.length
+                    ? `本地库找到 ${sameSpeciesMatches.length} 个同元素种类近邻，但化学计量不同或未知。`
+                : bestKnown
+                  ? `最接近的本地种子是 ${bestKnown.row.display_name || bestKnown.row.material}。`
+                  : "本地库未找到可追溯近邻。"
+            } 该排序用于决定下一步计算，不是成为超导体的概率。`
+          : `${formula || symbols.join("–")} is currently classified as “${labels[classification]}.” ${
+              groundedFormulaMatches.length
+                ? `${groundedFormulaMatches.length} source-grounded same-stoichiometry neighbour(s) were found.`
+                : sameStoichiometryMatches.length
+                  ? `${sameStoichiometryMatches.length} same-stoichiometry row(s) were found, but their sources still need verification.`
+                  : sameSpeciesMatches.length
+                    ? `${sameSpeciesMatches.length} same-element-species neighbour(s) were found, with different or unresolved stoichiometry.`
+                : bestKnown
+                  ? `The nearest local seed is ${bestKnown.row.display_name || bestKnown.row.material}.`
+                  : "No traceable local neighbour was found."
+            } This ranking prioritizes follow-up work; it is not a probability of superconductivity.`);
+
+      return {
+        formula,
+        counts,
+        symbols,
+        score,
+        seedElementCoverage,
+        classification,
+        classificationLabel: labels[classification],
+        evidenceLevel,
+        evidenceLabel: evidenceLabels[evidenceLevel],
+        uncertainty,
+        uncertaintyLabel: currentLang === "zh"
+          ? (uncertainty === "medium" ? "中等" : "高")
+          : (uncertainty === "medium" ? "Medium" : "High"),
+        summary,
+        pathways,
+        warnings,
+        sparseSymbols,
+        groundedFormulaMatches,
+        sameStoichiometryMatches,
+        sameSpeciesMatches,
+        containingMatches,
+        nearestMatches,
+        validationSteps: currentLang === "zh"
+          ? [
+              "查相图与公开数据库，枚举合理化学计量和候选晶体结构。",
+              "做结构稳定性、形成能、电子结构、声子与电子-声子耦合计算；强关联路径需加入相应模型。",
+              "按需要扫描压力、掺杂、氧含量、应变、层数或界面条件。",
+              "样品合成后用零电阻与迈斯纳/磁化响应共同验证体超导。",
+              "确认超导后再用 ARPES 检查费米面、能隙、轨道与竞争序。"
+            ]
+          : [
+              "Search phase diagrams and public databases; enumerate plausible stoichiometries and candidate structures.",
+              "Calculate structural stability, formation energy, electronic structure, phonons, and electron–phonon coupling; add correlated models where needed.",
+              "Scan pressure, doping, oxygen content, strain, layer count, or interface conditions as appropriate.",
+              "After synthesis, combine zero resistance with Meissner/magnetization evidence to verify bulk superconductivity.",
+              "Only after confirmation, use ARPES to inspect Fermi surfaces, gaps, orbital character, and competing orders."
+            ]
+      };
     }
 
     function renderRoundtableCrucibleElements() {
@@ -13963,7 +14683,7 @@
             ${esc(symbol)}${count > 1 ? `<small>×${count}</small>` : ""}
           </button>
         `).join("")
-        : `<span class="roundtable-crucible-empty">${esc(currentLang === "zh" ? "把右侧元素拖进锅里" : "Drag elements from the right into the crucible")}</span>`;
+        : `<span class="roundtable-crucible-empty">${esc(currentLang === "zh" ? "拖入，或点元素后点这里" : "Drag here, or select an element then tap here")}</span>`;
       container.querySelectorAll("[data-remove-roundtable-element]").forEach(button => {
         button.addEventListener("click", event => {
           event.stopPropagation();
@@ -14031,7 +14751,7 @@
         modelClearElementsBtn.setAttribute("aria-label", t("modelClearElements"));
       }
       renderModelElementPalette();
-      renderRoundtableCrucibleElements();
+      renderPeriodicCruciblePanel();
     }
 
     function addModelElement(symbol) {
@@ -14042,6 +14762,7 @@
         return;
       }
       state.modelElements.push(symbol);
+      resetMixtureAiState();
       renderModelMixture();
     }
 
@@ -14049,6 +14770,7 @@
       const index = state.modelElements.lastIndexOf(symbol);
       if (index < 0) return;
       state.modelElements.splice(index, 1);
+      resetMixtureAiState();
       renderModelMixture();
     }
 
@@ -14208,7 +14930,23 @@
       modelElementSearch?.addEventListener("input", renderModelElementPalette);
       modelClearElementsBtn?.addEventListener("click", () => {
         state.modelElements = [];
+        resetMixtureAiState();
         renderModelMixture();
+      });
+      mixtureAiAnalyzeBtn?.addEventListener("click", runCrucibleAiAnalysis);
+      mixtureClearBtn?.addEventListener("click", () => {
+        state.modelElements = [];
+        resetMixtureAiState();
+        renderModelMixture();
+      });
+      mixtureScienceOneBtn?.addEventListener("click", () => {
+        if (!state.modelElements.length) return;
+        const speciesInput = $("#scienceOneSpecies");
+        if (speciesInput && !speciesInput.value.trim()) speciesInput.value = uniq(state.modelElements).join(", ");
+        openRoundtableScienceOneTool("crystal", document.querySelector(".roundtable-center"));
+        showToast(currentLang === "zh"
+          ? "已打开科学验证；空白物种栏会自动带入元素，请补充晶格与坐标"
+          : "Scientific validation opened; an empty species field is prefilled, and lattice/coordinates still need input");
       });
       renderModelMixture();
     }
@@ -15122,6 +15860,7 @@
         question,
         selectedElement,
         activePage: activeAppPage,
+        mixture: state.modelElements.length ? mixtureAiContext(predictMixturePotential()) : null,
         chatHistory: (state.chatMessages || [])
           .filter(message => message.role === "user" || message.role === "assistant")
           .slice(-8)
@@ -15665,41 +16404,344 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ];
     }
 
-    function renderPeriodicCruciblePanel(symbol = "", rows = [], articleRows = [], prediction = null) {
-      if (!periodicCruciblePanel) return;
-      const hasElement = !!symbol;
-      const model = prediction || (hasElement ? predictElementPotential(symbol, rows, articleRows) : null);
-      periodicCruciblePanel.innerHTML = hasElement && model
+    function mixtureKnownMatchHtml(match) {
+      const row = match.row;
+      const relation = match.groundedFormulaMatch
+        ? (currentLang === "zh" ? "同化学计量且有来源支撑" : "same stoichiometry with grounded source")
+        : match.sameStoichiometry
+          ? (currentLang === "zh" ? "同化学计量，来源待核验" : "same stoichiometry; source needs verification")
+          : match.sameElementSet
+            ? (currentLang === "zh" ? "同元素种类，化学计量不同或未知" : "same element species; stoichiometry differs or is unresolved")
+        : match.containsSelection
+          ? (currentLang === "zh" ? "包含全部所选元素" : "contains every selected element")
+          : (currentLang === "zh" ? `集合相似度 ${Math.round(match.jaccard * 100)}%` : `set similarity ${Math.round(match.jaccard * 100)}%`);
+      const tc = row.transition_temperature_K ?? row.tc_K;
+      const verification = row.verification_status || (currentLang === "zh" ? "种子条目" : "seed row");
+      return `
+        <article class="mixture-candidate-card">
+          <strong>${esc(row.display_name || row.material || "-")}</strong>
+          <span>${esc(superconductivityFamilyName(row.family))}${tc == null ? "" : ` · Tc ${esc(tc)} K`} · ${esc(relation)}</span>
+          <small>${esc(verification)}${row.source_note ? ` · ${esc(row.source_note)}` : ""}</small>
+        </article>
+      `;
+    }
+
+    function renderMixtureAnalysis(model = predictMixturePotential()) {
+      if (!mixtureAnalysisPanel || !mixtureAnalysisBody) return;
+      const zh = currentLang === "zh";
+      const ready = model.symbols.length >= 2;
+      const loading = state.mixtureAi?.status === "loading" && state.mixtureAi.signature === mixtureSignature();
+      if (mixtureAnalysisMode) {
+        mixtureAnalysisMode.textContent = state.mixtureAi?.status === "done" && state.mixtureAi.source === "server-ai"
+          ? (zh ? "AI + 本地证据" : "AI + local evidence")
+          : (zh ? "本地证据预筛" : "Local evidence screening");
+      }
+      if (mixtureAnalysisTitle) mixtureAnalysisTitle.textContent = zh ? "多元素超导候选分析" : "Multi-element Superconductor Candidate Screening";
+      if (mixtureAnalysisHint) {
+        mixtureAnalysisHint.textContent = zh
+          ? "拖入元素，或先点元素再点坩埚。系统先检索已知近邻，再由 AI（可用时）提出待验证假设；探索排序不是成功概率或超导证明。"
+          : "Drag an element, or select it and then tap the crucible. Known neighbours are checked before AI proposes testable hypotheses; the rank is not a success probability or proof.";
+      }
+      if (mixtureAiAnalyzeBtn) {
+        mixtureAiAnalyzeBtn.disabled = !ready || loading;
+        mixtureAiAnalyzeBtn.textContent = loading
+          ? (zh ? "AI 正在分析…" : "AI is analyzing…")
+          : (zh ? "AI 深度分析" : "Run AI analysis");
+      }
+      if (mixtureScienceOneBtn) {
+        mixtureScienceOneBtn.disabled = !model.symbols.length;
+        mixtureScienceOneBtn.textContent = zh ? "转到科学验证" : "Open scientific validation";
+      }
+      if (mixtureClearBtn) {
+        mixtureClearBtn.disabled = !model.symbols.length;
+        mixtureClearBtn.textContent = zh ? "清空坩埚" : "Clear crucible";
+      }
+
+      if (!model.symbols.length) {
+        mixtureAnalysisBody.innerHTML = `
+          <div class="mixture-empty-state">${esc(zh
+            ? "从右侧周期表拖入至少两种元素；触屏也可先点元素、再点坩埚。绿色表示已有本地资料，灰色表示资料稀疏，但全部元素都能参与筛选。"
+            : "Drag at least two elements from the periodic table, or select each element and tap the crucible on touch screens. Bright cells have local data; grey cells are sparse, but all can be screened.")}</div>
+        `;
+        return;
+      }
+
+      const knownMatches = model.nearestMatches.length
+        ? model.nearestMatches.slice(0, 4).map(mixtureKnownMatchHtml).join("")
+        : `<div class="mixture-candidate-card"><strong>${esc(zh ? "未找到本地近邻" : "No local neighbour found")}</strong><small>${esc(zh ? "这不等于不可行，只表示当前数据库不能提供证据锚点。" : "This does not mean impossible; the current database simply has no evidence anchor.")}</small></div>`;
+      const pathwayRows = model.pathways.length
+        ? model.pathways.map(pathway => `
+            <article class="mixture-candidate-card">
+              <strong>${esc(pathway.title)}</strong>
+              <span>${esc(pathway.prototype)}</span>
+              <small>${esc(pathway.conditions)} · ${esc(pathway.rationale)}</small>
+            </article>
+          `).join("")
+        : `<div class="mixture-candidate-card"><strong>${esc(zh ? "等待更多元素" : "Add more elements")}</strong><small>${esc(zh ? "至少两种元素后才会建立组合路径。" : "A composition pathway requires at least two distinct elements.")}</small></div>`;
+      const warningRows = model.warnings.map(item => `<li>${esc(item)}</li>`).join("");
+      const validationRows = model.validationSteps.map(item => `<li>${esc(item)}</li>`).join("");
+      const aiState = state.mixtureAi || {};
+      const aiOutput = aiState.signature === mixtureSignature() && aiState.status !== "idle"
         ? `
-          <h3>${currentLang === "zh" ? "坩埚预测" : "Crucible Prediction"} <span id="roundtableCrucibleFormula"></span></h3>
-          ${crucibleVisualHtml()}
-          <div class="crucible-body">
+          <section class="mixture-ai-output" data-state="${esc(aiState.status)}">
+            <h4>${esc(aiState.status === "loading"
+              ? (zh ? "正在调用 AI 候选分析…" : "Running AI candidate analysis…")
+              : (zh ? "AI / 证据引擎补充分析" : "AI / evidence-engine analysis"))}</h4>
+            <span class="mixture-source-badge">${esc(aiState.source === "server-ai"
+              ? (zh ? "服务端 AI · 仍需实验验证" : "Server AI · experimental validation required")
+              : (zh ? "本地回退 · 未调用可用 AI" : "Local fallback · no available AI call"))}</span>
+            <pre>${esc(aiState.status === "loading"
+              ? (zh ? "正在整理相似材料、候选结构、条件、风险与证伪步骤…" : "Organizing analogues, candidate structures, conditions, risks, and falsification steps…")
+              : aiState.answer)}</pre>
+          </section>
+        `
+        : "";
+
+      mixtureAnalysisBody.innerHTML = `
+        <div class="mixture-verdict-grid">
+          <section class="mixture-verdict-card">
+            <strong>${esc(model.formula)} · ${esc(model.classificationLabel)}</strong>
+            <p>${esc(model.summary)}</p>
+            <div class="score-bar" title="${esc(zh ? "探索排序，不是概率" : "Exploration rank, not probability")}"><span style="--score:${model.score}%"></span></div>
+          </section>
+          <section class="mixture-metric-card">
+            <span>${esc(zh ? "探索排序" : "Exploration rank")}</span>
+            <strong>${model.score}/100</strong>
+            <p>${esc(zh ? "只用于安排后续计算，不表示成功率。" : "Prioritizes follow-up work; not a success rate.")}</p>
+          </section>
+          <section class="mixture-metric-card">
+            <span>${esc(zh ? "所选元素种子覆盖率" : "Selected-element seed coverage")}</span>
+            <strong>${model.seedElementCoverage}%</strong>
+            <p>${esc(zh ? "仅表示各元素是否在种子库出现，不代表该组合有证据。" : "Only tracks whether each element appears in the seed library; it is not composition evidence.")}</p>
+          </section>
+          <section class="mixture-metric-card">
+            <span>${esc(zh ? "不确定性" : "Uncertainty")}</span>
+            <strong>${esc(model.uncertaintyLabel)}</strong>
+            <p>${esc(zh ? "元素集合无法唯一确定结构与 Tc。" : "The element set cannot determine structure or Tc.")}</p>
+          </section>
+        </div>
+        <div class="mixture-result-grid">
+          <section class="mixture-result-section">
+            <h4>${esc(zh ? "已知材料与集合近邻" : "Known materials and set neighbours")}</h4>
+            <div class="mixture-candidate-list">${knownMatches}</div>
+          </section>
+          <section class="mixture-result-section">
+            <h4>${esc(zh ? "候选家族 / 结构搜索路径" : "Candidate family / structure-search paths")}</h4>
+            <div class="mixture-candidate-list">${pathwayRows}</div>
+          </section>
+          <section class="mixture-result-section">
+            <h4>${esc(zh ? "限制与安全提示" : "Limitations and safety")}</h4>
+            <ul class="mixture-warning-list">${warningRows}</ul>
+          </section>
+          <section class="mixture-result-section">
+            <h4>${esc(zh ? "建议验证链" : "Suggested validation chain")}</h4>
+            <ol class="mixture-validation-list">${validationRows}</ol>
+          </section>
+        </div>
+        ${aiOutput}
+      `;
+    }
+
+    function mixtureAiContext(model) {
+      return {
+        task: "superconductor_candidate_screening",
+        language: currentLang,
+        composition: {
+          formula_hint: model.formula,
+          elements: model.counts,
+          stoichiometry_is_hint_only: true
+        },
+        local_screening: {
+          classification: model.classification,
+          exploration_rank: model.score,
+          score_meaning: "ranking_not_probability",
+          seed_element_coverage_percent: model.seedElementCoverage,
+          evidence_level: model.evidenceLevel,
+          uncertainty: model.uncertainty,
+          known_matches: model.nearestMatches.slice(0, 5).map(match => ({
+            material: match.row.display_name || match.row.material,
+            family: match.row.family,
+            elements: match.row.elements || [],
+            tc_K: match.row.transition_temperature_K ?? match.row.tc_K ?? null,
+            verification_status: match.row.verification_status || "",
+            source_note: match.row.source_note || "",
+            relation: match.groundedFormulaMatch
+              ? "grounded_same_formula"
+              : match.sameStoichiometry
+                ? "same_stoichiometry_unverified"
+                : match.sameElementSet
+                  ? "same_element_species"
+                  : match.containsSelection
+                    ? "contains_selection"
+                    : "partial_overlap",
+            jaccard: Number(match.jaccard.toFixed(3))
+          })),
+          family_pathways: model.pathways.map(pathway => ({
+            id: pathway.id,
+            prototype: pathway.prototype,
+            conditions: pathway.conditions,
+            rationale: pathway.rationale
+          })),
+          warnings: model.warnings
+        },
+        response_requirements: [
+          "Separate database evidence from AI hypotheses.",
+          "Do not invent a Tc, DOI, stable structure, or experimental result.",
+          "State pressure, doping, substrate, stoichiometry, or structure assumptions explicitly.",
+          "Give falsification tests and a validation sequence.",
+          "Call the result candidate screening, never proof of superconductivity."
+        ]
+      };
+    }
+
+    function buildMixtureAiPrompt(model) {
+      return currentLang === "zh"
+        ? [
+            `请对元素组合 ${model.formula} 做超导候选筛选。`,
+            "必须把“本地数据库证据”和“AI 假设”分开。",
+            "不要捏造 Tc、DOI、稳定晶体结构或实验成功结论；没有证据就明确说未知。",
+            "请依次输出：总体判断与不确定性、最多 3 条候选化学计量/原型路径、压力/掺杂/基底等前提、主要风险、最能证伪该假设的计算或实验、下一步验证顺序。",
+            "结尾必须说明该结果不是超导证明。"
+          ].join("\n")
+        : [
+            `Screen the element combination ${model.formula} as a possible superconducting-material candidate.`,
+            "Separate local database evidence from AI hypotheses.",
+            "Do not invent a Tc, DOI, stable crystal structure, or successful experiment; say unknown when evidence is missing.",
+            "Return: overall judgment and uncertainty; up to three stoichiometry/prototype paths; pressure/doping/substrate assumptions; major risks; decisive falsification tests; and a validation sequence.",
+            "End by stating that the result is not proof of superconductivity."
+          ].join("\n");
+    }
+
+    function buildLocalMixtureAnalysis(model) {
+      const zh = currentLang === "zh";
+      const lines = [
+        zh ? `本地结论：${model.classificationLabel}（探索排序 ${model.score}/100；不是概率）。` : `Local verdict: ${model.classificationLabel} (exploration rank ${model.score}/100; not a probability).`,
+        zh ? `证据等级：${model.evidenceLabel}；所选元素种子覆盖率 ${model.seedElementCoverage}%（不代表组合证据）；不确定性 ${model.uncertaintyLabel}。` : `Evidence: ${model.evidenceLabel}; selected-element seed coverage ${model.seedElementCoverage}% (not composition evidence); uncertainty ${model.uncertaintyLabel}.`
+      ];
+      if (model.nearestMatches.length) {
+        lines.push(zh ? "\n已知近邻：" : "\nKnown neighbours:");
+        model.nearestMatches.slice(0, 3).forEach(match => {
+          const row = match.row;
+          lines.push(`- ${row.display_name || row.material} · ${superconductivityFamilyName(row.family)} · ${row.verification_status || "seed"}`);
+        });
+      } else {
+        lines.push(zh ? "\n已知近邻：当前本地库没有可追溯近邻。" : "\nKnown neighbours: no traceable neighbour in the current local library.");
+      }
+      lines.push(zh ? "\n候选搜索路径：" : "\nCandidate search paths:");
+      model.pathways.slice(0, 3).forEach(pathway => lines.push(`- ${pathway.title}: ${pathway.prototype}; ${pathway.conditions}`));
+      lines.push(zh ? "\n关键限制：" : "\nKey limitations:");
+      model.warnings.forEach(warning => lines.push(`- ${warning}`));
+      lines.push(zh ? "\n下一步：" : "\nNext steps:");
+      model.validationSteps.forEach((step, index) => lines.push(`${index + 1}. ${step}`));
+      lines.push(zh
+        ? "\n这是本地证据引擎的候选预筛，不是实验结论，也不能证明该组合会超导。"
+        : "\nThis is local evidence-based candidate screening, not an experimental result or proof that the composition superconducts.");
+      return lines.join("\n");
+    }
+
+    function defaultMaterialPredictEndpoint() {
+      const host = window.location.hostname || "";
+      if (window.location.protocol === "file:" || !host || host.includes("github.io")) return MATERIAL_PREDICT_PUBLIC_PROXY;
+      return "/api/material-predict";
+    }
+
+    async function callMaterialPredictEndpoint(model) {
+      const endpoint = defaultMaterialPredictEndpoint();
+      if (!endpoint) return "";
+      const controller = new AbortController();
+      mixtureAiAbortController?.abort();
+      mixtureAiAbortController = controller;
+      const timeout = window.setTimeout(() => controller.abort(), 24000);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify(mixtureAiContext(model))
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `Material AI endpoint HTTP ${response.status}`);
+        return String(data.answer || data.analysis || "").trim();
+      } finally {
+        window.clearTimeout(timeout);
+        if (mixtureAiAbortController === controller) mixtureAiAbortController = null;
+      }
+    }
+
+    async function runCrucibleAiAnalysis() {
+      const model = predictMixturePotential();
+      if (model.symbols.length < 2) {
+        showToast(currentLang === "zh" ? "请至少加入两种不同元素后再分析" : "Add at least two distinct elements before analysis");
+        return;
+      }
+      const signature = mixtureSignature();
+      state.mixtureAi = { signature, status: "loading", answer: "", source: "" };
+      renderPeriodicCruciblePanel();
+      mixtureAnalysisPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      let answer = "";
+      let source = "local";
+      try {
+        answer = await callMaterialPredictEndpoint(model);
+        if (answer) source = "server-ai";
+      } catch {
+        if (signature !== mixtureSignature()) return;
+        const cfg = loadAiConfig();
+        const hub = window.ARPESModelHub || window.ARPES_ML;
+        if (cfg.endpoint && hub?.chat) {
+          try {
+            const configuredAnswer = await hub.chat(buildMixtureAiPrompt(model), mixtureAiContext(model));
+            if (configuredAnswer && configuredAnswer !== t("chatNeedsAi")) {
+              answer = configuredAnswer;
+              source = "server-ai";
+            }
+          } catch {
+            // Keep the deterministic local evidence result below.
+          }
+        }
+      }
+      if (!answer) answer = buildLocalMixtureAnalysis(model);
+      if (signature !== mixtureSignature()) return;
+      state.mixtureAi = { signature, status: "done", answer, source };
+      renderPeriodicCruciblePanel();
+      if (source !== "server-ai") {
+        showToast(currentLang === "zh" ? "AI 服务暂不可用，已保留本地证据预筛" : "AI service unavailable; local evidence screening is shown");
+      }
+    }
+
+    function renderPeriodicCruciblePanel() {
+      if (!periodicCruciblePanel) return;
+      const model = predictMixturePotential();
+      const hasMixture = model.symbols.length > 0;
+      const loading = state.mixtureAi?.status === "loading" && state.mixtureAi.signature === mixtureSignature();
+      periodicCruciblePanel.innerHTML = `
+        <h3>${currentLang === "zh" ? "组合候选筛选" : "Composition Screening"} <span id="roundtableCrucibleFormula"></span></h3>
+        ${crucibleVisualHtml()}
+        <div class="crucible-body">
+          ${hasMixture ? `
             <div class="prediction-score">
-              <strong>${currentLang === "zh" ? "探索价值" : "Exploration value"}: ${model.score}/100</strong>
+              <strong>${currentLang === "zh" ? "探索排序（非概率）" : "Exploration rank (not probability)"}: ${model.score}/100</strong>
               <div class="score-bar"><span style="--score:${model.score}%"></span></div>
             </div>
-            <p>${esc(model.summary)}</p>
-            <div class="chips">
-              ${model.tags.map(tag => `<span class="chip">${esc(tag)}</span>`).join("")}
-            </div>
-            <button class="primary" type="button" id="runCrucibleBtn">${currentLang === "zh" ? "用坩埚生成建议" : "Run crucible"}</button>
-            <p class="muted" id="crucibleAdvice">${esc(model.advice)}</p>
-          </div>
-        `
-        : `
-          <h3>${currentLang === "zh" ? "坩埚预测" : "Crucible Prediction"} <span id="roundtableCrucibleFormula"></span></h3>
-          ${crucibleVisualHtml()}
-          <div class="crucible-body">
-            <p class="muted">${currentLang === "zh"
-              ? (state.topic === "2d" ? "选择周期表中的绿色元素后，坩埚会根据元素、二维材料家族、带隙/相和文献密度给出下一步探索建议。" : "选择周期表中的绿色元素后，坩埚会根据元素、材料家族、Tc 和文献密度给出下一步探索建议。")
-              : (state.topic === "2d" ? "Select a green element; the crucible combines element, 2D-material family, gap/phase context, and article density into a next-step exploration hint." : "Select a green element; the crucible combines element, family, Tc, and article density into a next-step exploration hint.")}</p>
-          </div>
-        `;
+            <p>${esc(model.classificationLabel)} · ${esc(model.evidenceLabel)} · ${esc(currentLang === "zh" ? "不确定性" : "uncertainty")} ${esc(model.uncertaintyLabel)}</p>
+            <button class="primary" type="button" id="runCrucibleBtn" ${model.symbols.length < 2 || loading ? "disabled" : ""}>${
+              loading
+                ? (currentLang === "zh" ? "AI 分析中…" : "AI analyzing…")
+                : (currentLang === "zh" ? "AI 分析这组元素" : "Analyze with AI")
+            }</button>
+            <p class="muted">${esc(model.symbols.length < 2
+              ? (currentLang === "zh" ? "再加入一种不同元素，形成组合。" : "Add a different element to form a composition.")
+              : (currentLang === "zh" ? "详细证据、风险与验证步骤见下方。" : "See detailed evidence, risks, and validation steps below."))}</p>
+          ` : `
+            <p class="muted">${esc(currentLang === "zh"
+              ? "把任意元素拖进锅里，或先点元素再点坩埚。亮色已有资料，灰色资料稀疏但同样可分析。"
+              : "Drag any element into the crucible, or select it and tap the crucible. Bright cells have data; grey cells are sparse but remain screenable.")}</p>
+          `}
+        </div>
+      `;
       renderRoundtableCrucibleElements();
-      $("#runCrucibleBtn")?.addEventListener("click", () => {
-        const advice = $("#crucibleAdvice");
-        if (advice && model) advice.textContent = model.nextStep;
-      });
+      renderMixtureAnalysis(model);
+      $("#runCrucibleBtn")?.addEventListener("click", runCrucibleAiAnalysis);
     }
 
     function renderElementHistoryWorkbench() {
@@ -15710,8 +16752,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           <div class="element-history-panel">
             <h3>${currentLang === "zh" ? "元素相关总结" : "Element Summary"}</h3>
             <p class="muted">${currentLang === "zh"
-              ? (state.topic === "2d" ? "选择周期表中的绿色元素后，这里会汇总它在二维材料中的角色、代表体系、带隙/相和 ARPES 关注点。" : "选择周期表中的绿色元素后，这里会汇总它在超导材料中的角色、代表体系、Tc 范围和 ARPES 关注点。")
-              : (state.topic === "2d" ? "Select a green element to summarize its 2D-material role, representative systems, gap/phase context, and ARPES focus." : "Select a green element to summarize its superconducting-material role, representative systems, Tc range, and ARPES focus.")}</p>
+              ? (state.topic === "2d" ? "选择周期表中的任意元素后，这里会汇总它在二维材料中的角色、代表体系、带隙/相和 ARPES 关注点。" : "选择周期表中的任意元素后，这里会汇总它在超导材料中的角色、代表体系、Tc 范围和 ARPES 关注点。")
+              : (state.topic === "2d" ? "Select any element to summarize its 2D-material role, representative systems, gap/phase context, and ARPES focus." : "Select any element to summarize its superconducting-material role, representative systems, Tc range, and ARPES focus.")}</p>
           </div>
         `;
         return;
@@ -16665,13 +17707,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         registered_models: Object.keys(hub?._models || {}),
         timestamp: new Date().toISOString()
       };
-      const confidence = matched.length ? Math.min(0.92, 0.56 + matched.length * 0.12) : 0.34;
+      const screening = predictMixturePotential();
       const resultLines = [
         `${zh ? "模型接口" : "Model hub"}: v${hub?.version || "0.1.0"}`,
-        `${zh ? "预览置信度" : "Preview confidence"}: ${Math.round(confidence * 100)}%`,
+        state.modelElements.length
+          ? `${zh ? "本地探索排序（非概率）" : "Local exploration rank (not probability)"}: ${screening.score}/100 · ${screening.evidenceLabel}`
+          : `${zh ? "本地数据预览" : "Local data preview"}: ${zh ? "请先加入元素组合" : "add a composition first"}`,
         matched.length
           ? `${zh ? "候选匹配" : "Candidate matches"}: ${matched.map(row => `${row.display_name || row.material} / ${familyName(row.family)} / Tc ${row.transition_temperature_K ?? "-"} K`).join("; ")}`
-          : (zh ? "候选匹配: 暂无，可作为新材料输入后续模型。" : "Candidate matches: none yet; treat as new input for future models.")
+          : (zh ? "候选匹配: 暂无本地证据；这不是负面结论，应继续做结构与相稳定性搜索。" : "Candidate matches: no local evidence; this is not a negative conclusion, so continue with structural and phase-stability searches.")
       ];
       modelOutput.innerHTML = `
         <strong style="color:var(--accent-glow);">${esc(t("modelPayloadTitle"))}</strong>
