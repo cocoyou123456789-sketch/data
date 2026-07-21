@@ -221,240 +221,18 @@
     }
 
     .login-card {
-      width: min(1240px, 100%);
-      max-height: calc(100dvh - 40px);
+      width: min(1040px, 100%);
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 0;
       background: #0b1119;
       box-shadow: 0 18px 50px rgba(0,0,0,0.38);
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    .login-map-overview {
-      display: grid;
-      gap: 14px;
-      padding: 22px 24px 20px;
-      border-bottom: 1px solid var(--line);
-      background: #0d1520;
-    }
-
-    .login-map-heading {
-      display: grid;
-      grid-template-columns: minmax(280px, 0.72fr) minmax(420px, 1.28fr);
-      gap: 32px;
-      align-items: end;
-    }
-
-    .login-map-title-wrap {
-      display: grid;
-      gap: 4px;
-    }
-
-    .login-map-kicker {
-      color: var(--accent-glow);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .login-map-heading h1 {
-      margin: 0;
-      color: #f4fbff;
-      font-size: 34px;
-      line-height: 1.08;
-      letter-spacing: 0;
-    }
-
-    html[lang="en"] .login-map-heading h1 {
-      font-size: 30px;
-    }
-
-    .login-map-lead {
-      margin: 0;
-      color: #b7c7d8;
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .login-domain-flow {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(250px, 0.72fr) minmax(0, 1fr);
-      border-top: 1px solid rgba(96,208,255,0.16);
-      border-bottom: 1px solid rgba(96,208,255,0.16);
-      background: #0a121b;
-    }
-
-    .login-domain {
-      min-width: 0;
-      display: grid;
-      grid-template-columns: 34px minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
-      padding: 12px 14px;
-    }
-
-    .login-domain-index {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border: 1px solid rgba(96,208,255,0.42);
-      border-radius: 50%;
-      color: var(--accent-glow);
-      font-size: 11px;
-      font-weight: 820;
-    }
-
-    .login-domain-copy {
-      min-width: 0;
-      display: grid;
-      gap: 2px;
-    }
-
-    .login-domain-copy strong {
-      color: #f4fbff;
-      font-size: 15px;
-    }
-
-    .login-domain-copy span {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
-    }
-
-    .login-domain-bridge {
-      display: grid;
-      gap: 3px;
-      place-content: center;
-      min-width: 0;
-      padding: 10px 16px;
-      border-left: 1px solid rgba(96,208,255,0.16);
-      border-right: 1px solid rgba(96,208,255,0.16);
-      text-align: center;
-    }
-
-    .login-domain-bridge strong {
-      color: #7ee7db;
-      font-size: 11px;
-    }
-
-    .login-domain-bridge span {
-      color: #d9e7f3;
-      font-size: 12px;
-      line-height: 1.45;
-    }
-
-    .login-map-principle {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 12px;
-      align-items: baseline;
-    }
-
-    .login-map-principle strong {
-      color: #7ee7db;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .login-map-principle span {
-      color: #c2d0dd;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .login-module-map-head {
-      display: flex;
-      gap: 10px;
-      align-items: baseline;
-      justify-content: space-between;
-    }
-
-    .login-module-map-head strong {
-      color: #f4fbff;
-      font-size: 13px;
-    }
-
-    .login-module-map-head span {
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .login-module-map {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 0;
-      margin: 0;
-      padding: 0;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      list-style: none;
       overflow: hidden;
-      background: #0b131d;
-    }
-
-    .login-module-map li {
-      min-width: 0;
-      display: grid;
-      gap: 5px;
-      align-content: start;
-      padding: 10px 12px;
-      border-right: 1px solid var(--line);
-    }
-
-    .login-module-map li:last-child {
-      border-right: 0;
-    }
-
-    .login-module-head {
-      display: flex;
-      gap: 7px;
-      align-items: center;
-      min-width: 0;
-    }
-
-    .login-module-head > span {
-      color: #60d0ff;
-      font-size: 10px;
-      font-weight: 820;
-    }
-
-    .login-module-head strong {
-      min-width: 0;
-      color: #eef8ff;
-      font-size: 12px;
-    }
-
-    .login-module-head em {
-      margin-left: auto;
-      color: #7ee7db;
-      font-size: 9px;
-      font-style: normal;
-      white-space: nowrap;
-    }
-
-    .login-module-map p,
-    .login-module-map small {
-      margin: 0;
-      color: #9eb0c2;
-      font-size: 11px;
-      line-height: 1.42;
-    }
-
-    .login-module-map small {
-      color: #cbd8e4;
-    }
-
-    .login-module-map small > span:first-child {
-      color: #60d0ff;
-      font-weight: 760;
     }
 
     .login-layout {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 0.58fr) minmax(320px, 0.42fr);
       gap: 0;
       align-items: stretch;
       min-height: 520px;
@@ -464,7 +242,7 @@
       position: relative;
       display: grid;
       gap: 14px;
-      align-content: start;
+      align-content: space-between;
       padding: 24px;
       min-height: 520px;
       overflow: hidden;
@@ -491,7 +269,6 @@
       display: grid;
       place-items: center;
       isolation: isolate;
-      order: 3;
     }
 
     .ustc-orbit {
@@ -626,7 +403,6 @@
       display: grid;
       gap: 8px;
       max-width: 520px;
-      order: 1;
     }
 
     .login-ustc-panel {
@@ -638,7 +414,6 @@
       display: grid;
       gap: 10px;
       max-width: 520px;
-      order: 2;
     }
 
     .login-ustc-panel h3 {
@@ -673,7 +448,6 @@
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
-      order: 0;
     }
 
     .login-badge {
@@ -697,7 +471,6 @@
       gap: 12px;
       max-width: none;
       box-shadow: none;
-      order: 1;
     }
 
     .login-feature {
@@ -711,17 +484,8 @@
         #0e1721;
       display: grid;
       gap: 12px;
-      align-content: start;
+      align-content: center;
       overflow: hidden;
-    }
-
-    .login-feature .login-virtual-copy {
-      order: 0;
-    }
-
-    .login-feature .virtual-access-orbit {
-      order: 2;
-      margin-top: 10px;
     }
 
     .login-feature .super-button {
@@ -7615,25 +7379,6 @@
         grid-template-columns: 1fr;
         min-height: 0;
       }
-      .login-map-heading {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-      .login-module-map {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .login-module-map li {
-        border-right: 1px solid var(--line);
-        border-bottom: 1px solid var(--line);
-      }
-      .login-module-map li:nth-child(2n) {
-        border-right: 0;
-      }
-      .login-module-map li:last-child {
-        grid-column: 1 / -1;
-        border-right: 0;
-        border-bottom: 0;
-      }
       .login-column {
         min-height: 520px;
       }
@@ -7803,50 +7548,6 @@
 
       .login-card {
         padding: 0;
-        max-height: none;
-        overflow: visible;
-      }
-
-      .login-map-overview {
-        gap: 12px;
-        padding: 18px 16px 16px;
-      }
-
-      .login-map-heading h1 {
-        font-size: 26px;
-      }
-
-      .login-domain-flow,
-      .login-module-map {
-        grid-template-columns: 1fr;
-      }
-
-      .login-domain-bridge {
-        border: 0;
-        border-top: 1px solid rgba(96,208,255,0.16);
-        border-bottom: 1px solid rgba(96,208,255,0.16);
-      }
-
-      .login-map-principle {
-        grid-template-columns: 1fr;
-        gap: 3px;
-      }
-
-      .login-module-map-head {
-        display: grid;
-        gap: 2px;
-      }
-
-      .login-module-map li,
-      .login-module-map li:nth-child(2n),
-      .login-module-map li:last-child {
-        grid-column: auto;
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .login-module-map li:last-child {
-        border-bottom: 0;
       }
 
       .login-card h2 {
@@ -7882,7 +7583,7 @@
       }
 
       .login-feature {
-        order: initial;
+        order: -1;
       }
 
       .login-feature .virtual-access-orbit,
@@ -8354,90 +8055,6 @@
   </div>
   <div class="login-screen" id="loginScreen" role="dialog" aria-modal="true" aria-label="ARPES access">
     <div class="login-card">
-      <section class="login-map-overview" aria-labelledby="loginMapTitle">
-        <div class="login-map-heading">
-          <div class="login-map-title-wrap">
-            <span class="login-map-kicker" data-i18n="loginMapKicker">CUSTOM RESEARCH INTELLIGENCE MAP</span>
-            <h1 id="loginMapTitle" data-i18n="loginMapTitle">智能化实验 × 智能化分析</h1>
-          </div>
-          <p class="login-map-lead" data-i18n="loginMapLead">面向不同学科和研究领域，将实验、数据、模型、调研与报告组合成可定制的全需求覆盖 Map，而不是彼此分立的单点工具。</p>
-        </div>
-        <div class="login-domain-flow">
-          <div class="login-domain">
-            <span class="login-domain-index">01</span>
-            <span class="login-domain-copy">
-              <strong data-i18n="loginExperimentTitle">智能化实验</strong>
-              <span data-i18n="loginExperimentHint">连接仪器、样品、环境参数与现场数据，形成可持续接入的实验侧入口。</span>
-            </span>
-          </div>
-          <div class="login-domain-bridge">
-            <strong data-i18n="loginBridgeTitle">建设目标</strong>
-            <span data-i18n="loginBridgeHint">数据双向互传 · 模型实时演算 · 参数闭环反馈</span>
-          </div>
-          <div class="login-domain">
-            <span class="login-domain-index">02</span>
-            <span class="login-domain-copy">
-              <strong data-i18n="loginAnalysisTitle">智能化分析</strong>
-              <span data-i18n="loginAnalysisHint">整合材料预测、数据建模、定点调研和报告输出，形成分析侧工作台。</span>
-            </span>
-          </div>
-        </div>
-        <div class="login-map-principle">
-          <strong data-i18n="loginPrincipleTitle">设计理念</strong>
-          <span data-i18n="loginPrincipleHint">按学科与领域定制完整研究链路，让每个 Map 覆盖从问题提出、实验执行到知识沉淀的全过程。</span>
-        </div>
-        <div class="login-module-map-head">
-          <strong data-i18n="loginModulesTitle">五个基础功能模块</strong>
-          <span data-i18n="loginModulesHint">每个模块都可独立使用，并逐步与实验侧形成实时协同。</span>
-        </div>
-        <ol class="login-module-map">
-          <li>
-            <div class="login-module-head">
-              <span>01</span>
-              <strong data-i18n="loginModuleHistoryTitle">发展历史</strong>
-              <em data-i18n="loginModuleHistoryTag">实时更新</em>
-            </div>
-            <p data-i18n="loginModuleHistoryHint">持续维护关键发现、材料体系与实验条件的时间脉络。</p>
-            <small><span data-i18n="loginModuleExampleLabel">示例</span>: <span data-i18n="loginModuleHistoryExample">Tc、年份与压力里程碑图</span></small>
-          </li>
-          <li>
-            <div class="login-module-head">
-              <span>02</span>
-              <strong data-i18n="loginModulePredictionTitle">材料预测</strong>
-              <em data-i18n="loginModulePredictionTag">智能化重点</em>
-            </div>
-            <p data-i18n="loginModulePredictionHint">组合元素、结构与科学模型，探索具有潜力的未来材料。</p>
-            <small><span data-i18n="loginModuleExampleLabel">示例</span>: <span data-i18n="loginModulePredictionExample">将 Mg 与 B 放入坩埚并比较模型输出</span></small>
-          </li>
-          <li>
-            <div class="login-module-head">
-              <span>03</span>
-              <strong data-i18n="loginModuleDataTitle">数据</strong>
-              <em data-i18n="loginModuleDataTag">实验互传</em>
-            </div>
-            <p data-i18n="loginModuleDataHint">治理历史数据，在线建模当前数据，并面向实验侧实时交换。</p>
-            <small><span data-i18n="loginModuleExampleLabel">示例</span>: <span data-i18n="loginModuleDataExample">导入 HDF5，在线切片、对比与回传</span></small>
-          </li>
-          <li>
-            <div class="login-module-head">
-              <span>04</span>
-              <strong data-i18n="loginModuleResearchTitle">调研</strong>
-              <em data-i18n="loginModuleResearchTag">定点找资料</em>
-            </div>
-            <p data-i18n="loginModuleResearchHint">围绕指定材料、现象或实验条件检索论文、图表与证据。</p>
-            <small><span data-i18n="loginModuleExampleLabel">示例</span>: <span data-i18n="loginModuleResearchExample">定点检索 FeSe 的 ARPES 文献与图谱</span></small>
-          </li>
-          <li>
-            <div class="login-module-head">
-              <span>05</span>
-              <strong data-i18n="loginModuleReportTitle">分析报告</strong>
-              <em data-i18n="loginModuleReportTag">多类型输出</em>
-            </div>
-            <p data-i18n="loginModuleReportHint">把实验记录、分析结果与研究脉络整理为可交付报告。</p>
-            <small><span data-i18n="loginModuleExampleLabel">示例</span>: <span data-i18n="loginModuleReportExample">输出实验报告或历史研究调研报告</span></small>
-          </li>
-        </ol>
-      </section>
       <div class="login-layout">
         <div class="login-column">
           <div class="login-badge-row">
@@ -8456,8 +8073,8 @@
             </div>
           </div>
           <div class="login-visual-copy">
-            <h2 data-i18n="loginTitle">智能化实验</h2>
-            <p class="muted" data-i18n="loginHint">通过 NSRL / ARPES 真实实验入口，承接仪器、样品、环境参数与现场数据。</p>
+            <h2 data-i18n="loginTitle">NSRL 光源入口</h2>
+            <p class="muted" data-i18n="loginHint">左侧代表 NSRL / ARPES 的真实实验入口，连接材料、文献和本地实验数据。</p>
           </div>
           <div class="login-ustc-panel">
             <h3 data-i18n="loginUstcPanelTitle">NSRL 登录</h3>
@@ -8482,8 +8099,8 @@
             <span class="virtual-eye-label" data-i18n="loginVirtualAccessLabel">Virtual Eye</span>
           </div>
           <div class="login-virtual-copy">
-            <h2 data-i18n="loginGuestTitle">智能化分析</h2>
-            <p class="muted" data-i18n="loginGuestHint">进入材料预测、数据建模、定点调研与报告生成工作台；支持本机账号或访客入口。</p>
+            <h2 data-i18n="loginGuestTitle">其他访问者 · 虚拟入口</h2>
+            <p class="muted" data-i18n="loginGuestHint">右侧给非 NSRL 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。</p>
           </div>
           <div class="login-form-panel">
             <div class="auth-tabs" role="group" aria-label="Authentication mode">
@@ -9918,42 +9535,8 @@
         workspaceTwoDTitle: "二维材料工作区",
         workspaceTwoDHint: "石墨烯、TMDs、h-BN、黑磷、MXene、Xenes 与 COF/MOF。",
         workspaceCatalogBtn: "切换材料界面",
-        loginMapKicker: "CUSTOM RESEARCH INTELLIGENCE MAP",
-        loginMapTitle: "智能化实验 × 智能化分析",
-        loginMapLead: "面向不同学科和研究领域，将实验、数据、模型、调研与报告组合成可定制的全需求覆盖 Map，而不是彼此分立的单点工具。",
-        loginExperimentTitle: "智能化实验",
-        loginExperimentHint: "连接仪器、样品、环境参数与现场数据，形成可持续接入的实验侧入口。",
-        loginBridgeTitle: "建设目标",
-        loginBridgeHint: "数据双向互传 · 模型实时演算 · 参数闭环反馈",
-        loginAnalysisTitle: "智能化分析",
-        loginAnalysisHint: "整合材料预测、数据建模、定点调研和报告输出，形成分析侧工作台。",
-        loginPrincipleTitle: "设计理念",
-        loginPrincipleHint: "按学科与领域定制完整研究链路，让每个 Map 覆盖从问题提出、实验执行到知识沉淀的全过程。",
-        loginModulesTitle: "五个基础功能模块",
-        loginModulesHint: "每个模块都可独立使用，并逐步与实验侧形成实时协同。",
-        loginModuleExampleLabel: "示例",
-        loginModuleHistoryTitle: "发展历史",
-        loginModuleHistoryTag: "实时更新",
-        loginModuleHistoryHint: "持续维护关键发现、材料体系与实验条件的时间脉络。",
-        loginModuleHistoryExample: "Tc、年份与压力里程碑图",
-        loginModulePredictionTitle: "材料预测",
-        loginModulePredictionTag: "智能化重点",
-        loginModulePredictionHint: "组合元素、结构与科学模型，探索具有潜力的未来材料。",
-        loginModulePredictionExample: "将 Mg 与 B 放入坩埚并比较模型输出",
-        loginModuleDataTitle: "数据",
-        loginModuleDataTag: "实验互传",
-        loginModuleDataHint: "治理历史数据，在线建模当前数据，并面向实验侧实时交换。",
-        loginModuleDataExample: "导入 HDF5，在线切片、对比与回传",
-        loginModuleResearchTitle: "调研",
-        loginModuleResearchTag: "定点找资料",
-        loginModuleResearchHint: "围绕指定材料、现象或实验条件检索论文、图表与证据。",
-        loginModuleResearchExample: "定点检索 FeSe 的 ARPES 文献与图谱",
-        loginModuleReportTitle: "分析报告",
-        loginModuleReportTag: "多类型输出",
-        loginModuleReportHint: "把实验记录、分析结果与研究脉络整理为可交付报告。",
-        loginModuleReportExample: "输出实验报告或历史研究调研报告",
-        loginTitle: "智能化实验",
-        loginHint: "通过 NSRL / ARPES 真实实验入口，承接仪器、样品、环境参数与现场数据。",
+        loginTitle: "NSRL 光源入口",
+        loginHint: "左侧代表 NSRL / ARPES 的真实实验入口，连接材料、文献和本地实验数据。",
         signInTab: "登录",
         createAccountTab: "创建账号",
         loginEmailLabel: "Email",
@@ -9970,8 +9553,8 @@
         loginUstcPanelTitle: "NSRL 登录",
         loginUstcBtn: "进入 NSRL 工作台",
         loginUstcGuestBtn: "NSRL 预览",
-        loginGuestTitle: "智能化分析",
-        loginGuestHint: "进入材料预测、数据建模、定点调研与报告生成工作台；支持本机账号或访客入口。",
+        loginGuestTitle: "其他访问者 · 虚拟入口",
+        loginGuestHint: "右侧给非 NSRL 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。",
         loginVirtualAccessLabel: "虚拟眼睛",
         loginRealEyeLabel: "NSRL",
         loginVirtualEyeLabel: "NSRL / ARPES",
@@ -10676,42 +10259,8 @@
         workspaceTwoDTitle: "2D Materials Workspace",
         workspaceTwoDHint: "Graphene, TMDs, h-BN, black phosphorus, MXenes, Xenes, and COF/MOF.",
         workspaceCatalogBtn: "Switch materials interface",
-        loginMapKicker: "CUSTOM RESEARCH INTELLIGENCE MAP",
-        loginMapTitle: "Intelligent Experimentation × Intelligent Analysis",
-        loginMapLead: "Across disciplines and research domains, experiments, data, models, research, and reports become a configurable full-needs Map instead of isolated single-purpose tools.",
-        loginExperimentTitle: "Intelligent Experimentation",
-        loginExperimentHint: "Connect instruments, samples, environment parameters, and live data through an extensible experimental entry point.",
-        loginBridgeTitle: "Target capability",
-        loginBridgeHint: "Bidirectional data transfer · live model computation · closed-loop parameter feedback",
-        loginAnalysisTitle: "Intelligent Analysis",
-        loginAnalysisHint: "Unify material prediction, data modeling, targeted research, and report delivery in one analysis workbench.",
-        loginPrincipleTitle: "Design principle",
-        loginPrincipleHint: "Configure a complete research path for each discipline and domain, covering the process from question and experiment to retained knowledge.",
-        loginModulesTitle: "Five core capability modules",
-        loginModulesHint: "Each module works independently and will progressively coordinate with the experimental side in real time.",
-        loginModuleExampleLabel: "Example",
-        loginModuleHistoryTitle: "History",
-        loginModuleHistoryTag: "Live updates",
-        loginModuleHistoryHint: "Maintain the timeline of key discoveries, material systems, and experimental conditions.",
-        loginModuleHistoryExample: "Tc, year, and pressure milestone map",
-        loginModulePredictionTitle: "Material prediction",
-        loginModulePredictionTag: "Intelligence focus",
-        loginModulePredictionHint: "Combine elements, structures, and scientific models to explore future materials.",
-        loginModulePredictionExample: "Place Mg and B in the crucible and compare model outputs",
-        loginModuleDataTitle: "Data",
-        loginModuleDataTag: "Experiment exchange",
-        loginModuleDataHint: "Govern historical data, model current data online, and exchange it with experiments in real time.",
-        loginModuleDataExample: "Import HDF5 for online slicing, comparison, and return flow",
-        loginModuleResearchTitle: "Research",
-        loginModuleResearchTag: "Targeted retrieval",
-        loginModuleResearchHint: "Find papers, figures, and evidence for a specified material, phenomenon, or condition.",
-        loginModuleResearchExample: "Target FeSe ARPES papers and figures",
-        loginModuleReportTitle: "Analysis reports",
-        loginModuleReportTag: "Multiple outputs",
-        loginModuleReportHint: "Turn experimental records, analysis results, and research history into deliverable reports.",
-        loginModuleReportExample: "Export an experiment report or historical research review",
-        loginTitle: "Intelligent Experimentation",
-        loginHint: "Use the real NSRL / ARPES entrance to connect instruments, samples, environment parameters, and live data.",
+        loginTitle: "NSRL Light Source Access",
+        loginHint: "The left side represents the real NSRL / ARPES experimental entrance connected to materials, papers, and local data.",
         signInTab: "Sign In",
         createAccountTab: "Create Account",
         loginEmailLabel: "Email",
@@ -10728,8 +10277,8 @@
         loginUstcPanelTitle: "NSRL Login",
         loginUstcBtn: "Enter NSRL Workbench",
         loginUstcGuestBtn: "NSRL Preview",
-        loginGuestTitle: "Intelligent Analysis",
-        loginGuestHint: "Enter the material prediction, data modeling, targeted research, and report workbench with a local account or as a guest.",
+        loginGuestTitle: "Other Visitors · Virtual Access",
+        loginGuestHint: "The right side is for non-NSRL or external visitors: sign in, create a local account, or continue as a guest.",
         loginVirtualAccessLabel: "Virtual Eye",
         loginRealEyeLabel: "NSRL",
         loginVirtualEyeLabel: "NSRL / ARPES",
