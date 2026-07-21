@@ -331,72 +331,46 @@
 
     .virtual-access-orbit {
       position: relative;
-      width: min(360px, 92%);
-      aspect-ratio: 1.72;
+      width: min(420px, 100%);
+      aspect-ratio: 720 / 418;
       margin: 0 auto 4px;
       pointer-events: none;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(ellipse at 50% 52%, rgba(96,208,255,0.2), transparent 62%),
-        repeating-linear-gradient(90deg, transparent 0 22px, rgba(96,208,255,0.06) 22px 23px),
-        repeating-linear-gradient(0deg, transparent 0 24px, rgba(96,208,255,0.04) 24px 25px);
-      border-radius: 50%;
+      overflow: hidden;
+      background: #050b12 url("assets/virtual-analysis-loop-poster.jpg") center / cover no-repeat;
+      border: 1px solid rgba(96,208,255,0.42);
+      border-radius: 8px;
+      box-shadow:
+        0 0 0 1px rgba(20,184,166,0.08),
+        0 18px 42px rgba(0,0,0,0.3),
+        0 0 34px rgba(96,208,255,0.14);
       isolation: isolate;
     }
 
     .virtual-access-orbit::before {
       content: "";
       position: absolute;
-      inset: 18% 6%;
-      border: 1px solid rgba(96,208,255,0.52);
-      border-radius: 50%;
+      inset: 0;
+      z-index: 2;
+      border-radius: inherit;
       background:
-        radial-gradient(ellipse at 50% 50%, rgba(7,16,26,0.04) 0 45%, rgba(96,208,255,0.2) 46% 48%, transparent 49%),
-        conic-gradient(from -18deg, transparent 0 9%, rgba(96,208,255,0.72) 9% 12%, transparent 12% 30%, rgba(20,184,166,0.52) 30% 33%, transparent 33% 60%, rgba(96,208,255,0.42) 60% 62%, transparent 62% 100%);
-      box-shadow:
-        inset 0 0 34px rgba(96,208,255,0.1),
-        0 0 34px rgba(96,208,255,0.28);
-      transform: rotate(-6deg);
+        linear-gradient(180deg, rgba(5,11,18,0.06), transparent 34%, rgba(5,11,18,0.18)),
+        repeating-linear-gradient(0deg, transparent 0 3px, rgba(210,244,255,0.025) 3px 4px);
     }
 
     .virtual-access-orbit::after {
       content: "";
       position: absolute;
-      inset: 31% 24%;
-      border-radius: 50%;
-      background:
-        linear-gradient(90deg, transparent 0 47%, rgba(210,244,255,0.78) 47% 53%, transparent 53%),
-        radial-gradient(circle at 50% 50%, #d2f4ff 0 7%, #60d0ff 8% 19%, rgba(20,184,166,0.9) 20% 34%, rgba(6,17,28,0.96) 35% 58%, rgba(96,208,255,0.36) 59% 64%, transparent 65%);
-      box-shadow:
-        0 0 18px rgba(210,244,255,0.88),
-        0 0 46px rgba(96,208,255,0.5),
-        inset 0 0 24px rgba(6,17,28,0.8);
-      z-index: 2;
+      inset: 0;
+      z-index: 3;
+      border-radius: inherit;
+      box-shadow: inset 0 0 38px rgba(4,10,18,0.5);
     }
 
-    .virtual-eye-scan {
-      position: absolute;
-      left: 11%;
-      right: 11%;
-      top: 50%;
-      height: 2px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, transparent, rgba(210,244,255,0.92), rgba(20,184,166,0.72), transparent);
-      box-shadow: 0 0 18px rgba(96,208,255,0.72);
-      z-index: 4;
-    }
-
-    .virtual-eye-label {
-      position: absolute;
-      right: 12%;
-      bottom: 4%;
-      color: rgba(210,244,255,0.86);
-      font-size: 11px;
-      font-weight: 760;
-      letter-spacing: 0;
-      text-transform: uppercase;
-      z-index: 5;
+    .virtual-access-video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .login-visual-copy {
@@ -8094,8 +8068,9 @@
         </div>
         <div class="login-feature">
           <div class="virtual-access-orbit" aria-hidden="true">
-            <span class="virtual-eye-scan"></span>
-            <span class="virtual-eye-label" data-i18n="loginVirtualAccessLabel">Virtual Eye</span>
+            <video class="virtual-access-video" autoplay muted loop playsinline preload="metadata" poster="assets/virtual-analysis-loop-poster.jpg" disablepictureinpicture tabindex="-1">
+              <source src="assets/virtual-analysis-loop.mp4" type="video/mp4" media="(min-width: 761px)">
+            </video>
           </div>
           <div class="login-virtual-copy">
             <h2 data-i18n="loginGuestTitle">其他访问者 · 虚拟入口</h2>
