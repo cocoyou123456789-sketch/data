@@ -2266,6 +2266,10 @@
       display: none !important;
     }
 
+    #section-band-ai {
+      scroll-margin-top: 72px;
+    }
+
     [data-app-page-section][hidden] {
       display: none !important;
     }
@@ -8234,6 +8238,7 @@
   </style>
 <script defer src="vendor/jsfive.js" onload="window.jsfive=window.jsfive||window.hdf5;if(window.updateHDF5ParserStatus)window.updateHDF5ParserStatus();"></script>
 <script defer src="vendor/igor-pxt.js" onload="if(window.updateHDF5ParserStatus)window.updateHDF5ParserStatus();"></script>
+<script defer src="band-ai.js"></script>
 <script>
   window.jsfive = window.jsfive || window.hdf5;
   window.addEventListener("error", event => {
@@ -8767,7 +8772,7 @@
       </div>
     </section>
 
-    <section class="advanced-library app-page" id="advancedLibrary" data-app-page="materials literature data" hidden>
+    <section class="advanced-library app-page" id="advancedLibrary" data-app-page="materials literature data band-ai" hidden>
       <div class="advanced-section-stack">
     <!-- ===== 搜索 & 筛选 ===== -->
     <section id="section-search" data-app-page-section="materials literature">
@@ -9074,7 +9079,10 @@
     <section id="section-hdf5" data-app-page-section="data">
       <div class="section-head">
         <h2 data-i18n="hdf5Title">📊 HDF5 / PXT 数据管理</h2>
-        <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip/.txt 文件</span>
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap;">
+          <span class="status" id="hdf5Status" data-i18n="hdf5StatusInitial">HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip/.txt 文件</span>
+          <button class="primary" id="openBandAiBtn" type="button" data-i18n="bandAiOpenBtn">能带 AI 训练</button>
+        </div>
       </div>
       <div class="content">
         <div class="drop-zone" id="hdf5DropZone">
@@ -9084,6 +9092,7 @@
             <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 / PXT / ZIP / 原始 map</button>
             <button type="button" id="hdf5PackageChooseBtn" data-i18n="hdf5PackageChooseBtn">导入转换包</button>
             <button type="button" id="analysisBundleChooseBtn" data-i18n="analysisBundleChooseBtn">读取能带 / 费米分析结果</button>
+            <button type="button" id="analysisFolderChooseBtn" data-i18n="analysisFolderChooseBtn">读取分析结果文件夹</button>
           </div>
           <div class="hdf5-reader-helper">
             <strong data-i18n="hdf5ReaderTitle">本地 HDF5 读图程序</strong>
@@ -9098,6 +9107,7 @@
           <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,.txt,.dat,.csv,.tsv,application/x-hdf5,application/octet-stream,application/zip,text/plain,text/csv" multiple tabindex="-1" aria-hidden="true">
           <input class="hdf5-native-input" type="file" id="hdf5PackageInput" accept=".zip,.json,application/json,application/zip,image/png,image/jpeg,image/webp" multiple tabindex="-1" aria-hidden="true">
           <input class="hdf5-native-input" type="file" id="analysisBundleInput" accept=".zip,.md,.json,.npz,.png,.jpg,.jpeg,.webp,application/zip,application/json,text/markdown,image/png,image/jpeg,image/webp" multiple tabindex="-1" aria-hidden="true">
+          <input class="hdf5-native-input" type="file" id="analysisFolderInput" webkitdirectory directory multiple tabindex="-1" aria-hidden="true">
           <input class="hdf5-native-input" type="file" id="hdf5LegacySourceInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,.txt,.dat,.csv,.tsv,application/x-hdf5,application/octet-stream,application/zip,text/plain,text/csv" tabindex="-1" aria-hidden="true">
         </div>
         <div class="card analysis-result-reader" id="analysisResultReader">
@@ -9168,6 +9178,20 @@
             <span class="muted" data-i18n="libraryEmpty">暂无数据。上传 HDF5 文件后添加到库。</span>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ===== 能带 AI 识别与标注训练 ===== -->
+    <section id="section-band-ai" class="app-page" data-app-page="band-ai" hidden>
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="bandAiPageTitle">能带 AI 识别与训练</h2>
+          <span class="status" data-i18n="bandAiPageHint">用实验谱图和正确材料答案建立持续优化的训练库</span>
+        </div>
+        <button id="backToDataBtn" type="button" data-i18n="bandAiBackBtn">返回数据管理</button>
+      </div>
+      <div class="content">
+        <arpes-band-ai id="bandAiWorkbench"></arpes-band-ai>
       </div>
     </section>
 
@@ -10236,12 +10260,17 @@
         clearBtn: "🗑️ 清空",
         notesTitle: "📌 模板说明",
         hdf5Title: "📊 HDF5 / PXT 数据管理",
+        bandAiOpenBtn: "能带 AI 训练",
+        bandAiPageTitle: "能带 AI 识别与训练",
+        bandAiPageHint: "用实验谱图和正确材料答案建立持续优化的训练库",
+        bandAiBackBtn: "返回数据管理",
         hdf5StatusInitial: "HDF5 与 PXT 解析器已就绪，可以选择 .h5/.pxt/.ibw/.zip/.txt 文件",
         hdf5DropTitle: "📁 拖放或点击上传 HDF5 / PXT / ZIP 文件",
-        hdf5DropHint: "支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包：zip 可直接读取 SES 的 Spectrum_*.bin + .ini，也可包含 HDF5、PXT/IBW、文本 map、预览 JSON 或图片。",
+        hdf5DropHint: "支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包。数据文件会自动保存在当前浏览器；仓库会从原始数据重建可调节预览，缩略图只用于卡片展示。",
         hdf5ChooseBtn: "选择 HDF5 / PXT / ZIP / 原始 map",
         hdf5PackageChooseBtn: "导入转换包",
         analysisBundleChooseBtn: "读取能带 / 费米分析结果",
+        analysisFolderChooseBtn: "读取分析结果文件夹",
         analysisResultTitle: "🧪 能带 / 费米分析结果读取",
         analysisResultEmpty: "导入 band、fermi 或 combine_outputs 的 ZIP，也可直接选择报告、PNG、JSON、NPZ。",
         analysisResultClearBtn: "清除结果",
@@ -10257,7 +10286,7 @@
         hdf5PreviewPackageLoaded: "已导入清晰预览包",
         hdf5PreviewPackageInvalid: "这个文件不是有效的 HDF5 预览包",
         hdf5SavedImportsTitle: "💾 已保存上传",
-        hdf5SavedImportsEmpty: "上传 HDF5 后会自动保存导入记录和预览。",
+        hdf5SavedImportsEmpty: "上传后会自动保存原始数据和可重新载入的互动预览记录。",
         hdf5SavedImportsStatus: "已保存 {count} 个上传记录",
         hdf5SavedImportFiles: "{count} 个 HDF5 文件",
         hdf5SavedImportDatasets: "{count} 个数据集",
@@ -10980,12 +11009,17 @@
         clearBtn: "🗑️ Clear",
         notesTitle: "📌 Template Notes",
         hdf5Title: "📊 HDF5 / PXT Data Library",
+        bandAiOpenBtn: "Band AI Training",
+        bandAiPageTitle: "Band Identification and Training",
+        bandAiPageHint: "Build an improving training library from spectra and verified material labels",
+        bandAiBackBtn: "Back to Data",
         hdf5StatusInitial: "HDF5 and PXT parsers ready. Choose .h5/.pxt/.ibw/.zip/.txt files",
         hdf5DropTitle: "📁 Drop or click to upload HDF5 / PXT / ZIP files",
-        hdf5DropHint: "Supports ARPES HDF5, PXT/IBW, raw map text, and .zip batches. SES Spectrum_*.bin + .ini packages open directly, alongside HDF5, PXT/IBW, text maps, preview JSON, or images.",
+        hdf5DropHint: "Supports ARPES HDF5, PXT/IBW, raw map text, and .zip batches. Data files are saved in this browser, and the library rebuilds adjustable previews from source data; thumbnails are card artwork only.",
         hdf5ChooseBtn: "Choose HDF5 / PXT / ZIP / Raw Map",
         hdf5PackageChooseBtn: "Import Preview Package",
         analysisBundleChooseBtn: "Read Band / Fermi Results",
+        analysisFolderChooseBtn: "Read Analysis Folder",
         analysisResultTitle: "🧪 Band / Fermi Result Reader",
         analysisResultEmpty: "Import a ZIP from band, fermi, or combine_outputs, or select reports, PNG, JSON, and NPZ files directly.",
         analysisResultClearBtn: "Clear Results",
@@ -11001,7 +11035,7 @@
         hdf5PreviewPackageLoaded: "Clear preview package imported",
         hdf5PreviewPackageInvalid: "This file is not a valid HDF5 preview package",
         hdf5SavedImportsTitle: "💾 Saved Uploads",
-        hdf5SavedImportsEmpty: "HDF5 uploads automatically save import records and previews.",
+        hdf5SavedImportsEmpty: "Uploads automatically save source data and reloadable interactive-preview records.",
         hdf5SavedImportsStatus: "{count} saved upload record(s)",
         hdf5SavedImportFiles: "{count} HDF5 file(s)",
         hdf5SavedImportDatasets: "{count} dataset(s)",
@@ -16108,6 +16142,7 @@
       if (page === "model") page = "materials";
       if (state.topic === "2d" && page === "history") page = "materials";
       activeAppPage = page;
+      const navigationPage = page === "band-ai" ? "data" : page;
       appPages.forEach(section => {
         section.hidden = !pageListMatches(section.dataset.appPage, page);
       });
@@ -16115,7 +16150,7 @@
         section.hidden = !pageListMatches(section.dataset.appPageSection, page);
       });
       document.querySelectorAll("[data-page-tab]").forEach(tab => {
-        const isActive = tab.dataset.pageTab === page;
+        const isActive = tab.dataset.pageTab === navigationPage;
         tab.classList.toggle("active", isActive);
         if (tab.closest(".top-menu-bar, .flow-tabs, .toc-list")) {
           if (isActive) tab.setAttribute("aria-current", "page");
@@ -16227,7 +16262,7 @@
     function updateTocActiveSection() {
       if (!tocList) return;
       tocList.querySelectorAll(".toc-link").forEach(link => {
-        const isActive = link.dataset.pageTab === activeAppPage;
+        const isActive = link.dataset.pageTab === (activeAppPage === "band-ai" ? "data" : activeAppPage);
         link.classList.toggle("active", isActive);
         if (isActive) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
@@ -21609,9 +21644,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5ChooseBtn = document.querySelector("#hdf5ChooseBtn");
     const hdf5PackageChooseBtn = document.querySelector("#hdf5PackageChooseBtn");
     const analysisBundleChooseBtn = document.querySelector("#analysisBundleChooseBtn");
+    const analysisFolderChooseBtn = document.querySelector("#analysisFolderChooseBtn");
     const hdf5FileInput = document.querySelector("#hdf5FileInput");
     const hdf5PackageInput = document.querySelector("#hdf5PackageInput");
     const analysisBundleInput = document.querySelector("#analysisBundleInput");
+    const analysisFolderInput = document.querySelector("#analysisFolderInput");
     const hdf5LegacySourceInput = document.querySelector("#hdf5LegacySourceInput");
     const hdf5Tree = document.querySelector("#hdf5Tree");
     const hdf5Meta = document.querySelector("#hdf5Meta");
@@ -21652,6 +21689,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (hdf5PreviewHitLayer) {
         hdf5PreviewHitLayer.hidden = !interactive;
         hdf5PreviewHitLayer.setAttribute("aria-disabled", String(!interactive));
+      }
+      if (!interactive) {
+        hdf5PreviewMouseDragging = false;
+        hdf5PreviewDragPointer = null;
+        hdf5PreviewDragZone = "";
+        document.body.classList.remove("hdf5-preview-dragging");
+        cancelHDF5PreviewRedraw();
+        if (hdf5PreviewOverlayFrame) cancelAnimationFrame(hdf5PreviewOverlayFrame);
+        hdf5PreviewOverlayFrame = 0;
       }
     }
 
@@ -21839,6 +21885,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       analysisBundleInput.value = "";
       analysisBundleInput.click();
     });
+    analysisFolderChooseBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!analysisFolderInput) return;
+      analysisFolderInput.value = "";
+      analysisFolderInput.click();
+    });
     hdf5DropZone.addEventListener("click", (e) => {
       if (e.target.closest("button, input[type='file'], .hdf5-reader-helper")) return;
       chooseHDF5Files();
@@ -21866,6 +21918,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     analysisBundleInput?.addEventListener("change", () => {
       handleAnalysisResultFiles(Array.from(analysisBundleInput.files || []));
       analysisBundleInput.value = "";
+    });
+    analysisFolderInput?.addEventListener("change", () => {
+      handleAnalysisResultFiles(Array.from(analysisFolderInput.files || []));
+      analysisFolderInput.value = "";
     });
     analysisResultClearBtn?.addEventListener("click", clearAnalysisResults);
 
@@ -22139,7 +22195,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       clearAnalysisResults();
       setHDF5Status(currentLang === "zh" ? "⏳ 正在读取能带 / 费米分析结果..." : "⏳ Reading band / Fermi analysis results...");
       try {
-        let state = { filename: validFiles.length === 1 ? validFiles[0].name : `${validFiles.length} files`, reports: [], images: [], json: [], npz: [] };
+        const folderRoots = [...new Set(validFiles.map(file => String(file.webkitRelativePath || "").split("/")[0]).filter(Boolean))];
+        let state = {
+          filename: folderRoots.length === 1 ? folderRoots[0] : (validFiles.length === 1 ? validFiles[0].name : `${validFiles.length} files`),
+          reports: [], images: [], json: [], npz: []
+        };
         for (const file of validFiles) {
           if (/\.zip$/i.test(file.name || "")) {
             const archiveState = await readAnalysisResultArchive(file);
@@ -22151,7 +22211,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
               npz: state.npz.concat(archiveState.npz)
             };
           } else {
-            await appendAnalysisDirectFile(state, file);
+            await appendAnalysisDirectFile(state, file, file.webkitRelativePath || file.name);
           }
         }
         state.reports.sort((a, b) => analysisResultRank(a.name) - analysisResultRank(b.name));
@@ -22224,6 +22284,34 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ].filter(Boolean).join("<br>");
     }
 
+    function queueRepositoryDatasetUpsert(store, dataset, plan) {
+      const request = store.getAll();
+      request.onsuccess = () => {
+        const expectedSource = normalizeRepositorySourceFilename(dataset.source_file || dataset.attrs?.source || "");
+        const matches = (request.result || []).filter(row => {
+          if (row.source_id) return false;
+          const sameSource = expectedSource
+            && normalizeRepositorySourceFilename(row.source_file || row.attrs?.source || "") === expectedSource;
+          return sameSource && repositoryRecordMatchesPlan(row, plan);
+        });
+        if (!matches.length) {
+          store.put(dataset);
+          return;
+        }
+        const linkedAt = new Date().toISOString();
+        for (const row of matches) {
+          store.put({
+            ...row,
+            thumbnail: dataset.thumbnail || row.thumbnail || "",
+            preview_error: "",
+            source_id: dataset.source_id,
+            source_linked_at: linkedAt
+          });
+        }
+      };
+      return request;
+    }
+
     async function saveIgorImportSummary(file, parsed, preview, sourceId = "") {
       if (!sourceId) return false;
       try {
@@ -22231,7 +22319,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const thumbnail = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
         const tx = db.transaction(["datasets", "imports"], "readwrite");
         const wave = parsed.primary;
-        tx.objectStore("datasets").put({
+        const dataset = {
           id: `igor-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
           name: wave.name || "Igor wave",
           path: wave.path || `/${wave.name || "wave"}`,
@@ -22245,6 +22333,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           source_file: file.name,
           imported_at: new Date().toISOString(),
           tags: autoTag(wave.name || file.name, wave.attrs || {})
+        };
+        queueRepositoryDatasetUpsert(tx.objectStore("datasets"), dataset, {
+          path: dataset.path,
+          name: dataset.name,
+          shape: dataset.shape
         });
         tx.objectStore("imports").put({
           id: `igor-import-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
@@ -22495,7 +22588,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const db = await openIDB();
         const thumbnail = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
         const tx = db.transaction(["datasets", "imports"], "readwrite");
-        tx.objectStore("datasets").put({
+        const dataset = {
           id: `raw-map-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
           name: parsed.regionName || file.name,
           path: parsed.plan.path || "/raw-map",
@@ -22513,7 +22606,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           source_file: file.name,
           imported_at: new Date().toISOString(),
           tags: autoTag(file.name, { raw: "SES map" })
-        });
+        };
+        queueRepositoryDatasetUpsert(tx.objectStore("datasets"), dataset, parsed.plan);
         tx.objectStore("imports").put({
           id: `raw-map-import-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
           kind: "raw-map",
@@ -23122,6 +23216,53 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return { plan, sample, regionName, persisted };
     }
 
+    async function importSupplementalZipDataEntries(file, allEntries, options = {}) {
+      const entries = allEntries
+        .filter(entry => isHDF5EntryName(entry.name) || isPXTWorkflowName(entry.name) || isRawMapTextName(entry.name))
+        .sort((a, b) => zipEntryImportRank(a) - zipEntryImportRank(b) || String(a.name).localeCompare(String(b.name)));
+      let imported = 0;
+      let persistenceFailures = 0;
+      for (const entry of entries) {
+        const entryName = entry.name.split("/").pop();
+        const buffer = await readZipEntryArrayBuffer(file, entry);
+        if (isHDF5EntryName(entry.name)) {
+          if (!hdf5Parser()?.File) continue;
+          const entryFile = fileFromZipEntryBuffer(buffer, entryName);
+          const sourceRecord = options.persist === false
+            ? null
+            : await trySaveRepositorySourceFile(entryFile, "h5", { sourceArchive: file.name });
+          const parsed = await parseHDF5Buffer(buffer, entryName, {
+            addSummaries: options.persist !== false && !!sourceRecord,
+            persistImport: false,
+            sourceArchive: file.name,
+            sourceId: sourceRecord?.id || ""
+          });
+          if (options.persist !== false && (!sourceRecord || parsed?.summariesSaved === false)) persistenceFailures++;
+          if (parsed) imported++;
+        } else if (isPXTWorkflowName(entry.name)) {
+          const result = await handleIgorPXTFile(fileFromZipEntryBuffer(buffer, entryName), {
+            persist: options.persist,
+            sourceArchive: file.name
+          });
+          if (result) {
+            if (result.persisted === false) persistenceFailures++;
+            imported++;
+          }
+        } else {
+          const result = await handleRawMapTextFile(fileFromZipEntryBuffer(buffer, entryName), {
+            persist: options.persist,
+            sourceArchive: file.name
+          });
+          if (result) {
+            if (result.persisted === false) persistenceFailures++;
+            imported++;
+          }
+        }
+        await yieldToBrowser();
+      }
+      return { imported, persistenceFailures };
+    }
+
     async function handleHDF5ZipFile(file, options = {}) {
       setHDF5Status(tf("hdf5ZipScanning", { filename: file.name }));
       try {
@@ -23142,12 +23283,39 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             persist: shouldPersist && !!sourceRecord,
             sourceId: options.sourceId || sourceRecord?.id || ""
           });
-          if (shouldPersist && !sourceRecord && result) {
-            result.persisted = false;
-            setHDF5Status(`⚠️ ${t("repositoryInteractiveNotSaved")}`);
+          const sesPreviewState = hdf5PreviewCanvas?.__hdf5PreviewState || null;
+          const sesTreeMarkup = hdf5Tree?.innerHTML || "";
+          const sesMetaMarkup = hdf5Meta?.innerHTML || "";
+          const sesStatusMessage = hdf5Status?.textContent || "";
+          const supplemental = await importSupplementalZipDataEntries(file, allEntries, {
+            persist: shouldPersist
+          });
+          if (sesPreviewState) {
+            drawHDF5Heatmap(hdf5PreviewCanvas, sesPreviewState.sourceSample || sesPreviewState.sample, sesPreviewState.plan, {
+              filename: sesPreviewState.filename || file.name,
+              selection: sesPreviewState.selection,
+              slicerCache: sesPreviewState.slicerCache,
+              basePlan: sesPreviewState.basePlan
+            });
+            if (result?.plan && result?.sample) updateHDF5PreviewInfo(result.plan, result.sample, file.name);
+            if (hdf5Tree) hdf5Tree.innerHTML = sesTreeMarkup;
+            if (hdf5Meta) hdf5Meta.innerHTML = sesMetaMarkup;
+          }
+          if (result) {
+            result.supplementalImports = supplemental.imported;
+            if ((shouldPersist && !sourceRecord) || supplemental.persistenceFailures) {
+              result.persisted = false;
+              setHDF5Status(`⚠️ ${t("repositoryInteractiveNotSaved")}`);
+            } else if (sesStatusMessage) {
+              setHDF5Status(sesStatusMessage);
+            }
           }
           return result;
         }
+        const shouldPersistArchive = options.persist !== false;
+        const archiveSourceRecord = !shouldPersistArchive
+          ? null
+          : await trySaveRepositorySourceFile(file, "zip");
         const entries = allEntries
           .filter(isSupportedZipEntry)
           .sort((a, b) => zipEntryImportRank(a) - zipEntryImportRank(b) || String(a.name).localeCompare(String(b.name)));
@@ -23165,7 +23333,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         let totalDatasets = 0;
         let totalArpes = 0;
         let interactiveImports = 0;
-        let persistenceFailures = 0;
+        let persistenceFailures = shouldPersistArchive && !archiveSourceRecord ? 1 : 0;
         const importedFiles = [];
         const importedLayouts = [];
         const previewPackageFiles = [];
@@ -23194,7 +23362,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
               sourceArchive: file.name,
               sourceId: options.sourceId || sourceRecord?.id || ""
             });
-            if (shouldPersist && !sourceRecord) persistenceFailures++;
+            if (shouldPersist && (!sourceRecord || parsed?.summariesSaved === false)) persistenceFailures++;
             totalDatasets += parsed?.detection?.allDatasets?.length || 0;
             totalArpes += parsed?.detection?.arpesDatasets?.length || 0;
             importedLayouts.push(...(parsed?.detection?.layouts || []));
@@ -23250,6 +23418,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             size: file.size || 0,
             files: importedFiles,
             layouts: [...new Set(importedLayouts)],
+            source_id: archiveSourceRecord?.id || "",
             imported_at: new Date().toISOString()
           });
         }
@@ -25207,6 +25376,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     bindHDF5PreviewCanvasInteraction();
+    setHDF5PreviewInteractionEnabled(false);
 
     function updateHDF5PreviewInfo(plan, sample, filename) {
       if (hdf5PreviewHint) hdf5PreviewHint.textContent = `${plan.name} · ${sample.cols}×${sample.rows}`;
@@ -25532,10 +25702,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         req.onsuccess = () => resolve(req.result || []);
         req.onerror = () => resolve([]);
       });
-      const existingByKey = new Map(existing.map(row => [`${row.source_file || ""}|${row.path || ""}`, row]));
+      const datasetKey = row => `${row.source_file || ""}|${row.path || ""}|${JSON.stringify(row.shape || [])}|${row.dtype || ""}`;
+      const existingByKey = new Map(existing.map(row => [datasetKey(row), row]));
       const pendingRecords = [];
       for (const dataset of primary) {
-        const key = `${filename}|${dataset.path}`;
+        const key = datasetKey({
+          source_file: filename,
+          path: dataset.path,
+          shape: dataset.shape || [],
+          dtype: dataset.dtype || ""
+        });
         let thumbnail = "";
         let previewError = "";
         if (h5) {
@@ -25619,10 +25795,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function repositorySourceId(file, kind, sourceArchive = "") {
-      const filename = String(file?.name || "dataset").replace(/\s+/g, " ").trim();
-      const size = Number(file?.size || 0);
-      const modified = Number(file?.lastModified || 0);
-      return `source:${kind}:${sourceArchive}:${filename}:${size}:${modified}`;
+      const uuid = globalThis.crypto?.randomUUID?.()
+        || `${Date.now().toString(36)}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
+      const archive = normalizeRepositorySourceFilename(sourceArchive);
+      return `source:${kind}:${archive}:${uuid}`;
     }
 
     function buildRepositorySourceRecord(file, kind, metadata = {}) {
@@ -25803,6 +25979,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     window.addDatasetToLibrary = async function(path) {
       if (!currentH5) return;
       try {
+        const storedSource = await getRepositorySourceFile(currentRepositorySourceId);
+        if (!(storedSource?.blob instanceof Blob)) {
+          const message = `⚠️ ${t("repositoryInteractiveNotSaved")}`;
+          setHDF5Status(message);
+          showToast(message);
+          return;
+        }
         let node = currentH5;
         const parts = path.split("/").filter(Boolean);
         for (const p of parts) node = node.get(p);
@@ -25929,6 +26112,93 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return new Error(tf("repositoryRelinkContentMismatch", { dataset: repositoryDatasetLabel(record) }));
     }
 
+    function repositoryRecordMatchesPlan(record, plan) {
+      if (!plan) return false;
+      const expectedPath = String(record?.path || "");
+      const expectedName = String(record?.name || "");
+      const actualPath = String(plan.path || "");
+      const actualName = String(plan.name || "");
+      const expectedLeaf = expectedPath.split("/").filter(Boolean).pop()?.replace(/^\[Data\]\s*/i, "") || "";
+      const actualLeaf = actualPath.split("/").filter(Boolean).pop()?.replace(/^\[Data\]\s*/i, "") || "";
+      const identityMatches = expectedPath
+        ? expectedPath === actualPath
+          || (!!expectedName && expectedName === actualName)
+          || (!!expectedLeaf && (expectedLeaf === actualName || expectedLeaf === actualLeaf))
+        : !expectedName || expectedName === actualName;
+      if (!identityMatches) return false;
+      if (repositoryShapesMatch(record?.shape, plan.shape)
+          || repositoryShapesMatch(record?.shape, plan.originalShape)) return true;
+      const expectedShape = Array.isArray(record?.shape) ? record.shape.map(Number) : [];
+      const sourceShape = Array.isArray(plan.originalShape) ? plan.originalShape.map(Number) : [];
+      return expectedShape.length === 2
+        && sourceShape.length === 3
+        && expectedShape[0] === sourceShape[0]
+        && expectedShape[1] === sourceShape[2];
+    }
+
+    async function renderRepositoryZipFileForRecord(record, file, sourceId = "") {
+      const entries = await readZipEntries(file);
+      const sesPackage = findSESBinaryMapPackage(entries);
+      const targetRank = Array.isArray(record?.shape) ? record.shape.length : 0;
+
+      const trySESPreview = async () => {
+        if (!sesPackage) return null;
+        const result = await handleSESBinaryMapZip(file, entries, sesPackage, { persist: false, sourceId });
+        return result && repositoryRecordMatchesPlan(record, result.plan)
+          ? { preview: result, sourceFile: file, sourceKind: "ses-zip" }
+          : null;
+      };
+
+      if (targetRank >= 3) {
+        const sesMatch = await trySESPreview();
+        if (sesMatch) return sesMatch;
+      }
+
+      const dataEntries = entries
+        .filter(entry => isHDF5EntryName(entry.name) || isPXTWorkflowName(entry.name) || isRawMapTextName(entry.name))
+        .sort((a, b) => zipEntryImportRank(a) - zipEntryImportRank(b) || String(a.name).localeCompare(String(b.name)));
+      for (const entry of dataEntries) {
+        const entryName = entry.name.split("/").pop();
+        try {
+          const buffer = await readZipEntryArrayBuffer(file, entry);
+          const entryFile = fileFromZipEntryBuffer(buffer, entryName);
+          if (isHDF5EntryName(entry.name)) {
+            const parsed = await parseHDF5Buffer(buffer, entryName, {
+              addSummaries: false,
+              persistImport: false,
+              sourceArchive: file.name,
+              sourceId
+            });
+            if (!record.path) continue;
+            const node = getHDF5NodeByPath(parsed.h5, record.path);
+            if (!repositoryShapesMatch(record.shape, node.shape || [])) continue;
+            const preview = await renderHDF5PreviewForPath(record.path, entryName);
+            if (preview) return { preview, sourceFile: entryFile, sourceKind: "h5" };
+          } else if (isPXTWorkflowName(entry.name)) {
+            const result = await handleIgorPXTFile(entryFile, { persist: false, sourceId });
+            const wave = result?.parsed?.waves?.find(item => item.path === record.path)
+              || result?.parsed?.waves?.find(item => item.name === record.name);
+            if (!wave || !repositoryShapesMatch(record.shape, wave.shape)) continue;
+            const preview = await renderIgorWavePreview(result.parsed, wave, entryName);
+            if (preview) return { preview, sourceFile: entryFile, sourceKind: "igor" };
+          } else {
+            const parsed = await handleRawMapTextFile(entryFile, { persist: false, sourceId });
+            if (!parsed || !repositoryRecordMatchesPlan(record, parsed.plan)) continue;
+            return { preview: parsed, sourceFile: entryFile, sourceKind: "raw-map" };
+          }
+        } catch (error) {
+          console.warn("ZIP entry did not match repository record", entry.name, error);
+        }
+        await yieldToBrowser();
+      }
+
+      if (targetRank < 3) {
+        const sesMatch = await trySESPreview();
+        if (sesMatch) return sesMatch;
+      }
+      throw repositoryContentMismatch(record);
+    }
+
     async function renderRepositoryFileForRecord(record, file, kind, sourceId = "") {
       if (kind === "h5") {
         const buffer = await file.arrayBuffer();
@@ -25943,7 +26213,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (!preview || !repositoryShapesMatch(record.shape, preview.plan?.shape)) {
           throw repositoryContentMismatch(record);
         }
-        return preview;
+        return { preview, sourceFile: file, sourceKind: kind };
       }
 
       if (kind === "igor") {
@@ -25958,62 +26228,45 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
         const preview = await renderIgorWavePreview(result.parsed, targetWave, file.name);
         if (!preview) throw repositoryContentMismatch(record);
-        return preview;
+        return { preview, sourceFile: file, sourceKind: kind };
       }
 
       if (kind === "ses-zip") {
-        const result = await handleHDF5ZipFile(file, { persist: false, sourceId });
-        if (!result || (!result.plan && !(result.interactiveImports > 0 || result.totalDatasets > 0))) {
-          throw repositoryContentMismatch(record);
-        }
-        if (result.plan) {
-          const samePath = !record.path || record.path === result.plan.path;
-          const sameName = !record.name || record.name === result.plan.name;
-          if (!samePath && !sameName) throw repositoryContentMismatch(record);
-        }
-        return result;
+        return renderRepositoryZipFileForRecord(record, file, sourceId);
       }
 
       const parsed = await handleRawMapTextFile(file, { persist: false, sourceId });
-      if (!parsed?.plan) throw repositoryContentMismatch(record);
-      const samePath = !record.path || record.path === parsed.plan.path;
-      const sameName = !record.name || record.name === parsed.plan.name;
-      if ((!samePath && !sameName) || !repositoryShapesMatch(record.shape, parsed.plan.shape)) {
-        throw repositoryContentMismatch(record);
-      }
-      return parsed;
+      if (!parsed?.plan || !repositoryRecordMatchesPlan(record, parsed.plan)) throw repositoryContentMismatch(record);
+      return { preview: parsed, sourceFile: file, sourceKind: kind };
     }
 
     async function saveAndAttachRepositorySourceFile(file, kind, targetRecord, sourceRecord = null) {
       if (!file || !targetRecord) throw new Error(t("repositorySourceMissing"));
       await requestRepositoryPersistence();
       const record = sourceRecord || buildRepositorySourceRecord(file, kind);
-      const expectedName = normalizeRepositorySourceFilename(targetRecord.source_file || targetRecord.attrs?.source || "");
       const linkedAt = new Date().toISOString();
       const db = await openIDB();
       return new Promise((resolve, reject) => {
         const tx = db.transaction(["imports", "datasets"], "readwrite");
         const datasetStore = tx.objectStore("datasets");
-        let datasetCount = 0;
 
         tx.objectStore("imports").put(record);
-        const datasetRequest = datasetStore.getAll();
+        const datasetRequest = datasetStore.get(targetRecord.id);
         datasetRequest.onsuccess = () => {
-          for (const row of datasetRequest.result || []) {
-            const sameSource = expectedName
-              && normalizeRepositorySourceFilename(row.source_file || row.attrs?.source || "") === expectedName;
-            if (row.id !== targetRecord.id && (!sameSource || row.source_id)) continue;
-            datasetStore.put({
-              ...row,
-              source_id: record.id,
-              source_linked_at: linkedAt
-            });
-            datasetCount++;
+          const row = datasetRequest.result;
+          if (!row) {
+            tx.abort();
+            return;
           }
+          datasetStore.put({
+            ...row,
+            source_id: record.id,
+            source_linked_at: linkedAt
+          });
         };
         datasetRequest.onerror = () => tx.abort();
 
-        tx.oncomplete = () => resolve({ sourceRecord: record, datasetCount });
+        tx.oncomplete = () => resolve({ sourceRecord: record, datasetCount: 1 });
         tx.onerror = () => reject(tx.error || new Error("Could not save repository source"));
         tx.onabort = () => reject(tx.error || new Error("Could not save repository source"));
       });
@@ -26032,16 +26285,20 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const kind = repositorySourceKindForFile(file);
       if (!kind) throw new Error(t("hdf5UnsupportedFile"));
       const expected = String(record.source_file || record.attrs?.source || "").trim();
-      if (expected && normalizeRepositorySourceFilename(file.name) !== normalizeRepositorySourceFilename(expected)) {
+      if (expected && kind !== "ses-zip" && normalizeRepositorySourceFilename(file.name) !== normalizeRepositorySourceFilename(expected)) {
         throw new Error(tf("repositoryRelinkMismatch", { expected, actual: file.name || "" }));
       }
 
       setHDF5Status(tf("repositoryRelinking", { filename: file.name || expected }));
-      const sourceRecord = buildRepositorySourceRecord(file, kind);
-      await renderRepositoryFileForRecord(record, file, kind, sourceRecord.id);
-      const linked = await saveAndAttachRepositorySourceFile(file, kind, record, sourceRecord);
+      const validation = await renderRepositoryFileForRecord(record, file, kind);
+      const sourceFile = validation.sourceFile || file;
+      const sourceKind = validation.sourceKind || kind;
+      const sourceRecord = buildRepositorySourceRecord(sourceFile, sourceKind, {
+        sourceArchive: sourceFile === file ? "" : file.name
+      });
+      const linked = await saveAndAttachRepositorySourceFile(sourceFile, sourceKind, record, sourceRecord);
       const storedSource = await getRepositorySourceFile(linked.sourceRecord.id);
-      if (!(storedSource?.blob instanceof Blob) || storedSource.blob.size !== file.size) {
+      if (!(storedSource?.blob instanceof Blob) || storedSource.blob.size !== sourceFile.size) {
         throw new Error(t("repositorySourceMissing"));
       }
       currentRepositorySourceId = linked.sourceRecord.id;
@@ -26111,10 +26368,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             const preview = await renderIgorWavePreview(currentIgorImport, currentIgorImport.waves[waveIndex], source.filename || filename);
             if (!preview) throw repositoryContentMismatch(record);
             loaded = true;
-          } else if (kind === "ses-zip") {
-            loaded = !!(await handleHDF5ZipFile(file, { persist: false, sourceId: source.id }));
+          } else if (kind === "ses-zip" || kind === "zip") {
+            loaded = !!(await renderRepositoryZipFileForRecord(record, file, source.id));
           } else {
-            loaded = !!(await handleRawMapTextFile(file, { persist: false, sourceId: source.id }));
+            const parsed = await handleRawMapTextFile(file, { persist: false, sourceId: source.id });
+            loaded = !!parsed && repositoryRecordMatchesPlan(record, parsed.plan);
           }
         } else if (record.path && currentH5?.filename === record.source_file) {
           loaded = !!(await renderHDF5PreviewForPath(record.path, record.source_file));
@@ -26645,6 +26903,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         Array.from(fileInput.files || []).forEach(handleFile);
       });
       window.setTimeout(updateStatus, 0);
+    })();
+  </script>
+  <script>
+    (() => {
+      const openBandAiBtn = document.querySelector("#openBandAiBtn");
+      const backToDataBtn = document.querySelector("#backToDataBtn");
+      openBandAiBtn?.addEventListener("click", () => {
+        if (typeof showAppPage === "function") showAppPage("band-ai");
+      });
+      backToDataBtn?.addEventListener("click", () => {
+        if (typeof showAppPage === "function") showAppPage("data");
+      });
     })();
   </script>
 </body>
