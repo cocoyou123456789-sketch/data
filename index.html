@@ -493,6 +493,13 @@
       .ustc-orbit-video {
         display: none;
       }
+
+      .ustc-orbit {
+        background:
+          linear-gradient(180deg, rgba(3,7,14,0.12), rgba(3,7,14,0.56)),
+          url("assets/nsrl-login-loop-poster-v2.jpg") center / cover no-repeat,
+          #050812;
+      }
     }
 
     .login-visual-copy {
@@ -10110,11 +10117,16 @@
         chatAiChecking: "正在检查",
         chatAiOnline: "在线",
         chatAiUnconfigured: "未配置",
+        chatAiLoginRequired: "请登录",
         chatAiLocal: "本地规则",
         chatAiError: "连接失败",
         chatThinking: "正在根据当前数据生成回答...",
         chatAiFallback: "所选 AI 模型暂不可用，以下为本地数据预览。请在“材料预测”页检查模型与 AI 接口设置。",
         chatNeedsAi: "AI 接口尚未连接，请在“材料预测”页选择智能体或配置接口。",
+        chatNeedsAuthorizedLogin: "请使用左侧授权账号登录后使用 ChatGPT 或 DeepSeek。访客仍可使用本地规则预览。",
+        chatOwnerLoginChecking: "正在验证授权账号...",
+        chatOwnerLoginFailed: "账号或密码不正确，或授权服务暂不可用。",
+        chatOwnerLoginSuccess: "授权账号已登录，AI 功能可用",
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
         modelReadyToast: "计算模型接口已就绪",
@@ -10859,11 +10871,16 @@
         chatAiChecking: "Checking",
         chatAiOnline: "online",
         chatAiUnconfigured: "not configured",
+        chatAiLoginRequired: "sign in",
         chatAiLocal: "Local rules",
         chatAiError: "Connection failed",
         chatThinking: "Generating an answer from the current data...",
         chatAiFallback: "The selected AI model is unavailable, so a local data preview is shown. Check the model and AI settings on Material Prediction.",
         chatNeedsAi: "No AI endpoint is connected. Select an agent or configure it on Material Prediction.",
+        chatNeedsAuthorizedLogin: "Sign in with the authorized account on the left to use ChatGPT or DeepSeek. Guests can still use the local rules preview.",
+        chatOwnerLoginChecking: "Verifying authorized account...",
+        chatOwnerLoginFailed: "The account or password is incorrect, or the authorization service is unavailable.",
+        chatOwnerLoginSuccess: "Authorized account signed in; AI is available",
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
         modelReadyToast: "Computation model interface is ready",
@@ -11597,6 +11614,7 @@
     const ARTICLE_IMPORT_PREVIEW_LIMIT = 60000;
     const ARTICLE_IMPORT_CHUNK_SIZE = 125;
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
+    const CHAT_SESSION_STORAGE_KEY = "arpes-ai-chat-session-v1";
     const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
     const CHAT_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/chat";
     const DEFAULT_CHAT_AGENT = "deepseek-v4-flash";
@@ -16142,6 +16160,7 @@
           confirmPassword.focus();
           return;
         }
+        clearChatAuthSession();
         const user = {
           email,
           password_set: true,
@@ -16158,7 +16177,7 @@
         if (authMode === "signup") showToast(t("accountCreatedToast"));
       };
       loginBtn?.addEventListener("click", submitLogin);
-      const submitUstcLogin = () => {
+      const submitUstcLogin = async () => {
         const email = ustcLoginEmail?.value.trim() || "";
         const password = ustcLoginPassword?.value || "";
         if (!email.includes("@")) {
@@ -16171,21 +16190,37 @@
           ustcLoginPassword?.focus();
           return;
         }
-        const user = {
-          email,
-          password_set: true,
-          name: email.split("@")[0] || "NSRL ARPES user",
-          group: "NSRL / ARPES",
-          account_mode: "nsrl_signin",
-          login_at: new Date().toISOString()
-        };
-        safeStorageSet(USER_STORAGE_KEY, JSON.stringify(user));
-        if (ustcLoginPassword) ustcLoginPassword.value = "";
-        if (ustcLoginStatus) ustcLoginStatus.textContent = "";
-        unlockWorkbench(user);
+        if (ustcLoginBtn) ustcLoginBtn.disabled = true;
+        if (ustcLoginStatus) ustcLoginStatus.textContent = t("chatOwnerLoginChecking");
+        try {
+          await authenticateChatOwner(email, password);
+          const user = {
+            email,
+            password_set: true,
+            name: email.split("@")[0] || "NSRL ARPES user",
+            group: "NSRL / ARPES",
+            account_mode: "authorized_owner",
+            login_at: new Date().toISOString()
+          };
+          safeStorageSet(USER_STORAGE_KEY, JSON.stringify(user));
+          if (ustcLoginPassword) ustcLoginPassword.value = "";
+          if (ustcLoginStatus) ustcLoginStatus.textContent = t("chatOwnerLoginSuccess");
+          unlockWorkbench(user);
+          probeChatEndpoint().catch(() => {});
+          showToast(t("chatOwnerLoginSuccess"));
+        } catch (error) {
+          clearChatAuthSession();
+          if (ustcLoginStatus) ustcLoginStatus.textContent = error?.code === "INVALID_CREDENTIALS"
+            ? t("chatOwnerLoginFailed")
+            : (error?.message || t("chatOwnerLoginFailed"));
+          ustcLoginPassword?.focus();
+        } finally {
+          if (ustcLoginBtn) ustcLoginBtn.disabled = false;
+        }
       };
       ustcLoginBtn?.addEventListener("click", submitUstcLogin);
       const enterGuest = () => {
+        clearChatAuthSession();
         const guest = {
           email: "",
           password_set: false,
@@ -16200,6 +16235,7 @@
       guestLoginBtn?.addEventListener("click", enterGuest);
       quickGuestLoginBtn?.addEventListener("click", enterGuest);
       ustcGuestBtn?.addEventListener("click", () => {
+        clearChatAuthSession();
         const guest = {
           email: "",
           password_set: false,
@@ -16271,6 +16307,7 @@
     }
 
     function logoutWorkbench() {
+      clearChatAuthSession();
       safeStorageRemove(USER_STORAGE_KEY);
       pendingWorkbenchUser = null;
       document.body.classList.add("locked");
@@ -16715,6 +16752,13 @@
           }
         }
       } catch (error) {
+        if (error?.code === "CHAT_AUTH_REQUIRED") {
+          clearChatAuthSession();
+          setChatAiStatus("offline", "chatAiLoginRequired", t("chatNeedsAuthorizedLogin"));
+          pending.text = t("chatNeedsAuthorizedLogin");
+          renderChatThread();
+          return;
+        }
         const unconfiguredCodes = new Set([
           "OPENAI_NOT_CONFIGURED",
           "CHAT_DISABLED",
@@ -19430,6 +19474,49 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }).catch(() => {});
     }
 
+    function chatSessionToken() {
+      try { return window.sessionStorage.getItem(CHAT_SESSION_STORAGE_KEY) || ""; }
+      catch { return ""; }
+    }
+
+    function saveChatAuthSession(token) {
+      try { window.sessionStorage.setItem(CHAT_SESSION_STORAGE_KEY, String(token || "")); }
+      catch {}
+    }
+
+    function clearChatAuthSession() {
+      try { window.sessionStorage.removeItem(CHAT_SESSION_STORAGE_KEY); }
+      catch {}
+    }
+
+    function chatRequestHeaders(base = {}) {
+      const token = chatSessionToken();
+      return token ? { ...base, Authorization: `Bearer ${token}` } : { ...base };
+    }
+
+    async function authenticateChatOwner(email, password) {
+      const endpoint = configuredAiEndpoint();
+      if (!endpoint) {
+        const error = new Error(t("chatAiUnconfigured"));
+        error.code = "CHAT_ENDPOINT_MISSING";
+        throw error;
+      }
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ action: "login", email, password })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.token) {
+        const error = new Error(data.error || `Authorization endpoint HTTP ${response.status}`);
+        error.code = data.code || `HTTP_${response.status}`;
+        throw error;
+      }
+      saveChatAuthSession(data.token);
+      return data.auth || {};
+    }
+
     function loadAiConfig() {
       let stored = {};
       try { stored = JSON.parse(safeStorageGet(AI_CONFIG_STORAGE_KEY) || "{}"); }
@@ -19560,7 +19647,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       try {
         const response = await fetch(endpoint, {
           method: "GET",
-          headers: { Accept: "application/json" },
+          headers: chatRequestHeaders({ Accept: "application/json" }),
           signal: controller.signal,
           cache: "no-store"
         });
@@ -19568,7 +19655,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (!response.ok) throw new Error(data.error || `AI endpoint HTTP ${response.status}`);
         if (token !== chatEndpointProbeToken) return data;
         const status = chatProviderStatus(data, provider);
-        if (status?.enabled !== false && status?.configured) {
+        if (data.auth?.required && !data.auth?.authenticated) {
+          setChatAiStatus("offline", "chatAiLoginRequired", t("chatNeedsAuthorizedLogin"));
+          if (aiKeyInput) aiKeyInput.value = t("chatNeedsAuthorizedLogin");
+        } else if (status?.enabled !== false && status?.configured) {
           const detail = chatProviderDetail(status, provider);
           setChatAiStatus("online", "chatAiOnline", detail);
           if (aiKeyInput) aiKeyInput.value = `${chatProviderLabel(provider)} · ${t("chatAiOnline")} · ${status.model || ""}`;
@@ -19603,7 +19693,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       try {
         const response = await fetch(endpoint, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: chatRequestHeaders({ "Content-Type": "application/json" }),
           signal: controller.signal,
           body: JSON.stringify({
             provider,
