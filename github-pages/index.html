@@ -5654,6 +5654,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
       gap: 8px;
     }
 
@@ -5664,11 +5665,72 @@
     .chat-agent-select {
       min-height: 34px;
       max-width: 160px;
-      margin-left: auto;
       color: var(--ink);
       background: #111b28;
       border-color: var(--line);
       font-size: 12px;
+    }
+
+    .chat-agent-control {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .chat-ai-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 170px;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-ai-status::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+
+    .chat-ai-status[data-state="online"] { color: #99f6e4; }
+    .chat-ai-status[data-state="online"]::before {
+      background: #2dd4bf;
+      box-shadow: 0 0 8px rgba(45,212,191,0.72);
+    }
+    .chat-ai-status[data-state="offline"] { color: #fbbf24; }
+    .chat-ai-status[data-state="offline"]::before { background: #f59e0b; }
+    .chat-ai-status[data-state="error"] { color: #fda4af; }
+    .chat-ai-status[data-state="error"]::before { background: #fb7185; }
+
+    .chat-message span {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 760px) {
+      .chat-agent-control {
+        width: 100%;
+        margin-left: 0;
+        justify-content: space-between;
+      }
+
+      .chat-ai-status {
+        max-width: min(52vw, 190px);
+      }
+
+      .chat-agent-select {
+        flex: 0 1 150px;
+        max-width: 150px;
+      }
     }
 
     .history-chat-panel {
@@ -7023,6 +7085,160 @@
       font-size: 12px;
       white-space: nowrap;
     }
+    .analysis-result-reader {
+      display: grid;
+      gap: 14px;
+    }
+    .analysis-result-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .analysis-result-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 8px;
+    }
+    .analysis-result-metric {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #101923;
+    }
+    .analysis-result-metric strong {
+      display: block;
+      color: var(--accent-glow);
+      font-size: 19px;
+      line-height: 1.1;
+    }
+    .analysis-result-metric span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .analysis-result-viewer {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.6fr);
+      gap: 12px;
+      align-items: start;
+    }
+    .analysis-result-index,
+    .analysis-result-report {
+      min-width: 0;
+      max-height: 680px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #0b121a;
+    }
+    .analysis-result-index {
+      padding: 8px;
+    }
+    .analysis-result-index button {
+      width: 100%;
+      min-height: 36px;
+      padding: 8px 10px;
+      border: 0;
+      border-bottom: 1px solid rgba(148,163,184,0.12);
+      border-radius: 0;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+    .analysis-result-index button:hover,
+    .analysis-result-index button[aria-pressed="true"] {
+      background: rgba(15,118,110,0.22);
+      color: #ccfbf1;
+    }
+    .analysis-result-report {
+      padding: 18px 20px;
+      line-height: 1.55;
+    }
+    .analysis-result-report h1,
+    .analysis-result-report h2,
+    .analysis-result-report h3 {
+      margin: 0 0 10px;
+      color: #e2e8f0;
+      letter-spacing: 0;
+    }
+    .analysis-result-report h1 { font-size: 21px; }
+    .analysis-result-report h2 { margin-top: 20px; font-size: 17px; }
+    .analysis-result-report h3 { margin-top: 16px; font-size: 14px; }
+    .analysis-result-report p,
+    .analysis-result-report ul { margin: 8px 0; }
+    .analysis-result-report code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: rgba(148,163,184,0.14);
+      color: #bfdbfe;
+    }
+    .analysis-result-report img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 520px;
+      margin: 14px auto;
+      border: 1px solid var(--line);
+      background: #fff;
+      object-fit: contain;
+      cursor: zoom-in;
+    }
+    .analysis-result-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 10px;
+    }
+    .analysis-result-figure {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #0b121a;
+    }
+    .analysis-result-figure img {
+      display: block;
+      width: 100%;
+      height: 180px;
+      background: #fff;
+      object-fit: contain;
+      cursor: zoom-in;
+    }
+    .analysis-result-figure span {
+      display: block;
+      padding: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+    .analysis-result-data-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 8px;
+    }
+    .analysis-result-data-card {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #101923;
+      overflow-wrap: anywhere;
+    }
+    .analysis-result-data-card pre {
+      max-height: 220px;
+      margin: 8px 0 0;
+      overflow: auto;
+      color: var(--muted);
+      font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+      white-space: pre-wrap;
+    }
+    @media (max-width: 900px) {
+      .analysis-result-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .analysis-result-viewer { grid-template-columns: 1fr; }
+      .analysis-result-index { max-height: 220px; }
+    }
     .hdf5-tree { max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; }
     .hdf5-tree .group { color: #f59e0b; cursor: pointer; }
     .hdf5-tree .dataset { color: var(--accent-glow); cursor: pointer; padding-left: 16px; }
@@ -7124,6 +7340,8 @@
       -webkit-user-select: none;
       background: transparent;
     }
+    .hdf5-preview-hit-layer[hidden] { display: none; }
+    .hdf5-preview-canvas-wrap.is-static-preview canvas { cursor: default; }
     body.hdf5-preview-dragging,
     body.hdf5-preview-dragging * {
       cursor: crosshair !important;
@@ -7245,6 +7463,14 @@
       min-height: 34px;
       padding: 6px 10px;
       white-space: nowrap;
+    }
+    .library-card-actions .repository-source-relink {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+    .hdf5-preview-info .repository-source-relink {
+      width: fit-content;
+      margin-top: 8px;
     }
     .library-source-state {
       display: inline-flex;
@@ -8386,11 +8612,14 @@
               <div class="chat-resize-handle" id="chatResizeHandle" role="separator" aria-orientation="vertical" aria-label="拖动调整对话框宽度" title="拖动调整对话框宽度" tabindex="0"></div>
               <div class="chat-panel-head">
                 <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
-                <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
-                  <option value="gpt-4.1-mini">ChatGPT</option>
-                  <option value="deepseek-r1">DeepSeek</option>
-                  <option value="arpes-rules-preview">ARPES 本地规则</option>
-                </select>
+                <div class="chat-agent-control">
+                  <span class="chat-ai-status" id="chatAiStatus" data-state="checking" data-i18n="chatAiChecking">正在检查</span>
+                  <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
+                    <option value="gpt-5.6-luna">ChatGPT</option>
+                    <option value="deepseek-r1">DeepSeek</option>
+                    <option value="arpes-rules-preview">ARPES 本地规则</option>
+                  </select>
+                </div>
               </div>
               <div class="chat-thread" id="chatThread" aria-live="polite"></div>
               <div class="chat-table-wrap" id="chatTableWrap" style="display:none;"></div>
@@ -8454,7 +8683,7 @@
             </div>
             <div class="roundtable-panel" aria-label="Module round table">
               <div class="roundtable-surface"></div>
-              <button class="round-module one active" type="button" data-ai-model="gpt-4.1-mini">
+              <button class="round-module one active" type="button" data-ai-model="gpt-5.6-luna">
                 <span class="module-cube">
                   <span class="module-cube-face front"><span><span class="round-module-model">GPT</span><span class="round-module-role">general reasoning</span></span></span>
                   <span class="module-cube-face top"></span>
@@ -8499,7 +8728,7 @@
               <div class="roundtable-center">
                 <div class="roundtable-model-status" aria-live="polite">
                   <strong data-roundtable-model-title>GPT</strong>
-                  <span data-roundtable-model-hint>gpt-4.1-mini · 通用推理、实验方案和跨模块问答。</span>
+                  <span data-roundtable-model-hint>gpt-5.6-luna · 通用推理、实验方案和跨模块问答。</span>
                 </div>
                 <div class="crucible-panel periodic-crucible-panel" id="periodicCruciblePanel" tabindex="0" aria-label="模型合集中央坩埚">
                   <h3>坩埚预测 <span id="roundtableCrucibleFormula">等待元素</span></h3>
@@ -8854,6 +9083,7 @@
           <div class="upload-actions">
             <button class="primary" type="button" id="hdf5ChooseBtn" data-i18n="hdf5ChooseBtn">选择 HDF5 / PXT / ZIP / 原始 map</button>
             <button type="button" id="hdf5PackageChooseBtn" data-i18n="hdf5PackageChooseBtn">导入转换包</button>
+            <button type="button" id="analysisBundleChooseBtn" data-i18n="analysisBundleChooseBtn">读取能带 / 费米分析结果</button>
           </div>
           <div class="hdf5-reader-helper">
             <strong data-i18n="hdf5ReaderTitle">本地 HDF5 读图程序</strong>
@@ -8867,6 +9097,20 @@
           </div>
           <input class="hdf5-native-input" type="file" id="hdf5FileInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,.txt,.dat,.csv,.tsv,application/x-hdf5,application/octet-stream,application/zip,text/plain,text/csv" multiple tabindex="-1" aria-hidden="true">
           <input class="hdf5-native-input" type="file" id="hdf5PackageInput" accept=".zip,.json,application/json,application/zip,image/png,image/jpeg,image/webp" multiple tabindex="-1" aria-hidden="true">
+          <input class="hdf5-native-input" type="file" id="analysisBundleInput" accept=".zip,.md,.json,.npz,.png,.jpg,.jpeg,.webp,application/zip,application/json,text/markdown,image/png,image/jpeg,image/webp" multiple tabindex="-1" aria-hidden="true">
+          <input class="hdf5-native-input" type="file" id="hdf5LegacySourceInput" accept=".h5,.hdf5,.hd5,.zip,.pxt,.pxp,.ibw,.txt,.dat,.csv,.tsv,application/x-hdf5,application/octet-stream,application/zip,text/plain,text/csv" tabindex="-1" aria-hidden="true">
+        </div>
+        <div class="card analysis-result-reader" id="analysisResultReader">
+          <div class="analysis-result-head">
+            <div>
+              <h3 data-i18n="analysisResultTitle">🧪 能带 / 费米分析结果读取</h3>
+              <span class="muted" id="analysisResultStatus" data-i18n="analysisResultEmpty">导入 band、fermi 或 combine_outputs 的 ZIP，也可直接选择报告、PNG、JSON、NPZ。</span>
+            </div>
+            <button type="button" id="analysisResultClearBtn" data-i18n="analysisResultClearBtn" hidden>清除结果</button>
+          </div>
+          <div id="analysisResultContent">
+            <span class="muted" data-i18n="analysisResultEmpty">导入 band、fermi 或 combine_outputs 的 ZIP，也可直接选择报告、PNG、JSON、NPZ。</span>
+          </div>
         </div>
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
@@ -9382,13 +9626,13 @@
                   <input id="aiEndpointInput" placeholder="/api/chat 或 https://your-site.vercel.app/api/chat">
                 </label>
                 <label data-label-i18n="aiModelLabel">AI 模型名
-                  <input id="aiModelInput" placeholder="gpt-4.1-mini / local-llm">
+                  <input id="aiModelInput" placeholder="gpt-5.6-luna / local-llm">
                 </label>
-                <label data-label-i18n="aiKeyLabel">API Key（只存在本机）
-                  <input id="aiKeyInput" type="password" autocomplete="off" placeholder="sk-...">
+                <label data-label-i18n="aiKeyLabel">服务器密钥状态
+                  <input id="aiKeyInput" type="text" readonly aria-readonly="true" placeholder="由服务器 OPENAI_API_KEY 管理">
                 </label>
               </div>
-              <p class="muted" data-i18n="aiConfigHint">部署到 Vercel 后可直接使用 /api/chat；如果仍用 GitHub Pages，请填写 Vercel 代理的完整 URL。API Key 只放在 Vercel 环境变量 OPENAI_API_KEY。</p>
+              <p class="muted" data-i18n="aiConfigHint">ChatGPT 通过服务器端 /api/chat 连接。API Key 只配置在 Netlify 或 Vercel 的 OPENAI_API_KEY 环境变量中，不会保存到浏览器。</p>
               <div class="toolbar">
                 <button id="aiSaveConfigBtn" type="button" data-i18n="aiSaveConfigBtn">保存 AI 配置</button>
                 <button id="aiClearConfigBtn" type="button" data-i18n="aiClearConfigBtn">清除 AI 配置</button>
@@ -9677,16 +9921,22 @@
         modelRegistryTemplate: "已注册模型：",
         aiEndpointLabel: "AI 接口地址",
         aiModelLabel: "AI 模型名",
-        aiKeyLabel: "API Key（只存在本机）",
-        aiConfigHint: "部署到 Vercel 后可直接使用 /api/chat；如果仍用 GitHub Pages，请填写 Vercel 代理的完整 URL。API Key 只放在 Vercel 环境变量 OPENAI_API_KEY。",
+        aiKeyLabel: "服务器密钥状态",
+        aiServerKeyManaged: "由服务器 OPENAI_API_KEY 管理",
+        aiConfigHint: "ChatGPT 通过服务器端 /api/chat 连接。API Key 只配置在 Netlify 或 Vercel 的 OPENAI_API_KEY 环境变量中，不会保存到浏览器。",
         aiSaveConfigBtn: "保存 AI 配置",
         aiClearConfigBtn: "清除 AI 配置",
         aiConfigSaved: "AI 配置已保存",
         aiConfigCleared: "AI 配置已清除",
         aiConfiguredStatus: "AI 已配置",
         aiLocalStatus: "等待接入 AI",
+        chatAiChecking: "正在检查",
+        chatAiOnline: "ChatGPT 在线",
+        chatAiUnconfigured: "ChatGPT 未配置",
+        chatAiLocal: "本地规则",
+        chatAiError: "连接失败",
         chatThinking: "正在根据当前数据生成回答...",
-        chatAiFallback: "AI 接口暂时不可用，请在“材料预测”页检查模型与 AI 接口设置。",
+        chatAiFallback: "ChatGPT 暂不可用，以下为本地数据预览。请在“材料预测”页检查模型与 AI 接口设置。",
         chatNeedsAi: "AI 接口尚未连接，请在“材料预测”页选择智能体或配置接口。",
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
@@ -9991,6 +10241,10 @@
         hdf5DropHint: "支持 ARPES HDF5、PXT/IBW、原始 map 文本和 .zip 批量包：zip 可直接读取 SES 的 Spectrum_*.bin + .ini，也可包含 HDF5、PXT/IBW、文本 map、预览 JSON 或图片。",
         hdf5ChooseBtn: "选择 HDF5 / PXT / ZIP / 原始 map",
         hdf5PackageChooseBtn: "导入转换包",
+        analysisBundleChooseBtn: "读取能带 / 费米分析结果",
+        analysisResultTitle: "🧪 能带 / 费米分析结果读取",
+        analysisResultEmpty: "导入 band、fermi 或 combine_outputs 的 ZIP，也可直接选择报告、PNG、JSON、NPZ。",
+        analysisResultClearBtn: "清除结果",
         hdf5ReaderTitle: "本地 HDF5 读图程序",
         hdf5ReaderHint: "如果浏览器直接预览发花，先用脚本生成预览包，再点“导入转换包”。",
         hdf5PxtTitle: "PXT / IBW 直接预览",
@@ -10039,6 +10293,7 @@
         librarySearchPlaceholder: "搜索：能量范围、温度、材料...",
         importToLibraryBtn: "⬆️ 导入本地仓库",
         loadLibraryPreviewBtn: "载入预览",
+        loadLibraryThumbnailBtn: "载入缩略图",
         selectLibraryCompareBtn: "选择对比",
         selectedLibraryCompareBtn: "已选中",
         repositorySourceAvailable: "原始文件已保存在本地",
@@ -10047,6 +10302,16 @@
         repositoryLoaded: "✅ 已从本地仓库载入 {dataset}",
         repositorySourceMissing: "这条旧记录没有保存原始文件，请重新上传同名文件。",
         repositoryStorageFailed: "文件已预览，但原始文件未能保存到本地仓库：{message}",
+        repositoryRelinkSourceBtn: "关联并保存原始文件",
+        repositoryReplaceSourceBtn: "更换并保存原始文件",
+        repositoryRelinking: "正在保存并关联 {filename}...",
+        repositoryRelinked: "✅ 原始文件已保存，并关联到 {count} 条数据记录",
+        repositoryRelinkMismatch: "文件不匹配：需要 {expected}，你选择了 {actual}。",
+        repositoryRelinkContentMismatch: "文件可以读取，但找不到与 {dataset} 对应的数据；本次没有保存。",
+        repositoryRelinkFailed: "无法保存原始文件：{message}",
+        repositoryInteractiveSaved: "原始数据已保存，可从本地仓库重新载入可调节预览",
+        repositoryInteractiveNotSaved: "已生成可调节预览，但原始文件或仓库记录未能完整保存；请检查浏览器存储空间后重试",
+        repositoryStaticPreviewHint: "这是静态缩略图；关联原始文件后可恢复曲线联动。",
         compareSelectedBtn: "📊 对比选中",
         clearLibraryBtn: "🗑️ 清空库",
         libraryEmpty: "暂无数据。上传 HDF5 文件后添加到库。",
@@ -10400,16 +10665,22 @@
         modelRegistryTemplate: "Registered models:",
         aiEndpointLabel: "AI Endpoint",
         aiModelLabel: "AI Model",
-        aiKeyLabel: "API Key (local only)",
-        aiConfigHint: "After deploying to Vercel, use /api/chat directly. If you keep using GitHub Pages, enter the full Vercel proxy URL. Put the API key only in the Vercel OPENAI_API_KEY environment variable.",
+        aiKeyLabel: "Server key status",
+        aiServerKeyManaged: "Managed by server OPENAI_API_KEY",
+        aiConfigHint: "ChatGPT connects through the server-side /api/chat endpoint. The API key is configured only as OPENAI_API_KEY on Netlify or Vercel and is never stored in the browser.",
         aiSaveConfigBtn: "Save AI Config",
         aiClearConfigBtn: "Clear AI Config",
         aiConfigSaved: "AI config saved",
         aiConfigCleared: "AI config cleared",
         aiConfiguredStatus: "AI configured",
         aiLocalStatus: "Waiting for AI",
+        chatAiChecking: "Checking",
+        chatAiOnline: "ChatGPT online",
+        chatAiUnconfigured: "ChatGPT not configured",
+        chatAiLocal: "Local rules",
+        chatAiError: "Connection failed",
         chatThinking: "Generating an answer from the current data...",
-        chatAiFallback: "The AI endpoint is unavailable. Check the model and AI settings on Material Prediction.",
+        chatAiFallback: "ChatGPT is unavailable, so a local data preview is shown. Check the model and AI settings on Material Prediction.",
         chatNeedsAi: "No AI endpoint is connected. Select an agent or configure it on Material Prediction.",
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
@@ -10714,6 +10985,10 @@
         hdf5DropHint: "Supports ARPES HDF5, PXT/IBW, raw map text, and .zip batches. SES Spectrum_*.bin + .ini packages open directly, alongside HDF5, PXT/IBW, text maps, preview JSON, or images.",
         hdf5ChooseBtn: "Choose HDF5 / PXT / ZIP / Raw Map",
         hdf5PackageChooseBtn: "Import Preview Package",
+        analysisBundleChooseBtn: "Read Band / Fermi Results",
+        analysisResultTitle: "🧪 Band / Fermi Result Reader",
+        analysisResultEmpty: "Import a ZIP from band, fermi, or combine_outputs, or select reports, PNG, JSON, and NPZ files directly.",
+        analysisResultClearBtn: "Clear Results",
         hdf5ReaderTitle: "Local HDF5 reader",
         hdf5ReaderHint: "If direct browser preview looks noisy, create a preview package with the script, then import it here.",
         hdf5PxtTitle: "Direct PXT / IBW preview",
@@ -10762,6 +11037,7 @@
         librarySearchPlaceholder: "Search: energy range, temperature, material...",
         importToLibraryBtn: "⬆️ Import to Local Library",
         loadLibraryPreviewBtn: "Load Preview",
+        loadLibraryThumbnailBtn: "Load Thumbnail",
         selectLibraryCompareBtn: "Select",
         selectedLibraryCompareBtn: "Selected",
         repositorySourceAvailable: "Original file stored locally",
@@ -10770,6 +11046,16 @@
         repositoryLoaded: "✅ Loaded {dataset} from the local library",
         repositorySourceMissing: "This legacy record has no stored source file. Re-upload the original file.",
         repositoryStorageFailed: "The file was previewed, but its source could not be saved locally: {message}",
+        repositoryRelinkSourceBtn: "Link and save original file",
+        repositoryReplaceSourceBtn: "Replace and save original file",
+        repositoryRelinking: "Saving and linking {filename}...",
+        repositoryRelinked: "✅ Original file saved and linked to {count} dataset record(s)",
+        repositoryRelinkMismatch: "File mismatch: expected {expected}, but selected {actual}.",
+        repositoryRelinkContentMismatch: "The file is readable, but it has no data matching {dataset}; nothing was saved.",
+        repositoryRelinkFailed: "Could not save the original file: {message}",
+        repositoryInteractiveSaved: "Original data saved; the adjustable preview can be reopened from the local library",
+        repositoryInteractiveNotSaved: "An adjustable preview was created, but the source or library record was not fully saved; check browser storage and retry",
+        repositoryStaticPreviewHint: "This is a static thumbnail. Link the original file to restore interactive profiles.",
         compareSelectedBtn: "📊 Compare Selected",
         clearLibraryBtn: "🗑️ Clear Library",
         libraryEmpty: "No data yet. Upload an HDF5 file and add datasets to the library.",
@@ -11125,6 +11411,7 @@
     const ARTICLE_IMPORT_CHUNK_SIZE = 125;
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
+    const CHAT_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/chat";
     const SCIENCEONE_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/scienceone";
     const MATERIAL_PREDICT_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/material-predict";
     const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v2";
@@ -11285,6 +11572,7 @@
     const chatThread = $("#chatThread");
     const chatInput = $("#chatInput");
     const chatAgentSelect = $("#chatAgentSelect");
+    const chatAiStatus = $("#chatAiStatus");
     const chatSendBtn = $("#chatSendBtn");
     const chatMakeTableBtn = $("#chatMakeTableBtn");
     const chatClearBtn = $("#chatClearBtn");
@@ -11292,6 +11580,8 @@
     const historySidePanel = $("#historySidePanel");
     const historyChatPanel = $("#historyChatPanel");
     const chatResizeHandle = $("#chatResizeHandle");
+    let chatRequestInFlight = false;
+    let chatEndpointProbeToken = 0;
     let activeAppPage = "module-select";
     let pendingWorkbenchUser = null;
     let loginInitialized = false;
@@ -13058,10 +13348,11 @@
       renderChatTable();
     });
     if (chatAgentSelect) {
-      const savedAgent = loadAiConfig().model || "gpt-4.1-mini";
+      const savedAgent = loadAiConfig().model || "gpt-5.6-luna";
       if ([...chatAgentSelect.options].some(option => option.value === savedAgent)) chatAgentSelect.value = savedAgent;
       chatAgentSelect.addEventListener("change", () => {
         selectRoundtableAiModel(chatAgentSelect.value, document.querySelector(".roundtable-center"));
+        probeChatEndpoint().catch(() => {});
       });
     }
     document.querySelectorAll("[data-chat-prompt]").forEach(btn => {
@@ -15960,7 +16251,7 @@
     }
 
     const roundtableAiModels = {
-      "gpt-4.1-mini": {
+      "gpt-5.6-luna": {
         title: "GPT",
         zh: "通用推理、实验方案和跨模块问答。",
         en: "General reasoning, experiment planning, and cross-module Q&A.",
@@ -16134,7 +16425,7 @@
     }
 
     function selectRoundtableAiModel(modelName, center, options = {}) {
-      const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-4.1-mini"];
+      const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-5.6-luna"];
       if (aiModelInput) aiModelInput.value = modelName;
       if (modelFeatureInput && !modelFeatureInput.value.trim()) modelFeatureInput.value = model.feature;
       if (modelTaskSelect) modelTaskSelect.value = model.task;
@@ -16156,7 +16447,7 @@
 
     function renderRoundtableAiCenter(modelName, center) {
       if (!center) return;
-      const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-4.1-mini"];
+      const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-5.6-luna"];
       const hint = currentLang === "zh" ? model.zh : model.en;
       updateRoundtableCenterStatus(center, model.title, `${modelName} · ${hint}`);
     }
@@ -16197,7 +16488,12 @@
 
     async function sendChatMessage() {
       const question = (chatInput?.value || "").trim();
-      if (!question) return;
+      if (!question || chatRequestInFlight) return;
+      chatRequestInFlight = true;
+      if (chatSendBtn) {
+        chatSendBtn.disabled = true;
+        chatSendBtn.setAttribute("aria-busy", "true");
+      }
       addChatMessage("user", question);
       if (chatInput) chatInput.value = "";
       const intent = detectChatIntent(question);
@@ -16213,18 +16509,32 @@
       state.chatMessages.push(pending);
       renderChatThread();
       try {
-        const selectedAgent = chatAgentSelect?.value || loadAiConfig().model || "gpt-4.1-mini";
+        const selectedAgent = chatAgentSelect?.value || loadAiConfig().model || "gpt-5.6-luna";
         if (selectedAgent === "arpes-rules-preview") {
+          setChatAiStatus("offline", "chatAiLocal");
           pending.text = buildLocalChatAnswer(question, context);
         } else {
           const hub = window.ARPESModelHub || window.ARPES_ML;
           const answer = await (hub?.chat ? hub.chat(question, context) : "");
-          pending.text = answer && answer !== t("chatNeedsAi")
-            ? answer
-            : buildLocalChatAnswer(question, context);
+          if (answer && answer !== t("chatNeedsAi")) {
+            pending.text = answer;
+          } else {
+            setChatAiStatus("offline", "chatAiUnconfigured");
+            pending.text = `${t("chatAiFallback")}\n\n${buildLocalChatAnswer(question, context)}`;
+          }
         }
-      } catch {
-        pending.text = buildLocalChatAnswer(question, context);
+      } catch (error) {
+        const statusKey = error?.code === "OPENAI_NOT_CONFIGURED" || error?.code === "CHAT_DISABLED"
+          ? "chatAiUnconfigured"
+          : "chatAiError";
+        setChatAiStatus(statusKey === "chatAiError" ? "error" : "offline", statusKey, error?.message || "");
+        pending.text = `${t("chatAiFallback")}\n\n${buildLocalChatAnswer(question, context)}`;
+      } finally {
+        chatRequestInFlight = false;
+        if (chatSendBtn) {
+          chatSendBtn.disabled = false;
+          chatSendBtn.removeAttribute("aria-busy");
+        }
       }
       renderChatThread();
     }
@@ -18924,14 +19234,41 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function loadAiConfig() {
-      try { return JSON.parse(safeStorageGet(AI_CONFIG_STORAGE_KEY) || "{}"); }
-      catch { return {}; }
+      let stored = {};
+      try { stored = JSON.parse(safeStorageGet(AI_CONFIG_STORAGE_KEY) || "{}"); }
+      catch { stored = {}; }
+      if (!stored || typeof stored !== "object" || Array.isArray(stored)) stored = {};
+      const clean = {
+        endpoint: String(stored.endpoint || "").trim(),
+        model: String(stored.model || "").trim()
+      };
+      if (Object.prototype.hasOwnProperty.call(stored, "apiKey")) {
+        safeStorageSet(AI_CONFIG_STORAGE_KEY, JSON.stringify(clean));
+      }
+      return clean;
     }
 
     function defaultAiEndpoint() {
       const host = window.location.hostname || "";
-      if (!host || host.includes("github.io")) return "";
+      if (!host || window.location.protocol === "file:") return "";
+      if (host.includes("github.io") || host === "127.0.0.1" || host === "localhost") {
+        return CHAT_PUBLIC_PROXY;
+      }
       return "/api/chat";
+    }
+
+    function configuredAiEndpoint() {
+      const cfg = loadAiConfig();
+      const endpoint = String(cfg.endpoint || defaultAiEndpoint()).trim();
+      if (!endpoint) return "";
+      const host = window.location.hostname || "";
+      if (host.includes("github.io") && (
+        endpoint === "/api/chat" ||
+        endpoint === `${window.location.origin}/api/chat`
+      )) {
+        return CHAT_PUBLIC_PROXY;
+      }
+      return endpoint;
     }
 
     function defaultWosApiEndpoint() {
@@ -18948,80 +19285,144 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function initAiConfigForm() {
       const cfg = loadAiConfig();
-      if (aiEndpointInput) aiEndpointInput.value = cfg.endpoint || defaultAiEndpoint();
-      if (aiModelInput) aiModelInput.value = cfg.model || "";
-      if (aiKeyInput) aiKeyInput.value = cfg.apiKey || "";
+      if (aiEndpointInput) aiEndpointInput.value = configuredAiEndpoint();
+      if (aiModelInput) aiModelInput.value = cfg.model || "gpt-5.6-luna";
+      if (aiKeyInput) aiKeyInput.value = t("aiServerKeyManaged");
       renderModelRegistry();
     }
 
     function saveAiConfigFromForm() {
       const cfg = {
         endpoint: (aiEndpointInput?.value || "").trim(),
-        model: (aiModelInput?.value || "").trim(),
-        apiKey: (aiKeyInput?.value || "").trim()
+        model: (aiModelInput?.value || "").trim()
       };
       safeStorageSet(AI_CONFIG_STORAGE_KEY, JSON.stringify(cfg));
       renderModelRegistry();
+      probeChatEndpoint().catch(() => {});
       showToast(t("aiConfigSaved"));
     }
 
     function clearAiConfig() {
       safeStorageRemove(AI_CONFIG_STORAGE_KEY);
-      if (aiEndpointInput) aiEndpointInput.value = "";
-      if (aiModelInput) aiModelInput.value = "";
-      if (aiKeyInput) aiKeyInput.value = "";
+      if (aiEndpointInput) aiEndpointInput.value = defaultAiEndpoint();
+      if (aiModelInput) aiModelInput.value = "gpt-5.6-luna";
+      if (aiKeyInput) aiKeyInput.value = t("aiServerKeyManaged");
       renderModelRegistry();
+      probeChatEndpoint().catch(() => {});
       showToast(t("aiConfigCleared"));
+    }
+
+    function setChatAiStatus(stateName, translationKey, detail = "") {
+      if (!chatAiStatus) return;
+      const key = translationKey || "chatAiChecking";
+      const label = t(key);
+      chatAiStatus.dataset.state = stateName || "checking";
+      chatAiStatus.dataset.i18n = key;
+      chatAiStatus.textContent = label;
+      chatAiStatus.title = detail || label;
+    }
+
+    async function probeChatEndpoint() {
+      const selectedAgent = chatAgentSelect?.value || loadAiConfig().model || "gpt-5.6-luna";
+      if (selectedAgent === "arpes-rules-preview") {
+        setChatAiStatus("offline", "chatAiLocal");
+        if (aiKeyInput) aiKeyInput.value = t("aiServerKeyManaged");
+        return null;
+      }
+      const endpoint = configuredAiEndpoint();
+      if (!endpoint) {
+        setChatAiStatus("offline", "chatAiUnconfigured");
+        if (aiKeyInput) aiKeyInput.value = t("chatAiUnconfigured");
+        return null;
+      }
+      const token = ++chatEndpointProbeToken;
+      setChatAiStatus("checking", "chatAiChecking", endpoint);
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), 8_000);
+      try {
+        const response = await fetch(endpoint, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          signal: controller.signal,
+          cache: "no-store"
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `AI endpoint HTTP ${response.status}`);
+        if (token !== chatEndpointProbeToken) return data;
+        if (data.enabled !== false && data.configured) {
+          const model = String(data.model || "ChatGPT");
+          setChatAiStatus("online", "chatAiOnline", `${model} · OpenAI Responses API`);
+          if (aiKeyInput) aiKeyInput.value = `${t("chatAiOnline")} · ${model}`;
+        } else {
+          setChatAiStatus("offline", "chatAiUnconfigured", endpoint);
+          if (aiKeyInput) aiKeyInput.value = t("chatAiUnconfigured");
+        }
+        return data;
+      } catch (error) {
+        if (token !== chatEndpointProbeToken) return null;
+        const detail = error?.name === "AbortError" ? "AI endpoint timeout" : (error?.message || String(error));
+        setChatAiStatus("error", "chatAiError", detail);
+        if (aiKeyInput) aiKeyInput.value = t("chatAiError");
+        return null;
+      } finally {
+        window.clearTimeout(timer);
+      }
     }
 
     async function callConfiguredAiEndpoint(question, context) {
       const cfg = loadAiConfig();
-      const endpoint = cfg.endpoint || defaultAiEndpoint();
+      const endpoint = configuredAiEndpoint();
       if (!endpoint) return "";
-      const headers = { "Content-Type": "application/json" };
-      if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`;
       const history = (context.chatHistory || [])
         .filter(message => message.content && message.content !== t("chatThinking"))
         .slice(-8);
-      const messages = [
-        {
-          role: "system",
-          content: [
-            currentLang === "zh"
-              ? "你是一个像 ChatGPT 一样的通用 AI 助手。用户可以问任何问题，你都要直接回答。"
-              : "You are a general AI assistant like ChatGPT. The user may ask anything; answer directly.",
-            currentLang === "zh"
-              ? "如果问题和 ARPES、超导材料、论文、图表、数据或本页面模板相关，请优先使用随请求附带的 page_context。"
-              : "If the question relates to ARPES, superconducting materials, papers, figures, data, or this page template, prioritize the attached page_context.",
-            currentLang === "zh"
-              ? "如果问题和页面无关，也正常回答，不要强行套材料库模板。"
-              : "If the question is unrelated to the page, answer normally and do not force a materials-database template."
-          ].join("\n")
-        },
-        ...history,
-        { role: "user", content: question }
-      ];
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          model: cfg.model || "gpt-4.1-mini",
-          question,
-          messages,
-          context,
-          page_context: context
-        })
-      });
-      if (!response.ok) throw new Error(`AI endpoint HTTP ${response.status}`);
-      const data = await response.json();
-      return String(
-        data.answer ||
-        data.output_text ||
-        data.response ||
-        data.choices?.[0]?.message?.content ||
-        data.choices?.[0]?.text ||
-        ""
-      ).trim();
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), 35_000);
+      setChatAiStatus("checking", "chatAiChecking", endpoint);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            question,
+            messages: history,
+            context,
+            page_context: context
+          })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const error = new Error(data.error || `AI endpoint HTTP ${response.status}`);
+          error.code = data.code || `HTTP_${response.status}`;
+          error.status = response.status;
+          throw error;
+        }
+        const answer = String(
+          data.answer ||
+          data.output_text ||
+          data.response ||
+          data.choices?.[0]?.message?.content ||
+          data.choices?.[0]?.text ||
+          ""
+        ).trim();
+        if (!answer) {
+          const error = new Error("AI endpoint returned an empty response.");
+          error.code = "EMPTY_RESPONSE";
+          throw error;
+        }
+        setChatAiStatus("online", "chatAiOnline", `${data.model || cfg.model || "ChatGPT"} · OpenAI Responses API`);
+        return answer;
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          const timeoutError = new Error("ChatGPT request timed out.");
+          timeoutError.code = "TIMEOUT";
+          throw timeoutError;
+        }
+        throw error;
+      } finally {
+        window.clearTimeout(timer);
+      }
     }
 
     function renderModelRegistry() {
@@ -19029,7 +19430,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const names = Object.keys(hub?._models || {});
       const chatNames = Object.keys(hub?._chatModels || {});
       const cfg = loadAiConfig();
-      const endpoint = cfg.endpoint || defaultAiEndpoint();
+      const endpoint = configuredAiEndpoint();
       if (modelApiStatus) modelApiStatus.textContent = hub ? `Ready v${hub.version || "0.1.0"} · ${endpoint ? t("aiConfiguredStatus") : t("aiLocalStatus")}` : "Offline";
       if (modelRegistryCount) modelRegistryCount.textContent = String(names.length);
       if (modelRegistryOutput) {
@@ -21207,8 +21608,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5DropZone = document.querySelector("#hdf5DropZone");
     const hdf5ChooseBtn = document.querySelector("#hdf5ChooseBtn");
     const hdf5PackageChooseBtn = document.querySelector("#hdf5PackageChooseBtn");
+    const analysisBundleChooseBtn = document.querySelector("#analysisBundleChooseBtn");
     const hdf5FileInput = document.querySelector("#hdf5FileInput");
     const hdf5PackageInput = document.querySelector("#hdf5PackageInput");
+    const analysisBundleInput = document.querySelector("#analysisBundleInput");
+    const hdf5LegacySourceInput = document.querySelector("#hdf5LegacySourceInput");
     const hdf5Tree = document.querySelector("#hdf5Tree");
     const hdf5Meta = document.querySelector("#hdf5Meta");
     const hdf5Status = document.querySelector("#hdf5Status");
@@ -21222,6 +21626,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5PreviewHint = document.querySelector("#hdf5PreviewHint");
     const hdf5SavedImports = document.querySelector("#hdf5SavedImports");
     const hdf5SavedImportsStatus = document.querySelector("#hdf5SavedImportsStatus");
+    const analysisResultStatus = document.querySelector("#analysisResultStatus");
+    const analysisResultContent = document.querySelector("#analysisResultContent");
+    const analysisResultClearBtn = document.querySelector("#analysisResultClearBtn");
     const librarySearch = document.querySelector("#librarySearch");
     const dataLibraryGrid = document.querySelector("#dataLibraryGrid");
     const importToLibraryBtn = document.querySelector("#importToLibraryBtn");
@@ -21233,8 +21640,20 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     let currentH5Path = "";
     let currentIgorImport = null;
     let currentRepositorySourceId = "";
+    let pendingRepositoryRelinkId = "";
     let librarySelection = new Set();
+    let analysisResultState = null;
+    let analysisResultObjectUrls = [];
     window.__hdf5UploadBound = true;
+
+    function setHDF5PreviewInteractionEnabled(enabled) {
+      const interactive = !!enabled;
+      hdf5PreviewCanvas?.closest(".hdf5-preview-canvas-wrap")?.classList.toggle("is-static-preview", !interactive);
+      if (hdf5PreviewHitLayer) {
+        hdf5PreviewHitLayer.hidden = !interactive;
+        hdf5PreviewHitLayer.setAttribute("aria-disabled", String(!interactive));
+      }
+    }
 
     function setHDF5Status(message) {
       if (hdf5Status) hdf5Status.textContent = message;
@@ -21290,6 +21709,22 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const name = file?.name || "";
       const type = file?.type || "";
       return /\.json$/i.test(name) || /^image\//i.test(type) || /\.(png|jpe?g|webp)$/i.test(name);
+    }
+
+    function isAnalysisResultName(name) {
+      return /\.(md|json|npz|png|jpe?g|webp)$/i.test(String(name || ""));
+    }
+
+    function isAnalysisResultFile(file) {
+      const name = file?.name || "";
+      return isAnalysisResultName(name) || /\.(zip)$/i.test(name);
+    }
+
+    function isAnalysisResultArchive(entries) {
+      const names = (entries || []).map(entry => String(entry?.name || "").toLowerCase());
+      return names.some(name => /(?:^|\/)(?:combined_master_report|pipeline_report|fermi_report)\.md$/.test(name))
+        || names.some(name => /(?:^|\/)(?:combined_symmetry|combine_band_params|03_cluster_report)\.json$/.test(name))
+        || (names.some(name => /\.npz$/i.test(name)) && names.some(name => /\.(?:png|md|json)$/i.test(name)));
     }
 
     function isSupportedZipEntry(entry) {
@@ -21398,6 +21833,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       hdf5PackageInput.value = "";
       hdf5PackageInput.click();
     });
+    analysisBundleChooseBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!analysisBundleInput) return;
+      analysisBundleInput.value = "";
+      analysisBundleInput.click();
+    });
     hdf5DropZone.addEventListener("click", (e) => {
       if (e.target.closest("button, input[type='file'], .hdf5-reader-helper")) return;
       chooseHDF5Files();
@@ -21409,6 +21850,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       hdf5DropZone.classList.remove("drag-over");
       const files = Array.from(e.dataTransfer.files || []);
       if (files.some(isHDF5ZipFile)) handleHDF5Files(files);
+      else if (files.some(file => /\.(md|npz)$/i.test(file.name || ""))) handleAnalysisResultFiles(files);
       else if (files.some(isHDF5PreviewPackageFile)) handleHDF5PreviewPackageFiles(files);
       else handleHDF5Files(files);
     });
@@ -21421,6 +21863,310 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       else handleHDF5PreviewPackageFiles(files);
       hdf5PackageInput.value = "";
     });
+    analysisBundleInput?.addEventListener("change", () => {
+      handleAnalysisResultFiles(Array.from(analysisBundleInput.files || []));
+      analysisBundleInput.value = "";
+    });
+    analysisResultClearBtn?.addEventListener("click", clearAnalysisResults);
+
+    function normalizeAnalysisPath(value) {
+      const parts = String(value || "").replace(/\\/g, "/").split("/");
+      const output = [];
+      for (const part of parts) {
+        if (!part || part === ".") continue;
+        if (part === "..") output.pop();
+        else output.push(part);
+      }
+      return output.join("/");
+    }
+
+    function joinAnalysisPath(baseFile, relativePath) {
+      const baseParts = normalizeAnalysisPath(baseFile).split("/").filter(Boolean);
+      baseParts.pop();
+      return normalizeAnalysisPath([...baseParts, String(relativePath || "")].join("/"));
+    }
+
+    function analysisResultRank(name) {
+      const value = String(name || "").toLowerCase();
+      if (/combined_master_report\.md$/.test(value)) return 0;
+      if (/fermi_report\.md$/.test(value)) return 1;
+      if (/pipeline_report(?:_polished)?\.md$/.test(value)) return 2;
+      if (/\.md$/.test(value)) return 3;
+      if (/combined_symmetry\.json$/.test(value)) return 4;
+      if (/03_cluster_report\.json$/.test(value)) return 5;
+      if (/\.json$/.test(value)) return 6;
+      if (/\.png$/.test(value)) return 7;
+      if (/\.npz$/.test(value)) return 8;
+      return 20;
+    }
+
+    function createAnalysisObjectUrl(blob) {
+      const url = URL.createObjectURL(blob);
+      analysisResultObjectUrls.push(url);
+      return url;
+    }
+
+    function clearAnalysisResults() {
+      analysisResultObjectUrls.forEach(url => URL.revokeObjectURL(url));
+      analysisResultObjectUrls = [];
+      analysisResultState = null;
+      if (analysisResultContent) analysisResultContent.innerHTML = `<span class="muted">${esc(t("analysisResultEmpty"))}</span>`;
+      if (analysisResultStatus) analysisResultStatus.textContent = t("analysisResultEmpty");
+      if (analysisResultClearBtn) analysisResultClearBtn.hidden = true;
+    }
+
+    function parseNpyHeader(buffer, name) {
+      const bytes = new Uint8Array(buffer);
+      if (bytes.length < 12 || bytes[0] !== 0x93 || String.fromCharCode(...bytes.slice(1, 6)) !== "NUMPY") {
+        return { name, error: currentLang === "zh" ? "不是有效的 NPY 数组" : "Invalid NPY array" };
+      }
+      const major = bytes[6];
+      const view = new DataView(buffer);
+      const headerLength = major >= 2 ? view.getUint32(8, true) : view.getUint16(8, true);
+      const headerOffset = major >= 2 ? 12 : 10;
+      const header = new TextDecoder("latin1").decode(bytes.slice(headerOffset, headerOffset + headerLength)).trim();
+      const dtype = header.match(/["']descr["']\s*:\s*["']([^"']+)["']/)?.[1] || "?";
+      const shapeText = header.match(/["']shape["']\s*:\s*\(([^)]*)\)/)?.[1] || "";
+      const shape = shapeText.split(",").map(value => Number(value.trim())).filter(Number.isFinite);
+      const fortran = /["']fortran_order["']\s*:\s*True/.test(header);
+      return { name, dtype, shape, fortran, bytes: buffer.byteLength };
+    }
+
+    async function inspectAnalysisNPZ(file, displayName = file.name || "result.npz") {
+      const entries = (await readZipEntries(file)).filter(entry => !isZipEntryDirectory(entry) && /\.npy$/i.test(entry.name || ""));
+      const arrays = [];
+      for (const entry of entries.slice(0, 80)) {
+        if (entry.uncompressedSize > 32 * 1024 * 1024) {
+          arrays.push({ name: entry.name, bytes: entry.uncompressedSize, skipped: true });
+          continue;
+        }
+        try {
+          const buffer = await readZipEntryArrayBuffer(file, entry);
+          arrays.push(parseNpyHeader(buffer, entry.name.replace(/\.npy$/i, "")));
+        } catch (error) {
+          arrays.push({ name: entry.name, error: error.message || String(error) });
+        }
+        await yieldToBrowser();
+      }
+      return { name: displayName, arrays, totalArrays: entries.length, size: file.size || 0 };
+    }
+
+    function analysisInlineMarkdown(value) {
+      let html = esc(String(value || ""));
+      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      return html;
+    }
+
+    function analysisMarkdownToHtml(report, state) {
+      const imageByPath = new Map((state.images || []).map(image => [normalizeAnalysisPath(image.name).toLowerCase(), image]));
+      const lines = String(report.text || "").replace(/\r\n?/g, "\n").split("\n");
+      const html = [];
+      let inList = false;
+      for (const sourceLine of lines) {
+        const line = sourceLine.trim();
+        const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+        if (imageMatch) {
+          if (inList) { html.push("</ul>"); inList = false; }
+          const ref = imageMatch[2].trim();
+          const resolved = /^https?:\/\//i.test(ref) ? null : imageByPath.get(joinAnalysisPath(report.name, ref).toLowerCase());
+          if (resolved) {
+            html.push(`<img src="${esc(resolved.src)}" alt="${esc(imageMatch[1] || resolved.name)}" data-floating-figure-preview data-preview-title="${esc(resolved.name)}" role="button" tabindex="0">`);
+          } else if (/^https?:\/\//i.test(ref)) {
+            html.push(`<img src="${esc(ref)}" alt="${esc(imageMatch[1])}" loading="lazy">`);
+          } else {
+            html.push(`<p class="muted">${esc(ref)}</p>`);
+          }
+          continue;
+        }
+        if (!line) {
+          if (inList) { html.push("</ul>"); inList = false; }
+          continue;
+        }
+        const heading = line.match(/^(#{1,3})\s+(.+)$/);
+        if (heading) {
+          if (inList) { html.push("</ul>"); inList = false; }
+          const level = heading[1].length;
+          html.push(`<h${level}>${analysisInlineMarkdown(heading[2])}</h${level}>`);
+          continue;
+        }
+        const listItem = line.match(/^[-*]\s+(.+)$/);
+        if (listItem) {
+          if (!inList) { html.push("<ul>"); inList = true; }
+          html.push(`<li>${analysisInlineMarkdown(listItem[1])}</li>`);
+          continue;
+        }
+        if (inList) { html.push("</ul>"); inList = false; }
+        if (/^---+$/.test(line)) html.push("<hr>");
+        else html.push(`<p>${analysisInlineMarkdown(line)}</p>`);
+      }
+      if (inList) html.push("</ul>");
+      return html.join("");
+    }
+
+    function analysisJsonHighlights(item) {
+      const data = item.data || {};
+      const poly = data.regular_polygon_fit || {};
+      const best = poly.best || {};
+      const metrics = [];
+      const add = (label, value) => {
+        if (value == null || value === "" || (typeof value === "number" && !Number.isFinite(value))) return;
+        metrics.push(`<div><strong>${esc(label)}:</strong> ${esc(String(value))}</div>`);
+      };
+      add("center kx", poly.center_kx ?? data.center_kx_as_beta);
+      add("center ky", poly.center_ky ?? data.center_ky_as_alpha);
+      add("polygon n", best.n);
+      add("theta0", best.theta0_deg != null ? `${best.theta0_deg}°` : null);
+      add("vertex rotation", data.angle_vertex_signed_ccw_deg != null ? `${data.angle_vertex_signed_ccw_deg}°` : null);
+      add("midedge rotation", data.angle_midedge_signed_ccw_deg != null ? `${data.angle_midedge_signed_ccw_deg}°` : null);
+      return metrics.join("");
+    }
+
+    function parseAnalysisJson(text) {
+      const source = String(text || "");
+      try {
+        return { data: JSON.parse(source), normalized: false };
+      } catch (originalError) {
+        const normalized = source.replace(/(^|[:,\[])\s*(NaN|-?Infinity)\s*(?=,|\]|\})/gm, "$1 null");
+        return { data: JSON.parse(normalized), normalized: true, originalError: originalError.message || String(originalError) };
+      }
+    }
+
+    function renderSelectedAnalysisReport(index) {
+      if (!analysisResultState || !analysisResultContent) return;
+      const report = analysisResultState.reports[index];
+      const viewer = analysisResultContent.querySelector("#analysisResultReport");
+      if (!report || !viewer) return;
+      viewer.innerHTML = analysisMarkdownToHtml(report, analysisResultState);
+      analysisResultContent.querySelectorAll("[data-analysis-report-index]").forEach(button => {
+        button.setAttribute("aria-pressed", String(Number(button.dataset.analysisReportIndex) === index));
+      });
+      bindFloatingFigurePreviewClicks(viewer);
+    }
+
+    function renderAnalysisResultState() {
+      if (!analysisResultContent || !analysisResultState) return;
+      const state = analysisResultState;
+      const summary = `<div class="analysis-result-summary">
+        <div class="analysis-result-metric"><strong>${state.reports.length}</strong><span>${currentLang === "zh" ? "报告" : "Reports"}</span></div>
+        <div class="analysis-result-metric"><strong>${state.images.length}</strong><span>${currentLang === "zh" ? "结果图" : "Figures"}</span></div>
+        <div class="analysis-result-metric"><strong>${state.json.length}</strong><span>JSON</span></div>
+        <div class="analysis-result-metric"><strong>${state.npz.length}</strong><span>NPZ</span></div>
+      </div>`;
+      const reportViewer = state.reports.length ? `<div class="analysis-result-viewer">
+        <div class="analysis-result-index">${state.reports.map((report, index) => `<button type="button" data-analysis-report-index="${index}" aria-pressed="${index === 0}">📄 ${esc(report.name)}</button>`).join("")}</div>
+        <article class="analysis-result-report" id="analysisResultReport"></article>
+      </div>` : "";
+      const gallery = state.images.length ? `<details open><summary><strong>${currentLang === "zh" ? "结果图" : "Figures"} (${state.images.length})</strong></summary>
+        <div class="analysis-result-gallery" style="margin-top:10px;">${state.images.slice(0, 72).map(image => `<div class="analysis-result-figure">
+          <img src="${esc(image.src)}" alt="${esc(image.name)}" loading="lazy" data-floating-figure-preview data-preview-title="${esc(image.name)}" role="button" tabindex="0">
+          <span>${esc(image.name)}</span>
+        </div>`).join("")}</div>
+        ${state.images.length > 72 ? `<p class="muted">${currentLang === "zh" ? `为保持流畅，当前显示前 72 / ${state.images.length} 张图。` : `Showing the first 72 / ${state.images.length} figures for performance.`}</p>` : ""}
+      </details>` : "";
+      const dataCards = [
+        ...state.json.map(item => `<div class="analysis-result-data-card"><strong>JSON · ${esc(item.name)}</strong>${item.normalized ? `<div class="muted">${currentLang === "zh" ? "已兼容 Python NaN/Infinity" : "Python NaN/Infinity normalized"}</div>` : ""}${analysisJsonHighlights(item)}<pre>${esc(JSON.stringify(item.data, null, 2).slice(0, 6000))}</pre></div>`),
+        ...state.npz.map(item => `<div class="analysis-result-data-card"><strong>NPZ · ${esc(item.name)}</strong><div class="muted">${item.totalArrays} arrays · ${esc(formatBytes(item.size || 0))}</div><pre>${esc(item.arrays.map(array => `${array.name}  [${(array.shape || []).join("×") || "?"}]  ${array.dtype || (array.skipped ? "large array" : "?")}`).join("\n"))}</pre></div>`)
+      ].join("");
+      analysisResultContent.innerHTML = [summary, reportViewer, gallery, dataCards ? `<details><summary><strong>${currentLang === "zh" ? "参数与数组" : "Parameters and arrays"} (${state.json.length + state.npz.length})</strong></summary><div class="analysis-result-data-grid" style="margin-top:10px;">${dataCards}</div></details>` : ""].filter(Boolean).join("");
+      analysisResultContent.querySelectorAll("[data-analysis-report-index]").forEach(button => {
+        button.addEventListener("click", () => renderSelectedAnalysisReport(Number(button.dataset.analysisReportIndex)));
+      });
+      bindFloatingFigurePreviewClicks(analysisResultContent);
+      if (state.reports.length) renderSelectedAnalysisReport(0);
+      if (analysisResultClearBtn) analysisResultClearBtn.hidden = false;
+      const total = state.reports.length + state.images.length + state.json.length + state.npz.length;
+      if (analysisResultStatus) analysisResultStatus.textContent = currentLang === "zh"
+        ? `✅ 已读取 ${state.filename} · ${total} 项结果`
+        : `✅ Loaded ${state.filename} · ${total} result items`;
+    }
+
+    async function appendAnalysisDirectFile(state, file, displayName = file.name || "result") {
+      const name = normalizeAnalysisPath(displayName);
+      if (/\.md$/i.test(name)) {
+        state.reports.push({ name, text: await readFileAsText(file) });
+      } else if (/\.json$/i.test(name)) {
+        const parsed = parseAnalysisJson(await readFileAsText(file));
+        state.json.push({ name, ...parsed });
+      } else if (/\.npz$/i.test(name)) {
+        state.npz.push(await inspectAnalysisNPZ(file, name));
+      } else if (/\.(png|jpe?g|webp)$/i.test(name)) {
+        state.images.push({ name, src: createAnalysisObjectUrl(file) });
+      }
+    }
+
+    async function readAnalysisResultArchive(file, entries = null) {
+      const allEntries = entries || await readZipEntries(file);
+      const candidates = allEntries
+        .filter(entry => !isZipEntryDirectory(entry) && isAnalysisResultName(entry.name))
+        .sort((a, b) => analysisResultRank(a.name) - analysisResultRank(b.name) || String(a.name).localeCompare(String(b.name)));
+      const state = { filename: file.name || "analysis-results.zip", reports: [], images: [], json: [], npz: [] };
+      for (const entry of candidates.slice(0, 900)) {
+        const name = normalizeAnalysisPath(entry.name);
+        try {
+          if (/\.(png|jpe?g|webp)$/i.test(name)) {
+            if (entry.uncompressedSize > 24 * 1024 * 1024) continue;
+            const buffer = await readZipEntryArrayBuffer(file, entry);
+            state.images.push({ name, src: createAnalysisObjectUrl(new Blob([buffer], { type: zipEntryMimeType(name) })) });
+          } else if (/\.npz$/i.test(name)) {
+            if (entry.uncompressedSize > 80 * 1024 * 1024) {
+              state.npz.push({ name, arrays: [], totalArrays: 0, size: entry.uncompressedSize, skipped: true });
+            } else {
+              const buffer = await readZipEntryArrayBuffer(file, entry);
+              state.npz.push(await inspectAnalysisNPZ(fileFromZipEntryBuffer(buffer, name), name));
+            }
+          } else {
+            if (entry.uncompressedSize > 8 * 1024 * 1024) continue;
+            const text = await readZipEntryText(file, entry);
+            if (/\.md$/i.test(name)) state.reports.push({ name, text });
+            else if (/\.json$/i.test(name)) state.json.push({ name, ...parseAnalysisJson(text) });
+          }
+        } catch (error) {
+          console.warn("Could not read analysis result entry", name, error);
+        }
+        if ((state.reports.length + state.images.length + state.json.length + state.npz.length) % 8 === 0) await yieldToBrowser();
+      }
+      return state;
+    }
+
+    async function handleAnalysisResultFiles(files) {
+      const validFiles = Array.from(files || []).filter(isAnalysisResultFile);
+      if (!validFiles.length) {
+        setHDF5Status(currentLang === "zh" ? "请选择分析结果 ZIP、MD、JSON、NPZ 或图片文件" : "Choose an analysis ZIP, MD, JSON, NPZ, or image file");
+        return null;
+      }
+      clearAnalysisResults();
+      setHDF5Status(currentLang === "zh" ? "⏳ 正在读取能带 / 费米分析结果..." : "⏳ Reading band / Fermi analysis results...");
+      try {
+        let state = { filename: validFiles.length === 1 ? validFiles[0].name : `${validFiles.length} files`, reports: [], images: [], json: [], npz: [] };
+        for (const file of validFiles) {
+          if (/\.zip$/i.test(file.name || "")) {
+            const archiveState = await readAnalysisResultArchive(file);
+            state = {
+              filename: archiveState.filename,
+              reports: state.reports.concat(archiveState.reports),
+              images: state.images.concat(archiveState.images),
+              json: state.json.concat(archiveState.json),
+              npz: state.npz.concat(archiveState.npz)
+            };
+          } else {
+            await appendAnalysisDirectFile(state, file);
+          }
+        }
+        state.reports.sort((a, b) => analysisResultRank(a.name) - analysisResultRank(b.name));
+        analysisResultState = state;
+        renderAnalysisResultState();
+        setHDF5Status(currentLang === "zh" ? `✅ 已读取分析结果: ${state.filename}` : `✅ Analysis results loaded: ${state.filename}`);
+        analysisResultContent?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        return state;
+      } catch (error) {
+        console.warn("Could not import analysis results", error);
+        setHDF5Status(currentLang === "zh" ? `❌ 分析结果读取失败: ${error.message}` : `❌ Could not read analysis results: ${error.message}`);
+        if (analysisResultStatus) analysisResultStatus.textContent = error.message || String(error);
+        return null;
+      }
+    }
     updateHDF5ParserStatus();
 
     async function handleHDF5Files(files) {
@@ -21436,9 +22182,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       setHDF5Status(tf("hdf5SelectedFiles", { count: validFiles.length }));
       for (const file of validFiles) {
         if (isPXTWorkflowFile(file)) await handleIgorPXTFile(file);
-        else if (isRawMapTextFile(file)) await handleRawMapTextFile(file);
+        else if (isHDF5File(file)) await handleHDF5File(file);
         else if (isHDF5ZipFile(file)) await handleHDF5ZipFile(file);
-        else await handleHDF5File(file);
+        else await handleRawMapTextFile(file);
       }
     }
 
@@ -21479,6 +22225,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     async function saveIgorImportSummary(file, parsed, preview, sourceId = "") {
+      if (!sourceId) return false;
       try {
         const db = await openIDB();
         const thumbnail = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
@@ -21519,10 +22266,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           tx.onerror = () => reject(tx.error);
           tx.onabort = () => reject(tx.error);
         });
-        renderLibrary();
+        renderLibrary().catch(error => console.warn("Could not render Igor library record", error));
         renderHDF5ImportHistory().catch(error => console.warn("Could not render Igor import history", error));
+        return true;
       } catch (error) {
         console.warn("Could not save Igor import summary", error);
+        showToast(tf("repositoryStorageFailed", { message: error?.message || String(error) }));
+        return false;
       }
     }
 
@@ -21566,15 +22316,23 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         currentH5Path = "";
         renderIgorTree(parsed);
         const preview = await renderIgorWavePreview(parsed, parsed.primary, file.name);
-        const sourceRecord = options.persist === false
+        const shouldPersist = options.persist !== false;
+        const sourceRecord = !shouldPersist
           ? null
           : await trySaveRepositorySourceFile(file, "igor", { sourceArchive: options.sourceArchive || "" });
         currentRepositorySourceId = options.sourceId || sourceRecord?.id || "";
         parsed.repositorySourceId = currentRepositorySourceId;
-        if (options.persist !== false) await saveIgorImportSummary(file, parsed, preview, currentRepositorySourceId);
-        setHDF5Status(tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 }));
-        showToast(tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 }));
-        return { parsed, preview };
+        const persisted = shouldPersist
+          ? !!sourceRecord && await saveIgorImportSummary(file, parsed, preview, currentRepositorySourceId)
+          : null;
+        if (shouldPersist && !persisted) {
+          setHDF5Status(`⚠️ ${t("repositoryInteractiveNotSaved")}`);
+          return { parsed, preview, persisted: false };
+        }
+        const loadedMessage = tf("hdf5PxtLoaded", { filename: file.name, count: parsed.waves?.length || 1 });
+        setHDF5Status(shouldPersist ? `${loadedMessage} · ${t("repositoryInteractiveSaved")}` : loadedMessage);
+        showToast(shouldPersist ? `✅ ${t("repositoryInteractiveSaved")}` : loadedMessage);
+        return { parsed, preview, persisted };
       } catch (error) {
         console.warn("Could not import Igor/PXT file", file.name, error);
         setHDF5Status(currentLang === "zh" ? `❌ 无法读取 ${file.name}: ${error.message}` : `❌ Cannot read ${file.name}: ${error.message}`);
@@ -21732,6 +22490,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     async function saveRawMapTextSummary(file, parsed, sourceId = "") {
+      if (!sourceId) return false;
       try {
         const db = await openIDB();
         const thumbnail = floatingFigureDataUrlFromCanvas(hdf5PreviewCanvas);
@@ -21774,10 +22533,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           tx.onerror = () => reject(tx.error);
           tx.onabort = () => reject(tx.error);
         });
-        renderLibrary();
+        renderLibrary().catch(error => console.warn("Could not render raw map library record", error));
         renderHDF5ImportHistory().catch(error => console.warn("Could not render raw map import history", error));
+        return true;
       } catch (error) {
         console.warn("Could not save raw map summary", error);
+        showToast(tf("repositoryStorageFailed", { message: error?.message || String(error) }));
+        return false;
       }
     }
 
@@ -21806,15 +22568,24 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             `<div>${esc(filename)}</div>`
           ].join("<br>");
         }
-        const sourceRecord = options.persist === false
+        const shouldPersist = options.persist !== false;
+        const sourceRecord = !shouldPersist
           ? null
           : await trySaveRepositorySourceFile(file, "raw-map", { sourceArchive: options.sourceArchive || "" });
         currentRepositorySourceId = options.sourceId || sourceRecord?.id || "";
-        if (options.persist !== false) await saveRawMapTextSummary(file, parsed, currentRepositorySourceId);
-        setHDF5Status(currentLang === "zh"
+        const persisted = shouldPersist
+          ? !!sourceRecord && await saveRawMapTextSummary(file, parsed, currentRepositorySourceId)
+          : null;
+        if (shouldPersist && !persisted) {
+          setHDF5Status(`⚠️ ${t("repositoryInteractiveNotSaved")}`);
+          return { ...parsed, persisted: false };
+        }
+        const loadedMessage = currentLang === "zh"
           ? `✅ 已读取原始 map: ${filename} · ${parsed.plan.shape.join("×")}`
-          : `✅ Raw map loaded: ${filename} · ${parsed.plan.shape.join("×")}`);
-        return parsed;
+          : `✅ Raw map loaded: ${filename} · ${parsed.plan.shape.join("×")}`;
+        setHDF5Status(shouldPersist ? `${loadedMessage} · ${t("repositoryInteractiveSaved")}` : loadedMessage);
+        if (shouldPersist) showToast(`✅ ${t("repositoryInteractiveSaved")}`);
+        return { ...parsed, persisted };
       } catch (error) {
         console.warn("Could not import raw map text", filename, error);
         setHDF5Status(currentLang === "zh" ? `❌ 无法读取原始 map ${filename}: ${error.message}` : `❌ Cannot read raw map ${filename}: ${error.message}`);
@@ -21831,17 +22602,30 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : (currentLang === "zh" ? `⏳ 解析 ${file.name}...` : `⏳ Parsing ${file.name}...`));
       try {
         const buffer = await file.arrayBuffer();
-        const sourceRecord = options.persist === false
+        const shouldPersist = options.persist !== false;
+        const sourceRecord = !shouldPersist
           ? null
           : await trySaveRepositorySourceFile(file, "h5", { sourceArchive: options.sourceArchive || "" });
-        await parseHDF5Buffer(buffer, file.name, {
-          addSummaries: options.persist !== false,
-          persistImport: options.persist !== false,
+        const canPersist = !shouldPersist || !!sourceRecord;
+        const parsed = await parseHDF5Buffer(buffer, file.name, {
+          addSummaries: shouldPersist && canPersist,
+          persistImport: shouldPersist && canPersist,
           sourceArchive: options.sourceArchive || "",
           sourceId: options.sourceId || sourceRecord?.id || ""
         });
+        if (shouldPersist && (!canPersist || parsed?.summariesSaved === false)) {
+          setHDF5Status(`⚠️ ${t("repositoryInteractiveNotSaved")}`);
+          return { ...parsed, persisted: false };
+        }
+        if (shouldPersist) {
+          const loadedMessage = hdf5Status?.textContent || (currentLang === "zh" ? `✅ 已加载: ${file.name}` : `✅ Loaded: ${file.name}`);
+          setHDF5Status(`${loadedMessage} · ${t("repositoryInteractiveSaved")}`);
+          showToast(`✅ ${t("repositoryInteractiveSaved")}`);
+        }
+        return { ...parsed, persisted: shouldPersist ? true : null };
       } catch (e) {
         setHDF5Status(currentLang === "zh" ? `❌ 无法解析 ${file.name}: ${e.message}` : `❌ Cannot parse ${file.name}: ${e.message}`);
+        return null;
       }
     }
 
@@ -21857,9 +22641,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const detection = autoScanARPES(h5, filename);
       currentH5Detection = detection;
       const preview = await renderAutomaticHDF5Preview(h5, detection, filename);
+      let summariesSaved = null;
       if (options.addSummaries) {
-        try { await addDetectedHDF5SummariesToLibrary(filename, detection, h5, currentRepositorySourceId); }
-        catch (error) { console.warn("Could not add HDF5 summaries", error); }
+        try {
+          await addDetectedHDF5SummariesToLibrary(filename, detection, h5, currentRepositorySourceId);
+          summariesSaved = true;
+        } catch (error) {
+          summariesSaved = false;
+          console.warn("Could not add HDF5 summaries", error);
+          showToast(tf("repositoryStorageFailed", { message: error?.message || String(error) }));
+        }
       }
       if (options.persistImport !== false) {
         await saveHDF5ImportRecord({
@@ -21879,7 +22670,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         });
       }
       await yieldToBrowser();
-      return { h5, detection, preview };
+      return { h5, detection, preview, summariesSaved };
     }
 
     function decodeZipName(bytes, flags) {
@@ -22314,41 +23105,67 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           `<div>${esc(currentLang === "zh" ? (isMap ? "三图联动预览" : "二维 CUT 预览") : (isMap ? "Three-panel linked preview" : "2D CUT preview"))}: ${isMap ? `${previewWidth}×${previewHeight}×${previewDepth}` : `${previewWidth}×${previewHeight}`}</div>`
         ].join("<br>");
       }
-      if (options.persist !== false) {
-        await saveRawMapTextSummary(file, { regionName, plan, sample }, currentRepositorySourceId);
+      const persisted = options.persist !== false
+        ? await saveRawMapTextSummary(file, { regionName, plan, sample }, currentRepositorySourceId)
+        : null;
+      if (options.persist !== false && !persisted) {
+        setHDF5Status(`⚠️ ${t("repositoryInteractiveNotSaved")}`);
+        return { plan, sample, regionName, persisted: false };
       }
-      setHDF5Status(currentLang === "zh"
+      const loadedMessage = currentLang === "zh"
         ? (isMap ? `✅ 已读取三维 MAP: ${file.name} · 三图联动预览已生成` : `✅ 已读取二维 CUT: ${file.name}`)
-        : (isMap ? `✅ Raw 3D MAP loaded: ${file.name} · linked preview ready` : `✅ Raw 2D CUT loaded: ${file.name}`));
-      showToast(currentLang === "zh" ? (isMap ? "三维 MAP 已读取" : "二维 CUT 已读取") : (isMap ? "3D MAP loaded" : "2D CUT loaded"));
-      return { plan, sample, regionName };
+        : (isMap ? `✅ Raw 3D MAP loaded: ${file.name} · linked preview ready` : `✅ Raw 2D CUT loaded: ${file.name}`);
+      setHDF5Status(options.persist !== false ? `${loadedMessage} · ${t("repositoryInteractiveSaved")}` : loadedMessage);
+      showToast(options.persist !== false
+        ? `✅ ${t("repositoryInteractiveSaved")}`
+        : (currentLang === "zh" ? (isMap ? "三维 MAP 已读取" : "二维 CUT 已读取") : (isMap ? "3D MAP loaded" : "2D CUT loaded")));
+      return { plan, sample, regionName, persisted };
     }
 
     async function handleHDF5ZipFile(file, options = {}) {
       setHDF5Status(tf("hdf5ZipScanning", { filename: file.name }));
       try {
         const allEntries = await readZipEntries(file);
+        const hasAnalysisResults = isAnalysisResultArchive(allEntries);
+        if (hasAnalysisResults) {
+          clearAnalysisResults();
+          analysisResultState = await readAnalysisResultArchive(file, allEntries);
+          renderAnalysisResultState();
+        }
         const sesPackage = findSESBinaryMapPackage(allEntries);
         if (sesPackage) {
-          const sourceRecord = options.persist === false
+          const shouldPersist = options.persist !== false;
+          const sourceRecord = !shouldPersist
             ? null
             : await trySaveRepositorySourceFile(file, "ses-zip");
-          return await handleSESBinaryMapZip(file, allEntries, sesPackage, {
-            persist: options.persist,
+          const result = await handleSESBinaryMapZip(file, allEntries, sesPackage, {
+            persist: shouldPersist && !!sourceRecord,
             sourceId: options.sourceId || sourceRecord?.id || ""
           });
-          return;
+          if (shouldPersist && !sourceRecord && result) {
+            result.persisted = false;
+            setHDF5Status(`⚠️ ${t("repositoryInteractiveNotSaved")}`);
+          }
+          return result;
         }
         const entries = allEntries
           .filter(isSupportedZipEntry)
           .sort((a, b) => zipEntryImportRank(a) - zipEntryImportRank(b) || String(a.name).localeCompare(String(b.name)));
         if (!entries.length) {
+          if (hasAnalysisResults) {
+            setHDF5Status(currentLang === "zh"
+              ? `✅ 已读取分析结果包: ${file.name}`
+              : `✅ Analysis result package loaded: ${file.name}`);
+            return { analysis: analysisResultState };
+          }
           setHDF5Status(tf("hdf5ZipNoH5", { filename: file.name }));
           return;
         }
         let imported = 0;
         let totalDatasets = 0;
         let totalArpes = 0;
+        let interactiveImports = 0;
+        let persistenceFailures = 0;
         const importedFiles = [];
         const importedLayouts = [];
         const previewPackageFiles = [];
@@ -22363,42 +23180,60 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             size: formatBytes(entry.uncompressedSize)
           }));
           const buffer = await readZipEntryArrayBuffer(file, entry);
+          let entryImported = false;
           if (isHDF5EntryName(entry.name)) {
             if (!hdf5Parser()?.File) throw new Error(t("hdf5LibraryMissing"));
             const entryFile = fileFromZipEntryBuffer(buffer, entryName);
-            const sourceRecord = options.persist === false
+            const shouldPersist = options.persist !== false;
+            const sourceRecord = !shouldPersist
               ? null
               : await trySaveRepositorySourceFile(entryFile, "h5", { sourceArchive: file.name });
             const parsed = await parseHDF5Buffer(buffer, entryName, {
-              addSummaries: options.persist !== false,
+              addSummaries: shouldPersist && !!sourceRecord,
               persistImport: false,
               sourceArchive: file.name,
               sourceId: options.sourceId || sourceRecord?.id || ""
             });
+            if (shouldPersist && !sourceRecord) persistenceFailures++;
             totalDatasets += parsed?.detection?.allDatasets?.length || 0;
             totalArpes += parsed?.detection?.arpesDatasets?.length || 0;
             importedLayouts.push(...(parsed?.detection?.layouts || []));
+            entryImported = !!parsed;
+            if (parsed) interactiveImports++;
           } else if (isPXTWorkflowName(entry.name)) {
-            await handleIgorPXTFile(fileFromZipEntryBuffer(buffer, entryName), {
+            const result = await handleIgorPXTFile(fileFromZipEntryBuffer(buffer, entryName), {
               persist: options.persist,
               sourceArchive: file.name
             });
-            totalDatasets += 1;
-            totalArpes += 1;
-            importedLayouts.push("Igor PXT/IBW");
+            if (result) {
+              if (result.persisted === false) persistenceFailures++;
+              totalDatasets += 1;
+              totalArpes += 1;
+              importedLayouts.push("Igor PXT/IBW");
+              entryImported = true;
+              interactiveImports++;
+            }
           } else if (isRawMapTextName(entry.name)) {
-            await handleRawMapTextFile(fileFromZipEntryBuffer(buffer, entryName), {
+            const result = await handleRawMapTextFile(fileFromZipEntryBuffer(buffer, entryName), {
               persist: options.persist,
               sourceArchive: file.name
             });
-            totalDatasets += 1;
-            totalArpes += 1;
-            importedLayouts.push("Raw SES/Scienta map");
+            if (result) {
+              if (result.persisted === false) persistenceFailures++;
+              totalDatasets += 1;
+              totalArpes += 1;
+              importedLayouts.push("Raw SES/Scienta map");
+              entryImported = true;
+              interactiveImports++;
+            }
           } else if (isHDF5PreviewPackageName(entry.name)) {
             previewPackageFiles.push(fileFromZipEntryBuffer(buffer, entryName));
+            entryImported = true;
           }
-          importedFiles.push(entry.name);
-          imported++;
+          if (entryImported) {
+            importedFiles.push(entry.name);
+            imported++;
+          }
           await yieldToBrowser();
         }
         if (previewPackageFiles.length) {
@@ -22418,8 +23253,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             imported_at: new Date().toISOString()
           });
         }
-        setHDF5Status(tf("hdf5ZipDone", { filename: file.name, count: imported }));
-        return { imported, totalDatasets, totalArpes };
+        if (persistenceFailures) {
+          setHDF5Status(`⚠️ ${t("repositoryInteractiveNotSaved")}`);
+        } else {
+          const doneMessage = tf("hdf5ZipDone", { filename: file.name, count: imported });
+          setHDF5Status(options.persist !== false && interactiveImports
+            ? `${doneMessage} · ${t("repositoryInteractiveSaved")}`
+            : doneMessage);
+        }
+        return {
+          imported,
+          totalDatasets,
+          totalArpes,
+          interactiveImports,
+          persisted: options.persist === false ? null : interactiveImports > 0 && persistenceFailures === 0
+        };
       } catch (error) {
         setHDF5Status(currentLang === "zh" ? `❌ 无法导入 ${file.name}: ${error.message}` : `❌ Cannot import ${file.name}: ${error.message}`);
         return null;
@@ -22556,6 +23404,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
       scan(h5, "");
       const layouts = detectARPESLayouts(allDatasets);
+      const zenodoLayout = detectZenodoHDF5Layout(h5, allDatasets);
+      if (zenodoLayout) {
+        layouts.unshift(`Zenodo DataArray ${zenodoLayout.shape.join("×")} · dims: ${zenodoLayout.dims.join(" × ")}`);
+        const dataRecord = allDatasets.find(dataset => dataset.path === zenodoLayout.dataPath);
+        if (dataRecord && !arpesDatasets.some(dataset => dataset.path === dataRecord.path)) arpesDatasets.push(dataRecord);
+      }
       if (arpesDatasets.length) {
         hdf5Status.textContent = tf("detectedDatasetStatus", { filename, count: arpesDatasets.length });
         hdf5Meta.innerHTML = [
@@ -22566,7 +23420,59 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             arpesDatasets.map(d => `📊 ${esc(d.path)} [${(d.shape||[]).join("×")}] ${esc(d.dtype)}`).join("<br>")
         ].filter(Boolean).join("<br><br>");
       }
-      return { arpesDatasets, allDatasets, layouts };
+      return { arpesDatasets, allDatasets, layouts, zenodoLayout };
+    }
+
+    function decodeHDF5StringValue(value) {
+      if (value == null) return "";
+      if (typeof value === "string") return value.replace(/\0+$/g, "").trim();
+      if (value instanceof Uint8Array) return new TextDecoder("utf-8").decode(value).replace(/\0+$/g, "").trim();
+      if (ArrayBuffer.isView(value)) return new TextDecoder("utf-8").decode(new Uint8Array(value.buffer, value.byteOffset, value.byteLength)).replace(/\0+$/g, "").trim();
+      return String(value).replace(/\0+$/g, "").trim();
+    }
+
+    function readHDF5StringValues(h5, path) {
+      try {
+        const node = getHDF5NodeByPath(h5, path);
+        const value = node?.value;
+        if (typeof value === "string") return value.split(/\0+/).map(decodeHDF5StringValue).filter(Boolean);
+        if (value instanceof Uint8Array) {
+          return new TextDecoder("utf-8").decode(value).split(/\0+/).map(decodeHDF5StringValue).filter(Boolean);
+        }
+        if (Array.isArray(value) || (value && typeof value.length === "number")) {
+          return Array.from(value).flat(2).map(decodeHDF5StringValue).filter(Boolean);
+        }
+      } catch (error) {
+        console.warn("Could not read HDF5 string dataset", path, error);
+      }
+      return [];
+    }
+
+    function detectZenodoHDF5Layout(h5, datasets) {
+      const byPath = new Map((datasets || []).map(dataset => [String(dataset.path || "").toLowerCase(), dataset]));
+      const data = byPath.get("/data");
+      const dimsDataset = byPath.get("/dims");
+      if (!data || !dimsDataset || !(data.shape || []).length) return null;
+      let dims = readHDF5StringValues(h5, dimsDataset.path).map(value => normalizeHDF5Name(value)).filter(Boolean);
+      if (dims.length !== data.shape.length) {
+        const coordinateNames = (datasets || [])
+          .filter(dataset => /^\/coords\/[^/]+$/i.test(dataset.path || "") && (dataset.shape || []).length === 1)
+          .map(dataset => normalizeHDF5Name(dataset.name));
+        if (coordinateNames.length === data.shape.length) dims = coordinateNames;
+      }
+      if (dims.length !== data.shape.length) return null;
+      const coordinates = dims.map((dim, dimIndex) => {
+        const path = `/coords/${dim}`;
+        const dataset = byPath.get(path.toLowerCase()) || (datasets || []).find(item => normalizeHDF5Name(item.name) === dim && (item.shape || []).length === 1 && Number(item.shape[0]) === Number(data.shape[dimIndex]));
+        return dataset ? { ...dataset, dimIndex } : null;
+      });
+      return {
+        dataPath: data.path,
+        dimsPath: dimsDataset.path,
+        dims,
+        shape: (data.shape || []).map(Number),
+        coordinates
+      };
     }
 
     function detectARPESLayouts(datasets) {
@@ -22720,6 +23626,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function inferHDF5Axes(detection) {
       const axes = [];
+      const zenodoCoordinates = new Map((detection?.zenodoLayout?.coordinates || []).filter(Boolean).map(axis => [axis.path, axis.dimIndex]));
       for (const dataset of detection?.allDatasets || []) {
         const shape = (dataset.shape || []).map(Number);
         if (shape.length !== 1 || shape[0] < 2 || !isNumericHDF5Dtype(dataset.dtype)) continue;
@@ -22731,7 +23638,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (/^(ev|e|energy|energies|binding_energy|kinetic_energy)$/.test(normalized)) score += 20;
         if (/^(alpha|beta|theta|phi|kx|ky|k|k_parallel|momentum)$/.test(normalized)) score += 20;
         if (/axis|axes|scale|dim/.test(dataset.path || "")) score += 5;
-        axes.push({ ...dataset, kind, label, length: shape[0], score });
+        const dimIndex = zenodoCoordinates.has(dataset.path) ? zenodoCoordinates.get(dataset.path) : null;
+        if (Number.isInteger(dimIndex)) score += 240;
+        axes.push({ ...dataset, kind, label, length: shape[0], score, dimIndex });
       }
       return axes;
     }
@@ -22758,6 +23667,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function hdf5DimAxis(shape, dim, axes, preferredKinds = []) {
       const length = Number(shape?.[dim]) || 0;
       if (!length) return null;
+      const exact = (axes || []).filter(axis => axis.dimIndex === dim && axisLength(axis) === length);
+      if (exact.length) return exact.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))[0];
       return bestAxisForLength(axes, length, preferredKinds);
     }
 
@@ -23368,12 +24279,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.clearRect(0, 0, overlay.width, overlay.height);
 
       if (state.staticPreview) {
-        const rect = state.staticPreview.rect;
-        const col = hdf5ClampIndex(state.selection?.col ?? state.sample.cols / 2, state.sample.cols);
-        const row = hdf5ClampIndex(state.selection?.row ?? state.sample.rows / 2, state.sample.rows);
-        const x = rect.x + (state.sample.cols <= 1 ? 0 : col / (state.sample.cols - 1)) * rect.w;
-        const y = rect.y + (state.sample.rows <= 1 ? 0 : row / (state.sample.rows - 1)) * rect.h;
-        drawHDF5OverlayCrosshair(ctx, rect, x, y, 4.5);
+        setHDF5PreviewInteractionEnabled(false);
         return true;
       }
 
@@ -23853,6 +24759,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function drawHDF5Heatmap(canvas, sample, plan, options = {}) {
       if (!canvas) return;
+      if (canvas === hdf5PreviewCanvas && !options.compact) setHDF5PreviewInteractionEnabled(true);
       if (!options.compact && drawHDF5SlicerHeatmap(canvas, sample, plan, options)) return;
       if (!options.compact) hideHDF5MainViewControls();
       const ctx = canvas.getContext("2d");
@@ -24240,7 +25147,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h);
-      drawHDF5PreviewOverlay(canvas, state);
+      clearHDF5PreviewOverlay(canvas);
     }
 
     function bindHDF5PreviewCanvasInteraction() {
@@ -24382,6 +25289,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
               flipY: false
             }
           };
+          setHDF5PreviewInteractionEnabled(false);
           redrawStaticHDF5PreviewSelection(canvas, canvas.__hdf5PreviewState);
           resolve(true);
         };
@@ -24544,6 +25452,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (hdf5PreviewHint) hdf5PreviewHint.textContent = message;
       if (hdf5PreviewInfo) hdf5PreviewInfo.innerHTML = `<span class="muted">${esc(message)}</span>`;
       if (!hdf5PreviewCanvas) return;
+      setHDF5PreviewInteractionEnabled(false);
       hideHDF5MainViewControls();
       clearHDF5PreviewOverlay(hdf5PreviewCanvas);
       const ctx = hdf5PreviewCanvas.getContext("2d");
@@ -24624,9 +25533,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         req.onerror = () => resolve([]);
       });
       const existingByKey = new Map(existing.map(row => [`${row.source_file || ""}|${row.path || ""}`, row]));
-      const tx = db.transaction("datasets", "readwrite");
-      const store = tx.objectStore("datasets");
-      let changed = 0;
+      const pendingRecords = [];
       for (const dataset of primary) {
         const key = `${filename}|${dataset.path}`;
         let thumbnail = "";
@@ -24643,17 +25550,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (existingRecord) {
           const sourceChanged = !!sourceId && sourceId !== (existingRecord.source_id || "");
           if ((thumbnail && thumbnail !== existingRecord.thumbnail) || previewError !== (existingRecord.preview_error || "") || sourceChanged) {
-            store.put({
+            pendingRecords.push({
               ...existingRecord,
               thumbnail: thumbnail || existingRecord.thumbnail || "",
               preview_error: thumbnail ? "" : previewError,
               source_id: sourceId || existingRecord.source_id || ""
             });
-            changed++;
           }
           continue;
         }
-        store.put({
+        pendingRecords.push({
           id: `h5-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
           name: dataset.name,
           path: dataset.path,
@@ -24668,14 +25574,17 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           imported_at: new Date().toISOString(),
           tags: autoTag(dataset.name, {})
         });
-        changed++;
       }
-      if (changed) await new Promise((resolve, reject) => {
+      if (!pendingRecords.length) return;
+      const tx = db.transaction("datasets", "readwrite");
+      const store = tx.objectStore("datasets");
+      pendingRecords.forEach(record => store.put(record));
+      await new Promise((resolve, reject) => {
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error);
         tx.onabort = () => reject(tx.error);
       });
-      if (changed) renderLibrary();
+      await renderLibrary();
     }
 
     // ===== IndexedDB 数据仓库 =====
@@ -24716,11 +25625,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       return `source:${kind}:${sourceArchive}:${filename}:${size}:${modified}`;
     }
 
-    async function saveRepositorySourceFile(file, kind, metadata = {}) {
-      if (!file) return null;
-      await requestRepositoryPersistence();
+    function buildRepositorySourceRecord(file, kind, metadata = {}) {
       const sourceArchive = String(metadata.sourceArchive || "");
-      const record = {
+      return {
         id: metadata.sourceId || repositorySourceId(file, kind, sourceArchive),
         record_type: "source",
         kind,
@@ -24732,6 +25639,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         saved_at: new Date().toISOString(),
         blob: typeof file.slice === "function" ? file.slice(0, file.size, file.type || "application/octet-stream") : file
       };
+    }
+
+    async function saveRepositorySourceFile(file, kind, metadata = {}) {
+      if (!file) return null;
+      await requestRepositoryPersistence();
+      const record = buildRepositorySourceRecord(file, kind, metadata);
       const db = await openIDB();
       const tx = db.transaction("imports", "readwrite");
       await new Promise((resolve, reject) => {
@@ -24740,6 +25653,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         tx.onerror = () => reject(tx.error);
         tx.onabort = () => reject(tx.error);
       });
+      const stored = await getRepositorySourceFile(record.id);
+      if (!(stored?.blob instanceof Blob) || stored.blob.size !== file.size) {
+        throw new Error(currentLang === "zh" ? "原始文件写入后校验失败" : "Stored source file verification failed");
+      }
       return record;
     }
 
@@ -24790,9 +25707,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         layouts: Array.isArray(record.layouts) ? record.layouts : []
       };
       await new Promise((resolve, reject) => {
-        const req = store.put(normalized);
-        req.onsuccess = resolve;
-        req.onerror = () => reject(req.error);
+        store.put(normalized);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
       });
       renderHDF5ImportHistory().catch(error => console.warn("Could not render HDF5 import history", error));
     }
@@ -24874,11 +25792,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const tx = db.transaction("datasets", "readwrite");
       const store = tx.objectStore("datasets");
       await new Promise((resolve, reject) => {
-        const req = store.put(dataset);
-        req.onsuccess = resolve;
-        req.onerror = reject;
+        store.put(dataset);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
       });
-      renderLibrary();
+      await renderLibrary();
     }
 
     window.addDatasetToLibrary = async function(path) {
@@ -24976,6 +25895,165 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       });
     }
 
+    function normalizeRepositorySourceFilename(name) {
+      return String(name || "")
+        .normalize("NFC")
+        .split(/[\\/]/)
+        .pop()
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
+    function repositorySourceKindForFile(file) {
+      if (isHDF5ZipFile(file)) return "ses-zip";
+      if (isHDF5File(file)) return "h5";
+      if (isPXTWorkflowFile(file)) return "igor";
+      if (isRawMapTextFile(file)) return "raw-map";
+      return "";
+    }
+
+    function repositoryDatasetLabel(record) {
+      return String(record?.path || record?.name || record?.source_file || "dataset");
+    }
+
+    function repositoryShapesMatch(expected, actual) {
+      const expectedShape = Array.isArray(expected) ? expected.map(Number) : [];
+      const actualShape = Array.isArray(actual) ? actual.map(Number) : [];
+      if (!expectedShape.length) return true;
+      return expectedShape.length === actualShape.length
+        && expectedShape.every((value, index) => value === actualShape[index]);
+    }
+
+    function repositoryContentMismatch(record) {
+      return new Error(tf("repositoryRelinkContentMismatch", { dataset: repositoryDatasetLabel(record) }));
+    }
+
+    async function renderRepositoryFileForRecord(record, file, kind, sourceId = "") {
+      if (kind === "h5") {
+        const buffer = await file.arrayBuffer();
+        const parsed = await parseHDF5Buffer(buffer, file.name, {
+          addSummaries: false,
+          persistImport: false,
+          sourceId
+        });
+        const preview = record.path
+          ? await renderHDF5PreviewForPath(record.path, file.name)
+          : parsed?.preview;
+        if (!preview || !repositoryShapesMatch(record.shape, preview.plan?.shape)) {
+          throw repositoryContentMismatch(record);
+        }
+        return preview;
+      }
+
+      if (kind === "igor") {
+        const result = await handleIgorPXTFile(file, { persist: false, sourceId });
+        if (!result?.parsed) throw repositoryContentMismatch(record);
+        const waves = result.parsed.waves || [];
+        const targetWave = waves.find(wave => wave.path === record.path)
+          || waves.find(wave => wave.name === record.name)
+          || (!record.path && !record.name ? result.parsed.primary : null);
+        if (!targetWave || !repositoryShapesMatch(record.shape, targetWave.shape)) {
+          throw repositoryContentMismatch(record);
+        }
+        const preview = await renderIgorWavePreview(result.parsed, targetWave, file.name);
+        if (!preview) throw repositoryContentMismatch(record);
+        return preview;
+      }
+
+      if (kind === "ses-zip") {
+        const result = await handleHDF5ZipFile(file, { persist: false, sourceId });
+        if (!result || (!result.plan && !(result.interactiveImports > 0 || result.totalDatasets > 0))) {
+          throw repositoryContentMismatch(record);
+        }
+        if (result.plan) {
+          const samePath = !record.path || record.path === result.plan.path;
+          const sameName = !record.name || record.name === result.plan.name;
+          if (!samePath && !sameName) throw repositoryContentMismatch(record);
+        }
+        return result;
+      }
+
+      const parsed = await handleRawMapTextFile(file, { persist: false, sourceId });
+      if (!parsed?.plan) throw repositoryContentMismatch(record);
+      const samePath = !record.path || record.path === parsed.plan.path;
+      const sameName = !record.name || record.name === parsed.plan.name;
+      if ((!samePath && !sameName) || !repositoryShapesMatch(record.shape, parsed.plan.shape)) {
+        throw repositoryContentMismatch(record);
+      }
+      return parsed;
+    }
+
+    async function saveAndAttachRepositorySourceFile(file, kind, targetRecord, sourceRecord = null) {
+      if (!file || !targetRecord) throw new Error(t("repositorySourceMissing"));
+      await requestRepositoryPersistence();
+      const record = sourceRecord || buildRepositorySourceRecord(file, kind);
+      const expectedName = normalizeRepositorySourceFilename(targetRecord.source_file || targetRecord.attrs?.source || "");
+      const linkedAt = new Date().toISOString();
+      const db = await openIDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(["imports", "datasets"], "readwrite");
+        const datasetStore = tx.objectStore("datasets");
+        let datasetCount = 0;
+
+        tx.objectStore("imports").put(record);
+        const datasetRequest = datasetStore.getAll();
+        datasetRequest.onsuccess = () => {
+          for (const row of datasetRequest.result || []) {
+            const sameSource = expectedName
+              && normalizeRepositorySourceFilename(row.source_file || row.attrs?.source || "") === expectedName;
+            if (row.id !== targetRecord.id && (!sameSource || row.source_id)) continue;
+            datasetStore.put({
+              ...row,
+              source_id: record.id,
+              source_linked_at: linkedAt
+            });
+            datasetCount++;
+          }
+        };
+        datasetRequest.onerror = () => tx.abort();
+
+        tx.oncomplete = () => resolve({ sourceRecord: record, datasetCount });
+        tx.onerror = () => reject(tx.error || new Error("Could not save repository source"));
+        tx.onabort = () => reject(tx.error || new Error("Could not save repository source"));
+      });
+    }
+
+    function chooseRepositorySourceForRecord(id) {
+      if (!id || !hdf5LegacySourceInput) return;
+      pendingRepositoryRelinkId = id;
+      hdf5LegacySourceInput.value = "";
+      hdf5LegacySourceInput.click();
+    }
+
+    async function relinkRepositorySource(recordId, file) {
+      const record = await getLibraryRecord(recordId);
+      if (!record) throw new Error(t("repositorySourceMissing"));
+      const kind = repositorySourceKindForFile(file);
+      if (!kind) throw new Error(t("hdf5UnsupportedFile"));
+      const expected = String(record.source_file || record.attrs?.source || "").trim();
+      if (expected && normalizeRepositorySourceFilename(file.name) !== normalizeRepositorySourceFilename(expected)) {
+        throw new Error(tf("repositoryRelinkMismatch", { expected, actual: file.name || "" }));
+      }
+
+      setHDF5Status(tf("repositoryRelinking", { filename: file.name || expected }));
+      const sourceRecord = buildRepositorySourceRecord(file, kind);
+      await renderRepositoryFileForRecord(record, file, kind, sourceRecord.id);
+      const linked = await saveAndAttachRepositorySourceFile(file, kind, record, sourceRecord);
+      const storedSource = await getRepositorySourceFile(linked.sourceRecord.id);
+      if (!(storedSource?.blob instanceof Blob) || storedSource.blob.size !== file.size) {
+        throw new Error(t("repositorySourceMissing"));
+      }
+      currentRepositorySourceId = linked.sourceRecord.id;
+      await renderLibrary();
+      await renderHDF5ImportHistory().catch(error => console.warn("Could not refresh HDF5 import history", error));
+      const message = tf("repositoryRelinked", { count: linked.datasetCount });
+      setHDF5Status(message);
+      showToast(message);
+      document.querySelector(".hdf5-preview-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return linked;
+    }
+
     async function renderLegacyLibraryPreview(record) {
       if (!/^data:image\//i.test(record?.thumbnail || "")) return false;
       currentH5 = null;
@@ -24991,7 +26069,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         hdf5PreviewInfo.innerHTML = [
           `<div class="metric"><strong>${esc(t("hdf5PreviewDataset"))}:</strong> ${esc(record.source_file || "")} · ${esc(record.path || record.name || "")}</div>`,
           `<div class="metric"><strong>Shape:</strong> [${esc((record.shape || []).join("×"))}] ${esc(record.dtype || "")}</div>`,
-          `<div class="metric"><strong>${esc(t("repositoryThumbnailOnly"))}</strong><br>${esc(t("repositorySourceMissing"))}</div>`
+          `<div class="metric"><strong>${esc(t("repositoryThumbnailOnly"))}</strong><br>${esc(t("repositoryStaticPreviewHint"))}<br>${esc(t("repositorySourceMissing"))}<br><button type="button" class="primary repository-source-relink" data-library-relink="${esc(record.id)}">${esc(t("repositoryRelinkSourceBtn"))}</button></div>`
         ].join("");
       }
       setHDF5Status(t("repositoryThumbnailOnly"));
@@ -25011,21 +26089,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const kind = source.kind || (isHDF5File(file) ? "h5" : isPXTWorkflowFile(file) ? "igor" : isHDF5ZipFile(file) ? "ses-zip" : "raw-map");
           if (kind === "h5") {
             const buffer = await file.arrayBuffer();
-            await parseHDF5Buffer(buffer, source.filename || filename, {
+            const parsed = await parseHDF5Buffer(buffer, source.filename || filename, {
               addSummaries: false,
               persistImport: false,
               sourceId: source.id
             });
-            if (record.path) {
-              try { await renderHDF5PreviewForPath(record.path, source.filename || filename); }
-              catch (error) { console.warn("Could not reopen requested HDF5 path", record.path, error); }
+            const preview = record.path
+              ? await renderHDF5PreviewForPath(record.path, source.filename || filename)
+              : parsed?.preview;
+            if (!preview || !repositoryShapesMatch(record.shape, preview.plan?.shape)) {
+              throw repositoryContentMismatch(record);
             }
             loaded = true;
           } else if (kind === "igor") {
             const result = await handleIgorPXTFile(file, { persist: false, sourceId: source.id });
             if (!result) throw new Error(t("hdf5PreviewUnavailable"));
             const waveIndex = currentIgorImport?.waves?.findIndex(wave => wave.path === record.path || wave.name === record.name) ?? -1;
-            if (waveIndex >= 0) await renderIgorWavePreview(currentIgorImport, currentIgorImport.waves[waveIndex], source.filename || filename);
+            if (waveIndex < 0 || !repositoryShapesMatch(record.shape, currentIgorImport?.waves?.[waveIndex]?.shape)) {
+              throw repositoryContentMismatch(record);
+            }
+            const preview = await renderIgorWavePreview(currentIgorImport, currentIgorImport.waves[waveIndex], source.filename || filename);
+            if (!preview) throw repositoryContentMismatch(record);
             loaded = true;
           } else if (kind === "ses-zip") {
             loaded = !!(await handleHDF5ZipFile(file, { persist: false, sourceId: source.id }));
@@ -25033,10 +26117,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             loaded = !!(await handleRawMapTextFile(file, { persist: false, sourceId: source.id }));
           }
         } else if (record.path && currentH5?.filename === record.source_file) {
-          await renderHDF5PreviewForPath(record.path, record.source_file);
-          loaded = true;
+          loaded = !!(await renderHDF5PreviewForPath(record.path, record.source_file));
         } else {
-          loaded = await renderLegacyLibraryPreview(record);
+          const legacyLoaded = await renderLegacyLibraryPreview(record);
+          if (legacyLoaded) document.querySelector(".hdf5-preview-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          return legacyLoaded;
         }
 
         if (!loaded) throw new Error(t("repositorySourceMissing"));
@@ -25050,6 +26135,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const message = error?.message || t("repositorySourceMissing");
         setHDF5Status(`❌ ${message}`);
         showToast(message);
+        setHDF5PreviewInteractionEnabled(false);
+        if (hdf5PreviewInfo) {
+          hdf5PreviewInfo.innerHTML = `<div class="metric"><strong>❌ ${esc(message)}</strong><br><button type="button" class="primary repository-source-relink" data-library-relink="${esc(record.id)}">${esc(t(record.source_id ? "repositoryReplaceSourceBtn" : "repositoryRelinkSourceBtn"))}</button></div>`;
+        }
         return false;
       }
     }
@@ -25086,14 +26175,20 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           <span class="library-source-state ${r.source_id ? "available" : ""}">${esc(sourceState)}</span>
           <span class="muted">${esc(r.imported_at?.slice(0,16) || "")}</span>
           <div class="library-card-actions">
-            <button type="button" class="primary" data-library-load="${esc(r.id)}">${esc(t("loadLibraryPreviewBtn"))}</button>
+            <button type="button" class="${r.source_id ? "primary" : ""}" data-library-load="${esc(r.id)}">${esc(t(r.source_id ? "loadLibraryPreviewBtn" : "loadLibraryThumbnailBtn"))}</button>
             <button type="button" data-library-select="${esc(r.id)}" aria-pressed="${librarySelection.has(r.id)}">${esc(t(librarySelection.has(r.id) ? "selectedLibraryCompareBtn" : "selectLibraryCompareBtn"))}</button>
+            <button type="button" class="primary repository-source-relink" data-library-relink="${esc(r.id)}">${esc(t(r.source_id ? "repositoryReplaceSourceBtn" : "repositoryRelinkSourceBtn"))}</button>
           </div>
         </div>`;
       }).join("");
     }
 
     dataLibraryGrid?.addEventListener("click", async event => {
+      const relinkButton = event.target.closest("[data-library-relink]");
+      if (relinkButton) {
+        chooseRepositorySourceForRecord(relinkButton.dataset.libraryRelink || "");
+        return;
+      }
       const selectButton = event.target.closest("[data-library-select]");
       if (selectButton) {
         window.toggleLibrarySelect(selectButton.dataset.librarySelect || "");
@@ -25104,6 +26199,28 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         loadButton.disabled = true;
         try { await loadLibraryRecordIntoPreview(loadButton.dataset.libraryLoad || ""); }
         finally { if (loadButton.isConnected) loadButton.disabled = false; }
+      }
+    });
+
+    hdf5PreviewInfo?.addEventListener("click", event => {
+      const relinkButton = event.target.closest("[data-library-relink]");
+      if (relinkButton) chooseRepositorySourceForRecord(relinkButton.dataset.libraryRelink || "");
+    });
+
+    hdf5LegacySourceInput?.addEventListener("change", async () => {
+      const recordId = pendingRepositoryRelinkId;
+      const file = hdf5LegacySourceInput.files?.[0] || null;
+      pendingRepositoryRelinkId = "";
+      hdf5LegacySourceInput.disabled = true;
+      try {
+        if (recordId && file) await relinkRepositorySource(recordId, file);
+      } catch (error) {
+        const message = tf("repositoryRelinkFailed", { message: error?.message || String(error) });
+        setHDF5Status(`❌ ${message}`);
+        showToast(message);
+      } finally {
+        hdf5LegacySourceInput.value = "";
+        hdf5LegacySourceInput.disabled = false;
       }
     });
 
@@ -25399,6 +26516,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     // ===== 启动页面 =====
     installModelHub();
     initAiConfigForm();
+    probeChatEndpoint().catch(() => {});
     initScienceOneTools();
     setupIndependentPanelSizing();
     setupRoundtableModules();
