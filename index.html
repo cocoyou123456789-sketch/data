@@ -293,14 +293,13 @@
       height: 100%;
       object-fit: cover;
       object-position: center 52%;
+      opacity: 0;
       pointer-events: none;
-      animation: ustc-video-loop-fade 3.7667s linear infinite;
+      transition: opacity 360ms ease;
     }
 
-    @keyframes ustc-video-loop-fade {
-      0%, 3% { opacity: 0; }
-      10%, 86% { opacity: 1; }
-      100% { opacity: 0; }
+    .ustc-orbit-video.is-visible {
+      opacity: 1;
     }
 
     .ustc-orbit::before {
@@ -8391,7 +8390,7 @@
           </div>
           <div class="login-eye-stage" aria-hidden="true">
             <div class="ustc-orbit">
-              <video class="ustc-orbit-video" autoplay muted loop playsinline preload="metadata" poster="assets/nsrl-login-loop-poster-v2.jpg" disablepictureinpicture tabindex="-1">
+              <video class="ustc-orbit-video" autoplay muted playsinline preload="auto" poster="assets/nsrl-login-loop-poster-v2.jpg" disablepictureinpicture tabindex="-1">
                 <source src="assets/nsrl-login-loop-v2.mp4" type="video/mp4" media="(min-width: 761px) and (prefers-reduced-motion: no-preference)">
               </video>
               <span class="ustc-beam one"></span>
@@ -9889,6 +9888,31 @@
     <span class="floating-resize-handle" data-corner="sw" aria-hidden="true"></span>
     <span class="floating-resize-handle" data-corner="se" aria-hidden="true"></span>
   </div>
+
+  <script>
+    (() => {
+      const video = document.querySelector(".ustc-orbit-video");
+      if (!video) return;
+
+      let holdTimer = 0;
+      const showVideo = () => video.classList.add("is-visible");
+      const restartVideo = () => {
+        video.classList.remove("is-visible");
+        window.setTimeout(() => {
+          video.currentTime = 0;
+          const replay = video.play();
+          if (replay && typeof replay.catch === "function") replay.catch(() => {});
+        }, 380);
+      };
+
+      video.addEventListener("playing", showVideo);
+      video.addEventListener("ended", () => {
+        showVideo();
+        window.clearTimeout(holdTimer);
+        holdTimer = window.setTimeout(restartVideo, 1400);
+      });
+    })();
+  </script>
 
   <script>
     // ===== 国际化 i18n =====
