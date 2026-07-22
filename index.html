@@ -8724,7 +8724,7 @@
                   <span class="chat-ai-status" id="chatAiStatus" data-state="checking" data-i18n="chatAiChecking">正在检查</span>
                   <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
                     <option value="gpt-5.6-luna">ChatGPT</option>
-                    <option value="deepseek-r1">DeepSeek</option>
+                    <option value="deepseek-v4-flash" selected>DeepSeek</option>
                     <option value="arpes-rules-preview">ARPES 本地规则</option>
                   </select>
                 </div>
@@ -8819,7 +8819,7 @@
                   <span class="module-cube-face right"></span>
                 </span>
               </button>
-              <button class="round-module five" type="button" data-ai-model="deepseek-r1">
+              <button class="round-module five" type="button" data-ai-model="deepseek-v4-flash">
                 <span class="module-cube">
                   <span class="module-cube-face front"><span><span class="round-module-model">DeepSeek</span><span class="round-module-role">math + code</span></span></span>
                   <span class="module-cube-face top"></span>
@@ -9753,13 +9753,13 @@
                   <input id="aiEndpointInput" placeholder="/api/chat 或 https://your-site.vercel.app/api/chat">
                 </label>
                 <label data-label-i18n="aiModelLabel">AI 模型名
-                  <input id="aiModelInput" placeholder="gpt-5.6-luna / local-llm">
+                  <input id="aiModelInput" placeholder="deepseek-v4-flash / gpt-5.6-luna">
                 </label>
                 <label data-label-i18n="aiKeyLabel">服务器密钥状态
-                  <input id="aiKeyInput" type="text" readonly aria-readonly="true" placeholder="由服务器 OPENAI_API_KEY 管理">
+                  <input id="aiKeyInput" type="text" readonly aria-readonly="true" placeholder="由服务器端模型密钥管理">
                 </label>
               </div>
-              <p class="muted" data-i18n="aiConfigHint">ChatGPT 通过服务器端 /api/chat 连接。API Key 只配置在 Netlify 或 Vercel 的 OPENAI_API_KEY 环境变量中，不会保存到浏览器。</p>
+              <p class="muted" data-i18n="aiConfigHint">ChatGPT 与 DeepSeek 均通过服务器端 /api/chat 连接。密钥只配置在 Netlify 或 Vercel 环境变量中，不会保存到浏览器。</p>
               <div class="toolbar">
                 <button id="aiSaveConfigBtn" type="button" data-i18n="aiSaveConfigBtn">保存 AI 配置</button>
                 <button id="aiClearConfigBtn" type="button" data-i18n="aiClearConfigBtn">清除 AI 配置</button>
@@ -10049,8 +10049,8 @@
         aiEndpointLabel: "AI 接口地址",
         aiModelLabel: "AI 模型名",
         aiKeyLabel: "服务器密钥状态",
-        aiServerKeyManaged: "由服务器 OPENAI_API_KEY 管理",
-        aiConfigHint: "ChatGPT 通过服务器端 /api/chat 连接。API Key 只配置在 Netlify 或 Vercel 的 OPENAI_API_KEY 环境变量中，不会保存到浏览器。",
+        aiServerKeyManaged: "由服务器 OPENAI_API_KEY / DEEPSEEK_API_KEY 管理",
+        aiConfigHint: "ChatGPT 与 DeepSeek 均通过服务器端 /api/chat 连接。密钥只配置在 Netlify 或 Vercel 环境变量中，不会保存到浏览器。",
         aiSaveConfigBtn: "保存 AI 配置",
         aiClearConfigBtn: "清除 AI 配置",
         aiConfigSaved: "AI 配置已保存",
@@ -10058,12 +10058,12 @@
         aiConfiguredStatus: "AI 已配置",
         aiLocalStatus: "等待接入 AI",
         chatAiChecking: "正在检查",
-        chatAiOnline: "ChatGPT 在线",
-        chatAiUnconfigured: "ChatGPT 未配置",
+        chatAiOnline: "在线",
+        chatAiUnconfigured: "未配置",
         chatAiLocal: "本地规则",
         chatAiError: "连接失败",
         chatThinking: "正在根据当前数据生成回答...",
-        chatAiFallback: "ChatGPT 暂不可用，以下为本地数据预览。请在“材料预测”页检查模型与 AI 接口设置。",
+        chatAiFallback: "所选 AI 模型暂不可用，以下为本地数据预览。请在“材料预测”页检查模型与 AI 接口设置。",
         chatNeedsAi: "AI 接口尚未连接，请在“材料预测”页选择智能体或配置接口。",
         modelPayloadTitle: "模型输入包",
         modelResultTitle: "规则化预览结果",
@@ -10798,8 +10798,8 @@
         aiEndpointLabel: "AI Endpoint",
         aiModelLabel: "AI Model",
         aiKeyLabel: "Server key status",
-        aiServerKeyManaged: "Managed by server OPENAI_API_KEY",
-        aiConfigHint: "ChatGPT connects through the server-side /api/chat endpoint. The API key is configured only as OPENAI_API_KEY on Netlify or Vercel and is never stored in the browser.",
+        aiServerKeyManaged: "Managed by server OPENAI_API_KEY / DEEPSEEK_API_KEY",
+        aiConfigHint: "ChatGPT and DeepSeek connect through the server-side /api/chat endpoint. Keys are configured only in Netlify or Vercel environment variables and are never stored in the browser.",
         aiSaveConfigBtn: "Save AI Config",
         aiClearConfigBtn: "Clear AI Config",
         aiConfigSaved: "AI config saved",
@@ -10807,12 +10807,12 @@
         aiConfiguredStatus: "AI configured",
         aiLocalStatus: "Waiting for AI",
         chatAiChecking: "Checking",
-        chatAiOnline: "ChatGPT online",
-        chatAiUnconfigured: "ChatGPT not configured",
+        chatAiOnline: "online",
+        chatAiUnconfigured: "not configured",
         chatAiLocal: "Local rules",
         chatAiError: "Connection failed",
         chatThinking: "Generating an answer from the current data...",
-        chatAiFallback: "ChatGPT is unavailable, so a local data preview is shown. Check the model and AI settings on Material Prediction.",
+        chatAiFallback: "The selected AI model is unavailable, so a local data preview is shown. Check the model and AI settings on Material Prediction.",
         chatNeedsAi: "No AI endpoint is connected. Select an agent or configure it on Material Prediction.",
         modelPayloadTitle: "Model Input Packet",
         modelResultTitle: "Rule-Based Preview",
@@ -11549,6 +11549,7 @@
     const AI_CONFIG_STORAGE_KEY = "arpes-ai-chat-config-v1";
     const SCIENCEONE_CONFIG_STORAGE_KEY = "arpes-scienceone-config-v1";
     const CHAT_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/chat";
+    const DEFAULT_CHAT_AGENT = "deepseek-v4-flash";
     const SCIENCEONE_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/scienceone";
     const MATERIAL_PREDICT_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/material-predict";
     const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v2";
@@ -13485,7 +13486,7 @@
       renderChatTable();
     });
     if (chatAgentSelect) {
-      const savedAgent = loadAiConfig().model || "gpt-5.6-luna";
+      const savedAgent = loadAiConfig().model || DEFAULT_CHAT_AGENT;
       if ([...chatAgentSelect.options].some(option => option.value === savedAgent)) chatAgentSelect.value = savedAgent;
       chatAgentSelect.addEventListener("change", () => {
         selectRoundtableAiModel(chatAgentSelect.value, document.querySelector(".roundtable-center"));
@@ -16396,7 +16397,7 @@
         task: "identify",
         feature: "ARPES summary, superconductivity, literature"
       },
-      "deepseek-r1": {
+      "deepseek-v4-flash": {
         title: "DeepSeek",
         zh: "数学推理、代码检查和模型/数据处理流程。",
         en: "Mathematical reasoning, code checks, and data workflows.",
@@ -16563,21 +16564,22 @@
     }
 
     function selectRoundtableAiModel(modelName, center, options = {}) {
-      const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-5.6-luna"];
-      if (aiModelInput) aiModelInput.value = modelName;
+      const selectedModelName = roundtableAiModels[modelName] ? modelName : DEFAULT_CHAT_AGENT;
+      const model = roundtableAiModels[selectedModelName];
+      if (aiModelInput) aiModelInput.value = selectedModelName;
       if (modelFeatureInput && !modelFeatureInput.value.trim()) modelFeatureInput.value = model.feature;
       if (modelTaskSelect) modelTaskSelect.value = model.task;
       const cfg = loadAiConfig();
       safeStorageSet(AI_CONFIG_STORAGE_KEY, JSON.stringify({
         ...cfg,
         endpoint: cfg.endpoint || defaultAiEndpoint(),
-        model: modelName
+        model: selectedModelName
       }));
-      if (chatAgentSelect) chatAgentSelect.value = modelName;
+      if (chatAgentSelect) chatAgentSelect.value = selectedModelName;
       document.querySelectorAll(".round-module[data-ai-model]").forEach(button => {
-        button.classList.toggle("active", button.dataset.aiModel === modelName);
+        button.classList.toggle("active", button.dataset.aiModel === selectedModelName);
       });
-      renderRoundtableAiCenter(modelName, center || document.querySelector(".roundtable-center"));
+      renderRoundtableAiCenter(selectedModelName, center || document.querySelector(".roundtable-center"));
       renderModelRegistry();
       if (options.notify !== false) showToast(`${t("aiRoundtableSelected")} ${model.title}`);
       return model;
@@ -16585,9 +16587,10 @@
 
     function renderRoundtableAiCenter(modelName, center) {
       if (!center) return;
-      const model = roundtableAiModels[modelName] || roundtableAiModels["gpt-5.6-luna"];
+      const selectedModelName = roundtableAiModels[modelName] ? modelName : DEFAULT_CHAT_AGENT;
+      const model = roundtableAiModels[selectedModelName];
       const hint = currentLang === "zh" ? model.zh : model.en;
-      updateRoundtableCenterStatus(center, model.title, `${modelName} · ${hint}`);
+      updateRoundtableCenterStatus(center, model.title, `${selectedModelName} · ${hint}`);
     }
 
     function updateRoundtableCenterStatus(center, title, hint) {
@@ -16647,7 +16650,7 @@
       state.chatMessages.push(pending);
       renderChatThread();
       try {
-        const selectedAgent = chatAgentSelect?.value || loadAiConfig().model || "gpt-5.6-luna";
+        const selectedAgent = chatAgentSelect?.value || loadAiConfig().model || DEFAULT_CHAT_AGENT;
         if (selectedAgent === "arpes-rules-preview") {
           setChatAiStatus("offline", "chatAiLocal");
           pending.text = buildLocalChatAnswer(question, context);
@@ -16662,7 +16665,13 @@
           }
         }
       } catch (error) {
-        const statusKey = error?.code === "OPENAI_NOT_CONFIGURED" || error?.code === "CHAT_DISABLED"
+        const unconfiguredCodes = new Set([
+          "OPENAI_NOT_CONFIGURED",
+          "CHAT_DISABLED",
+          "DEEPSEEK_NOT_CONFIGURED",
+          "DEEPSEEK_CHAT_DISABLED"
+        ]);
+        const statusKey = unconfiguredCodes.has(error?.code)
           ? "chatAiUnconfigured"
           : "chatAiError";
         setChatAiStatus(statusKey === "chatAiError" ? "error" : "offline", statusKey, error?.message || "");
@@ -19376,11 +19385,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       try { stored = JSON.parse(safeStorageGet(AI_CONFIG_STORAGE_KEY) || "{}"); }
       catch { stored = {}; }
       if (!stored || typeof stored !== "object" || Array.isArray(stored)) stored = {};
+      const storedModel = String(stored.model || "").trim();
       const clean = {
         endpoint: String(stored.endpoint || "").trim(),
-        model: String(stored.model || "").trim()
+        model: storedModel === "deepseek-r1" ? DEFAULT_CHAT_AGENT : storedModel
       };
-      if (Object.prototype.hasOwnProperty.call(stored, "apiKey")) {
+      if (Object.prototype.hasOwnProperty.call(stored, "apiKey") || storedModel === "deepseek-r1") {
         safeStorageSet(AI_CONFIG_STORAGE_KEY, JSON.stringify(clean));
       }
       return clean;
@@ -19424,7 +19434,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function initAiConfigForm() {
       const cfg = loadAiConfig();
       if (aiEndpointInput) aiEndpointInput.value = configuredAiEndpoint();
-      if (aiModelInput) aiModelInput.value = cfg.model || "gpt-5.6-luna";
+      if (aiModelInput) aiModelInput.value = cfg.model || DEFAULT_CHAT_AGENT;
       if (aiKeyInput) aiKeyInput.value = t("aiServerKeyManaged");
       renderModelRegistry();
     }
@@ -19443,7 +19453,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function clearAiConfig() {
       safeStorageRemove(AI_CONFIG_STORAGE_KEY);
       if (aiEndpointInput) aiEndpointInput.value = defaultAiEndpoint();
-      if (aiModelInput) aiModelInput.value = "gpt-5.6-luna";
+      if (aiModelInput) aiModelInput.value = DEFAULT_CHAT_AGENT;
       if (aiKeyInput) aiKeyInput.value = t("aiServerKeyManaged");
       renderModelRegistry();
       probeChatEndpoint().catch(() => {});
@@ -19460,13 +19470,33 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       chatAiStatus.title = detail || label;
     }
 
+    function chatProviderForAgent(agentName) {
+      return String(agentName || "").toLowerCase().startsWith("deepseek") ? "deepseek" : "openai";
+    }
+
+    function chatProviderLabel(provider) {
+      return provider === "deepseek" ? "DeepSeek" : "ChatGPT";
+    }
+
+    function chatProviderStatus(payload, provider) {
+      if (payload?.providers?.[provider]) return payload.providers[provider];
+      return payload?.provider === provider ? payload : null;
+    }
+
+    function chatProviderDetail(status, provider) {
+      const model = String(status?.model || chatProviderLabel(provider));
+      const api = status?.api === "chat.completions" ? "DeepSeek Chat Completions API" : "OpenAI Responses API";
+      return `${model} · ${api}`;
+    }
+
     async function probeChatEndpoint() {
-      const selectedAgent = chatAgentSelect?.value || loadAiConfig().model || "gpt-5.6-luna";
+      const selectedAgent = chatAgentSelect?.value || loadAiConfig().model || DEFAULT_CHAT_AGENT;
       if (selectedAgent === "arpes-rules-preview") {
         setChatAiStatus("offline", "chatAiLocal");
         if (aiKeyInput) aiKeyInput.value = t("aiServerKeyManaged");
         return null;
       }
+      const provider = chatProviderForAgent(selectedAgent);
       const endpoint = configuredAiEndpoint();
       if (!endpoint) {
         setChatAiStatus("offline", "chatAiUnconfigured");
@@ -19487,13 +19517,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || `AI endpoint HTTP ${response.status}`);
         if (token !== chatEndpointProbeToken) return data;
-        if (data.enabled !== false && data.configured) {
-          const model = String(data.model || "ChatGPT");
-          setChatAiStatus("online", "chatAiOnline", `${model} · OpenAI Responses API`);
-          if (aiKeyInput) aiKeyInput.value = `${t("chatAiOnline")} · ${model}`;
+        const status = chatProviderStatus(data, provider);
+        if (status?.enabled !== false && status?.configured) {
+          const detail = chatProviderDetail(status, provider);
+          setChatAiStatus("online", "chatAiOnline", detail);
+          if (aiKeyInput) aiKeyInput.value = `${chatProviderLabel(provider)} · ${t("chatAiOnline")} · ${status.model || ""}`;
         } else {
-          setChatAiStatus("offline", "chatAiUnconfigured", endpoint);
-          if (aiKeyInput) aiKeyInput.value = t("chatAiUnconfigured");
+          setChatAiStatus("offline", "chatAiUnconfigured", `${chatProviderLabel(provider)} · ${endpoint}`);
+          if (aiKeyInput) aiKeyInput.value = `${chatProviderLabel(provider)} · ${t("chatAiUnconfigured")}`;
         }
         return data;
       } catch (error) {
@@ -19511,6 +19542,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const cfg = loadAiConfig();
       const endpoint = configuredAiEndpoint();
       if (!endpoint) return "";
+      const selectedAgent = chatAgentSelect?.value || cfg.model || DEFAULT_CHAT_AGENT;
+      const provider = chatProviderForAgent(selectedAgent);
       const history = (context.chatHistory || [])
         .filter(message => message.content && message.content !== t("chatThinking"))
         .slice(-8);
@@ -19523,6 +19556,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           headers: { "Content-Type": "application/json" },
           signal: controller.signal,
           body: JSON.stringify({
+            provider,
             question,
             messages: history,
             context,
@@ -19549,11 +19583,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           error.code = "EMPTY_RESPONSE";
           throw error;
         }
-        setChatAiStatus("online", "chatAiOnline", `${data.model || cfg.model || "ChatGPT"} · OpenAI Responses API`);
+        setChatAiStatus("online", "chatAiOnline", chatProviderDetail(data, data.provider || provider));
+        if (aiKeyInput) aiKeyInput.value = `${chatProviderLabel(data.provider || provider)} · ${t("chatAiOnline")} · ${data.model || ""}`;
         return answer;
       } catch (error) {
         if (error?.name === "AbortError") {
-          const timeoutError = new Error("ChatGPT request timed out.");
+          const timeoutError = new Error("AI request timed out.");
           timeoutError.code = "TIMEOUT";
           throw timeoutError;
         }
