@@ -3,6 +3,7 @@ const test = require("node:test");
 
 const {
   handleChatRequest,
+  hashChatPassword,
   normalizeMessages
 } = require("../lib/openai-chat");
 
@@ -165,6 +166,81 @@ test("unknown providers are rejected", async () => {
   }, { env: { OPENAI_API_KEY: "test-key" } });
   assert.equal(result.statusCode, 400);
   assert.equal(result.payload.code, "INVALID_PROVIDER");
+});
+
+test("authorized chat login issues a session and gates model calls", async () => {
+  const env = {
+    CHAT_AUTH_REQUIRED: "true",
+    CHAT_AUTH_EMAIL: "owner@example.com",
+    CHAT_AUTH_PASSWORD_HASH: hashChatPassword("correct-password", Buffer.alloc(16, 7)),
+    CHAT_AUTH_SECRET: "test-session-secret-with-enough-entropy",
+    DEEPSEEK_API_KEY: "deepseek-test-key",
+    DEEPSEEK_CHAT_ENABLED: "true",
+    DEEPSEEK_CHAT_MODEL: "deepseek-v4-flash"
+  };
+  const status = await handleChatRequest({ method: "GET", origin: ORIGIN, ip: "auth-status-test" }, { env });
+  assert.equal(status.statusCode, 200);
+  assert.equal(status.payload.auth.required, true);
+  assert.equal(status.payload.auth.configured, true);
+  assert.equal(status.payload.auth.authenticated, false);
+
+  const blocked = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "auth-blocked-test",
+    body: JSON.stringify({ provider: "deepseek", question: "hello" })
+  }, { env });
+  assert.equal(blocked.statusCode, 401);
+  assert.equal(blocked.payload.code, "CHAT_AUTH_REQUIRED");
+
+  const rejected = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "auth-rejected-test",
+    body: JSON.stringify({ action: "login", email: "owner@example.com", password: "wrong-password" })
+  }, { env });
+  assert.equal(rejected.statusCode, 401);
+  assert.equal(rejected.payload.code, "INVALID_CREDENTIALS");
+
+  const login = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "auth-login-test",
+    body: JSON.stringify({ action: "login", email: "OWNER@example.com", password: "correct-password" })
+  }, { env });
+  assert.equal(login.statusCode, 200);
+  assert.equal(login.payload.auth.authenticated, true);
+  assert.match(login.payload.token, /^[^.]+\.[^.]+$/);
+
+  const authenticatedStatus = await handleChatRequest({
+    method: "GET",
+    origin: ORIGIN,
+    authorization: `Bearer ${login.payload.token}`,
+    ip: "auth-status-signed-test"
+  }, { env });
+  assert.equal(authenticatedStatus.payload.auth.authenticated, true);
+  assert.equal(authenticatedStatus.payload.auth.email, "owner@example.com");
+
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    authorization: `Bearer ${login.payload.token}`,
+    ip: "auth-deepseek-test",
+    body: JSON.stringify({ provider: "deepseek", question: "hello" })
+  }, {
+    env,
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: "deepseek_auth_test",
+        model: "deepseek-v4-flash",
+        choices: [{ message: { content: "authorized" } }]
+      })
+    })
+  });
+  assert.equal(result.statusCode, 200);
+  assert.equal(result.payload.answer, "authorized");
 });
 
 test("message normalization removes duplicate turns and client system prompts", () => {

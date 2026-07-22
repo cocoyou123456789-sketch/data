@@ -7,7 +7,7 @@ function response(statusCode, payload, origin) {
   const headers = {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Cache-Control": "no-store"
   };
   if (origin && isAllowedOrigin(origin, process.env)) {
@@ -33,6 +33,7 @@ exports.handler = async function handler(event) {
   const result = await handleChatRequest({
     method,
     origin,
+    authorization: event.headers?.authorization || event.headers?.Authorization || "",
     ip: event.headers?.["x-forwarded-for"] || event.headers?.["client-ip"] || "unknown",
     body: event.body || ""
   });

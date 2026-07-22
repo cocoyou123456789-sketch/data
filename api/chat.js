@@ -10,7 +10,7 @@ function setCors(req, res) {
     res.setHeader("Vary", "Origin");
   }
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.setHeader("Cache-Control", "no-store");
 }
 
@@ -45,6 +45,7 @@ module.exports = async function handler(req, res) {
     const result = await handleChatRequest({
       method: req.method,
       origin,
+      authorization: req.headers.authorization || "",
       ip: req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown",
       body
     });
