@@ -10117,10 +10117,12 @@
         chatAiChecking: "正在检查",
         chatAiOnline: "在线",
         chatAiUnconfigured: "未配置",
+        chatAiOpenOnline: "请打开线上网址",
         chatAiLoginRequired: "请登录",
         chatAiLocal: "本地规则",
         chatAiError: "连接失败",
         chatThinking: "正在根据当前数据生成回答...",
+        chatQuestionRequired: "请先输入问题。",
         chatAiFallback: "所选 AI 模型暂不可用，以下为本地数据预览。请在“材料预测”页检查模型与 AI 接口设置。",
         chatNeedsAi: "AI 接口尚未连接，请在“材料预测”页选择智能体或配置接口。",
         chatNeedsAuthorizedLogin: "请使用左侧授权账号登录后使用 ChatGPT 或 DeepSeek。访客仍可使用本地规则预览。",
@@ -10487,25 +10489,25 @@
         librarySearchPlaceholder: "搜索：能量范围、温度、材料...",
         importToLibraryBtn: "⬆️ 导入本地仓库",
         loadLibraryPreviewBtn: "载入预览",
-        loadLibraryThumbnailBtn: "载入缩略图",
+        loadLibraryThumbnailBtn: "仅查看旧缩略图（不可调）",
         selectLibraryCompareBtn: "选择对比",
         selectedLibraryCompareBtn: "已选中",
         repositorySourceAvailable: "原始文件已保存在本地",
-        repositoryThumbnailOnly: "旧记录：载入现有缩略图",
+        repositoryThumbnailOnly: "旧记录：只有缩略图，不可调",
         repositoryLoading: "正在从本地仓库载入 {filename}...",
         repositoryLoaded: "✅ 已从本地仓库载入 {dataset}",
-        repositorySourceMissing: "这条旧记录没有保存原始文件，请重新上传同名文件。",
+        repositorySourceMissing: "这条旧记录当时只保存了缩略图。请选择原始文件一次，即可恢复并保存可调预览。",
         repositoryStorageFailed: "文件已预览，但原始文件未能保存到本地仓库：{message}",
-        repositoryRelinkSourceBtn: "关联并保存原始文件",
+        repositoryRelinkSourceBtn: "选择原始文件，恢复可调预览",
         repositoryReplaceSourceBtn: "更换并保存原始文件",
         repositoryRelinking: "正在保存并关联 {filename}...",
-        repositoryRelinked: "✅ 原始文件已保存，并关联到 {count} 条数据记录",
+        repositoryRelinked: "✅ 原始文件已保存，已恢复 {count} 条可调数据记录",
         repositoryRelinkMismatch: "文件不匹配：需要 {expected}，你选择了 {actual}。",
         repositoryRelinkContentMismatch: "文件可以读取，但找不到与 {dataset} 对应的数据；本次没有保存。",
         repositoryRelinkFailed: "无法保存原始文件：{message}",
         repositoryInteractiveSaved: "原始数据已保存，可从本地仓库重新载入可调节预览",
         repositoryInteractiveNotSaved: "已生成可调节预览，但原始文件或仓库记录未能完整保存；请检查浏览器存储空间后重试",
-        repositoryStaticPreviewHint: "这是静态缩略图；关联原始文件后可恢复曲线联动。",
+        repositoryStaticPreviewHint: "这不是原始数据，无法联动曲线；请选择原始 HDF5 / ZIP 文件恢复。",
         compareSelectedBtn: "📊 对比选中",
         clearLibraryBtn: "🗑️ 清空库",
         libraryEmpty: "暂无数据。上传 HDF5 文件后添加到库。",
@@ -10871,10 +10873,12 @@
         chatAiChecking: "Checking",
         chatAiOnline: "online",
         chatAiUnconfigured: "not configured",
+        chatAiOpenOnline: "open the online site",
         chatAiLoginRequired: "sign in",
         chatAiLocal: "Local rules",
         chatAiError: "Connection failed",
         chatThinking: "Generating an answer from the current data...",
+        chatQuestionRequired: "Enter a question first.",
         chatAiFallback: "The selected AI model is unavailable, so a local data preview is shown. Check the model and AI settings on Material Prediction.",
         chatNeedsAi: "No AI endpoint is connected. Select an agent or configure it on Material Prediction.",
         chatNeedsAuthorizedLogin: "Sign in with the authorized account on the left to use ChatGPT or DeepSeek. Guests can still use the local rules preview.",
@@ -11241,25 +11245,25 @@
         librarySearchPlaceholder: "Search: energy range, temperature, material...",
         importToLibraryBtn: "⬆️ Import to Local Library",
         loadLibraryPreviewBtn: "Load Preview",
-        loadLibraryThumbnailBtn: "Load Thumbnail",
+        loadLibraryThumbnailBtn: "View Legacy Thumbnail (Static)",
         selectLibraryCompareBtn: "Select",
         selectedLibraryCompareBtn: "Selected",
         repositorySourceAvailable: "Original file stored locally",
-        repositoryThumbnailOnly: "Legacy record: load saved thumbnail",
+        repositoryThumbnailOnly: "Legacy record: thumbnail only, not adjustable",
         repositoryLoading: "Loading {filename} from the local library...",
         repositoryLoaded: "✅ Loaded {dataset} from the local library",
-        repositorySourceMissing: "This legacy record has no stored source file. Re-upload the original file.",
+        repositorySourceMissing: "This legacy record stored only a thumbnail. Select the original file once to restore and save an adjustable preview.",
         repositoryStorageFailed: "The file was previewed, but its source could not be saved locally: {message}",
-        repositoryRelinkSourceBtn: "Link and save original file",
+        repositoryRelinkSourceBtn: "Select source and restore adjustable preview",
         repositoryReplaceSourceBtn: "Replace and save original file",
         repositoryRelinking: "Saving and linking {filename}...",
-        repositoryRelinked: "✅ Original file saved and linked to {count} dataset record(s)",
+        repositoryRelinked: "✅ Original file saved; restored {count} adjustable dataset record(s)",
         repositoryRelinkMismatch: "File mismatch: expected {expected}, but selected {actual}.",
         repositoryRelinkContentMismatch: "The file is readable, but it has no data matching {dataset}; nothing was saved.",
         repositoryRelinkFailed: "Could not save the original file: {message}",
         repositoryInteractiveSaved: "Original data saved; the adjustable preview can be reopened from the local library",
         repositoryInteractiveNotSaved: "An adjustable preview was created, but the source or library record was not fully saved; check browser storage and retry",
-        repositoryStaticPreviewHint: "This is a static thumbnail. Link the original file to restore interactive profiles.",
+        repositoryStaticPreviewHint: "This is not source data, so profiles cannot update. Select the original HDF5 / ZIP file to restore them.",
         compareSelectedBtn: "📊 Compare Selected",
         clearLibraryBtn: "🗑️ Clear Library",
         libraryEmpty: "No data yet. Upload an HDF5 file and add datasets to the library.",
@@ -16716,7 +16720,12 @@
 
     async function sendChatMessage() {
       const question = (chatInput?.value || "").trim();
-      if (!question || chatRequestInFlight) return;
+      if (!question) {
+        showToast(t("chatQuestionRequired"));
+        chatInput?.focus();
+        return;
+      }
+      if (chatRequestInFlight) return;
       chatRequestInFlight = true;
       if (chatSendBtn) {
         chatSendBtn.disabled = true;
@@ -19636,8 +19645,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const provider = chatProviderForAgent(selectedAgent);
       const endpoint = configuredAiEndpoint();
       if (!endpoint) {
-        setChatAiStatus("offline", "chatAiUnconfigured");
-        if (aiKeyInput) aiKeyInput.value = t("chatAiUnconfigured");
+        const localFileMode = window.location.protocol === "file:";
+        const statusKey = localFileMode ? "chatAiOpenOnline" : "chatAiUnconfigured";
+        setChatAiStatus("offline", statusKey, localFileMode ? "https://cocoyou123456789-sketch.github.io/data/" : "");
+        if (aiKeyInput) aiKeyInput.value = t(statusKey);
         return null;
       }
       const token = ++chatEndpointProbeToken;
@@ -26408,10 +26419,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           || repositoryShapesMatch(record?.shape, plan.originalShape)) return true;
       const expectedShape = Array.isArray(record?.shape) ? record.shape.map(Number) : [];
       const sourceShape = Array.isArray(plan.originalShape) ? plan.originalShape.map(Number) : [];
-      return expectedShape.length === 2
+      const legacySesShapeMatches = expectedShape.length === 2
         && sourceShape.length === 3
         && expectedShape[0] === sourceShape[0]
-        && expectedShape[1] === sourceShape[2];
+        && (expectedShape[1] === sourceShape[1] || expectedShape[1] === sourceShape[2]);
+      return legacySesShapeMatches;
     }
 
     async function renderRepositoryZipFileForRecord(record, file, sourceId = "") {
@@ -26701,19 +26713,26 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       dataLibraryGrid.innerHTML = filtered.map(r => {
         const sel = librarySelection.has(r.id) ? "selected" : "";
         const thumb = renderLibraryThumbnail(r);
-        const sourceState = r.source_id ? t("repositorySourceAvailable") : t("repositoryThumbnailOnly");
+        const hasSource = !!r.source_id;
+        const sourceState = hasSource ? t("repositorySourceAvailable") : t("repositoryThumbnailOnly");
+        const primaryAction = hasSource
+          ? `<button type="button" class="primary" data-library-load="${esc(r.id)}">${esc(t("loadLibraryPreviewBtn"))}</button>`
+          : `<button type="button" class="primary repository-source-relink" data-library-relink="${esc(r.id)}">${esc(t("repositoryRelinkSourceBtn"))}</button>`;
+        const replaceAction = hasSource
+          ? `<button type="button" class="repository-source-relink" data-library-relink="${esc(r.id)}">${esc(t("repositoryReplaceSourceBtn"))}</button>`
+          : "";
         return `<div class="library-card ${sel} ${thumb ? "has-thumb" : ""}" data-id="${esc(r.id)}" draggable="true">
           ${thumb}
           <div class="library-card-title"><span>📊</span><strong>${esc(r.name)}</strong></div>
           <span class="muted">[${(r.shape||[]).join("×")}] ${esc(r.dtype)}</span>
           <span class="muted">📁 ${t("sourceFileLabel")}: ${esc(r.source_file)}</span>
           <div class="chips">${(r.tags||[]).map(t => `<span class="chip good">${esc(t)}</span>`).join("")}</div>
-          <span class="library-source-state ${r.source_id ? "available" : ""}">${esc(sourceState)}</span>
+          <span class="library-source-state ${hasSource ? "available" : ""}">${esc(sourceState)}</span>
           <span class="muted">${esc(r.imported_at?.slice(0,16) || "")}</span>
           <div class="library-card-actions">
-            <button type="button" class="${r.source_id ? "primary" : ""}" data-library-load="${esc(r.id)}">${esc(t(r.source_id ? "loadLibraryPreviewBtn" : "loadLibraryThumbnailBtn"))}</button>
+            ${primaryAction}
             <button type="button" data-library-select="${esc(r.id)}" aria-pressed="${librarySelection.has(r.id)}">${esc(t(librarySelection.has(r.id) ? "selectedLibraryCompareBtn" : "selectLibraryCompareBtn"))}</button>
-            <button type="button" class="primary repository-source-relink" data-library-relink="${esc(r.id)}">${esc(t(r.source_id ? "repositoryReplaceSourceBtn" : "repositoryRelinkSourceBtn"))}</button>
+            ${replaceAction}
           </div>
         </div>`;
       }).join("");
