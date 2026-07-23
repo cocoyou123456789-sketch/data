@@ -5755,9 +5755,109 @@
     .chat-ai-status[data-state="error"] { color: #fda4af; }
     .chat-ai-status[data-state="error"]::before { background: #fb7185; }
 
-    .chat-message span {
-      white-space: pre-wrap;
+    .chat-message-body {
+      min-width: 0;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.65;
       overflow-wrap: anywhere;
+    }
+
+    .chat-message-body > :first-child { margin-top: 0; }
+    .chat-message-body > :last-child { margin-bottom: 0; }
+
+    .chat-message-body p,
+    .chat-message-body ul,
+    .chat-message-body ol,
+    .chat-message-body blockquote,
+    .chat-message-body pre,
+    .chat-message-body table {
+      margin: 0 0 8px;
+    }
+
+    .chat-message-body ul,
+    .chat-message-body ol {
+      padding-left: 22px;
+    }
+
+    .chat-message-body li + li { margin-top: 4px; }
+
+    .chat-message-body h1,
+    .chat-message-body h2,
+    .chat-message-body h3,
+    .chat-message-body h4 {
+      margin: 10px 0 6px;
+      color: #f1f8ff;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .chat-message-body strong {
+      color: #f4fbff;
+      font-size: inherit;
+    }
+
+    .chat-message-body code {
+      padding: 1px 5px;
+      border: 1px solid rgba(96,208,255,0.16);
+      border-radius: 4px;
+      background: rgba(3,10,18,0.72);
+      color: #bfeeff;
+      font: 0.92em/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .chat-message-body pre {
+      max-width: 100%;
+      overflow: auto;
+      padding: 9px;
+      border: 1px solid rgba(96,208,255,0.16);
+      border-radius: 7px;
+      background: rgba(3,10,18,0.78);
+      white-space: pre;
+    }
+
+    .chat-message-body pre code {
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .chat-message-body blockquote {
+      padding-left: 10px;
+      border-left: 3px solid rgba(45,212,191,0.48);
+      color: var(--muted);
+    }
+
+    .chat-message-table-scroll {
+      max-width: 100%;
+      overflow-x: auto;
+      margin-bottom: 8px;
+    }
+
+    .chat-message-body table {
+      width: 100%;
+      min-width: 360px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .chat-message-body th,
+    .chat-message-body td {
+      padding: 6px 8px;
+      border: 1px solid rgba(96,208,255,0.18);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .chat-message-body th {
+      color: #dff8ff;
+      background: rgba(20,184,166,0.1);
+    }
+
+    .chat-message-body sub,
+    .chat-message-body sup {
+      font-size: 0.78em;
+      line-height: 0;
     }
 
     @media (max-width: 760px) {
@@ -5777,18 +5877,27 @@
       }
     }
 
+    .history-chat-shell {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      align-self: stretch;
+    }
+
     .history-chat-panel {
       position: relative;
       min-height: 0;
       height: 100%;
+      box-sizing: border-box;
       border: 1px solid rgba(96,208,255,0.22);
       border-radius: 8px;
       padding: 12px;
       background: rgba(10,18,28,0.78);
       display: grid;
-      grid-template-rows: auto auto auto auto;
+      grid-template-rows: auto minmax(132px, 1fr) auto auto;
       gap: 8px;
-      align-content: start;
+      align-content: stretch;
       overflow: auto;
       resize: none;
     }
@@ -5850,13 +5959,71 @@
       user-select: none !important;
     }
 
+    .chat-height-resize-handle {
+      position: absolute;
+      z-index: 10;
+      right: 10px;
+      bottom: -1px;
+      left: 10px;
+      height: 18px;
+      border: 0;
+      background: transparent;
+      cursor: row-resize;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+    }
+
+    .chat-height-resize-handle::before {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: rgba(96,208,255,0.22);
+      transition: height 140ms ease, background 140ms ease, box-shadow 140ms ease;
+    }
+
+    .chat-height-resize-handle::after {
+      content: "";
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      width: 54px;
+      height: 10px;
+      border: 1px solid rgba(96,208,255,0.42);
+      border-radius: 5px;
+      background:
+        radial-gradient(circle, rgba(207,250,254,0.82) 0 1px, transparent 2px) 9px center / 9px 4px repeat-x,
+        rgba(8,24,34,0.94);
+      box-shadow: 0 0 14px rgba(96,208,255,0.2);
+      transform: translateX(-50%);
+    }
+
+    .chat-height-resize-handle:hover::before,
+    .chat-height-resize-handle:focus-visible::before,
+    .history-side-panel.is-resizing-chat-height .chat-height-resize-handle::before {
+      height: 3px;
+      background: var(--accent-glow);
+      box-shadow: 0 0 14px rgba(45,212,191,0.54);
+    }
+
+    .history-side-panel.is-resizing-chat-height,
+    .history-side-panel.is-resizing-chat-height * {
+      cursor: row-resize !important;
+      user-select: none !important;
+    }
+
     .chat-thread {
       display: grid;
       gap: 10px;
-      min-height: 48px;
-      max-height: 132px;
+      min-height: 132px;
+      max-height: none;
       overflow-y: auto;
       padding-right: 4px;
+      overscroll-behavior: contain;
     }
 
     .chat-thread:empty {
@@ -5878,7 +6045,7 @@
       background: rgba(15,118,110,0.08);
     }
 
-    .chat-message strong {
+    .chat-message-label {
       color: var(--accent-glow);
       font-size: 12px;
     }
@@ -7590,10 +7757,12 @@
       }
       .periodic-index-panel,
       .periodic-workbench > .periodic-wrap,
+      .history-chat-shell,
       .history-chat-panel {
         min-width: 0;
         width: 100% !important;
         max-width: none;
+        height: auto !important;
         resize: none;
       }
 
@@ -7612,7 +7781,8 @@
         display: none;
       }
 
-      .chat-resize-handle {
+      .chat-resize-handle,
+      .chat-height-resize-handle {
         display: none;
       }
       .model-element-panel { min-height: 460px; }
@@ -8656,34 +8826,37 @@
               <div class="cube-face-picker" id="cubeFacePicker" aria-label="Cube face selector"></div>
               <div class="cube-readout" id="cubeReadout" data-i18n="cubeReadoutDefault">点击魔方的一个面查看对应材料家族。</div>
             </div>
-            <div class="history-chat-panel" id="historyChatPanel">
-              <div class="chat-resize-handle" id="chatResizeHandle" role="separator" aria-orientation="vertical" aria-label="拖动调整对话框宽度" title="拖动调整对话框宽度" tabindex="0"></div>
-              <div class="chat-panel-head">
-                <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
-                <div class="chat-agent-control">
-                  <span class="chat-ai-status" id="chatAiStatus" data-state="checking" data-i18n="chatAiChecking">正在检查</span>
-                  <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
-                    <option value="gpt-5.6-luna">ChatGPT</option>
-                    <option value="deepseek-v4-flash" selected>DeepSeek</option>
-                    <option value="arpes-rules-preview">ARPES 本地规则</option>
-                  </select>
+            <div class="history-chat-shell" id="historyChatShell">
+              <div class="history-chat-panel" id="historyChatPanel">
+                <div class="chat-panel-head">
+                  <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
+                  <div class="chat-agent-control">
+                    <span class="chat-ai-status" id="chatAiStatus" data-state="checking" data-i18n="chatAiChecking">正在检查</span>
+                    <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
+                      <option value="gpt-5.6-luna">ChatGPT</option>
+                      <option value="deepseek-v4-flash" selected>DeepSeek</option>
+                      <option value="arpes-rules-preview">ARPES 本地规则</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="chat-thread" id="chatThread" aria-live="polite"></div>
+                <div class="chat-table-wrap" id="chatTableWrap" style="display:none;"></div>
+                <div class="chat-composer">
+                  <div class="chat-prompt-row">
+                    <button type="button" data-chat-prompt="请比较 FeSe、Bi2212 和 MgB2 的 ARPES 关注点" data-i18n="chatPromptCompare">比较材料</button>
+                    <button type="button" data-chat-prompt="请生成当前检索结果的表格" data-i18n="chatPromptTable">生成表格</button>
+                    <button type="button" data-chat-prompt="请总结适合写进调研报告的要点" data-i18n="chatPromptReport">报告要点</button>
+                  </div>
+                  <textarea id="chatInput" aria-label="ARPES 对话问题" data-i18n-placeholder="chatInputPlaceholder" placeholder="问一个 ARPES/超导材料问题，或让 Chat platform 生成表格..."></textarea>
+                  <div class="toolbar">
+                    <button class="primary" id="chatSendBtn" type="button" data-i18n="chatSendBtn">发送</button>
+                    <button id="chatMakeTableBtn" type="button" data-i18n="chatMakeTableBtn">生成表格</button>
+                    <button id="chatClearBtn" type="button" data-i18n="chatClearBtn">清空</button>
+                  </div>
                 </div>
               </div>
-              <div class="chat-thread" id="chatThread" aria-live="polite"></div>
-              <div class="chat-table-wrap" id="chatTableWrap" style="display:none;"></div>
-              <div class="chat-composer">
-                <div class="chat-prompt-row">
-                  <button type="button" data-chat-prompt="请比较 FeSe、Bi2212 和 MgB2 的 ARPES 关注点" data-i18n="chatPromptCompare">比较材料</button>
-                  <button type="button" data-chat-prompt="请生成当前检索结果的表格" data-i18n="chatPromptTable">生成表格</button>
-                  <button type="button" data-chat-prompt="请总结适合写进调研报告的要点" data-i18n="chatPromptReport">报告要点</button>
-                </div>
-                <textarea id="chatInput" aria-label="ARPES 对话问题" data-i18n-placeholder="chatInputPlaceholder" placeholder="问一个 ARPES/超导材料问题，或让 Chat platform 生成表格..."></textarea>
-                <div class="toolbar">
-                  <button class="primary" id="chatSendBtn" type="button" data-i18n="chatSendBtn">发送</button>
-                  <button id="chatMakeTableBtn" type="button" data-i18n="chatMakeTableBtn">生成表格</button>
-                  <button id="chatClearBtn" type="button" data-i18n="chatClearBtn">清空</button>
-                </div>
-              </div>
+              <div class="chat-resize-handle" id="chatResizeHandle" role="separator" aria-orientation="vertical" aria-controls="historyChatPanel" aria-label="拖动调整对话框宽度" title="拖动调整对话框宽度" tabindex="0"></div>
+              <div class="chat-height-resize-handle" id="chatHeightResizeHandle" role="separator" aria-orientation="horizontal" aria-controls="historyChatPanel" aria-label="拖动调整对话框高度" title="拖动调整对话框高度" tabindex="0"></div>
             </div>
           </div>
         </div>
@@ -9950,6 +10123,7 @@
         chatMakeTableBtn: "生成表格",
         chatClearBtn: "清空",
         chatResizeHandle: "拖动调整对话框宽度",
+        chatResizeHeightHandle: "拖动调整对话框高度",
         chatUserLabel: "用户",
         chatAssistantLabel: "对话框",
         chatWelcome: "可以点击魔方材料点，也可以直接提问。我会基于当前材料库、免费 ARPES 题录、个人数据和页面筛选生成回答。",
@@ -10705,7 +10879,8 @@
         chatSendBtn: "Send",
         chatMakeTableBtn: "Make table",
         chatClearBtn: "Clear",
-        chatResizeHandle: "Drag to resize the chat panel",
+        chatResizeHandle: "Drag to resize the chat panel width",
+        chatResizeHeightHandle: "Drag to resize the chat panel height",
         chatUserLabel: "User",
         chatAssistantLabel: "Chat platform",
         chatWelcome: "Click a cube material point or ask directly. I will answer from the current materials, free ARPES metadata, personal data, and page filters.",
@@ -11440,6 +11615,7 @@
       }
       renderPeriodicTable();
       applyChatPanelWidth(chatPanelWidth, { persist: false });
+      applyChatPanelHeight(chatPanelHeight, { persist: false });
       renderModelMixture();
       highlightPeriodicTable();
       renderFloatingComparison();
@@ -11534,6 +11710,7 @@
     const MATERIAL_PREDICT_PUBLIC_PROXY = "https://arpes-materials-explorer-cocoyou.netlify.app/api/material-predict";
     const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v2";
     const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-width-v3";
+    const CHAT_PANEL_HEIGHT_STORAGE_KEY = "arpes-chat-panel-height-v1";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
     // ===== DOM 引用 =====
@@ -11696,8 +11873,10 @@
     const chatClearBtn = $("#chatClearBtn");
     const chatTableWrap = $("#chatTableWrap");
     const historySidePanel = $("#historySidePanel");
+    const historyChatShell = $("#historyChatShell");
     const historyChatPanel = $("#historyChatPanel");
     const chatResizeHandle = $("#chatResizeHandle");
+    const chatHeightResizeHandle = $("#chatHeightResizeHandle");
     let chatRequestInFlight = false;
     let chatEndpointProbeToken = 0;
     let activeAppPage = "module-select";
@@ -15759,9 +15938,19 @@
 
     const CHAT_PANEL_MIN_WIDTH = 300;
     const CHAT_CUBE_MIN_WIDTH = 360;
+    const CHAT_PANEL_MIN_HEIGHT = 360;
+    const CHAT_PANEL_MAX_HEIGHT = 1200;
     let chatPanelWidth = (() => {
       try {
         const saved = Number(safeStorageGet(CHAT_PANEL_SIZE_STORAGE_KEY));
+        return Number.isFinite(saved) && saved > 0 ? saved : null;
+      } catch {
+        return null;
+      }
+    })();
+    let chatPanelHeight = (() => {
+      try {
+        const saved = Number(safeStorageGet(CHAT_PANEL_HEIGHT_STORAGE_KEY));
         return Number.isFinite(saved) && saved > 0 ? saved : null;
       } catch {
         return null;
@@ -15805,40 +15994,118 @@
       }
     }
 
+    function chatPanelHeightBounds() {
+      const viewportHeight = Number(window.innerHeight) || 720;
+      return {
+        min: CHAT_PANEL_MIN_HEIGHT,
+        max: Math.max(CHAT_PANEL_MIN_HEIGHT, Math.min(CHAT_PANEL_MAX_HEIGHT, Math.round(viewportHeight * 1.2)))
+      };
+    }
+
+    function applyChatPanelHeight(height = chatPanelHeight, { persist = true } = {}) {
+      if (!historyChatShell || !historyChatPanel) return;
+      const mobile = window.matchMedia("(max-width: 980px)").matches;
+      if (mobile) {
+        historyChatShell.style.removeProperty("height");
+        return;
+      }
+      const bounds = chatPanelHeightBounds();
+      const requested = Number(height);
+      if (height == null || !Number.isFinite(requested)) {
+        historyChatShell.style.removeProperty("height");
+        const naturalHeight = Math.round(historyChatShell.getBoundingClientRect().height);
+        if (chatHeightResizeHandle) {
+          chatHeightResizeHandle.title = t("chatResizeHeightHandle");
+          chatHeightResizeHandle.setAttribute("aria-label", t("chatResizeHeightHandle"));
+          chatHeightResizeHandle.setAttribute("aria-valuemin", String(bounds.min));
+          chatHeightResizeHandle.setAttribute("aria-valuemax", String(bounds.max));
+          chatHeightResizeHandle.setAttribute("aria-valuenow", String(Math.max(bounds.min, naturalHeight || bounds.min)));
+        }
+        return;
+      }
+      chatPanelHeight = Math.round(Math.max(bounds.min, Math.min(bounds.max, requested)));
+      historyChatShell.style.height = `${chatPanelHeight}px`;
+      if (chatHeightResizeHandle) {
+        chatHeightResizeHandle.title = t("chatResizeHeightHandle");
+        chatHeightResizeHandle.setAttribute("aria-label", t("chatResizeHeightHandle"));
+        chatHeightResizeHandle.setAttribute("aria-valuemin", String(bounds.min));
+        chatHeightResizeHandle.setAttribute("aria-valuemax", String(bounds.max));
+        chatHeightResizeHandle.setAttribute("aria-valuenow", String(chatPanelHeight));
+      }
+      if (persist) {
+        safeStorageSet(CHAT_PANEL_HEIGHT_STORAGE_KEY, String(chatPanelHeight));
+      }
+    }
+
     function setupChatPanelSizing() {
-      if (!historySidePanel || !historyChatPanel || !chatResizeHandle || historySidePanel.dataset.sizeBound === "true") return;
+      if (!historySidePanel || !historyChatShell || !historyChatPanel || !chatResizeHandle || !chatHeightResizeHandle || historySidePanel.dataset.sizeBound === "true") return;
       historySidePanel.dataset.sizeBound = "true";
-      let dragState = null;
-      const startResize = event => {
+      let widthDragState = null;
+      let heightDragState = null;
+      const startWidthResize = event => {
         if (window.matchMedia("(max-width: 980px)").matches || (event.button !== undefined && event.button !== 0)) return;
-        dragState = {
+        widthDragState = {
           pointerId: event.pointerId,
           startX: event.clientX,
-          startWidth: historyChatPanel.getBoundingClientRect().width
+          startWidth: historyChatShell.getBoundingClientRect().width
         };
         historySidePanel.classList.add("is-resizing-chat");
         chatResizeHandle.setPointerCapture?.(event.pointerId);
         event.preventDefault();
       };
-      const resize = event => {
-        if (!dragState || event.pointerId !== dragState.pointerId) return;
-        const deltaX = event.clientX - dragState.startX;
-        applyChatPanelWidth(dragState.startWidth - deltaX, { persist: false });
+      const resizeWidth = event => {
+        if (!widthDragState || event.pointerId !== widthDragState.pointerId) return;
+        const deltaX = event.clientX - widthDragState.startX;
+        applyChatPanelWidth(widthDragState.startWidth - deltaX, { persist: false });
       };
-      const stopResize = event => {
-        if (!dragState || (event.pointerId !== undefined && event.pointerId !== dragState.pointerId)) return;
-        dragState = null;
+      const stopWidthResize = event => {
+        if (!widthDragState || (event.pointerId !== undefined && event.pointerId !== widthDragState.pointerId)) return;
+        widthDragState = null;
         historySidePanel.classList.remove("is-resizing-chat");
         applyChatPanelWidth(chatPanelWidth, { persist: true });
       };
-      chatResizeHandle.addEventListener("pointerdown", startResize);
-      window.addEventListener("pointermove", resize);
-      window.addEventListener("pointerup", stopResize);
-      window.addEventListener("pointercancel", stopResize);
-      chatResizeHandle.addEventListener("lostpointercapture", stopResize);
+      const startHeightResize = event => {
+        if (window.matchMedia("(max-width: 980px)").matches || (event.button !== undefined && event.button !== 0)) return;
+        heightDragState = {
+          pointerId: event.pointerId,
+          startY: event.clientY,
+          startHeight: historyChatShell.getBoundingClientRect().height
+        };
+        historySidePanel.classList.add("is-resizing-chat-height");
+        chatHeightResizeHandle.setPointerCapture?.(event.pointerId);
+        event.preventDefault();
+      };
+      const resizeHeight = event => {
+        if (!heightDragState || event.pointerId !== heightDragState.pointerId) return;
+        const deltaY = event.clientY - heightDragState.startY;
+        applyChatPanelHeight(heightDragState.startHeight + deltaY, { persist: false });
+      };
+      const stopHeightResize = event => {
+        if (!heightDragState || (event.pointerId !== undefined && event.pointerId !== heightDragState.pointerId)) return;
+        const finalHeight = chatPanelHeight ?? heightDragState.startHeight;
+        heightDragState = null;
+        historySidePanel.classList.remove("is-resizing-chat-height");
+        applyChatPanelHeight(finalHeight, { persist: true });
+      };
+      chatResizeHandle.addEventListener("pointerdown", startWidthResize);
+      chatHeightResizeHandle.addEventListener("pointerdown", startHeightResize);
+      window.addEventListener("pointermove", event => {
+        resizeWidth(event);
+        resizeHeight(event);
+      });
+      window.addEventListener("pointerup", event => {
+        stopWidthResize(event);
+        stopHeightResize(event);
+      });
+      window.addEventListener("pointercancel", event => {
+        stopWidthResize(event);
+        stopHeightResize(event);
+      });
+      chatResizeHandle.addEventListener("lostpointercapture", stopWidthResize);
+      chatHeightResizeHandle.addEventListener("lostpointercapture", stopHeightResize);
       chatResizeHandle.addEventListener("keydown", event => {
         const bounds = chatPanelWidthBounds();
-        let nextWidth = chatPanelWidth ?? historyChatPanel.getBoundingClientRect().width;
+        let nextWidth = chatPanelWidth ?? historyChatShell.getBoundingClientRect().width;
         if (event.key === "ArrowLeft") nextWidth += 24;
         else if (event.key === "ArrowRight") nextWidth -= 24;
         else if (event.key === "Home") nextWidth = bounds.min;
@@ -15847,12 +16114,27 @@
         event.preventDefault();
         applyChatPanelWidth(nextWidth, { persist: true });
       });
-      window.addEventListener("resize", () => applyChatPanelWidth(chatPanelWidth, { persist: false }));
+      chatHeightResizeHandle.addEventListener("keydown", event => {
+        const bounds = chatPanelHeightBounds();
+        let nextHeight = chatPanelHeight ?? historyChatShell.getBoundingClientRect().height;
+        if (event.key === "ArrowUp") nextHeight -= 24;
+        else if (event.key === "ArrowDown") nextHeight += 24;
+        else if (event.key === "Home") nextHeight = bounds.min;
+        else if (event.key === "End") nextHeight = bounds.max;
+        else return;
+        event.preventDefault();
+        applyChatPanelHeight(nextHeight, { persist: true });
+      });
+      window.addEventListener("resize", () => {
+        applyChatPanelWidth(chatPanelWidth, { persist: false });
+        applyChatPanelHeight(chatPanelHeight, { persist: false });
+      });
       if ("ResizeObserver" in window) {
         const resizeObserver = new ResizeObserver(() => applyChatPanelWidth(chatPanelWidth, { persist: false }));
         resizeObserver.observe(historySidePanel);
       }
       applyChatPanelWidth(chatPanelWidth, { persist: false });
+      applyChatPanelHeight(chatPanelHeight, { persist: false });
     }
 
     function curatedArticles() {
@@ -16272,6 +16554,7 @@
           renderOverview();
           ensureHistoryCubeReady();
           applyChatPanelWidth(chatPanelWidth, { persist: false });
+          applyChatPanelHeight(chatPanelHeight, { persist: false });
         });
       }
       if (!options.preserveScroll) {
@@ -16610,6 +16893,164 @@
       renderChatThread();
     }
 
+    function normalizeChatMathText(value) {
+      const latexSymbols = {
+        times: "×", cdot: "·", pm: "±", approx: "≈", sim: "∼",
+        le: "≤", leq: "≤", ge: "≥", geq: "≥", neq: "≠",
+        to: "→", rightarrow: "→", leftarrow: "←", infty: "∞",
+        Delta: "Δ", Gamma: "Γ", alpha: "α", beta: "β", gamma: "γ",
+        theta: "θ", lambda: "λ", mu: "μ", pi: "π", sigma: "σ", omega: "ω",
+        angstrom: "Å"
+      };
+      let text = String(value || "").replace(/\r\n?/g, "\n");
+      for (let pass = 0; pass < 4; pass += 1) {
+        const next = text.replace(/\\{1,2}(?:text|mathrm|mathbf|operatorname)\{([^{}]*)\}/g, "$1");
+        if (next === text) break;
+        text = next;
+      }
+      text = text
+        .replace(/\\{1,2}(?:\(|\)|\[|\])/g, "")
+        .replace(/\${1,2}/g, "")
+        .replace(/\\{1,2}(?:,|;|:|!|quad|qquad)/g, " ")
+        .replace(/\\{1,2}([A-Za-z]+)\b/g, (match, name) => Object.prototype.hasOwnProperty.call(latexSymbols, name) ? latexSymbols[name] : match)
+        .replace(/\\{2,}\s*(?=\n|$)/g, "\n")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/[ \t]{2,}/g, " ");
+      return text.trim();
+    }
+
+    function renderChatInlineMarkdown(value) {
+      const codeTokens = [];
+      let output = esc(String(value || ""));
+      output = output.replace(/`([^`\n]+)`/g, (_, code) => {
+        const token = `\uE000CHATCODE${codeTokens.length}\uE001`;
+        codeTokens.push(`<code>${code}</code>`);
+        return token;
+      });
+      output = output
+        .replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/__([^_\n]+)__/g, "<strong>$1</strong>")
+        .replace(/~~([^~\n]+)~~/g, "<s>$1</s>")
+        .replace(/([A-Za-z\u0391-\u03c9])_(?:\{([^{}]+)\}|([A-Za-z0-9+\-]+))/g, (_, base, braced, plain) => `${base}<sub>${braced || plain}</sub>`)
+        .replace(/([A-Za-z\u0391-\u03c9])\^(?:\{([^{}]+)\}|([A-Za-z0-9+\-]+))/g, (_, base, braced, plain) => `${base}<sup>${braced || plain}</sup>`)
+        .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
+      codeTokens.forEach((html, index) => {
+        output = output.split(`\uE000CHATCODE${index}\uE001`).join(html);
+      });
+      return output;
+    }
+
+    function chatMarkdownTableCells(line) {
+      return String(line || "").trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(cell => cell.trim());
+    }
+
+    function isChatMarkdownTableDivider(line) {
+      const cells = chatMarkdownTableCells(line);
+      return cells.length > 1 && cells.every(cell => /^:?-{3,}:?$/.test(cell));
+    }
+
+    function renderChatRichText(value) {
+      const codeBlocks = [];
+      let text = String(value || "").replace(/\r\n?/g, "\n");
+      text = text.replace(/```([^\n`]*)\n?([\s\S]*?)```/g, (_, language, code) => {
+        const token = `\uE000CHATBLOCK${codeBlocks.length}\uE001`;
+        codeBlocks.push({ language: String(language || "").trim(), code: String(code || "").replace(/\n$/, "") });
+        return `\n${token}\n`;
+      });
+      text = normalizeChatMathText(text);
+      const lines = text.split("\n");
+      const html = [];
+      let listType = "";
+      let paragraph = [];
+      const closeList = () => {
+        if (!listType) return;
+        html.push(`</${listType}>`);
+        listType = "";
+      };
+      const flushParagraph = () => {
+        if (!paragraph.length) return;
+        html.push(`<p>${paragraph.map(renderChatInlineMarkdown).join("<br>")}</p>`);
+        paragraph = [];
+      };
+      const openList = type => {
+        flushParagraph();
+        if (listType === type) return;
+        closeList();
+        listType = type;
+        html.push(`<${type}>`);
+      };
+
+      for (let index = 0; index < lines.length; index += 1) {
+        const line = lines[index];
+        const trimmed = line.trim();
+        const codeMatch = trimmed.match(/^\uE000CHATBLOCK(\d+)\uE001$/);
+        if (codeMatch) {
+          flushParagraph();
+          closeList();
+          const block = codeBlocks[Number(codeMatch[1])] || { code: "" };
+          html.push(`<pre><code>${esc(block.code)}</code></pre>`);
+          continue;
+        }
+        if (!trimmed) {
+          flushParagraph();
+          closeList();
+          continue;
+        }
+        if (trimmed.includes("|") && index + 1 < lines.length && isChatMarkdownTableDivider(lines[index + 1])) {
+          flushParagraph();
+          closeList();
+          const header = chatMarkdownTableCells(trimmed);
+          const bodyRows = [];
+          index += 2;
+          while (index < lines.length && lines[index].trim() && lines[index].includes("|")) {
+            bodyRows.push(chatMarkdownTableCells(lines[index]));
+            index += 1;
+          }
+          index -= 1;
+          html.push(`<div class="chat-message-table-scroll"><table><thead><tr>${header.map(cell => `<th>${renderChatInlineMarkdown(cell)}</th>`).join("")}</tr></thead><tbody>${bodyRows.map(row => `<tr>${header.map((_, cellIndex) => `<td>${renderChatInlineMarkdown(row[cellIndex] || "")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`);
+          continue;
+        }
+        const heading = trimmed.match(/^(#{1,4})\s+(.+)$/);
+        if (heading) {
+          flushParagraph();
+          closeList();
+          const level = Math.min(4, heading[1].length + 1);
+          html.push(`<h${level}>${renderChatInlineMarkdown(heading[2])}</h${level}>`);
+          continue;
+        }
+        const unordered = trimmed.match(/^[-+*]\s+(.+)$/);
+        if (unordered) {
+          openList("ul");
+          html.push(`<li>${renderChatInlineMarkdown(unordered[1])}</li>`);
+          continue;
+        }
+        const ordered = trimmed.match(/^\d+[.)]\s+(.+)$/);
+        if (ordered) {
+          openList("ol");
+          html.push(`<li>${renderChatInlineMarkdown(ordered[1])}</li>`);
+          continue;
+        }
+        const quote = trimmed.match(/^>\s?(.+)$/);
+        if (quote) {
+          flushParagraph();
+          closeList();
+          html.push(`<blockquote>${renderChatInlineMarkdown(quote[1])}</blockquote>`);
+          continue;
+        }
+        if (/^_{3,}$|^-{3,}$|^\*{3,}$/.test(trimmed)) {
+          flushParagraph();
+          closeList();
+          html.push("<hr>");
+          continue;
+        }
+        closeList();
+        paragraph.push(trimmed);
+      }
+      flushParagraph();
+      closeList();
+      return html.join("") || `<p>${esc(text)}</p>`;
+    }
+
     function renderChatThread() {
       if (!chatThread) return;
       const rows = state.chatMessages || [];
@@ -16617,12 +17058,18 @@
         chatThread.innerHTML = "";
         return;
       }
-      chatThread.innerHTML = rows.map(message => `
-        <div class="chat-message ${message.role === "user" ? "user" : "assistant"}">
-          <strong>${esc(message.role === "user" ? t("chatUserLabel") : t("chatAssistantLabel"))}</strong>
-          <span>${esc(message.text)}</span>
-        </div>
-      `).join("");
+      chatThread.innerHTML = rows.map(message => {
+        const isUser = message.role === "user";
+        const body = isUser
+          ? `<p>${esc(message.text).replace(/\n/g, "<br>")}</p>`
+          : renderChatRichText(message.text);
+        return `
+          <div class="chat-message ${isUser ? "user" : "assistant"}">
+            <strong class="chat-message-label">${esc(isUser ? t("chatUserLabel") : t("chatAssistantLabel"))}</strong>
+            <div class="chat-message-body">${body}</div>
+          </div>
+        `;
+      }).join("");
       chatThread.scrollTop = chatThread.scrollHeight;
     }
 
