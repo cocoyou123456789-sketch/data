@@ -1797,6 +1797,11 @@
       border-color: rgba(45, 212, 191, 0.48);
     }
 
+    .voice-command-btn.is-unavailable {
+      color: #fbbf24;
+      border-color: rgba(251, 191, 36, 0.42);
+    }
+
     .voice-command-btn.is-listening::after {
       content: "";
       position: absolute;
@@ -1907,6 +1912,106 @@
       color: #fca5a5;
       font-size: 11px;
       line-height: 1.4;
+    }
+
+    .voice-settings-panel {
+      position: absolute;
+      z-index: 92;
+      top: calc(100% + 8px);
+      right: 0;
+      width: min(400px, calc(100vw - 24px));
+      padding: 12px;
+      border: 1px solid rgba(45, 212, 191, 0.46);
+      border-radius: 6px;
+      background: var(--panel);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.36);
+    }
+
+    .voice-settings-panel[hidden] {
+      display: none;
+    }
+
+    .voice-settings-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .voice-settings-compat {
+      margin: 0;
+      padding: 8px 9px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.026);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .voice-settings-compat[data-tone="warning"] {
+      border-color: rgba(251, 191, 36, 0.38);
+      color: #fde68a;
+    }
+
+    .voice-settings-field {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .voice-settings-field select {
+      width: 100%;
+      min-height: 38px;
+      padding: 7px 9px;
+      font-size: 12px;
+    }
+
+    .voice-settings-note {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .voice-settings-range {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 44px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .voice-settings-range output {
+      color: var(--ink);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .voice-settings-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .voice-settings-check input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent-glow);
+    }
+
+    .voice-settings-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .voice-settings-actions button {
+      min-height: 34px;
+      padding: 6px 10px;
+      font-size: 12px;
     }
 
     input[type="search"], select {
@@ -6102,6 +6207,27 @@
       font-size: 12px;
     }
 
+    .chat-message-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .chat-speak-btn {
+      min-height: 28px;
+      padding: 4px 8px;
+      border-radius: 7px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .chat-speak-btn:hover,
+    .chat-speak-btn:focus-visible {
+      color: #dff8ff;
+      border-color: rgba(45,212,191,0.48);
+    }
+
     .chat-composer {
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -8750,16 +8876,23 @@
             <path d="M8 22h8"></path>
           </svg>
         </button>
-        <button class="voice-command-btn" id="voiceCorrectionBtn" type="button" aria-label="修改识别结果" aria-expanded="false" aria-controls="voiceCorrectionPanel" title="修改识别结果">
+        <button class="voice-command-btn" id="voiceCorrectionBtn" type="button" aria-label="语音与键盘指令" aria-expanded="false" aria-controls="voiceCorrectionPanel" title="语音与键盘指令">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 20h9"></path>
             <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path>
           </svg>
         </button>
+        <button class="voice-command-btn" id="voiceSettingsBtn" type="button" aria-label="语音设置" aria-expanded="false" aria-controls="voiceSettingsPanel" title="语音设置">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11 5 6.5 9H3v6h3.5L11 19Z"></path>
+            <path d="M15 9a4 4 0 0 1 0 6"></path>
+            <path d="M18 6a8 8 0 0 1 0 12"></path>
+          </svg>
+        </button>
         <div class="voice-command-status" id="voiceCommandStatus" role="status" aria-live="polite" hidden></div>
         <div class="voice-correction-panel" id="voiceCorrectionPanel" role="dialog" aria-modal="false" aria-labelledby="voiceCorrectionTitle" hidden>
           <div class="voice-correction-head">
-            <span id="voiceCorrectionTitle" data-i18n="voiceCorrectionTitle">修改识别结果</span>
+            <span id="voiceCorrectionTitle" data-i18n="voiceCorrectionTitle">语音与键盘指令</span>
             <button class="voice-correction-close" id="voiceCorrectionCloseBtn" type="button" aria-label="关闭" title="关闭">×</button>
           </div>
           <input class="voice-correction-input" id="voiceCorrectionInput" type="text" autocomplete="off" spellcheck="false" aria-label="语音识别结果" data-i18n-placeholder="voiceCorrectionPlaceholder" placeholder="识别结果或手动输入指令">
@@ -8768,6 +8901,46 @@
             <button id="voiceCorrectionRetryBtn" type="button" data-i18n="voiceCorrectionRetry">重说</button>
           </div>
           <span class="voice-correction-feedback" id="voiceCorrectionFeedback" role="status" aria-live="polite"></span>
+        </div>
+        <div class="voice-settings-panel" id="voiceSettingsPanel" role="dialog" aria-modal="false" aria-labelledby="voiceSettingsTitle" hidden>
+          <div class="voice-correction-head">
+            <span id="voiceSettingsTitle" data-i18n="voiceSettingsTitle">语音设置</span>
+            <button class="voice-correction-close" id="voiceSettingsCloseBtn" type="button" aria-label="关闭" title="关闭">×</button>
+          </div>
+          <div class="voice-settings-grid">
+            <p class="voice-settings-compat" id="voiceCompatibilityStatus" role="status"></p>
+            <label class="voice-settings-field" for="voiceRecognitionLanguage">
+              <span data-i18n="voiceRecognitionLanguageLabel">识别语言</span>
+              <select id="voiceRecognitionLanguage">
+                <option value="auto" data-i18n="voiceRecognitionLanguageAuto">跟随网站语言</option>
+                <option value="zh-CN" data-i18n="voiceRecognitionLanguageChinese">中文（普通话）</option>
+                <option value="en-US" data-i18n="voiceRecognitionLanguageEnglish">English (US)</option>
+              </select>
+            </label>
+            <label class="voice-settings-field" for="voiceSpeakerSelect">
+              <span data-i18n="voiceSpeakerLabel">朗读音色（Speaker）</span>
+              <select id="voiceSpeakerSelect">
+                <option value="" data-i18n="voiceSpeakerAutomatic">系统自动选择</option>
+              </select>
+              <span class="voice-settings-note" data-i18n="voiceSpeakerDeviceNote">这里选择发音人；扬声器或耳机仍由电脑系统设置决定。</span>
+            </label>
+            <label class="voice-settings-field" for="voiceRateInput">
+              <span data-i18n="voiceRateLabel">朗读速度</span>
+              <span class="voice-settings-range">
+                <input id="voiceRateInput" type="range" min="0.7" max="1.5" step="0.1" value="1">
+                <output id="voiceRateOutput" for="voiceRateInput">1.0×</output>
+              </span>
+            </label>
+            <label class="voice-settings-check" for="voiceAutoSpeakInput">
+              <input id="voiceAutoSpeakInput" type="checkbox">
+              <span data-i18n="voiceAutoSpeakLabel">自动朗读语音指令执行结果</span>
+            </label>
+            <div class="voice-settings-actions">
+              <button class="primary" id="voicePreviewBtn" type="button" data-i18n="voicePreviewBtn">试听</button>
+              <button id="voiceStopSpeakingBtn" type="button" data-i18n="voiceStopSpeakingBtn">停止朗读</button>
+            </div>
+            <span class="voice-correction-feedback" id="voiceSettingsFeedback" role="status" aria-live="polite"></span>
+          </div>
         </div>
       </div>
       <label class="mini-control" title="PDF opens a print view; Word, Excel, and Markdown download directly.">
@@ -10197,6 +10370,7 @@
         chatResizeHint: "拖动箭头调节对话框大小",
         chatUserLabel: "用户",
         chatAssistantLabel: "对话框",
+        chatSpeakBtn: "朗读",
         chatWelcome: "可以点击魔方材料点，也可以直接提问。我会基于当前材料库、免费 ARPES 题录、个人数据和页面筛选生成回答。",
         chatTableTitle: "对话框生成表格",
         chatEmptyExport: "暂无对话框问答；报告将只包含当前页面数据。",
@@ -10808,8 +10982,9 @@
         soundBarsTitle: "音效可视化",
         languageLabel: "切换语言",
         voiceControlLabel: "语音控制",
-        voiceEditLabel: "修改识别结果",
-        voiceCorrectionTitle: "修改识别结果",
+        voiceStopControlLabel: "停止语音控制",
+        voiceEditLabel: "语音与键盘指令",
+        voiceCorrectionTitle: "语音与键盘指令",
         voiceCorrectionPlaceholder: "识别结果或手动输入指令",
         voiceCorrectionInputLabel: "语音识别结果",
         voiceCorrectionRun: "执行",
@@ -10817,6 +10992,36 @@
         voiceCorrectionClose: "关闭",
         voiceCorrectionEmpty: "请先输入一条指令",
         voiceCorrectionInvalid: "这句话还不能执行，请修改后再试",
+        voiceSettingsTitle: "语音设置",
+        voiceSettingsLabel: "语音设置",
+        voiceRecognitionLanguageLabel: "识别语言",
+        voiceRecognitionLanguageAuto: "跟随网站语言",
+        voiceRecognitionLanguageChinese: "中文（普通话）",
+        voiceRecognitionLanguageEnglish: "English (US)",
+        voiceSpeakerLabel: "朗读音色（Speaker）",
+        voiceSpeakerAutomatic: "系统自动选择",
+        voiceSpeakerLoading: "正在读取本机音色…",
+        voiceSpeakerUnavailable: "当前电脑没有可用的朗读音色",
+        voiceSpeakerLocal: "本机",
+        voiceSpeakerOnline: "在线",
+        voiceSpeakerDeviceNote: "这里选择发音人；扬声器或耳机仍由电脑系统设置决定。",
+        voiceRateLabel: "朗读速度",
+        voiceAutoSpeakLabel: "自动朗读语音指令执行结果",
+        voicePreviewBtn: "试听",
+        voiceStopSpeakingBtn: "停止朗读",
+        voicePreviewText: "你好，这是当前选择的朗读音色。",
+        voiceSpeechInputReady: "语音输入可用",
+        voiceSpeechInputFallback: "此浏览器不支持语音识别；可以点击铅笔按钮并输入文字指令",
+        voiceSpeechOutputReady: "朗读可用，可选择本机音色",
+        voiceSpeechOutputLoading: "朗读可用，正在读取本机音色列表",
+        voiceSpeechOutputFallback: "此浏览器不支持文字朗读",
+        voiceCompatibilityJoin: "；",
+        voiceSpeechError: "朗读失败，请换一个音色或检查系统声音设置",
+        voiceManualFallback: "麦克风在这台电脑上不可用，请在这里输入指令后点击“执行”",
+        voiceStarting: "正在启动麦克风…",
+        voiceAlreadyStarting: "麦克风正在启动，请稍候",
+        voiceStopping: "麦克风正在停止，请稍候",
+        voiceLanguageUnsupported: "当前识别语言不可用，请在语音设置中切换语言",
         voiceListening: "正在听…",
         voiceHeard: "识别：{transcript}",
         voiceUnsupported: "当前浏览器不支持语音识别",
@@ -10956,6 +11161,7 @@
         chatResizeHint: "Drag the arrow handles to resize the chat panel",
         chatUserLabel: "User",
         chatAssistantLabel: "Chat platform",
+        chatSpeakBtn: "Read aloud",
         chatWelcome: "Click a cube material point or ask directly. I will answer from the current materials, free ARPES metadata, personal data, and page filters.",
         chatTableTitle: "Chat platform generated table",
         chatEmptyExport: "No Chat platform Q&A yet; the report will include current page data only.",
@@ -11567,8 +11773,9 @@
         soundBarsTitle: "Sound Visualizer",
         languageLabel: "Switch Language",
         voiceControlLabel: "Voice control",
-        voiceEditLabel: "Edit recognized command",
-        voiceCorrectionTitle: "Edit recognized command",
+        voiceStopControlLabel: "Stop voice control",
+        voiceEditLabel: "Voice and keyboard commands",
+        voiceCorrectionTitle: "Voice and keyboard commands",
         voiceCorrectionPlaceholder: "Recognized text or a manual command",
         voiceCorrectionInputLabel: "Recognized voice command",
         voiceCorrectionRun: "Run",
@@ -11576,6 +11783,36 @@
         voiceCorrectionClose: "Close",
         voiceCorrectionEmpty: "Enter a command first",
         voiceCorrectionInvalid: "This command cannot run yet. Edit it and try again.",
+        voiceSettingsTitle: "Voice settings",
+        voiceSettingsLabel: "Voice settings",
+        voiceRecognitionLanguageLabel: "Recognition language",
+        voiceRecognitionLanguageAuto: "Follow website language",
+        voiceRecognitionLanguageChinese: "Chinese (Mandarin)",
+        voiceRecognitionLanguageEnglish: "English (US)",
+        voiceSpeakerLabel: "Reading voice (speaker)",
+        voiceSpeakerAutomatic: "Choose automatically",
+        voiceSpeakerLoading: "Loading voices from this device…",
+        voiceSpeakerUnavailable: "No reading voices are available on this device",
+        voiceSpeakerLocal: "on device",
+        voiceSpeakerOnline: "online",
+        voiceSpeakerDeviceNote: "This selects a voice; the physical speaker or headphones still follow system audio settings.",
+        voiceRateLabel: "Reading speed",
+        voiceAutoSpeakLabel: "Read voice-command results aloud",
+        voicePreviewBtn: "Preview voice",
+        voiceStopSpeakingBtn: "Stop speaking",
+        voicePreviewText: "Hello, this is the currently selected reading voice.",
+        voiceSpeechInputReady: "Voice input is available",
+        voiceSpeechInputFallback: "Speech recognition is not supported here; use the pencil button to type a command",
+        voiceSpeechOutputReady: "Reading aloud is available with voices from this device",
+        voiceSpeechOutputLoading: "Reading aloud is available; loading the device voice list",
+        voiceSpeechOutputFallback: "Text-to-speech is not supported in this browser",
+        voiceCompatibilityJoin: "; ",
+        voiceSpeechError: "Reading failed. Try another voice or check the system audio settings.",
+        voiceManualFallback: "The microphone is unavailable on this computer. Type a command here and choose Run.",
+        voiceStarting: "Starting microphone…",
+        voiceAlreadyStarting: "The microphone is starting; please wait",
+        voiceStopping: "The microphone is stopping; please wait",
+        voiceLanguageUnsupported: "This recognition language is unavailable. Choose another language in Voice settings.",
         voiceListening: "Listening…",
         voiceHeard: "Heard: {transcript}",
         voiceUnsupported: "Speech recognition is not supported in this browser",
@@ -11784,6 +12021,7 @@
     const PERIODIC_PANEL_SIZE_STORAGE_KEY = "arpes-periodic-panel-sizes-v2";
     const CHAT_PANEL_SIZE_STORAGE_KEY = "arpes-chat-panel-width-v3";
     const CHAT_PANEL_HEIGHT_STORAGE_KEY = "arpes-chat-panel-height-v1";
+    const VOICE_SETTINGS_STORAGE_KEY = "arpes-voice-settings-v1";
     const STATIC_DATA_BASE = "https://cocoyou123456789-sketch.github.io/data/";
 
     // ===== DOM 引用 =====
@@ -11845,6 +12083,18 @@
     const voiceCorrectionRetryBtn = $("#voiceCorrectionRetryBtn");
     const voiceCorrectionCloseBtn = $("#voiceCorrectionCloseBtn");
     const voiceCorrectionFeedback = $("#voiceCorrectionFeedback");
+    const voiceSettingsBtn = $("#voiceSettingsBtn");
+    const voiceSettingsPanel = $("#voiceSettingsPanel");
+    const voiceSettingsCloseBtn = $("#voiceSettingsCloseBtn");
+    const voiceCompatibilityStatus = $("#voiceCompatibilityStatus");
+    const voiceRecognitionLanguage = $("#voiceRecognitionLanguage");
+    const voiceSpeakerSelect = $("#voiceSpeakerSelect");
+    const voiceRateInput = $("#voiceRateInput");
+    const voiceRateOutput = $("#voiceRateOutput");
+    const voiceAutoSpeakInput = $("#voiceAutoSpeakInput");
+    const voicePreviewBtn = $("#voicePreviewBtn");
+    const voiceStopSpeakingBtn = $("#voiceStopSpeakingBtn");
+    const voiceSettingsFeedback = $("#voiceSettingsFeedback");
     const tocList = $("#tocList");
     const tocNote = $("#tocNote");
     const advancedLibrary = $("#advancedLibrary");
@@ -12909,8 +13159,11 @@
     // ===== 语音导航与搜索 =====
     const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
     const SpeechRecognitionPhraseApi = window.SpeechRecognitionPhrase || window.webkitSpeechRecognitionPhrase;
+    const SpeechSynthesisController = window.speechSynthesis || null;
+    const SpeechSynthesisUtteranceApi = window.SpeechSynthesisUtterance;
     let voiceRecognition = null;
     let voiceRecognitionUnavailable = !SpeechRecognitionApi;
+    let voiceRecognitionState = "idle";
     let voiceListening = false;
     let voiceRecognitionHadError = false;
     let voiceRecognitionManualStop = false;
@@ -12920,8 +13173,47 @@
     let voiceLastRecognizedTranscript = "";
     let voiceSessionTimer = 0;
     let voiceStatusTimer = 0;
+    let voiceOutputVoices = [];
+    let voiceActiveUtterance = null;
+    let voiceSpeechSession = 0;
     const voiceContextPhraseKeys = new Set();
     const VOICE_SESSION_TIMEOUT_MS = 20000;
+
+    function loadVoiceSettings() {
+      const defaults = {
+        recognitionLanguage: "auto",
+        speakerKey: "",
+        rate: 1,
+        autoSpeak: false
+      };
+      try {
+        const stored = JSON.parse(safeStorageGet(VOICE_SETTINGS_STORAGE_KEY) || "{}");
+        const recognitionLanguage = ["auto", "zh-CN", "en-US"].includes(stored.recognitionLanguage)
+          ? stored.recognitionLanguage
+          : defaults.recognitionLanguage;
+        const rate = Math.min(1.5, Math.max(0.7, Number(stored.rate) || 1));
+        return {
+          recognitionLanguage,
+          speakerKey: typeof stored.speakerKey === "string" ? stored.speakerKey : "",
+          rate,
+          autoSpeak: stored.autoSpeak === true
+        };
+      } catch {
+        return defaults;
+      }
+    }
+
+    let voiceSettings = loadVoiceSettings();
+
+    function saveVoiceSettings() {
+      safeStorageSet(VOICE_SETTINGS_STORAGE_KEY, JSON.stringify(voiceSettings));
+    }
+
+    function selectedRecognitionLanguage() {
+      return voiceSettings.recognitionLanguage === "auto"
+        ? (currentLang === "zh" ? "zh-CN" : "en-US")
+        : voiceSettings.recognitionLanguage;
+    }
 
     const VOICE_COMMAND_PHRASES = [
       "打开历史", "打开材料", "打开文献", "打开论文", "打开数据", "打开模型", "打开报告",
@@ -13221,6 +13513,9 @@
       voiceCommandStatus.textContent = message || "";
       voiceCommandStatus.dataset.tone = tone;
       voiceCommandStatus.hidden = !message || !!(voiceCorrectionPanel && !voiceCorrectionPanel.hidden);
+      if (message && tone === "success" && voiceSettings.autoSpeak) {
+        speakVoiceText(message, { reportErrors: false });
+      }
       if (message && hideAfter > 0) {
         voiceStatusTimer = window.setTimeout(() => {
           voiceCommandStatus.hidden = true;
@@ -13232,6 +13527,253 @@
       voiceListening = !!active;
       voiceCommandBtn?.classList.toggle("is-listening", voiceListening);
       voiceCommandBtn?.setAttribute("aria-pressed", String(voiceListening));
+      if (voiceCommandBtn && voiceListening) {
+        voiceCommandBtn.title = t("voiceStopControlLabel");
+        voiceCommandBtn.setAttribute("aria-label", t("voiceStopControlLabel"));
+      } else if (voiceCommandBtn) {
+        const supported = !!SpeechRecognitionApi && !voiceRecognitionUnavailable;
+        const label = supported ? t("voiceControlLabel") : t("voiceUnsupported");
+        voiceCommandBtn.title = label;
+        voiceCommandBtn.setAttribute("aria-label", label);
+      }
+    }
+
+    function voiceSpeakerKey(voice) {
+      return JSON.stringify([voice?.voiceURI || "", voice?.lang || "", voice?.name || ""]);
+    }
+
+    function voiceLanguageScore(voice, language = selectedRecognitionLanguage()) {
+      const voiceLanguage = String(voice?.lang || "").toLowerCase();
+      const preferredLanguage = String(language || "").toLowerCase();
+      if (voiceLanguage === preferredLanguage) return 0;
+      if (voiceLanguage.split("-")[0] === preferredLanguage.split("-")[0]) return 1;
+      if (voice?.default) return 2;
+      return 3;
+    }
+
+    function selectedSpeechVoice() {
+      const saved = voiceOutputVoices.find(voice => voiceSpeakerKey(voice) === voiceSettings.speakerKey);
+      if (saved) return saved;
+      return [...voiceOutputVoices].sort((left, right) => {
+        const rank = voiceLanguageScore(left) - voiceLanguageScore(right);
+        if (rank) return rank;
+        if (left.default !== right.default) return left.default ? -1 : 1;
+        if (left.localService !== right.localService) return left.localService ? -1 : 1;
+        return String(left.name || "").localeCompare(String(right.name || ""));
+      })[0] || null;
+    }
+
+    function setVoiceSettingsFeedback(message = "") {
+      if (voiceSettingsFeedback) voiceSettingsFeedback.textContent = message;
+    }
+
+    function stopVoiceSpeech() {
+      voiceSpeechSession += 1;
+      try { SpeechSynthesisController?.cancel(); } catch {}
+      voiceActiveUtterance = null;
+      if (voiceStopSpeakingBtn) voiceStopSpeakingBtn.disabled = true;
+    }
+
+    function splitVoiceSpeechText(text, maxLength = 140) {
+      const sentences = String(text || "").match(/[^。！？.!?；;]+[。！？.!?；;]?/g) || [];
+      const chunks = [];
+      let current = "";
+      const flush = () => {
+        if (current) chunks.push(current);
+        current = "";
+      };
+      sentences.forEach(sentence => {
+        const value = sentence.trim();
+        if (!value) return;
+        const parts = [];
+        for (let offset = 0; offset < value.length; offset += maxLength) {
+          parts.push(value.slice(offset, offset + maxLength));
+        }
+        parts.forEach(part => {
+          if (current && current.length + part.length + 1 > maxLength) flush();
+          current = current ? `${current} ${part}` : part;
+          if (current.length >= maxLength) flush();
+        });
+      });
+      flush();
+      return chunks;
+    }
+
+    function speakVoiceText(text, options = {}) {
+      const value = String(text || "").replace(/\s+/g, " ").trim();
+      if (!value || !SpeechSynthesisController || !SpeechSynthesisUtteranceApi) {
+        if (options.reportErrors !== false) setVoiceSettingsFeedback(t("voiceSpeechOutputFallback"));
+        return false;
+      }
+      stopVoiceSpeech();
+      const session = voiceSpeechSession;
+      const chunks = splitVoiceSpeechText(value);
+      const speaker = selectedSpeechVoice();
+      const speakChunk = index => {
+        if (session !== voiceSpeechSession || index >= chunks.length) return;
+        try {
+          const utterance = new SpeechSynthesisUtteranceApi(chunks[index]);
+          utterance.lang = speaker?.lang || selectedRecognitionLanguage();
+          utterance.rate = voiceSettings.rate;
+          if (speaker) utterance.voice = speaker;
+          utterance.onstart = () => {
+            if (session !== voiceSpeechSession) return;
+            voiceActiveUtterance = utterance;
+            if (voiceStopSpeakingBtn) voiceStopSpeakingBtn.disabled = false;
+          };
+          utterance.onend = () => {
+            if (session !== voiceSpeechSession) return;
+            if (index + 1 < chunks.length) {
+              speakChunk(index + 1);
+            } else {
+              voiceActiveUtterance = null;
+              if (voiceStopSpeakingBtn) voiceStopSpeakingBtn.disabled = true;
+            }
+          };
+          utterance.onerror = event => {
+            if (session !== voiceSpeechSession) return;
+            voiceActiveUtterance = null;
+            if (voiceStopSpeakingBtn) voiceStopSpeakingBtn.disabled = true;
+            if (!["canceled", "interrupted"].includes(event.error) && options.reportErrors !== false) {
+              const message = t("voiceSpeechError");
+              setVoiceSettingsFeedback(message);
+              setVoiceStatus(message, "error", 4200);
+            }
+          };
+          voiceActiveUtterance = utterance;
+          SpeechSynthesisController.speak(utterance);
+        } catch {
+          voiceActiveUtterance = null;
+          if (voiceStopSpeakingBtn) voiceStopSpeakingBtn.disabled = true;
+          if (options.reportErrors !== false) {
+            const message = t("voiceSpeechError");
+            setVoiceSettingsFeedback(message);
+            setVoiceStatus(message, "error", 4200);
+          }
+        }
+      };
+      if (!chunks.length) return false;
+      speakChunk(0);
+      return true;
+    }
+
+    function updateVoiceCompatibilityStatus() {
+      if (!voiceCompatibilityStatus) return;
+      const recognitionReady = !!SpeechRecognitionApi && !voiceRecognitionUnavailable;
+      const synthesisReady = !!SpeechSynthesisController && !!SpeechSynthesisUtteranceApi;
+      const messages = [
+        t(recognitionReady ? "voiceSpeechInputReady" : "voiceSpeechInputFallback"),
+        t(synthesisReady
+          ? (voiceOutputVoices.length ? "voiceSpeechOutputReady" : "voiceSpeechOutputLoading")
+          : "voiceSpeechOutputFallback")
+      ];
+      voiceCompatibilityStatus.textContent = messages.join(t("voiceCompatibilityJoin"));
+      voiceCompatibilityStatus.dataset.tone = recognitionReady && synthesisReady ? "ready" : "warning";
+    }
+
+    function refreshVoiceSpeakerOptions() {
+      if (!voiceSpeakerSelect) return;
+      const synthesisReady = !!SpeechSynthesisController && !!SpeechSynthesisUtteranceApi;
+      voiceOutputVoices = synthesisReady
+        ? Array.from(SpeechSynthesisController.getVoices?.() || [])
+        : [];
+      voiceOutputVoices.sort((left, right) => {
+        const rank = voiceLanguageScore(left) - voiceLanguageScore(right);
+        if (rank) return rank;
+        if (left.localService !== right.localService) return left.localService ? -1 : 1;
+        return `${left.lang} ${left.name}`.localeCompare(`${right.lang} ${right.name}`);
+      });
+
+      const automaticOption = document.createElement("option");
+      automaticOption.value = "";
+      automaticOption.textContent = synthesisReady
+        ? (voiceOutputVoices.length ? t("voiceSpeakerAutomatic") : t("voiceSpeakerLoading"))
+        : t("voiceSpeakerUnavailable");
+      voiceSpeakerSelect.replaceChildren(automaticOption);
+      voiceOutputVoices.forEach(voice => {
+        const option = document.createElement("option");
+        option.value = voiceSpeakerKey(voice);
+        const serviceLabel = t(voice.localService ? "voiceSpeakerLocal" : "voiceSpeakerOnline");
+        option.textContent = `${voice.name} · ${voice.lang} · ${serviceLabel}`;
+        voiceSpeakerSelect.appendChild(option);
+      });
+      const savedVoiceExists = voiceOutputVoices.some(voice => voiceSpeakerKey(voice) === voiceSettings.speakerKey);
+      voiceSpeakerSelect.value = savedVoiceExists ? voiceSettings.speakerKey : "";
+      voiceSpeakerSelect.disabled = !synthesisReady || voiceOutputVoices.length === 0;
+      if (voicePreviewBtn) voicePreviewBtn.disabled = !synthesisReady;
+      if (voiceStopSpeakingBtn) voiceStopSpeakingBtn.disabled = !SpeechSynthesisController?.speaking;
+      if (voiceAutoSpeakInput) voiceAutoSpeakInput.disabled = !synthesisReady;
+      updateVoiceCompatibilityStatus();
+    }
+
+    function setVoiceSettingsOpen(open, options = {}) {
+      if (!voiceSettingsPanel || !voiceSettingsBtn) return;
+      const shouldOpen = !!open;
+      if (shouldOpen && document.body.classList.contains("locked")) {
+        const message = t("voiceLoginRequired");
+        setVoiceStatus(message, "error", 2400);
+        showToast(message);
+        return;
+      }
+      if (shouldOpen) {
+        stopVoiceRecognitionForCorrection();
+        setVoiceCorrectionOpen(false);
+        refreshVoiceSpeakerOptions();
+        setVoiceSettingsFeedback("");
+        voiceCommandStatus.hidden = true;
+      }
+      voiceSettingsPanel.hidden = !shouldOpen;
+      voiceSettingsBtn.setAttribute("aria-expanded", String(shouldOpen));
+      if (shouldOpen && options.focus !== false) {
+        window.requestAnimationFrame(() => voiceRecognitionLanguage?.focus());
+      }
+    }
+
+    function initVoiceSettings() {
+      if (!voiceSettingsPanel || !voiceSettingsBtn) return;
+      if (voiceRecognitionLanguage) voiceRecognitionLanguage.value = voiceSettings.recognitionLanguage;
+      if (voiceRateInput) voiceRateInput.value = String(voiceSettings.rate);
+      if (voiceRateOutput) voiceRateOutput.value = `${voiceSettings.rate.toFixed(1)}×`;
+      if (voiceAutoSpeakInput) voiceAutoSpeakInput.checked = voiceSettings.autoSpeak;
+      voiceSettingsBtn.addEventListener("click", () => {
+        setVoiceSettingsOpen(voiceSettingsPanel.hidden);
+      });
+      voiceSettingsCloseBtn?.addEventListener("click", () => setVoiceSettingsOpen(false));
+      voiceRecognitionLanguage?.addEventListener("change", () => {
+        voiceSettings.recognitionLanguage = voiceRecognitionLanguage.value;
+        saveVoiceSettings();
+        if (voiceRecognition) voiceRecognition.lang = selectedRecognitionLanguage();
+        refreshVoiceSpeakerOptions();
+      });
+      voiceSpeakerSelect?.addEventListener("change", () => {
+        voiceSettings.speakerKey = voiceSpeakerSelect.value;
+        saveVoiceSettings();
+        setVoiceSettingsFeedback("");
+      });
+      voiceRateInput?.addEventListener("input", () => {
+        voiceSettings.rate = Math.min(1.5, Math.max(0.7, Number(voiceRateInput.value) || 1));
+        if (voiceRateOutput) voiceRateOutput.value = `${voiceSettings.rate.toFixed(1)}×`;
+        saveVoiceSettings();
+      });
+      voiceAutoSpeakInput?.addEventListener("change", () => {
+        voiceSettings.autoSpeak = !!voiceAutoSpeakInput.checked;
+        saveVoiceSettings();
+      });
+      voicePreviewBtn?.addEventListener("click", () => {
+        setVoiceSettingsFeedback("");
+        speakVoiceText(t("voicePreviewText"));
+      });
+      voiceStopSpeakingBtn?.addEventListener("click", stopVoiceSpeech);
+      voiceSettingsPanel.addEventListener("keydown", event => {
+        if (event.key !== "Escape") return;
+        event.preventDefault();
+        setVoiceSettingsOpen(false);
+        voiceSettingsBtn.focus();
+      });
+      SpeechSynthesisController?.addEventListener?.("voiceschanged", refreshVoiceSpeakerOptions);
+      refreshVoiceSpeakerOptions();
+      window.setTimeout(refreshVoiceSpeakerOptions, 500);
+      window.addEventListener("pagehide", stopVoiceSpeech);
     }
 
     function rememberVoiceTranscript(transcript) {
@@ -13245,10 +13787,11 @@
     }
 
     function stopVoiceRecognitionForCorrection() {
-      if (!voiceListening) return;
+      if (voiceRecognitionState === "idle") return;
       voiceRecognitionManualStop = true;
+      voiceRecognitionState = "stopping";
       clearTimeout(voiceSessionTimer);
-      try { voiceRecognition?.stop(); } catch {}
+      try { voiceRecognition?.stop(); } catch { voiceRecognitionState = "idle"; }
       setVoiceListening(false);
     }
 
@@ -13263,6 +13806,7 @@
       }
       if (shouldOpen) {
         stopVoiceRecognitionForCorrection();
+        setVoiceSettingsOpen(false);
         if (options.transcript) rememberVoiceTranscript(options.transcript);
         if (voiceCorrectionInput && !voiceCorrectionInput.value) {
           voiceCorrectionInput.value = voiceLastRecognizedTranscript;
@@ -13521,6 +14065,8 @@
       if (errorCode === "audio-capture") return t("voiceMicUnavailable");
       if (errorCode === "network") return t("voiceNetworkError");
       if (errorCode === "no-speech") return t("voiceNoSpeech");
+      if (["language-not-supported", "language-unavailable"].includes(errorCode)) return t("voiceLanguageUnsupported");
+      if (errorCode === "aborted") return t("voiceStopped");
       return t("voiceRecognitionError");
     }
 
@@ -13532,17 +14078,36 @@
         return false;
       }
       if (!voiceRecognition || voiceRecognitionUnavailable) {
-        setVoiceStatus(t("voiceUnsupported"), "error", 3000);
+        const message = t("voiceManualFallback");
+        setVoiceStatus(message, "error", 4200);
+        setVoiceCorrectionOpen(true, { feedback: message, focus: true, select: false });
         return false;
       }
+      if (voiceRecognitionState !== "idle") {
+        setVoiceStatus(t("voiceAlreadyStarting"), "error", 2200);
+        return false;
+      }
+      stopVoiceSpeech();
+      setVoiceSettingsOpen(false);
       setVoiceCorrectionOpen(false);
+      voiceRecognitionManualStop = false;
+      voiceRecognitionState = "starting";
+      setVoiceStatus(t("voiceStarting"));
       try {
-        voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
+        voiceRecognition.lang = selectedRecognitionLanguage();
         applyVoiceContextPhrases();
         voiceRecognition.start();
         return true;
       } catch (error) {
-        setVoiceStatus(error.message || t("voiceMicUnavailable"), "error", 3000);
+        voiceRecognitionState = "idle";
+        setVoiceListening(false);
+        const message = error?.name === "NotAllowedError"
+          ? t("voiceMicDenied")
+          : (error?.name === "InvalidStateError" ? t("voiceAlreadyStarting") : t("voiceRecognitionError"));
+        setVoiceStatus(message, "error", 3200);
+        if (error?.name !== "InvalidStateError") {
+          setVoiceCorrectionOpen(true, { feedback: message, focus: true, select: false });
+        }
         return false;
       }
     }
@@ -13559,42 +14124,91 @@
         voiceCorrectionCloseBtn.title = t("voiceCorrectionClose");
         voiceCorrectionCloseBtn.setAttribute("aria-label", t("voiceCorrectionClose"));
       }
+      if (voiceSettingsBtn) {
+        voiceSettingsBtn.title = t("voiceSettingsLabel");
+        voiceSettingsBtn.setAttribute("aria-label", t("voiceSettingsLabel"));
+      }
+      if (voiceSettingsCloseBtn) {
+        voiceSettingsCloseBtn.title = t("voiceCorrectionClose");
+        voiceSettingsCloseBtn.setAttribute("aria-label", t("voiceCorrectionClose"));
+      }
       if (!voiceCommandBtn) return;
       const supported = !!SpeechRecognitionApi && !voiceRecognitionUnavailable;
       const label = supported ? t("voiceControlLabel") : t("voiceUnsupported");
-      voiceCommandBtn.disabled = !supported;
+      voiceCommandBtn.disabled = false;
+      voiceCommandBtn.classList.toggle("is-unavailable", !supported);
       voiceCommandBtn.title = label;
       voiceCommandBtn.setAttribute("aria-label", label);
-      if (voiceRecognition) voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
+      if (voiceCorrectionRetryBtn) voiceCorrectionRetryBtn.disabled = !supported;
+      if (voiceRecognitionLanguage) voiceRecognitionLanguage.value = voiceSettings.recognitionLanguage;
+      if (voiceRecognition) voiceRecognition.lang = selectedRecognitionLanguage();
+      refreshVoiceSpeakerOptions();
     }
 
     function initVoiceControl() {
       if (!voiceCommandBtn) return;
+      voiceCommandBtn.addEventListener("click", () => {
+        if (document.body.classList.contains("locked")) {
+          const message = t("voiceLoginRequired");
+          setVoiceStatus(message, "error", 2400);
+          showToast(message);
+          return;
+        }
+        if (voiceRecognitionState === "starting") {
+          setVoiceStatus(t("voiceAlreadyStarting"), "error", 2200);
+          return;
+        }
+        if (voiceRecognitionState === "listening") {
+          voiceRecognitionManualStop = true;
+          voiceLastInterim = "";
+          voiceBestTranscript = "";
+          voiceRecognitionState = "stopping";
+          clearTimeout(voiceSessionTimer);
+          try { voiceRecognition?.stop(); } catch { voiceRecognitionState = "idle"; }
+          setVoiceStatus(t("voiceStopped"), "neutral", 1800);
+          return;
+        }
+        if (voiceRecognitionState === "stopping") {
+          setVoiceStatus(t("voiceStopping"), "error", 1800);
+          return;
+        }
+        startVoiceRecognition();
+      });
       updateVoiceControlLanguage();
       if (!SpeechRecognitionApi) return;
       try {
         voiceRecognition = new SpeechRecognitionApi();
       } catch {
         voiceRecognitionUnavailable = true;
-        voiceCommandBtn.disabled = true;
-        voiceCommandBtn.title = t("voiceUnsupported");
-        voiceCommandBtn.setAttribute("aria-label", t("voiceUnsupported"));
+        updateVoiceControlLanguage();
         return;
       }
-      voiceRecognition.lang = currentLang === "zh" ? "zh-CN" : "en-US";
+      voiceRecognition.lang = selectedRecognitionLanguage();
       voiceRecognition.continuous = false;
       voiceRecognition.interimResults = true;
       voiceRecognition.maxAlternatives = 10;
       applyVoiceContextPhrases();
       voiceRecognition.onstart = () => {
+        if (voiceRecognitionManualStop || voiceRecognitionState === "stopping") {
+          voiceRecognitionState = "stopping";
+          try {
+            if (typeof voiceRecognition.abort === "function") voiceRecognition.abort();
+            else voiceRecognition.stop();
+          } catch {
+            voiceRecognitionState = "idle";
+          }
+          setVoiceListening(false);
+          return;
+        }
+        voiceRecognitionState = "listening";
         voiceRecognitionHadError = false;
-        voiceRecognitionManualStop = false;
         voiceCommandExecuted = false;
         voiceLastInterim = "";
         voiceBestTranscript = "";
         clearTimeout(voiceSessionTimer);
         voiceSessionTimer = window.setTimeout(() => {
-          try { voiceRecognition?.stop(); } catch {}
+          voiceRecognitionState = "stopping";
+          try { voiceRecognition?.stop(); } catch { voiceRecognitionState = "idle"; }
         }, VOICE_SESSION_TIMEOUT_MS);
         setVoiceListening(true);
         setVoiceStatus(t("voiceListening"));
@@ -13631,10 +14245,17 @@
       voiceRecognition.onerror = event => {
         clearTimeout(voiceSessionTimer);
         voiceRecognitionHadError = true;
-        setVoiceStatus(voiceErrorMessage(event.error), "error", 3200);
+        voiceRecognitionState = "idle";
+        setVoiceListening(false);
+        const message = voiceErrorMessage(event.error);
+        setVoiceStatus(message, "error", 4200);
+        if (["not-allowed", "service-not-allowed", "audio-capture", "network", "language-not-supported", "language-unavailable"].includes(event.error)) {
+          setVoiceCorrectionOpen(true, { feedback: message, focus: true, select: false });
+        }
       };
       voiceRecognition.onend = () => {
         clearTimeout(voiceSessionTimer);
+        voiceRecognitionState = "idle";
         setVoiceListening(false);
         if (!voiceCommandExecuted && !voiceRecognitionManualStop && !voiceRecognitionHadError) {
           const pendingTranscript = voiceBestTranscript || voiceLastInterim;
@@ -13652,24 +14273,7 @@
           }
         }
       };
-      voiceCommandBtn.addEventListener("click", () => {
-        if (document.body.classList.contains("locked")) {
-          const message = t("voiceLoginRequired");
-          setVoiceStatus(message, "error", 2400);
-          showToast(message);
-          return;
-        }
-        if (voiceListening) {
-          voiceRecognitionManualStop = true;
-          voiceLastInterim = "";
-          voiceBestTranscript = "";
-          clearTimeout(voiceSessionTimer);
-          voiceRecognition.stop();
-          setVoiceStatus(t("voiceStopped"), "neutral", 1800);
-          return;
-        }
-        startVoiceRecognition();
-      });
+      updateVoiceControlLanguage();
     }
 
     // Vosk or Whisper adapters can feed recognized text into this stable command interface.
@@ -13678,8 +14282,11 @@
       normalize: normalizeVoiceTranscript,
       getContextPhrases: getVoiceContextPhrases,
       applyContextPhrases: applyVoiceContextPhrases,
-      executeTranscript: runVoiceCommand
+      executeTranscript: runVoiceCommand,
+      speak: speakVoiceText,
+      stopSpeaking: stopVoiceSpeech
     });
+    initVoiceSettings();
     initVoiceCorrection();
     initVoiceControl();
 
@@ -13707,6 +14314,16 @@
     chatSendBtn?.addEventListener("click", () => sendChatMessage());
     chatInput?.addEventListener("keydown", event => {
       if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) sendChatMessage();
+    });
+    chatThread?.addEventListener("click", event => {
+      const button = event.target.closest("[data-chat-speak-index]");
+      if (!button) return;
+      const text = button.closest(".chat-message")?.querySelector(".chat-message-body")?.textContent || "";
+      setVoiceSettingsFeedback("");
+      if (!speakVoiceText(text)) {
+        setVoiceSettingsOpen(true, { focus: false });
+        setVoiceSettingsFeedback(t("voiceSpeechOutputFallback"));
+      }
     });
     chatMakeTableBtn?.addEventListener("click", () => {
       makeChatTable();
@@ -17141,14 +17758,17 @@
         chatThread.innerHTML = "";
         return;
       }
-      chatThread.innerHTML = rows.map(message => {
+      chatThread.innerHTML = rows.map((message, index) => {
         const isUser = message.role === "user";
         const body = isUser
           ? `<p>${esc(message.text).replace(/\n/g, "<br>")}</p>`
           : renderChatRichText(message.text);
         return `
           <div class="chat-message ${isUser ? "user" : "assistant"}">
-            <strong class="chat-message-label">${esc(isUser ? t("chatUserLabel") : t("chatAssistantLabel"))}</strong>
+            <div class="chat-message-head">
+              <strong class="chat-message-label">${esc(isUser ? t("chatUserLabel") : t("chatAssistantLabel"))}</strong>
+              ${isUser ? "" : `<button class="chat-speak-btn" type="button" data-chat-speak-index="${index}" aria-label="${esc(t("chatSpeakBtn"))}" title="${esc(t("chatSpeakBtn"))}">🔊 ${esc(t("chatSpeakBtn"))}</button>`}
+            </div>
             <div class="chat-message-body">${body}</div>
           </div>
         `;
