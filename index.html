@@ -354,9 +354,7 @@
       margin: 0 auto 4px;
       pointer-events: none;
       overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(2,6,16,0.02), rgba(2,6,16,0.18)),
-        #050b12 url("assets/virtual-analysis-nebula-v2.jpg") center / cover no-repeat;
+      background: #050b12 url("assets/virtual-analysis-loop-v2-poster.jpg") center / cover no-repeat;
       border: 1px solid rgba(96,208,255,0.42);
       border-radius: 8px;
       box-shadow:
@@ -366,74 +364,11 @@
       isolation: isolate;
     }
 
-    .virtual-nebula-layer {
-      position: absolute;
-      inset: -14%;
-      z-index: 1;
-      overflow: hidden;
-      border-radius: 50%;
-      opacity: 0.48;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      -webkit-mask: radial-gradient(ellipse at 50% 51%, transparent 0 27%, rgba(0,0,0,0.24) 35%, #000 46% 78%, transparent 96%);
-      mask: radial-gradient(ellipse at 50% 51%, transparent 0 27%, rgba(0,0,0,0.24) 35%, #000 46% 78%, transparent 96%);
-    }
-
-    .virtual-nebula-layer::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 152%;
-      aspect-ratio: 1;
-      background:
-        conic-gradient(from 18deg, transparent 0 12%, rgba(136,206,255,0.24) 18%, transparent 28% 46%, rgba(203,174,255,0.26) 54%, transparent 65% 82%, rgba(255,226,193,0.18) 88%, transparent 96%),
-        url("assets/virtual-analysis-nebula-v2.jpg") center / cover no-repeat;
-      background-blend-mode: screen;
-      transform: translate(-50%, -50%) rotate(0deg);
-      transform-origin: center;
-      will-change: transform;
-      animation: virtual-nebula-spin 46s linear infinite;
-    }
-
-    .virtual-nebula-layer.two {
-      inset: -24%;
-      z-index: 2;
-      opacity: 0.32;
-      -webkit-mask: radial-gradient(ellipse at 50% 51%, transparent 0 24%, rgba(0,0,0,0.18) 34%, #000 48% 82%, transparent 98%);
-      mask: radial-gradient(ellipse at 50% 51%, transparent 0 24%, rgba(0,0,0,0.18) 34%, #000 48% 82%, transparent 98%);
-    }
-
-    .virtual-nebula-layer.two::before {
-      width: 144%;
-      filter: saturate(1.2) hue-rotate(8deg);
-      animation: virtual-nebula-spin-reverse 68s linear infinite;
-    }
-
-    .virtual-nebula-stars {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      background:
-        radial-gradient(circle at 11% 23%, rgba(222,247,255,0.94) 0 1px, transparent 1.8px),
-        radial-gradient(circle at 18% 69%, rgba(120,202,255,0.86) 0 1.1px, transparent 2px),
-        radial-gradient(circle at 29% 12%, rgba(218,198,255,0.88) 0 0.9px, transparent 1.8px),
-        radial-gradient(circle at 71% 17%, rgba(139,209,255,0.92) 0 1px, transparent 1.9px),
-        radial-gradient(circle at 84% 71%, rgba(213,193,255,0.9) 0 1.2px, transparent 2.1px),
-        radial-gradient(circle at 94% 35%, rgba(225,248,255,0.86) 0 0.9px, transparent 1.8px);
-      opacity: 0.64;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      -webkit-mask: radial-gradient(ellipse at 50% 51%, transparent 0 27%, rgba(0,0,0,0.32) 38%, #000 49%);
-      mask: radial-gradient(ellipse at 50% 51%, transparent 0 27%, rgba(0,0,0,0.32) 38%, #000 49%);
-      animation: virtual-star-drift 8s ease-in-out infinite alternate;
-    }
-
     .virtual-access-orbit::before {
       content: "";
       position: absolute;
       inset: 0;
-      z-index: 5;
+      z-index: 2;
       border-radius: inherit;
       background:
         linear-gradient(180deg, rgba(5,11,18,0.06), transparent 34%, rgba(5,11,18,0.18)),
@@ -445,47 +380,23 @@
       content: "";
       position: absolute;
       inset: 0;
-      z-index: 6;
+      z-index: 3;
       border-radius: inherit;
-      background: radial-gradient(ellipse at 50% 51%, transparent 0 29%, rgba(3,8,19,0.02) 41%, rgba(3,8,18,0.14) 72%, rgba(2,6,15,0.38) 100%);
-      box-shadow: inset 0 0 34px rgba(4,10,18,0.46);
+      box-shadow: inset 0 0 38px rgba(4,10,18,0.5);
       pointer-events: none;
     }
 
     .virtual-access-video {
       position: absolute;
       inset: 0;
-      z-index: 4;
+      z-index: 1;
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      -webkit-mask: radial-gradient(ellipse 27% 20% at 50% 51%, #000 0 72%, rgba(0,0,0,0.76) 82%, transparent 100%);
-      mask: radial-gradient(ellipse 27% 20% at 50% 51%, #000 0 72%, rgba(0,0,0,0.76) 82%, transparent 100%);
-    }
-
-    @keyframes virtual-nebula-spin {
-      from { transform: translate(-50%, -50%) rotate(0deg); }
-      to { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-
-    @keyframes virtual-nebula-spin-reverse {
-      from { transform: translate(-50%, -50%) rotate(360deg); }
-      to { transform: translate(-50%, -50%) rotate(0deg); }
-    }
-
-    @keyframes virtual-star-drift {
-      from { opacity: 0.5; transform: translate3d(-2px, 1px, 0) scale(1); }
-      to { opacity: 0.74; transform: translate3d(3px, -2px, 0) scale(1.012); }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .virtual-nebula-layer::before,
-      .virtual-nebula-stars {
-        animation: none;
-        will-change: auto;
-      }
-
       .virtual-access-video {
         display: none;
       }
@@ -8431,11 +8342,8 @@
         </div>
         <div class="login-feature">
           <div class="virtual-access-orbit" aria-hidden="true">
-            <span class="virtual-nebula-layer one"></span>
-            <span class="virtual-nebula-layer two"></span>
-            <span class="virtual-nebula-stars"></span>
-            <video class="virtual-access-video" autoplay muted loop playsinline preload="metadata" poster="assets/virtual-analysis-loop-poster.jpg" disablepictureinpicture tabindex="-1">
-              <source src="assets/virtual-analysis-loop.mp4" type="video/mp4" media="(min-width: 761px) and (prefers-reduced-motion: no-preference)">
+            <video class="virtual-access-video" autoplay muted loop playsinline preload="metadata" poster="assets/virtual-analysis-loop-v2-poster.jpg" disablepictureinpicture tabindex="-1">
+              <source src="assets/virtual-analysis-loop-v2.mp4" type="video/mp4" media="(min-width: 761px) and (prefers-reduced-motion: no-preference)">
             </video>
           </div>
           <div class="login-virtual-copy">
