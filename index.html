@@ -9754,15 +9754,6 @@
               </div>
               <div class="model-reactor" id="modelDropZone">
                 <span class="model-reactor-label" data-i18n="modelReactorLabel">Composition model</span>
-                <div class="model-crucible-drop" id="modelCrucibleDrop" tabindex="0" aria-label="模型坩埚">
-                  <div class="crucible-visual" aria-hidden="true">
-                    <div class="crucible-bubbles"><span></span><span></span><span></span></div>
-                    <div class="crucible-bowl"></div>
-                  </div>
-                  <div class="model-crucible-elements" id="modelCrucibleElements" aria-live="polite">
-                    <span class="model-crucible-empty" data-i18n="modelCrucibleEmpty">坩埚为空</span>
-                  </div>
-                </div>
               </div>
               <div class="model-stage-controls">
                 <div class="model-control-grid">
@@ -16362,25 +16353,26 @@
     }
 
     function renderModelMixture() {
-      if (!modelCrucibleElements) return;
       const counts = modelElementCounts();
       const formula = modelMixtureFormula();
-      modelCrucibleElements.innerHTML = counts.length
-        ? counts.map(({ symbol, count }) => `
-          <button class="model-element-token" type="button" data-remove-model-element="${esc(symbol)}"
-            title="${currentLang === "zh" ? "点击移除一个" : "Click to remove one"} ${esc(symbol)}"
-            aria-label="${currentLang === "zh" ? "从坩埚移除一个" : "Remove one from crucible"} ${esc(symbol)}">
-            <span>${esc(symbol)}${count > 1 ? `<small>×${count}</small>` : ""}</span>
-            <span class="crucible-token-remove" aria-hidden="true">×</span>
-          </button>
-        `).join("")
-        : `<span class="model-crucible-empty">${esc(t("modelCrucibleEmpty"))}</span>`;
-      modelCrucibleElements.querySelectorAll("[data-remove-model-element]").forEach(button => {
-        button.addEventListener("click", event => {
-          event.stopPropagation();
-          removeModelElement(button.dataset.removeModelElement, { announce: true });
+      if (modelCrucibleElements) {
+        modelCrucibleElements.innerHTML = counts.length
+          ? counts.map(({ symbol, count }) => `
+            <button class="model-element-token" type="button" data-remove-model-element="${esc(symbol)}"
+              title="${currentLang === "zh" ? "点击移除一个" : "Click to remove one"} ${esc(symbol)}"
+              aria-label="${currentLang === "zh" ? "从坩埚移除一个" : "Remove one from crucible"} ${esc(symbol)}">
+              <span>${esc(symbol)}${count > 1 ? `<small>×${count}</small>` : ""}</span>
+              <span class="crucible-token-remove" aria-hidden="true">×</span>
+            </button>
+          `).join("")
+          : `<span class="model-crucible-empty">${esc(t("modelCrucibleEmpty"))}</span>`;
+        modelCrucibleElements.querySelectorAll("[data-remove-model-element]").forEach(button => {
+          button.addEventListener("click", event => {
+            event.stopPropagation();
+            removeModelElement(button.dataset.removeModelElement, { announce: true });
+          });
         });
-      });
+      }
       if (modelMixtureSummary) {
         modelMixtureSummary.textContent = counts.length
           ? tf("modelMixtureCount", { count: state.modelElements.length, formula })
