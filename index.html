@@ -3946,7 +3946,7 @@
       display: grid;
       grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
       gap: 12px;
-      align-items: stretch;
+      align-items: start;
     }
 
     .history-cube-panel {
@@ -5706,6 +5706,13 @@
       margin: 0;
     }
 
+    .chat-resize-hint {
+      color: #8fcfe2;
+      font-size: 10px;
+      line-height: 1.35;
+      white-space: normal;
+    }
+
     .chat-agent-select {
       min-height: 34px;
       max-width: 160px;
@@ -5880,9 +5887,9 @@
     .history-chat-shell {
       position: relative;
       min-width: 0;
-      min-height: 0;
-      height: 100%;
-      align-self: stretch;
+      min-height: 360px;
+      height: clamp(520px, 72dvh, 760px);
+      align-self: start;
     }
 
     .history-chat-panel {
@@ -5898,7 +5905,7 @@
       grid-template-rows: auto minmax(132px, 1fr) auto auto;
       gap: 8px;
       align-content: stretch;
-      overflow: auto;
+      overflow: hidden;
       resize: none;
     }
 
@@ -5907,8 +5914,8 @@
       z-index: 10;
       top: 10px;
       bottom: 10px;
-      left: -1px;
-      width: 18px;
+      left: -10px;
+      width: 26px;
       border: 0;
       background: transparent;
       cursor: col-resize;
@@ -5930,18 +5937,21 @@
     }
 
     .chat-resize-handle::after {
-      content: "";
+      content: "↔";
       position: absolute;
       top: 50%;
-      left: 2px;
-      width: 10px;
-      height: 54px;
+      left: 0;
+      width: 26px;
+      height: 36px;
       border: 1px solid rgba(96,208,255,0.42);
-      border-radius: 5px;
-      background:
-        radial-gradient(circle, rgba(207,250,254,0.82) 0 1px, transparent 2px) center 9px / 4px 9px repeat-y,
-        rgba(8,24,34,0.94);
+      border-radius: 8px;
+      background: rgba(8,24,34,0.96);
       box-shadow: 0 0 14px rgba(96,208,255,0.2);
+      color: #cffafe;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
       transform: translateY(-50%);
     }
 
@@ -5962,10 +5972,10 @@
     .chat-height-resize-handle {
       position: absolute;
       z-index: 10;
-      right: 10px;
-      bottom: -1px;
-      left: 10px;
-      height: 18px;
+      right: 12px;
+      bottom: -12px;
+      left: 28px;
+      height: 26px;
       border: 0;
       background: transparent;
       cursor: row-resize;
@@ -5987,18 +5997,21 @@
     }
 
     .chat-height-resize-handle::after {
-      content: "";
+      content: "↕";
       position: absolute;
-      bottom: 2px;
+      bottom: 0;
       left: 50%;
-      width: 54px;
-      height: 10px;
+      width: 48px;
+      height: 26px;
       border: 1px solid rgba(96,208,255,0.42);
-      border-radius: 5px;
-      background:
-        radial-gradient(circle, rgba(207,250,254,0.82) 0 1px, transparent 2px) 9px center / 9px 4px repeat-x,
-        rgba(8,24,34,0.94);
+      border-radius: 8px;
+      background: rgba(8,24,34,0.96);
       box-shadow: 0 0 14px rgba(96,208,255,0.2);
+      color: #cffafe;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
       transform: translateX(-50%);
     }
 
@@ -6013,6 +6026,45 @@
     .history-side-panel.is-resizing-chat-height,
     .history-side-panel.is-resizing-chat-height * {
       cursor: row-resize !important;
+      user-select: none !important;
+    }
+
+    .chat-corner-resize-handle {
+      position: absolute;
+      z-index: 12;
+      left: -10px;
+      bottom: -10px;
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(96,208,255,0.5);
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      color: #cffafe;
+      background: rgba(8,24,34,0.98);
+      box-shadow: 0 0 16px rgba(96,208,255,0.24);
+      cursor: nesw-resize;
+      touch-action: none;
+      user-select: none;
+      outline: none;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .chat-resize-handle:hover::after,
+    .chat-resize-handle:focus-visible::after,
+    .chat-height-resize-handle:hover::after,
+    .chat-height-resize-handle:focus-visible::after,
+    .chat-corner-resize-handle:hover,
+    .chat-corner-resize-handle:focus-visible {
+      border-color: var(--accent-glow);
+      color: #ffffff;
+      box-shadow: 0 0 18px rgba(45,212,191,0.5);
+    }
+
+    .history-side-panel.is-resizing-chat-both,
+    .history-side-panel.is-resizing-chat-both * {
+      cursor: nesw-resize !important;
       user-select: none !important;
     }
 
@@ -7756,14 +7808,29 @@
         padding-bottom: 0;
       }
       .periodic-index-panel,
-      .periodic-workbench > .periodic-wrap,
-      .history-chat-shell,
-      .history-chat-panel {
+      .periodic-workbench > .periodic-wrap {
         min-width: 0;
         width: 100% !important;
         max-width: none;
         height: auto !important;
         resize: none;
+      }
+
+      .history-chat-shell,
+      .history-chat-panel {
+        min-width: 0;
+        width: 100% !important;
+        max-width: none;
+        resize: none;
+      }
+
+      .history-chat-shell {
+        min-height: 360px;
+        height: min(640px, 78dvh);
+      }
+
+      .history-chat-panel {
+        height: 100%;
       }
 
       .periodic-workbench > .periodic-wrap {
@@ -7782,7 +7849,7 @@
       }
 
       .chat-resize-handle,
-      .chat-height-resize-handle {
+      .chat-corner-resize-handle {
         display: none;
       }
       .model-element-panel { min-height: 460px; }
@@ -8830,6 +8897,7 @@
               <div class="history-chat-panel" id="historyChatPanel">
                 <div class="chat-panel-head">
                   <h3 data-i18n="chatPlatformTitle">Chat platform</h3>
+                  <span class="chat-resize-hint" data-i18n="chatResizeHint">拖动箭头调节对话框大小</span>
                   <div class="chat-agent-control">
                     <span class="chat-ai-status" id="chatAiStatus" data-state="checking" data-i18n="chatAiChecking">正在检查</span>
                     <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
@@ -8857,6 +8925,7 @@
               </div>
               <div class="chat-resize-handle" id="chatResizeHandle" role="separator" aria-orientation="vertical" aria-controls="historyChatPanel" aria-label="拖动调整对话框宽度" title="拖动调整对话框宽度" tabindex="0"></div>
               <div class="chat-height-resize-handle" id="chatHeightResizeHandle" role="separator" aria-orientation="horizontal" aria-controls="historyChatPanel" aria-label="拖动调整对话框高度" title="拖动调整对话框高度" tabindex="0"></div>
+              <div class="chat-corner-resize-handle" id="chatCornerResizeHandle" role="button" aria-controls="historyChatPanel" aria-label="拖动同时调整对话框宽度和高度" title="拖动同时调整对话框宽度和高度" tabindex="0">↙</div>
             </div>
           </div>
         </div>
@@ -10124,6 +10193,8 @@
         chatClearBtn: "清空",
         chatResizeHandle: "拖动调整对话框宽度",
         chatResizeHeightHandle: "拖动调整对话框高度",
+        chatResizeCornerHandle: "拖动同时调整对话框宽度和高度",
+        chatResizeHint: "拖动箭头调节对话框大小",
         chatUserLabel: "用户",
         chatAssistantLabel: "对话框",
         chatWelcome: "可以点击魔方材料点，也可以直接提问。我会基于当前材料库、免费 ARPES 题录、个人数据和页面筛选生成回答。",
@@ -10881,6 +10952,8 @@
         chatClearBtn: "Clear",
         chatResizeHandle: "Drag to resize the chat panel width",
         chatResizeHeightHandle: "Drag to resize the chat panel height",
+        chatResizeCornerHandle: "Drag to resize the chat panel width and height",
+        chatResizeHint: "Drag the arrow handles to resize the chat panel",
         chatUserLabel: "User",
         chatAssistantLabel: "Chat platform",
         chatWelcome: "Click a cube material point or ask directly. I will answer from the current materials, free ARPES metadata, personal data, and page filters.",
@@ -11877,6 +11950,7 @@
     const historyChatPanel = $("#historyChatPanel");
     const chatResizeHandle = $("#chatResizeHandle");
     const chatHeightResizeHandle = $("#chatHeightResizeHandle");
+    const chatCornerResizeHandle = $("#chatCornerResizeHandle");
     let chatRequestInFlight = false;
     let chatEndpointProbeToken = 0;
     let activeAppPage = "module-select";
@@ -14587,6 +14661,7 @@
     async function init() {
       initLogin();
       document.body.classList.add("app-initialized");
+      setupChatPanelSizing();
       try {
         appDataReadyPromise = Promise.all([
           loadJson("data/superconductivity.json"),
@@ -14607,7 +14682,6 @@
         renderFamilyChips();
         renderPeriodicTable();
         setupModelWorkbench();
-        setupChatPanelSizing();
         updateTopicUI();
         applyFilters();
         renderOurData();
@@ -16004,12 +16078,11 @@
 
     function applyChatPanelHeight(height = chatPanelHeight, { persist = true } = {}) {
       if (!historyChatShell || !historyChatPanel) return;
-      const mobile = window.matchMedia("(max-width: 980px)").matches;
-      if (mobile) {
-        historyChatShell.style.removeProperty("height");
-        return;
-      }
       const bounds = chatPanelHeightBounds();
+      if (chatCornerResizeHandle) {
+        chatCornerResizeHandle.title = t("chatResizeCornerHandle");
+        chatCornerResizeHandle.setAttribute("aria-label", t("chatResizeCornerHandle"));
+      }
       const requested = Number(height);
       if (height == null || !Number.isFinite(requested)) {
         historyChatShell.style.removeProperty("height");
@@ -16038,76 +16111,63 @@
     }
 
     function setupChatPanelSizing() {
-      if (!historySidePanel || !historyChatShell || !historyChatPanel || !chatResizeHandle || !chatHeightResizeHandle || historySidePanel.dataset.sizeBound === "true") return;
+      if (!historySidePanel || !historyChatShell || !historyChatPanel || !chatResizeHandle || !chatHeightResizeHandle || !chatCornerResizeHandle || historySidePanel.dataset.sizeBound === "true") return;
       historySidePanel.dataset.sizeBound = "true";
-      let widthDragState = null;
-      let heightDragState = null;
-      const startWidthResize = event => {
-        if (window.matchMedia("(max-width: 980px)").matches || (event.button !== undefined && event.button !== 0)) return;
-        widthDragState = {
+      let dragState = null;
+      const clearResizeClasses = () => {
+        historySidePanel.classList.remove("is-resizing-chat", "is-resizing-chat-height", "is-resizing-chat-both");
+      };
+      const startResize = (event, mode, handle) => {
+        const mobile = window.matchMedia("(max-width: 980px)").matches;
+        if ((mobile && mode !== "height") || (event.button !== undefined && event.button !== 0)) return;
+        const rect = historyChatShell.getBoundingClientRect();
+        dragState = {
+          mode,
+          handle,
           pointerId: event.pointerId,
           startX: event.clientX,
-          startWidth: historyChatShell.getBoundingClientRect().width
-        };
-        historySidePanel.classList.add("is-resizing-chat");
-        chatResizeHandle.setPointerCapture?.(event.pointerId);
-        event.preventDefault();
-      };
-      const resizeWidth = event => {
-        if (!widthDragState || event.pointerId !== widthDragState.pointerId) return;
-        const deltaX = event.clientX - widthDragState.startX;
-        applyChatPanelWidth(widthDragState.startWidth - deltaX, { persist: false });
-      };
-      const stopWidthResize = event => {
-        if (!widthDragState || (event.pointerId !== undefined && event.pointerId !== widthDragState.pointerId)) return;
-        widthDragState = null;
-        historySidePanel.classList.remove("is-resizing-chat");
-        applyChatPanelWidth(chatPanelWidth, { persist: true });
-      };
-      const startHeightResize = event => {
-        if (window.matchMedia("(max-width: 980px)").matches || (event.button !== undefined && event.button !== 0)) return;
-        heightDragState = {
-          pointerId: event.pointerId,
           startY: event.clientY,
-          startHeight: historyChatShell.getBoundingClientRect().height
+          startWidth: rect.width,
+          startHeight: rect.height
         };
-        historySidePanel.classList.add("is-resizing-chat-height");
-        chatHeightResizeHandle.setPointerCapture?.(event.pointerId);
+        clearResizeClasses();
+        historySidePanel.classList.add(mode === "width" ? "is-resizing-chat" : mode === "height" ? "is-resizing-chat-height" : "is-resizing-chat-both");
+        handle.setPointerCapture?.(event.pointerId);
         event.preventDefault();
       };
-      const resizeHeight = event => {
-        if (!heightDragState || event.pointerId !== heightDragState.pointerId) return;
-        const deltaY = event.clientY - heightDragState.startY;
-        applyChatPanelHeight(heightDragState.startHeight + deltaY, { persist: false });
+      const resize = event => {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+        if (dragState.mode === "width" || dragState.mode === "both") {
+          applyChatPanelWidth(dragState.startWidth - (event.clientX - dragState.startX), { persist: false });
+        }
+        if (dragState.mode === "height" || dragState.mode === "both") {
+          applyChatPanelHeight(dragState.startHeight + (event.clientY - dragState.startY), { persist: false });
+        }
       };
-      const stopHeightResize = event => {
-        if (!heightDragState || (event.pointerId !== undefined && event.pointerId !== heightDragState.pointerId)) return;
-        const finalHeight = chatPanelHeight ?? heightDragState.startHeight;
-        heightDragState = null;
-        historySidePanel.classList.remove("is-resizing-chat-height");
-        applyChatPanelHeight(finalHeight, { persist: true });
+      const stopResize = event => {
+        if (!dragState || (event.pointerId !== undefined && event.pointerId !== dragState.pointerId)) return;
+        const finishedMode = dragState.mode;
+        const fallbackHeight = dragState.startHeight;
+        dragState = null;
+        clearResizeClasses();
+        if (finishedMode === "width" || finishedMode === "both") applyChatPanelWidth(chatPanelWidth, { persist: true });
+        if (finishedMode === "height" || finishedMode === "both") applyChatPanelHeight(chatPanelHeight ?? fallbackHeight, { persist: true });
       };
-      chatResizeHandle.addEventListener("pointerdown", startWidthResize);
-      chatHeightResizeHandle.addEventListener("pointerdown", startHeightResize);
-      window.addEventListener("pointermove", event => {
-        resizeWidth(event);
-        resizeHeight(event);
-      });
-      window.addEventListener("pointerup", event => {
-        stopWidthResize(event);
-        stopHeightResize(event);
-      });
-      window.addEventListener("pointercancel", event => {
-        stopWidthResize(event);
-        stopHeightResize(event);
-      });
-      chatResizeHandle.addEventListener("lostpointercapture", stopWidthResize);
-      chatHeightResizeHandle.addEventListener("lostpointercapture", stopHeightResize);
+      chatResizeHandle.addEventListener("pointerdown", event => startResize(event, "width", chatResizeHandle));
+      chatHeightResizeHandle.addEventListener("pointerdown", event => startResize(event, "height", chatHeightResizeHandle));
+      chatCornerResizeHandle.addEventListener("pointerdown", event => startResize(event, "both", chatCornerResizeHandle));
+      window.addEventListener("pointermove", resize);
+      window.addEventListener("pointerup", stopResize);
+      window.addEventListener("pointercancel", stopResize);
+      chatResizeHandle.addEventListener("lostpointercapture", stopResize);
+      chatHeightResizeHandle.addEventListener("lostpointercapture", stopResize);
+      chatCornerResizeHandle.addEventListener("lostpointercapture", stopResize);
       chatResizeHandle.addEventListener("keydown", event => {
         const bounds = chatPanelWidthBounds();
         let nextWidth = chatPanelWidth ?? historyChatShell.getBoundingClientRect().width;
-        if (event.key === "ArrowLeft") nextWidth += 24;
-        else if (event.key === "ArrowRight") nextWidth -= 24;
+        const step = event.shiftKey ? 72 : 24;
+        if (event.key === "ArrowLeft") nextWidth += step;
+        else if (event.key === "ArrowRight") nextWidth -= step;
         else if (event.key === "Home") nextWidth = bounds.min;
         else if (event.key === "End") nextWidth = bounds.max;
         else return;
@@ -16117,13 +16177,36 @@
       chatHeightResizeHandle.addEventListener("keydown", event => {
         const bounds = chatPanelHeightBounds();
         let nextHeight = chatPanelHeight ?? historyChatShell.getBoundingClientRect().height;
-        if (event.key === "ArrowUp") nextHeight -= 24;
-        else if (event.key === "ArrowDown") nextHeight += 24;
+        const step = event.shiftKey ? 72 : 24;
+        if (event.key === "ArrowUp") nextHeight -= step;
+        else if (event.key === "ArrowDown") nextHeight += step;
         else if (event.key === "Home") nextHeight = bounds.min;
         else if (event.key === "End") nextHeight = bounds.max;
         else return;
         event.preventDefault();
         applyChatPanelHeight(nextHeight, { persist: true });
+      });
+      chatCornerResizeHandle.addEventListener("keydown", event => {
+        const step = event.shiftKey ? 72 : 24;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          applyChatPanelWidth(null, { persist: true });
+          applyChatPanelHeight(620, { persist: true });
+        } else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+          const currentWidth = chatPanelWidth ?? historyChatShell.getBoundingClientRect().width;
+          event.preventDefault();
+          applyChatPanelWidth(currentWidth + (event.key === "ArrowLeft" ? step : -step), { persist: true });
+        } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+          const currentHeight = chatPanelHeight ?? historyChatShell.getBoundingClientRect().height;
+          event.preventDefault();
+          applyChatPanelHeight(currentHeight + (event.key === "ArrowDown" ? step : -step), { persist: true });
+        }
+      });
+      chatResizeHandle.addEventListener("dblclick", () => applyChatPanelWidth(null, { persist: true }));
+      chatHeightResizeHandle.addEventListener("dblclick", () => applyChatPanelHeight(620, { persist: true }));
+      chatCornerResizeHandle.addEventListener("dblclick", () => {
+        applyChatPanelWidth(null, { persist: true });
+        applyChatPanelHeight(620, { persist: true });
       });
       window.addEventListener("resize", () => {
         applyChatPanelWidth(chatPanelWidth, { persist: false });
