@@ -7130,6 +7130,33 @@
       color: var(--muted);
       font-size: 11px;
     }
+    .floating-figure-db-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .floating-figure-db-tools input {
+      width: min(260px, 42vw);
+      min-height: 32px;
+      padding: 5px 9px;
+      font-size: 11px;
+    }
+    .floating-figure-db-card.is-selected {
+      border-color: rgba(20,184,166,0.78);
+      box-shadow: 0 0 0 1px rgba(20,184,166,0.2), 0 0 18px rgba(20,184,166,0.12);
+    }
+    .floating-figure-db-card .floating-paper-select {
+      width: 100%;
+      min-height: 30px;
+      margin-top: 3px;
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+    .floating-figure-card.is-literature {
+      border-color: rgba(96,165,250,0.48);
+      background: rgba(30,64,175,0.09);
+    }
     .floating-figure-empty {
       border: 1px dashed var(--line);
       border-radius: 8px;
@@ -7258,6 +7285,16 @@
         height: min(72vh, 620px) !important;
         min-width: 0;
         min-height: 0;
+      }
+      .floating-figure-section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .floating-figure-db-tools {
+        width: 100%;
+      }
+      .floating-figure-db-tools input {
+        width: 100%;
       }
       .magic-book-screen {
         padding: 14px;
@@ -7648,6 +7685,19 @@
       gap: 12px;
       flex-wrap: wrap;
       margin-bottom: 10px;
+    }
+    .hdf5-preview-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .hdf5-preview-actions button {
+      min-height: 32px;
+      padding: 5px 10px;
+      font-size: 11px;
     }
     .hdf5-preview-layout {
       display: grid;
@@ -8687,7 +8737,7 @@
             <p class="muted" data-i18n="loginHint">左侧代表 NSRL 的真实实验入口，连接材料、文献和本地实验数据。</p>
           </div>
           <div class="login-ustc-panel">
-            <h3 data-i18n="loginUstcPanelTitle">NSRL 登录</h3>
+            <h3 data-i18n="loginUstcPanelTitle">AI 授权账号登录</h3>
             <div class="login-mini-grid">
               <label data-label-i18n="loginEmailLabel">Email
                 <input id="ustcLoginEmail" type="email" autocomplete="email" placeholder="name@nsrl.ac.cn">
@@ -8698,7 +8748,7 @@
             </div>
             <span class="status" id="ustcLoginStatus"></span>
             <div class="login-ustc-actions">
-              <button class="primary" id="ustcLoginBtn" type="button" data-i18n="loginUstcBtn">进入 NSRL 工作台</button>
+              <button class="primary" id="ustcLoginBtn" type="button" data-i18n="loginUstcBtn">登录并连接 AI</button>
               <button id="ustcGuestBtn" type="button" data-i18n="loginUstcGuestBtn">NSRL 预览</button>
             </div>
           </div>
@@ -9435,7 +9485,7 @@
       <div class="content">
         <div class="import-workflow">
           <div>
-            <h3 data-i18n="wosWorkflowTitle">🧭 WoS / Scholar 批量导入流程</h3>
+            <h3 data-i18n="wosWorkflowTitle">🧭 WoS / Scholar / ReadCube 批量导入流程</h3>
             <ol>
               <li data-i18n="wosWorkflowStep1">在 Web of Science 或 Google Scholar 先按 ARPES、材料、超导关键词检索。</li>
               <li data-i18n="wosWorkflowStep2">从 WoS 使用 Export 导出 CSV/TSV/TXT；从 Scholar 或 Publish or Perish 导出 BibTeX。</li>
@@ -9466,6 +9516,7 @@
           <button class="primary" id="importWosBtn" data-i18n="importWosBtn">📥 导入 WoS</button>
           <button class="primary" id="importWosApiBtn" data-i18n="importWosApiBtn">🔎 WoS API 搜索</button>
           <button class="primary" id="importScholarBtn" data-i18n="importScholarBtn">📥 导入 Google Scholar</button>
+          <button class="primary" id="importReadCubeBtn" data-i18n="importReadCubeBtn">📚 导入 ReadCube</button>
           <button class="primary" id="importArxivBtn" data-i18n="importArxivBtn">📚 导入 arXiv</button>
           <button id="resetArticlesBtn" data-i18n="resetArticlesBtn">🔄 恢复默认数据</button>
         </div>
@@ -9506,6 +9557,14 @@
               <a id="arxivApiLink" target="_blank" rel="noopener" style="display:none;" data-i18n="openArxivXmlLink">打开 arXiv 文档</a>
               <span class="status" id="arxivApiStatus"></span>
             </div>
+          </div>
+          <div id="readCubeHelpPanel" style="display:none; border:1px solid var(--line); border-radius:8px; padding:10px; margin:10px 0; background:rgba(255,255,255,0.03);">
+            <ol style="margin:0 0 8px 20px; padding:0;">
+              <li data-i18n="readCubeStep1">在 ReadCube 的 ARPES 检索结果中选择需要的文献并加入 Library 或 List。</li>
+              <li data-i18n="readCubeStep2">在 Library / List 中选择 Export，优先导出 RIS，也支持 BibTeX 或 CSV。</li>
+              <li data-i18n="readCubeStep3">把导出文件拖到下方，网站会去重并提取 DOI、材料、元素、技术和关键词。</li>
+            </ol>
+            <a href="https://app.readcube.com/search/query?type=publications&amp;query=arpes&amp;recent=arpes" target="_blank" rel="noopener" data-i18n="openReadCubeSearch" style="color:var(--accent); font-weight:700;">打开 ReadCube 的 ARPES 搜索</a>
           </div>
           <div class="import-drop-zone" id="articleImportDropZone">
             <strong data-i18n="importDropTitle">拖拽 WoS / Scholar 导出文件到这里</strong>
@@ -9592,7 +9651,10 @@
         <div class="card hdf5-preview-card">
           <div class="hdf5-preview-header">
             <h3 data-i18n="hdf5PreviewTitle">🖼️ HDF5 数据预览</h3>
-            <span class="muted" id="hdf5PreviewHint" data-i18n="hdf5PreviewEmpty">导入后自动显示可预览的二维谱图或三维切片</span>
+            <div class="hdf5-preview-actions">
+              <span class="muted" id="hdf5PreviewHint" data-i18n="hdf5PreviewEmpty">导入后自动显示可预览的二维谱图或三维切片</span>
+              <button class="primary" id="hdf5CompareLiteratureBtn" type="button" data-i18n="hdf5CompareLiteratureBtn" disabled>与文献图对比</button>
+            </div>
           </div>
           <div class="hdf5-preview-layout">
             <div class="hdf5-main-view-control" id="hdf5MainViewControl" hidden>
@@ -10180,7 +10242,10 @@
       <div class="floating-figure-grid" id="floatingFigureUserGrid"></div>
       <div class="floating-figure-section-head">
         <strong data-i18n="floatingFigureDbTitle">数据库论文图</strong>
-        <span id="floatingFigureDbStatus">0 张</span>
+        <div class="floating-figure-db-tools">
+          <input type="search" id="floatingFigureDbSearch" data-i18n-placeholder="floatingFigureDbSearchPlaceholder" placeholder="搜索材料、标题或图类型，例如 FeSe">
+          <span id="floatingFigureDbStatus">0 张</span>
+        </div>
       </div>
       <div class="floating-figure-db-grid" id="floatingFigureDbGrid"></div>
     </div>
@@ -10266,8 +10331,8 @@
         loginPrivacy: "本机账号不会跨设备同步；换手机或电脑时可直接进入网站。",
         loginUstcBadge: "NSRL Lab Access",
         loginOfficialBadge: "NSRL 真实入口",
-        loginUstcPanelTitle: "NSRL 登录",
-        loginUstcBtn: "进入 NSRL 工作台",
+        loginUstcPanelTitle: "AI 授权账号登录",
+        loginUstcBtn: "登录并连接 AI",
         loginUstcGuestBtn: "NSRL 预览",
         loginGuestTitle: "其他访问者 · 虚拟入口",
         loginGuestHint: "右侧给非 NSRL 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。",
@@ -10673,9 +10738,9 @@
         detailHint: "先选择材料家族，再点击材料行查看详情。",
         articleTitle: "📄 文章数据 (公共共享库)",
         articleLoading: "加载文章中...",
-        wosWorkflowTitle: "🧭 WoS / Scholar 批量导入流程",
-        wosWorkflowStep1: "在 Web of Science 或 Google Scholar 先按 ARPES、材料、超导关键词检索。",
-        wosWorkflowStep2: "从 WoS 使用 Export 导出 CSV/TSV/TXT；从 Scholar 或 Publish or Perish 导出 BibTeX。",
+        wosWorkflowTitle: "🧭 WoS / Scholar / ReadCube 批量导入流程",
+        wosWorkflowStep1: "在 Web of Science、Google Scholar 或 ReadCube 先按 ARPES、材料、超导关键词检索。",
+        wosWorkflowStep2: "从 WoS 导出 CSV/TSV/TXT；从 Scholar 导出 BibTeX；从 ReadCube 优先导出 RIS。",
         wosWorkflowStep3: "上传文件或粘贴文本，网站自动提取标题、年份、DOI、材料、元素、技术和关键词。",
         importMetricRecords: "当前文章记录",
         importMetricWos: "WoS/出版商记录",
@@ -10685,6 +10750,7 @@
         importWosBtn: "📥 导入 WoS",
         importWosApiBtn: "🔎 WoS API 搜索",
         importScholarBtn: "📥 导入 Google Scholar",
+        importReadCubeBtn: "📚 导入 ReadCube",
         importArxivBtn: "📚 导入 arXiv",
         resetArticlesBtn: "🔄 恢复默认数据",
         importPanelTitle: "导入文章",
@@ -10692,6 +10758,14 @@
         importTextareaPlaceholder: "在此粘贴 Web of Science 导出的 CSV/TSV 文本，或 Google Scholar 的 BibTeX 文本...",
         importDropTitle: "拖拽 WoS / Scholar 导出文件到这里",
         importDropHint: "支持 .txt/.csv/.tsv/.bib/.ris，以及 WoS 的文本型 .xls",
+        readCubeImportTitle: "📚 导入 ReadCube 文献",
+        readCubeImportHelp: "从 ReadCube 导出 RIS、BibTeX 或 CSV 后拖入下方。推荐 RIS；ReadCube 登录和检索仍在其官网完成。",
+        readCubeDropTitle: "拖拽 ReadCube 导出文件到这里",
+        readCubeDropHint: "支持 .ris、.bib、.csv、.tsv 和文本型 .xls；推荐使用 RIS",
+        readCubeStep1: "在 ReadCube 的 ARPES 检索结果中选择需要的文献并加入 Library 或 List。",
+        readCubeStep2: "在 Library / List 中选择 Export，优先导出 RIS，也支持 BibTeX 或 CSV。",
+        readCubeStep3: "把导出文件拖到下方，网站会去重并提取 DOI、材料、元素、技术和关键词。",
+        openReadCubeSearch: "打开 ReadCube 的 ARPES 搜索",
         arxivDropTitle: "拖拽 arXiv XML / BibTeX 文件到这里",
         arxivDropHint: "支持 arXiv API XML、.xml、.txt、.bib；也可以直接点击上方 arXiv 检索导入",
         importDropActive: "松开鼠标即可导入文件",
@@ -10793,6 +10867,7 @@
         hdf5MetaTitle: "🏷️ 元数据",
         hdf5MetaEmpty: "点击数据集查看元数据",
         hdf5PreviewTitle: "🖼️ HDF5 数据预览",
+        hdf5CompareLiteratureBtn: "与文献图对比",
         hdf5PreviewEmpty: "导入后自动显示可预览的二维谱图或三维切片",
         hdf5PreviewDrawing: "正在生成预览图...",
         hdf5PreviewUnavailable: "这个数据集暂时不能直接预览，但结构和元数据已经导入。",
@@ -10853,12 +10928,13 @@
         floatingClearedToast: "悬浮对比已清空",
         floatingRemovedToast: "已从悬浮窗移除",
         floatingFigureTitle: "悬浮图像对比",
-        floatingFigureCount: "{count} 张实验图",
+        floatingFigureCount: "{count} 张对比图",
         floatingFigureDropTitle: "拖入实验图 / HDF5 截图",
         floatingFigureDropHint: "支持 PNG、JPG、WebP；HDF5 图像请在本地数据仓库中选择后点击“对比选中”",
         floatingFigureDbTitle: "数据库论文图",
         floatingFigureDbStatus: "{count} 张可对比论文图",
-        floatingFigureNoImages: "请在本地数据仓库中选择至少两张预览图并点击“对比选中”，也可以把自己的 PNG/JPG 拖到这里。",
+        floatingFigureDbSearchPlaceholder: "搜索材料、标题或图类型，例如 FeSe",
+        floatingFigureNoImages: "请在本地数据仓库中选择至少一张预览图并点击“对比选中”，也可以把自己的 PNG/JPG 拖到这里。",
         floatingFigureNoDb: "当前筛选下暂无数据库论文图。可以切到文献页导入更多文章或清除筛选。",
         floatingFigureOpenFiguresBtn: "打开图表库",
         floatingFigureClearBtn: "清空图像",
@@ -10869,6 +10945,9 @@
         floatingFigureRemove: "移除",
         floatingFigureSourceHdf5: "HDF5 导入",
         floatingFigureSourceUpload: "手动上传",
+        floatingFigureSourceLiterature: "文献图",
+        floatingFigureAddPaper: "加入对比",
+        floatingFigureRemovePaper: "移出对比",
         noMatchSource: "未找到匹配的光源或档案。试试搜索\"上海\"、\"北京\"、\"NSRRC\"、\"ALS\"、\"arXiv\"。",
         seedMaterials: "种子材料",
         seedDataNote: "本页面是超导主题的交互式探索模板。Tc 值和历史记录为代表性和种子数据，非最终精选条目。个人数据保存在浏览器 localStorage 中。点击 SUPERCONDUCTOR 按钮让周期表元素跳舞！支持按地区搜索光源设施（上海 SSRF、北京 BSRF、合肥 NSRL、台湾 NSRRC 及全球各地）。文章数据从 articles.json、free_arpes_articles.json 和 shared_articles.json 加载，包含公开共享的 WoS 元数据、开放 API 题录和已发表文献。",
@@ -10934,6 +11013,8 @@
         libraryCleared: "🗑️ 数据仓库已清空",
         selectTwoDatasets: "请至少选择2个数据集进行对比",
         selectTwoPreviewImages: "请至少选择2个带预览图的数据集",
+        selectOneDataset: "请至少选择1个数据集，再与文献图对比",
+        selectOnePreviewImage: "请选择至少1个带预览图的数据集",
         bandComparisonTitle: "📊 能带图对比",
         highSymmetryHint: "⚡ 高对称方向 · ML 扩展接口预留",
         exportBandDataBtn: "📥 导出数据 JSON",
@@ -11057,8 +11138,8 @@
         loginPrivacy: "Local accounts do not sync across devices. On another phone or computer, use Open Website.",
         loginUstcBadge: "NSRL Lab Access",
         loginOfficialBadge: "NSRL Real Access",
-        loginUstcPanelTitle: "NSRL Login",
-        loginUstcBtn: "Enter NSRL Workbench",
+        loginUstcPanelTitle: "Authorized AI account",
+        loginUstcBtn: "Sign in and connect AI",
         loginUstcGuestBtn: "NSRL Preview",
         loginGuestTitle: "Other Visitors · Virtual Access",
         loginGuestHint: "The right side is for non-NSRL or external visitors: sign in, create a local account, or continue as a guest.",
@@ -11464,9 +11545,9 @@
         detailHint: "Choose a material family, then click a material row for details.",
         articleTitle: "📄 Article Data (public shared library)",
         articleLoading: "Loading articles...",
-        wosWorkflowTitle: "🧭 WoS / Scholar Bulk Import Workflow",
-        wosWorkflowStep1: "Search Web of Science or Google Scholar with ARPES, material, and superconductivity keywords.",
-        wosWorkflowStep2: "Export CSV/TSV/TXT from WoS; export BibTeX from Scholar or Publish or Perish.",
+        wosWorkflowTitle: "🧭 WoS / Scholar / ReadCube Bulk Import Workflow",
+        wosWorkflowStep1: "Search Web of Science, Google Scholar, or ReadCube with ARPES, material, and superconductivity keywords.",
+        wosWorkflowStep2: "Export CSV/TSV/TXT from WoS, BibTeX from Scholar, or preferably RIS from ReadCube.",
         wosWorkflowStep3: "Upload the file or paste text; the site extracts title, year, DOI, materials, elements, techniques, and keywords.",
         importMetricRecords: "Current records",
         importMetricWos: "WoS/publisher records",
@@ -11476,6 +11557,7 @@
         importWosBtn: "📥 Import WoS",
         importWosApiBtn: "🔎 WoS API Search",
         importScholarBtn: "📥 Import Google Scholar",
+        importReadCubeBtn: "📚 Import ReadCube",
         importArxivBtn: "📚 Import arXiv",
         resetArticlesBtn: "🔄 Restore Defaults",
         importPanelTitle: "Import Articles",
@@ -11483,6 +11565,14 @@
         importTextareaPlaceholder: "Paste Web of Science CSV/TSV export text, or Google Scholar BibTeX text...",
         importDropTitle: "Drag WoS / Scholar export files here",
         importDropHint: "Supports .txt/.csv/.tsv/.bib/.ris and text-based WoS .xls",
+        readCubeImportTitle: "📚 Import ReadCube articles",
+        readCubeImportHelp: "Export RIS, BibTeX, or CSV from ReadCube and drop the file below. RIS is recommended; sign-in and search remain on ReadCube.",
+        readCubeDropTitle: "Drop a ReadCube export file here",
+        readCubeDropHint: "Supports .ris, .bib, .csv, .tsv, and text-based .xls; RIS is recommended",
+        readCubeStep1: "Select the ARPES results you need in ReadCube and add them to a Library or List.",
+        readCubeStep2: "Choose Export in the Library or List. RIS is preferred; BibTeX and CSV are also supported.",
+        readCubeStep3: "Drop the export below. The site deduplicates records and extracts DOI, materials, elements, techniques, and keywords.",
+        openReadCubeSearch: "Open the ReadCube ARPES search",
         arxivDropTitle: "Drag arXiv XML / BibTeX files here",
         arxivDropHint: "Supports arXiv API XML, .xml, .txt, .bib; or import directly from the arXiv search above",
         importDropActive: "Release to import the file",
@@ -11584,6 +11674,7 @@
         hdf5MetaTitle: "🏷️ Metadata",
         hdf5MetaEmpty: "Click a dataset to inspect metadata",
         hdf5PreviewTitle: "🖼️ HDF5 Data Preview",
+        hdf5CompareLiteratureBtn: "Compare with paper figures",
         hdf5PreviewEmpty: "A previewable 2D spectrum or 3D slice appears after import",
         hdf5PreviewDrawing: "Drawing preview...",
         hdf5PreviewUnavailable: "This dataset cannot be previewed directly yet, but structure and metadata were imported.",
@@ -11644,12 +11735,13 @@
         floatingClearedToast: "Floating compare cleared",
         floatingRemovedToast: "Removed from floating window",
         floatingFigureTitle: "Floating Figure Compare",
-        floatingFigureCount: "{count} experiment image(s)",
+        floatingFigureCount: "{count} comparison image(s)",
         floatingFigureDropTitle: "Drop experiment figures / HDF5 snapshots",
         floatingFigureDropHint: "PNG, JPG, and WebP supported; select HDF5 previews in the local library, then choose Compare Selected",
         floatingFigureDbTitle: "Database Paper Figures",
         floatingFigureDbStatus: "{count} paper figure(s) to compare",
-        floatingFigureNoImages: "Select at least two previews in the local library and choose Compare Selected, or drop your own PNG/JPG files here.",
+        floatingFigureDbSearchPlaceholder: "Search material, title, or figure type, e.g. FeSe",
+        floatingFigureNoImages: "Select at least one preview in the local library and choose Compare Selected, or drop your own PNG/JPG files here.",
         floatingFigureNoDb: "No database paper figures match the current filters. Import more literature or clear filters.",
         floatingFigureOpenFiguresBtn: "Open Figure Library",
         floatingFigureClearBtn: "Clear Images",
@@ -11660,6 +11752,9 @@
         floatingFigureRemove: "Remove",
         floatingFigureSourceHdf5: "HDF5 import",
         floatingFigureSourceUpload: "Manual upload",
+        floatingFigureSourceLiterature: "Paper figure",
+        floatingFigureAddPaper: "Add to compare",
+        floatingFigureRemovePaper: "Remove from compare",
         noMatchSource: "No matching light source or archive. Try Shanghai, Beijing, NSRRC, ALS, arXiv.",
         seedMaterials: "seed materials",
         seedDataNote: "This page is an interactive superconductivity exploration template. Tc values and historical notes are representative seed data, not final curated entries. Personal data is stored in browser localStorage. Click SUPERCONDUCTOR to make the periodic table dance! Search by region for light source facilities (SSRF, BSRF, NSRL, NSRRC, and global). Article data loads from articles.json, free_arpes_articles.json, and shared_articles.json, including public shared WoS metadata, open API metadata, and published literature.",
@@ -11725,6 +11820,8 @@
         libraryCleared: "🗑️ Data library cleared",
         selectTwoDatasets: "Select at least two datasets to compare",
         selectTwoPreviewImages: "Select at least two datasets with preview images",
+        selectOneDataset: "Select at least one dataset to compare with paper figures",
+        selectOnePreviewImage: "Select at least one dataset with a preview image",
         bandComparisonTitle: "📊 Band Structure Comparison",
         highSymmetryHint: "⚡ High-symmetry directions · ML extension placeholder",
         exportBandDataBtn: "📥 Export Data JSON",
@@ -12276,6 +12373,7 @@
     const importWosBtn = $("#importWosBtn");
     const importWosApiBtn = $("#importWosApiBtn");
     const importScholarBtn = $("#importScholarBtn");
+    const importReadCubeBtn = $("#importReadCubeBtn");
     const importArxivBtn = $("#importArxivBtn");
     const resetArticlesBtn = $("#resetArticlesBtn");
     const importPanel = $("#importPanel");
@@ -12299,6 +12397,7 @@
     const runArxivBtn = $("#runArxivBtn");
     const arxivApiStatus = $("#arxivApiStatus");
     const arxivApiLink = $("#arxivApiLink");
+    const readCubeHelpPanel = $("#readCubeHelpPanel");
     const importMetricRecords = $("#importMetricRecords");
     const importMetricWos = $("#importMetricWos");
     const importMetricFree = $("#importMetricFree");
@@ -12330,6 +12429,7 @@
     const floatingFigureInput = $("#floatingFigureInput");
     const floatingFigureUserGrid = $("#floatingFigureUserGrid");
     const floatingFigureDbGrid = $("#floatingFigureDbGrid");
+    const floatingFigureDbSearch = $("#floatingFigureDbSearch");
     const floatingFigureDbStatus = $("#floatingFigureDbStatus");
     const floatingFigureMinBtn = $("#floatingFigureMinBtn");
     const floatingFigureCloseBtn = $("#floatingFigureCloseBtn");
@@ -14460,8 +14560,10 @@
     function setImportMode(mode) {
       const isWosApi = mode === "wos-api";
       const isArxiv = mode === "arxiv";
+      const isReadCube = mode.startsWith("readcube");
       if (wosApiPanel) wosApiPanel.style.display = isWosApi ? "block" : "none";
       if (arxivApiPanel) arxivApiPanel.style.display = isArxiv ? "block" : "none";
+      if (readCubeHelpPanel) readCubeHelpPanel.style.display = isReadCube ? "block" : "none";
       if (articleImportDropZone) articleImportDropZone.style.display = isWosApi ? "none" : "grid";
       const fileRow = articleImportFile?.closest(".import-file-row");
       if (fileRow) fileRow.style.display = isWosApi ? "none" : "";
@@ -14470,7 +14572,9 @@
         parseImportBtn.style.display = isWosApi ? "none" : "";
         parseImportBtn.textContent = isArxiv ? t("parseArxivXmlBtn") : t("parseImportBtn");
       }
-      setImportDropCopy(isArxiv ? "arxivDropTitle" : "importDropTitle", isArxiv ? "arxivDropHint" : "importDropHint");
+      if (isArxiv) setImportDropCopy("arxivDropTitle", "arxivDropHint");
+      else if (isReadCube) setImportDropCopy("readCubeDropTitle", "readCubeDropHint");
+      else setImportDropCopy("importDropTitle", "importDropHint");
     }
 
     function setImportDropCopy(titleKey, hintKey) {
@@ -14521,6 +14625,21 @@
       importTextarea.value = "";
       importTextarea.focus();
       importTextarea.dataset.mode = "scholar";
+    });
+    importReadCubeBtn?.addEventListener("click", () => {
+      importPanel.style.display = "block";
+      setImportMode("readcube");
+      clearPendingImportText();
+      importPanelTitle.textContent = t("readCubeImportTitle");
+      if (importHelpText) importHelpText.textContent = t("readCubeImportHelp");
+      importTextarea.placeholder = currentLang === "zh"
+        ? "把 ReadCube 导出的 RIS、BibTeX 或 CSV 文本粘贴到这里..."
+        : "Paste ReadCube RIS, BibTeX, or CSV export text here...";
+      importParseStatus.textContent = "";
+      articleImportFileStatus.textContent = "";
+      articleImportFile.value = "";
+      importTextarea.value = "";
+      importTextarea.dataset.mode = "readcube";
     });
     importArxivBtn.addEventListener("click", () => {
       importPanel.style.display = "block";
@@ -14591,10 +14710,18 @@
       return /<feed[\s\S]+<entry/i.test(text) && /arxiv\.org/i.test(text);
     }
 
+    function looksLikeRis(text) {
+      return /^TY\s{2}-\s*.+$/m.test(text) && /^ER\s{2}-\s*$/m.test(text);
+    }
+
     function inferImportModeFromFile(file, text) {
+      const currentMode = importTextarea?.dataset.mode || "";
       if (/\.(xml)$/i.test(file.name) || looksLikeArxivAtom(text)) return "arxiv";
-      if (/\.(bib|ris)$/i.test(file.name)) return "scholar";
-      if (/^@(?:article|inproceedings|misc|book)\s*{/i.test(text.trim())) return "scholar";
+      if (/\.(ris)$/i.test(file.name) || looksLikeRis(text)) return "readcube-ris";
+      if (/\.(bib)$/i.test(file.name) || /^@(?:article|inproceedings|misc|book)\s*{/i.test(text.trim())) {
+        return currentMode.startsWith("readcube") ? "readcube-bib" : "scholar";
+      }
+      if (currentMode.startsWith("readcube")) return "readcube-csv";
       return "wos";
     }
 
@@ -14639,6 +14766,7 @@
       const inferredMode = inferImportModeFromFile(file, text);
       importTextarea.dataset.mode = inferredMode;
       if (inferredMode === "arxiv") setImportMode("arxiv");
+      else if (inferredMode.startsWith("readcube")) setImportMode(inferredMode);
       importParseStatus.textContent = currentLang === "zh"
         ? `已读取 ${file.name}${text.length > ARTICLE_IMPORT_PREVIEW_LIMIT ? "（大文件已启用预览模式）" : ""}，可以点击“解析并导入”`
         : `${file.name} loaded${text.length > ARTICLE_IMPORT_PREVIEW_LIMIT ? " in preview mode" : ""}; click Parse & Import`;
@@ -14665,7 +14793,10 @@
         event.preventDefault();
         articleImportDropZone.classList.remove("drag-over");
         const hint = articleImportDropZone.querySelector("span");
-        if (hint) hint.textContent = t(importTextarea?.dataset.mode === "arxiv" ? "arxivDropHint" : "importDropHint");
+        const mode = importTextarea?.dataset.mode || "";
+        if (hint) hint.textContent = t(mode === "arxiv"
+          ? "arxivDropHint"
+          : (mode.startsWith("readcube") ? "readCubeDropHint" : "importDropHint"));
       });
     });
     articleImportDropZone?.addEventListener("drop", async event => {
@@ -14998,9 +15129,29 @@
         : `Parsing${pendingImportFileName ? ` ${pendingImportFileName}` : ""}...`;
       await yieldToBrowser();
       try {
-        const parsed = mode === "wos"
-          ? parseWoSExport(text)
-          : (mode === "arxiv" ? parseArxivAtomXml(text) : parseScholarBibTeX(text));
+        let parsed;
+        if (mode === "wos") {
+          parsed = parseWoSExport(text);
+        } else if (mode === "arxiv") {
+          parsed = parseArxivAtomXml(text);
+        } else if (mode === "readcube-ris" || (mode === "readcube" && looksLikeRis(text))) {
+          parsed = parseRisExport(text);
+        } else if (mode === "readcube-bib" || (mode === "readcube" && /^\s*@\w+\s*\{/i.test(text))) {
+          parsed = parseScholarBibTeX(text, {
+            idPrefix: "readcube",
+            source: "ReadCube export",
+            verificationStatus: "readcube_imported_metadata"
+          });
+        } else if (mode?.startsWith("readcube")) {
+          parsed = parseWoSExport(text, {
+            idPrefix: "readcube",
+            source: "ReadCube export",
+            verificationStatus: "readcube_imported_metadata",
+            useWosRecordUrl: false
+          });
+        } else {
+          parsed = parseScholarBibTeX(text);
+        }
         if (!parsed.length) {
           importParseStatus.textContent = "未识别到文章记录，请检查格式";
           return [];
@@ -15143,7 +15294,16 @@
     }
 
     // ===== WoS CSV/TSV 解析器 =====
-    function parseWoSExport(text) {
+    function normalizeImportedDoi(value) {
+      return String(value || "")
+        .trim()
+        .replace(/^doi\s*:\s*/i, "")
+        .replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")
+        .replace(/[?#].*$/, "")
+        .trim();
+    }
+
+    function parseWoSExport(text, options = {}) {
       if (/<table[\s>]/i.test(text) || /<tr[\s>]/i.test(text)) text = htmlTableToTsv(text);
       if (/^\/Users\/.+\.(?:xls|xlsx|csv|tsv|txt)$/i.test(text.trim())) {
         throw new Error(currentLang === "zh"
@@ -15154,6 +15314,9 @@
       if (lines.length < 2) throw new Error("Need header + data rows");
       const sep = detectDelimiter(lines[0]);
       const headers = parseDelimitedLine(lines[0], sep).map(normalizeImportHeader);
+      const idPrefix = options.idPrefix || "wos";
+      const source = options.source || "Web of Science export";
+      const verificationStatus = options.verificationStatus || "wos_imported_metadata";
       const articles = [];
       for (let i = 1; i < lines.length; i++) {
         const vals = parseDelimitedLine(lines[i], sep);
@@ -15162,25 +15325,35 @@
         headers.forEach((h, j) => { row[h] = vals[j] || ""; });
         const title = row["article title"] || row["ti"] || row["title"] || "";
         if (!title) continue;
-        const doi = row["doi"] || row["di"] || "";
-        const uid = row["ut unique wos id"] || row["ut"] || row["accession number"] || "";
-        const year = parseInt(row["publication year"] || row["py"] || "0") || null;
-        const authorKeywords = row["author keywords"] || row["de"] || "";
-        const keywordsPlus = row["keywords plus"] || row["id"] || "";
-        const allText = [title, row["abstract"] || row["ab"] || "", authorKeywords, keywordsPlus].join(" ");
+        const doi = normalizeImportedDoi(row["doi"] || row["di"] || "");
+        const uid = row["ut unique wos id"] || row["ut"] || row["accession number"] || row["id"] || "";
+        const yearText = row["publication year"] || row["year"] || row["date"] || row["py"] || "";
+        const yearMatch = String(yearText).match(/\b(?:19|20)\d{2}\b/);
+        const year = yearMatch ? parseInt(yearMatch[0], 10) : null;
+        const authorKeywords = row["author keywords"] || row["keywords"] || row["tags"] || row["de"] || "";
+        const keywordsPlus = row["keywords plus"] || "";
+        const abstract = row["abstract"] || row["ab"] || row["notes"] || "";
+        const journal = row["source title"] || row["publication title"] || row["publication"] || row["journal"] || row["so"] || "";
+        const authors = row["authors"] || row["author"] || row["creators"] || row["au"] || "";
+        const exportedUrl = row["url"] || row["link"] || row["web link"] || "";
+        const allText = [title, abstract, authorKeywords, keywordsPlus, journal].join(" ");
         const elements = extractElements(allText);
         articles.push({
-          id: uid || `wos-${Date.now()}-${i}`,
-          title, year, source: "Web of Science export",
-          source_title: row["source title"] || row["so"] || "",
-          authors: row["authors"] || row["au"] || "",
-          url: uid ? `https://www.webofscience.com/wos/woscc/full-record/${uid}` : "",
-          doi, materials: extractMaterials(allText), elements,
+          id: doi ? `${idPrefix}:${doi}` : (uid || `${idPrefix}-${Date.now()}-${i}`),
+          title, year, source,
+          source_title: journal,
+          authors,
+          abstract,
+          url: exportedUrl
+            || (options.useWosRecordUrl !== false && uid ? `https://www.webofscience.com/wos/woscc/full-record/${uid}` : "")
+            || (doi ? `https://doi.org/${doi}` : ""),
+          doi, wos_uid: options.useWosRecordUrl === false ? "" : uid,
+          materials: extractMaterials(allText), elements,
           dopants: [], techniques: extractTechniques(allText),
           keywords: `${authorKeywords};${keywordsPlus}`.split(/[;|]/).map(k => k.trim()).filter(Boolean),
           temperature_K: null, photon_energy_eV: null, beamline: "",
           properties: [], evidence: [title, doi ? `DOI: ${doi}` : "", uid ? `WoS ID: ${uid}` : ""].filter(Boolean),
-          verification_status: "wos_imported_metadata", figures: []
+          verification_status: verificationStatus, figures: []
         });
       }
       return articles;
@@ -15230,9 +15403,89 @@
         .trim();
     }
 
-    // ===== Google Scholar BibTeX 解析器 =====
-    function parseScholarBibTeX(text) {
+    // ===== RIS / ReadCube 解析器 =====
+    function parseRisExport(text) {
+      const rawRecords = [];
+      let record = {};
+      let currentTag = "";
+      const pushRecord = () => {
+        if (Object.keys(record).length) rawRecords.push(record);
+        record = {};
+        currentTag = "";
+      };
+      for (const rawLine of text.split(/\r?\n/)) {
+        const match = rawLine.match(/^([A-Z0-9]{2})\s{2}-\s?(.*)$/);
+        if (match) {
+          const [, tag, value] = match;
+          if (tag === "TY" && Object.keys(record).length) pushRecord();
+          if (tag === "ER") {
+            pushRecord();
+            continue;
+          }
+          if (!record[tag]) record[tag] = [];
+          record[tag].push(value.trim());
+          currentTag = tag;
+        } else if (currentTag && rawLine.trim()) {
+          const values = record[currentTag];
+          values[values.length - 1] = `${values[values.length - 1]} ${rawLine.trim()}`.trim();
+        }
+      }
+      pushRecord();
+
+      const first = (source, ...tags) => {
+        for (const tag of tags) {
+          const value = source[tag]?.find(Boolean);
+          if (value) return value;
+        }
+        return "";
+      };
+      return rawRecords.map((source, index) => {
+        const title = first(source, "TI", "T1", "CT");
+        if (!title) return null;
+        const doiFromUrl = first(source, "UR", "L1", "L2").match(/doi\.org\/([^?#\s]+)/i)?.[1] || "";
+        const doi = normalizeImportedDoi(first(source, "DO") || doiFromUrl);
+        const dateText = first(source, "PY", "Y1", "DA");
+        const yearMatch = dateText.match(/\b(?:19|20)\d{2}\b/);
+        const year = yearMatch ? parseInt(yearMatch[0], 10) : null;
+        const journal = first(source, "JO", "JF", "T2", "JA");
+        const authors = [...(source.AU || []), ...(source.A1 || [])].filter(Boolean).join("; ");
+        const keywords = (source.KW || []).flatMap(value => value.split(/[;|]/)).map(value => value.trim()).filter(Boolean);
+        const abstract = first(source, "AB", "N2");
+        const exportedUrl = first(source, "UR", "L1", "L2");
+        const allText = [title, journal, abstract, ...keywords].join(" ");
+        const exportedId = first(source, "ID", "AN");
+        return {
+          id: doi ? `readcube:${doi}` : (exportedId ? `readcube:${exportedId}` : `readcube-${Date.now()}-${index}`),
+          title,
+          year,
+          source: "ReadCube export",
+          source_title: journal,
+          authors,
+          abstract,
+          url: exportedUrl || (doi ? `https://doi.org/${doi}` : ""),
+          doi,
+          materials: extractMaterials(allText),
+          elements: extractElements(allText),
+          dopants: [],
+          techniques: extractTechniques(allText),
+          keywords,
+          temperature_K: null,
+          photon_energy_eV: null,
+          beamline: "",
+          properties: [],
+          evidence: [title, doi ? `DOI: ${doi}` : "", "ReadCube RIS export"].filter(Boolean),
+          verification_status: "readcube_imported_metadata",
+          figures: []
+        };
+      }).filter(Boolean);
+    }
+
+    // ===== Google Scholar / ReadCube BibTeX 解析器 =====
+    function parseScholarBibTeX(text, options = {}) {
       const entries = text.split(/@\w+\s*\{/).filter(Boolean);
+      const idPrefix = options.idPrefix || "scholar";
+      const source = options.source || "Google Scholar";
+      const verificationStatus = options.verificationStatus || "scholar_imported";
       const articles = [];
       for (const entry of entries) {
         const keyMatch = entry.match(/^([^,]+),/);
@@ -15247,19 +15500,22 @@
         const author = getField("author");
         const journal = getField("journal") || getField("booktitle");
         const year = parseInt(getField("year")) || null;
-        const doi = getField("doi");
+        const doi = normalizeImportedDoi(getField("doi"));
         const url = getField("url");
-        const allText = [title, journal].join(" ");
+        const abstract = getField("abstract");
+        const keywords = getField("keywords").split(/[;|,]/).map(value => value.trim()).filter(Boolean);
+        const allText = [title, journal, abstract, ...keywords].join(" ");
         const elements = extractElements(allText);
         articles.push({
-          id: `scholar:${key}`,
-          title, year, source: "Google Scholar",
+          id: doi ? `${idPrefix}:${doi}` : `${idPrefix}:${key}`,
+          title, year, source,
           source_title: journal, authors: author,
+          abstract,
           url: url || (doi ? `https://doi.org/${doi}` : ""),
           doi, materials: extractMaterials(allText), elements,
           dopants: [], techniques: extractTechniques(allText),
-          keywords: [], temperature_K: null, photon_energy_eV: null, beamline: "",
-          properties: [], evidence: [title], verification_status: "scholar_imported", figures: []
+          keywords, temperature_K: null, photon_energy_eV: null, beamline: "",
+          properties: [], evidence: [title], verification_status: verificationStatus, figures: []
         });
       }
       return articles;
@@ -20606,7 +20862,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const endpoint = String(cfg.endpoint || defaultAiEndpoint()).trim();
       if (!endpoint) return "";
       const host = window.location.hostname || "";
-      if (host.includes("github.io") && (
+      const needsPublicProxy = (
+        window.location.protocol === "file:" ||
+        !host ||
+        host.includes("github.io") ||
+        host === "127.0.0.1" ||
+        host === "localhost"
+      );
+      if (needsPublicProxy && (
         endpoint === "/api/chat" ||
         endpoint === `${window.location.origin}/api/chat`
       )) {
@@ -21925,7 +22188,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const raw = JSON.parse(safeStorageGet(FLOATING_FIGURE_STORAGE_KEY) || "[]");
         if (!Array.isArray(raw)) return [];
         return raw
-          .filter(item => item && typeof item.src === "string" && item.src.startsWith("data:image/"))
+          .filter(item => item && typeof item.src === "string" && /^(?:data:image\/|https?:\/\/|\/)/i.test(item.src))
           .slice(0, FLOATING_FIGURE_LIMIT);
       } catch {
         return [];
@@ -21934,6 +22197,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function persistFloatingFigures() {
       const figures = (state.floatingFigures || []).slice(0, FLOATING_FIGURE_LIMIT);
+      if (!figures.length) {
+        safeStorageSet(FLOATING_FIGURE_STORAGE_KEY, "[]");
+        state.floatingFigures = [];
+        return;
+      }
       for (let keep = figures.length; keep >= 1; keep--) {
         try {
           const kept = figures.slice(0, keep);
@@ -22278,7 +22546,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function sourceLabelForFloatingFigure(source) {
-      return source === "hdf5" ? t("floatingFigureSourceHdf5") : t("floatingFigureSourceUpload");
+      if (source === "hdf5") return t("floatingFigureSourceHdf5");
+      if (source === "literature") return t("floatingFigureSourceLiterature");
+      return t("floatingFigureSourceUpload");
     }
 
     function floatingFigureTitle(text) {
@@ -22359,9 +22629,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function gatherFloatingDatabaseFigures(limit = 6, relaxed = false) {
       const items = [];
-      const term = relaxed ? "" : (searchInput?.value || "").trim().toLowerCase();
-      const family = relaxed ? "" : (familyFilter?.value || "");
-      const selectedElement = relaxed ? "" : (state.selectedElement || "");
+      const panelTerm = (floatingFigureDbSearch?.value || "").trim().toLowerCase();
+      const term = panelTerm || (relaxed ? "" : (searchInput?.value || "").trim().toLowerCase());
+      const family = panelTerm || relaxed ? "" : (familyFilter?.value || "");
+      const selectedElement = panelTerm || relaxed ? "" : (state.selectedElement || "");
       for (const article of curatedArticles()) {
         if (!isRecentArticle(article)) continue;
         if (selectedElement && !articleMatchesElement(article, selectedElement)) continue;
@@ -22372,12 +22643,19 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           ...(article.keywords || []),
           ...(article.techniques || [])
         ].join(" ").toLowerCase();
-        if (term && !articleText.includes(term)) continue;
         if (!articleMatchesFamilySelection(article, family)) continue;
         for (const fig of article.figures || []) {
           const imageUrl = resolveFigureImage(fig, article);
           if (!imageUrl) continue;
           const normalizedType = classifyFigureType(fig);
+          const figureText = [
+            articleText,
+            fig.caption,
+            fig.publisher_caption,
+            normalizedType,
+            figureTypeLabel(normalizedType)
+          ].join(" ").toLowerCase();
+          if (term && !figureText.includes(term)) continue;
           if (activeFigureTypeFilter() !== "all" && normalizedType !== normalizeFigureType(activeFigureTypeFilter())) continue;
           items.push({
             ...fig,
@@ -22402,12 +22680,22 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function floatingDatabaseFigures(limit = 6) {
       const filtered = gatherFloatingDatabaseFigures(limit, false);
+      if ((floatingFigureDbSearch?.value || "").trim()) return filtered;
       return filtered.length ? filtered : gatherFloatingDatabaseFigures(limit, true);
     }
 
     function renderFloatingFigureComparison(options = {}) {
       if (!floatingFigurePanel || !floatingFigureUserGrid || !floatingFigureDbGrid) return;
       const figures = Array.isArray(state.floatingFigures) ? state.floatingFigures : [];
+      if (options.open && !articlesLoaded && !articlesLoadingPromise) {
+        if (floatingFigureDbStatus) floatingFigureDbStatus.textContent = t("articlesLoading");
+        ensureArticlesLoaded({ render: false })
+          .then(() => renderFloatingFigureComparison({ open: true }))
+          .catch(error => {
+            console.warn("Could not load paper figures for comparison", error);
+            if (floatingFigureDbStatus) floatingFigureDbStatus.textContent = t("loadingFailed");
+          });
+      }
       if (!figures.length && !options.open) {
         floatingFigurePanel.hidden = true;
         if (floatingFigureCount) floatingFigureCount.textContent = tf("floatingFigureCount", { count: 0 });
@@ -22424,14 +22712,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
       floatingFigureUserGrid.innerHTML = figures.length
         ? figures.map(item => `
-            <div class="floating-figure-card">
-              <img src="${esc(item.src)}" alt="${esc(item.title || "HDF5 preview")}" data-floating-figure-preview data-preview-title="${esc(item.title || "HDF5 preview")}" role="button" tabindex="0">
+            <div class="floating-figure-card ${item.source === "literature" ? "is-literature" : ""}">
+              <img src="${esc(item.src)}" alt="${esc(item.title || "HDF5 preview")}" data-floating-figure-preview data-preview-title="${esc(item.title || "HDF5 preview")}" role="button" tabindex="0" referrerpolicy="no-referrer">
               <div class="floating-figure-meta">
                 <div class="floating-figure-meta-row">
                   <strong>${esc(floatingFigureTitle(item.title || "HDF5"))}</strong>
                   <button type="button" data-floating-figure-remove="${esc(item.id)}" aria-label="${esc(t("floatingFigureRemove"))}">×</button>
                 </div>
                 <span>${esc(sourceLabelForFloatingFigure(item.source))}${item.dataset ? ` · ${esc(item.dataset)}` : ""}</span>
+                ${item.year || item.materials?.length ? `<span>${esc([item.year, ...(item.materials || [])].filter(Boolean).join(" · "))}</span>` : ""}
+                ${item.article_url ? `<a href="${esc(item.article_url)}" target="_blank" rel="noreferrer" class="chip good" style="width:max-content;font-size:10px;">${esc(t("viewFigureSource"))}</a>` : ""}
                 ${item.created_at ? `<span>${esc(new Date(item.created_at).toLocaleString(currentLang === "zh" ? "zh-CN" : "en-US"))}</span>` : ""}
               </div>
             </div>
@@ -22439,10 +22729,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : `<div class="floating-figure-empty" style="grid-column:1/-1;">${esc(t("floatingFigureNoImages"))}</div>`;
 
       const dbFigures = floatingDatabaseFigures(6);
-      if (floatingFigureDbStatus) floatingFigureDbStatus.textContent = tf("floatingFigureDbStatus", { count: dbFigures.length });
+      if (floatingFigureDbStatus) {
+        floatingFigureDbStatus.textContent = articlesLoaded
+          ? tf("floatingFigureDbStatus", { count: dbFigures.length })
+          : t("articlesLoading");
+      }
       floatingFigureDbGrid.innerHTML = dbFigures.length
-        ? dbFigures.map(fig => `
-            <div class="floating-figure-db-card ${esc(figureTypeClass[fig.normalized_type] || "fig-type-other")}">
+        ? dbFigures.map((fig, index) => {
+          const selected = figures.some(item => item.source === "literature" && item.src === fig.image_url);
+          return `
+            <div class="floating-figure-db-card ${selected ? "is-selected" : ""} ${esc(figureTypeClass[fig.normalized_type] || "fig-type-other")}">
               <img src="${esc(fig.image_url)}" alt="${esc(fig.caption || fig.article_title)}"
                 data-floating-figure-preview
                 data-preview-title="${esc(fig.caption || fig.article_title || "Paper figure")}"
@@ -22457,10 +22753,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
                 <strong>${esc(floatingFigureTitle(fig.caption || fig.article_title))}</strong>
                 <span>${esc(figureTypeLabel(fig.normalized_type))} · ${esc(fig.year || "")} · ${esc((fig.materials || []).join(", "))}</span>
                 <a href="${esc(fig.article_url || fig.image_url)}" target="_blank" rel="noreferrer" class="chip good" style="width:max-content;font-size:10px;">${esc(t("viewFigureSource"))}</a>
+                <button type="button" class="floating-paper-select ${selected ? "primary" : ""}" data-floating-paper-index="${index}">${esc(t(selected ? "floatingFigureRemovePaper" : "floatingFigureAddPaper"))}</button>
               </div>
             </div>
-          `).join("")
-        : `<div class="floating-figure-empty" style="grid-column:1/-1;">${esc(t("floatingFigureNoDb"))}</div>`;
+          `;
+        }).join("")
+        : `<div class="floating-figure-empty" style="grid-column:1/-1;">${esc(articlesLoaded ? t("floatingFigureNoDb") : t("articlesLoading"))}</div>`;
 
       floatingFigureUserGrid.querySelectorAll("[data-floating-figure-remove]").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -22468,6 +22766,29 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           persistFloatingFigures();
           renderFloatingFigureComparison({ open: true });
           showToast(t("floatingFigureRemovedToast"));
+        });
+      });
+      floatingFigureDbGrid.querySelectorAll("[data-floating-paper-index]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const fig = dbFigures[Number(btn.dataset.floatingPaperIndex)];
+          if (!fig?.image_url) return;
+          const alreadySelected = (state.floatingFigures || []).some(item => item.source === "literature" && item.src === fig.image_url);
+          if (alreadySelected) {
+            state.floatingFigures = (state.floatingFigures || []).filter(item => !(item.source === "literature" && item.src === fig.image_url));
+            persistFloatingFigures();
+            renderFloatingFigureComparison({ open: true });
+            return;
+          }
+          addFloatingFigureImage({
+            id: `literature:${fig.image_url}`,
+            title: fig.caption || fig.article_title || "Paper figure",
+            src: fig.image_url,
+            source: "literature",
+            dataset: figureTypeLabel(fig.normalized_type),
+            article_url: fig.article_url || fig.image_url,
+            year: fig.year || "",
+            materials: fig.materials || []
+          }, { open: true, toast: false });
         });
       });
       bindFloatingFigurePreviewClicks(floatingFigureUserGrid);
@@ -22483,7 +22804,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         src: input.src,
         source: input.source || "upload",
         dataset: input.dataset || "",
-        created_at: input.created_at || new Date().toISOString()
+        created_at: input.created_at || new Date().toISOString(),
+        article_url: input.article_url || "",
+        year: input.year || "",
+        materials: input.materials || []
       };
       state.floatingFigures = [item, ...(state.floatingFigures || []).filter(existing => existing.src !== item.src)]
         .slice(0, FLOATING_FIGURE_LIMIT);
@@ -22594,6 +22918,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       floatingFigureInput?.addEventListener("change", () => {
         addFloatingImageFiles(floatingFigureInput.files);
         floatingFigureInput.value = "";
+      });
+      floatingFigureDbSearch?.addEventListener("input", () => {
+        renderFloatingFigureComparison({ open: true });
       });
       floatingFigureDrop?.addEventListener("dragover", event => {
         event.preventDefault();
@@ -23000,6 +23327,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     const hdf5MainViewOptions = document.querySelector("#hdf5MainViewOptions");
     const hdf5PreviewInfo = document.querySelector("#hdf5PreviewInfo");
     const hdf5PreviewHint = document.querySelector("#hdf5PreviewHint");
+    const hdf5CompareLiteratureBtn = document.querySelector("#hdf5CompareLiteratureBtn");
     const hdf5SavedImports = document.querySelector("#hdf5SavedImports");
     const hdf5SavedImportsStatus = document.querySelector("#hdf5SavedImportsStatus");
     const analysisResultStatus = document.querySelector("#analysisResultStatus");
@@ -23039,6 +23367,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         hdf5PreviewOverlayFrame = 0;
       }
     }
+
+    function setHDF5CompareLiteratureReady(ready) {
+      if (hdf5CompareLiteratureBtn) hdf5CompareLiteratureBtn.disabled = !ready;
+    }
+
+    hdf5CompareLiteratureBtn?.addEventListener("click", () => {
+      const previewState = hdf5PreviewCanvas?.__hdf5PreviewState;
+      if (!hdf5PreviewCanvas || !previewState) {
+        showToast(t("hdf5PreviewEmpty"));
+        return;
+      }
+      const title = String(hdf5PreviewHint?.textContent || previewState.plan?.name || "HDF5 preview").trim();
+      addFloatingFigureImage({
+        id: `hdf5-preview:${Date.now()}`,
+        title,
+        src: hdf5PreviewCanvas.toDataURL("image/jpeg", 0.86),
+        source: "hdf5",
+        dataset: previewState.plan?.path || previewState.plan?.name || "",
+        created_at: new Date().toISOString()
+      }, { open: true });
+    });
 
     function setHDF5Status(message) {
       if (hdf5Status) hdf5Status.textContent = message;
@@ -26267,7 +26616,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function drawHDF5Heatmap(canvas, sample, plan, options = {}) {
       if (!canvas) return;
-      if (canvas === hdf5PreviewCanvas && !options.compact) setHDF5PreviewInteractionEnabled(true);
+      if (canvas === hdf5PreviewCanvas && !options.compact) {
+        setHDF5PreviewInteractionEnabled(true);
+        setHDF5CompareLiteratureReady(true);
+      }
       if (!options.compact && drawHDF5SlicerHeatmap(canvas, sample, plan, options)) return;
       if (!options.compact) hideHDF5MainViewControls();
       const ctx = canvas.getContext("2d");
@@ -26800,6 +27152,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           };
           setHDF5PreviewInteractionEnabled(false);
           redrawStaticHDF5PreviewSelection(canvas, canvas.__hdf5PreviewState);
+          setHDF5CompareLiteratureReady(true);
           resolve(true);
         };
         img.onerror = () => reject(new Error("Could not load preview image"));
@@ -26961,6 +27314,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (hdf5PreviewHint) hdf5PreviewHint.textContent = message;
       if (hdf5PreviewInfo) hdf5PreviewInfo.innerHTML = `<span class="muted">${esc(message)}</span>`;
       if (!hdf5PreviewCanvas) return;
+      setHDF5CompareLiteratureReady(false);
       setHDF5PreviewInteractionEnabled(false);
       hideHDF5MainViewControls();
       clearHDF5PreviewOverlay(hdf5PreviewCanvas);
@@ -27883,14 +28237,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     });
 
     compareSelectedBtn.addEventListener("click", async () => {
-      if (librarySelection.size < 2) { showToast(t("selectTwoDatasets")); return; }
+      if (librarySelection.size < 1) { showToast(t("selectOneDataset")); return; }
       const db = await openIDB();
       const tx = db.transaction("datasets", "readonly");
       const all = await new Promise((resolve) => { tx.objectStore("datasets").getAll().onsuccess = (e) => resolve(e.target.result || []); });
       const selected = all.filter(r => librarySelection.has(r.id));
       const previewable = selected.filter(record => /^data:image\//i.test(record.thumbnail || ""));
-      if (previewable.length < 2) { showToast(t("selectTwoPreviewImages")); return; }
-      state.floatingFigures = previewable.slice(0, FLOATING_FIGURE_LIMIT).map(record => ({
+      if (previewable.length < 1) { showToast(t("selectOnePreviewImage")); return; }
+      const selectedPaperFigures = (state.floatingFigures || []).filter(item => item.source === "literature");
+      const selectedLocalFigures = previewable.map(record => ({
         id: `library:${record.id}`,
         title: `${record.source_file || "HDF5"} · ${record.name || record.path || "dataset"}`,
         src: record.thumbnail,
@@ -27898,6 +28253,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         dataset: record.path || record.name || "",
         created_at: record.imported_at || new Date().toISOString()
       }));
+      state.floatingFigures = [...selectedLocalFigures, ...selectedPaperFigures].slice(0, FLOATING_FIGURE_LIMIT);
       persistFloatingFigures();
       renderFloatingFigureComparison({ open: true });
       showToast(t("floatingFigureAddedToast"));
