@@ -1,0 +1,233 @@
+.bohrium-openlam-bridge {
+  margin-top: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent, #26d0ce) 34%, var(--line, #243244));
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(28, 158, 217, 0.12), transparent 34%),
+    rgba(8, 18, 28, 0.68);
+  overflow: hidden;
+}
+
+.bohrium-openlam-bridge > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 15px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.bohrium-openlam-bridge > summary::-webkit-details-marker {
+  display: none;
+}
+
+.bohrium-openlam-bridge > summary::after {
+  content: "+";
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid var(--line, #243244);
+  border-radius: 50%;
+  color: var(--accent-glow, #7ee7e5);
+  font-weight: 800;
+}
+
+.bohrium-openlam-bridge[open] > summary::after {
+  content: "−";
+}
+
+.bohrium-openlam-bridge > summary > span:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.bohrium-openlam-bridge > summary strong {
+  color: var(--text, #e9f1fb);
+  font-size: 14px;
+}
+
+.bohrium-openlam-bridge > summary small {
+  color: var(--muted, #93a4b8);
+  font-size: 11px;
+}
+
+.bohrium-openlam-mode {
+  margin-left: auto;
+  padding: 5px 9px;
+  border: 1px solid rgba(38, 208, 206, 0.34);
+  border-radius: 999px;
+  background: rgba(38, 208, 206, 0.09);
+  color: var(--accent-glow, #7ee7e5);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.bohrium-openlam-body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
+  padding: 0 15px 15px;
+}
+
+.bohrium-openlam-explain,
+.bohrium-openlam-controls {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--line, #243244);
+  border-radius: 12px;
+  background: rgba(10, 20, 31, 0.72);
+}
+
+.bohrium-openlam-explain h4 {
+  margin: 0 0 7px;
+  color: var(--accent-glow, #7ee7e5);
+  font-size: 12px;
+}
+
+.bohrium-openlam-explain p,
+.bohrium-openlam-explain ol,
+.bohrium-openlam-hint {
+  margin: 0;
+  color: var(--muted, #93a4b8);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.bohrium-openlam-explain ol {
+  margin: 8px 0;
+  padding-left: 19px;
+}
+
+.bohrium-openlam-privacy {
+  padding-top: 8px;
+  border-top: 1px dashed var(--line, #243244);
+}
+
+.bohrium-openlam-native-input {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bohrium-openlam-controls {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.bohrium-openlam-controls > button,
+.bohrium-openlam-actions button,
+.bohrium-openlam-actions a {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px solid var(--line, #243244);
+  border-radius: 9px;
+  background: rgba(20, 32, 46, 0.84);
+  color: var(--text, #e9f1fb);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.bohrium-openlam-controls > button:hover,
+.bohrium-openlam-actions button:hover,
+.bohrium-openlam-actions a:hover {
+  border-color: rgba(38, 208, 206, 0.5);
+}
+
+.bohrium-openlam-actions button.primary {
+  border-color: rgba(38, 208, 206, 0.46);
+  background: rgba(18, 139, 133, 0.84);
+}
+
+.bohrium-openlam-actions button:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.bohrium-openlam-file {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px dashed var(--line, #243244);
+  border-radius: 9px;
+  color: var(--muted, #93a4b8);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.bohrium-openlam-file[data-tone="good"] {
+  border-color: rgba(38, 208, 206, 0.44);
+  color: var(--accent-glow, #7ee7e5);
+}
+
+.bohrium-openlam-file[data-tone="error"] {
+  border-color: rgba(244, 63, 94, 0.5);
+  color: #fb7185;
+}
+
+.bohrium-openlam-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.bohrium-openlam-fields label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted, #93a4b8);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.bohrium-openlam-fields select {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 9px;
+  border: 1px solid var(--line, #243244);
+  border-radius: 9px;
+  background: rgba(17, 29, 42, 0.94);
+  color: var(--text, #e9f1fb);
+  font: inherit;
+}
+
+.bohrium-openlam-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.bohrium-openlam-hint {
+  padding-top: 2px;
+}
+
+@media (max-width: 1050px) {
+  .bohrium-openlam-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .bohrium-openlam-mode {
+    display: none;
+  }
+
+  .bohrium-openlam-fields,
+  .bohrium-openlam-actions {
+    grid-template-columns: 1fr;
+  }
+}

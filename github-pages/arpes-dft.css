@@ -1,0 +1,301 @@
+.arpes-dft-workbench {
+  --arpes-dft-accent: #38bdf8;
+  --arpes-dft-line: rgba(56, 189, 248, 0.28);
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(56, 189, 248, 0.28);
+  background:
+    radial-gradient(circle at 92% 8%, rgba(56, 189, 248, 0.08), transparent 32%),
+    var(--card-bg);
+}
+
+.arpes-dft-workbench::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, #38bdf8, #14b8a6 62%, transparent);
+  pointer-events: none;
+}
+
+.arpes-dft-head,
+.arpes-dft-toolbar,
+.arpes-dft-switches,
+.arpes-dft-project-actions,
+.arpes-dft-file-summary,
+.arpes-dft-chart-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.arpes-dft-head {
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.arpes-dft-head h3 {
+  margin: 0 0 4px;
+}
+
+.arpes-dft-head p {
+  margin: 0;
+  max-width: 760px;
+}
+
+.arpes-dft-browser-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  margin-left: 7px;
+  padding: 2px 8px;
+  border: 1px solid rgba(45, 212, 191, 0.38);
+  border-radius: 999px;
+  color: #99f6e4;
+  background: rgba(13, 148, 136, 0.12);
+  font-size: 11px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.arpes-dft-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  max-width: min(100%, 520px);
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(8, 14, 22, 0.62);
+  font-size: 12px;
+}
+
+.arpes-dft-status[data-tone="good"] {
+  border-color: rgba(45, 212, 191, 0.35);
+  color: #99f6e4;
+}
+
+.arpes-dft-status[data-tone="warn"] {
+  border-color: rgba(245, 158, 11, 0.42);
+  color: #fcd34d;
+}
+
+.arpes-dft-status[data-tone="error"] {
+  border-color: rgba(248, 113, 113, 0.42);
+  color: #fca5a5;
+}
+
+.arpes-dft-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(420px, 1.55fr);
+  gap: 14px;
+}
+
+.arpes-dft-controls,
+.arpes-dft-chart-panel {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(8, 14, 22, 0.58);
+}
+
+.arpes-dft-toolbar,
+.arpes-dft-project-actions {
+  margin-bottom: 12px;
+}
+
+.arpes-dft-toolbar button,
+.arpes-dft-project-actions button {
+  flex: 1 1 130px;
+}
+
+.arpes-dft-file-summary {
+  min-height: 54px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px dashed rgba(56, 189, 248, 0.3);
+  border-radius: 10px;
+  background: rgba(14, 116, 144, 0.06);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.arpes-dft-file-summary strong {
+  color: var(--ink);
+}
+
+.arpes-dft-control-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.arpes-dft-control-grid label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.arpes-dft-control-grid input,
+.arpes-dft-control-grid select {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink);
+  background: #111923;
+}
+
+.arpes-dft-control-grid input[type="color"] {
+  padding: 4px;
+}
+
+.arpes-dft-control-grid input:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.arpes-dft-control-grid .arpes-dft-wide {
+  grid-column: 1 / -1;
+}
+
+.arpes-dft-range-value {
+  color: #bae6fd;
+  font-variant-numeric: tabular-nums;
+}
+
+.arpes-dft-switches {
+  align-items: flex-start;
+  margin: 12px 0;
+}
+
+.arpes-dft-switches label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink);
+  background: rgba(17, 25, 35, 0.78);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.arpes-dft-switches input {
+  accent-color: #14b8a6;
+}
+
+.arpes-dft-note {
+  margin: 0 0 12px;
+  padding: 9px 11px;
+  border-left: 2px solid rgba(56, 189, 248, 0.55);
+  color: var(--muted);
+  background: rgba(56, 189, 248, 0.055);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.arpes-dft-chart-head {
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.arpes-dft-chart-head strong {
+  font-size: 13px;
+}
+
+.arpes-dft-chart-wrap {
+  position: relative;
+  min-height: 320px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #080d14;
+}
+
+.arpes-dft-chart-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 320px;
+}
+
+.arpes-dft-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.arpes-dft-metric {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(17, 25, 35, 0.78);
+}
+
+.arpes-dft-metric span,
+.arpes-dft-metric strong {
+  display: block;
+}
+
+.arpes-dft-metric span {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.arpes-dft-metric strong {
+  margin-top: 4px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arpes-dft-native-input {
+  position: fixed !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body.arpes-dft-calibrating #hdf5PreviewHitLayer {
+  cursor: crosshair;
+}
+
+@media (max-width: 980px) {
+  .arpes-dft-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .arpes-dft-control-grid,
+  .arpes-dft-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .arpes-dft-chart-wrap,
+  .arpes-dft-chart-wrap canvas {
+    min-height: 270px;
+    height: 270px;
+  }
+}
