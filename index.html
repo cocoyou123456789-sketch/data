@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <title>ARPES Superconductivity Explorer | 超导材料探索器</title>
+  <link rel="stylesheet" href="arpes-dft.css">
+  <link rel="stylesheet" href="bohrium-openlam.css">
   <style>
     :root {
       --bg: #0a0e14;
@@ -8692,6 +8694,8 @@
 <script defer src="vendor/jsfive.js" onload="window.jsfive=window.jsfive||window.hdf5;if(window.updateHDF5ParserStatus)window.updateHDF5ParserStatus();"></script>
 <script defer src="vendor/igor-pxt.js" onload="if(window.updateHDF5ParserStatus)window.updateHDF5ParserStatus();"></script>
 <script defer src="band-ai.js"></script>
+<script defer src="arpes-dft.js"></script>
+<script defer src="bohrium-openlam.js"></script>
 <script>
   window.jsfive = window.jsfive || window.hdf5;
   window.addEventListener("error", event => {
@@ -9668,6 +9672,107 @@
             </div>
             <div class="hdf5-preview-info" id="hdf5PreviewInfo">
               <span class="muted" data-i18n="hdf5PreviewEmpty">导入后自动显示可预览的二维谱图或三维切片</span>
+            </div>
+          </div>
+        </div>
+        <div class="card arpes-dft-workbench" id="arpesDftWorkbench">
+          <div class="arpes-dft-head">
+            <div>
+              <h3><span data-arpes-dft-i18n="title">ARPES × DFT 联合分析</span><span class="arpes-dft-browser-badge" data-arpes-dft-i18n="browser">浏览器本地运行</span></h3>
+              <p class="muted" data-arpes-dft-i18n="subtitle">在浏览器中读取理论能带，并叠加到当前可调节的 ARPES 谱图；数据不会上传到服务器。</p>
+            </div>
+            <span class="arpes-dft-status" id="arpesDftStatus" role="status" aria-live="polite" data-arpes-dft-i18n="waiting">请先从上方上传区载入 ARPES 数据，再选择 DFT 能带文件</span>
+          </div>
+          <input class="arpes-dft-native-input" id="arpesDftFileInput" type="file" accept=".dat,.gnu,.txt,.csv,.tsv,text/plain,text/csv" multiple tabindex="-1" aria-hidden="true">
+          <input class="arpes-dft-native-input" id="arpesDftProjectInput" type="file" accept=".json,application/json" tabindex="-1" aria-hidden="true">
+          <div class="arpes-dft-grid">
+            <div class="arpes-dft-controls">
+              <div class="arpes-dft-toolbar">
+                <button class="primary" id="arpesDftChooseBtn" type="button" data-arpes-dft-i18n="chooseDft">选择 DFT 文件</button>
+                <button id="arpesDftImportProjectBtn" type="button" data-arpes-dft-i18n="importProject">导入分析项目</button>
+                <button id="arpesDftClearBtn" type="button" data-arpes-dft-i18n="clearDft">清除 DFT</button>
+              </div>
+              <div class="arpes-dft-file-summary" id="arpesDftFileSummary">
+                <span data-arpes-dft-i18n="noDft">尚未载入 DFT；支持 QE bands.dat.gnu、k+多能带矩阵，以及 band/k/E 长表。</span>
+              </div>
+              <div class="arpes-dft-control-grid">
+                <label><span data-arpes-dft-i18n="dftFermi">DFT 费米能 EF (eV)</span><input id="arpesDftFermiInput" type="number" value="0" step="0.001"></label>
+                <label><span data-arpes-dft-i18n="arpesFermi">ARPES 费米能 EF (eV)</span><input id="arpesDftArpesFermiInput" type="number" value="0" step="0.001"></label>
+                <label><span data-arpes-dft-i18n="energyDirection">ARPES 能量约定</span><select id="arpesDftEnergyDirection"><option value="auto" data-arpes-dft-i18n="energyDirectionAuto">自动（按轴名称识别 Binding Energy）</option><option value="electron" data-arpes-dft-i18n="energyDirectionElectron">电子能量 / 动能：E − EF</option><option value="binding" data-arpes-dft-i18n="energyDirectionBinding">Binding Energy：EF − EB</option></select></label>
+                <label><span data-arpes-dft-i18n="sigma">自动 EF 平滑 σ（采样点）</span><input id="arpesDftEfSigmaInput" type="number" value="2" min="0.25" max="20" step="0.25"></label>
+                <label><span data-arpes-dft-i18n="kScale">直接映射时 k 比例</span><input id="arpesDftKScaleInput" type="number" value="1" step="0.001"></label>
+                <label><span data-arpes-dft-i18n="kOffset">直接映射时 k 偏移</span><input id="arpesDftKOffsetInput" type="number" value="0" step="0.001"></label>
+                <label><span data-arpes-dft-i18n="lineColor">DFT 线条颜色</span><input id="arpesDftLineColor" type="color" value="#f43f5e"></label>
+                <label class="arpes-dft-wide"><span><span data-arpes-dft-i18n="opacity">叠加透明度</span> · <span class="arpes-dft-range-value" id="arpesDftOpacityValue">86%</span></span><input id="arpesDftOpacity" type="range" min="0.08" max="1" step="0.01" value="0.86"></label>
+                <label class="arpes-dft-wide"><span data-arpes-dft-i18n="symmetry">高对称点标注（仅独立预览，例如 Γ=0,M=1.25）</span><input id="arpesDftSymmetryInput" type="text" value="Γ=0,M=1.25"></label>
+              </div>
+              <div class="arpes-dft-switches">
+                <label><input id="arpesDftAlignK" type="checkbox" checked><span data-arpes-dft-i18n="alignK">按范围缩放 DFT k 轴到 ARPES</span></label>
+                <label><input id="arpesDftShowOverlay" type="checkbox" checked><span data-arpes-dft-i18n="showOverlay">在 ARPES 主图叠加 DFT</span></label>
+              </div>
+              <div class="arpes-dft-project-actions">
+                <button id="arpesDftBindCurrentBtn" type="button" data-arpes-dft-i18n="bindCurrent">关联当前 ARPES</button>
+                <button id="arpesDftEstimateEfBtn" type="button" data-arpes-dft-i18n="estimateEf">启发式估计 ARPES EF</button>
+                <button id="arpesDftPickEfBtn" type="button" aria-pressed="false" data-arpes-dft-i18n="pickEf">在图上点选 EF</button>
+                <button id="arpesDftExportBtn" type="button" data-arpes-dft-i18n="saveProject">导出项目 JSON</button>
+                <button id="arpesDftResetBtn" type="button" data-arpes-dft-i18n="resetSettings">重置校准</button>
+              </div>
+              <p class="arpes-dft-note" data-arpes-dft-i18n="note">“按范围缩放”只是把 DFT 的最小/最大 k 线性映射到实验范围，不等同于按晶格或高对称点做物理配准；角度轴叠加也未进行 θ→k 转换，仅供视觉比较。取消勾选后可用 k 比例/偏移直接映射。超出能量窗的线段会裁切隐藏。项目 JSON 不含 ARPES 原始矩阵，换设备时仍需重新载入原文件。</p>
+              <details class="bohrium-openlam-bridge" id="bohriumOpenlamBridge">
+                <summary>
+                  <span><strong data-bohrium-i18n="title">玻尔空间站 · OpenLAM 计算接力</strong><small data-bohrium-i18n="summary">结构预处理 → 电子能带 → ARPES 对照</small></span>
+                  <span class="bohrium-openlam-mode" data-bohrium-i18n="mode">安全移交模式</span>
+                </summary>
+                <div class="bohrium-openlam-body">
+                  <div class="bohrium-openlam-explain">
+                    <h4 data-bohrium-i18n="whatTitle">OpenLAM 在这里负责什么</h4>
+                    <p data-bohrium-i18n="whatBody">OpenLAM / DeePMD 适合预测原子结构的能量、力并做预弛豫或分子动力学；它不是电子能带模型，不能直接生成 ARPES 色散。</p>
+                    <ol>
+                      <li data-bohrium-i18n="stepOne">选择 CIF、POSCAR 或 XYZ 原子结构。</li>
+                      <li data-bohrium-i18n="stepTwo">在 Bohrium 用 OpenLAM 做结构弛豫、能量/力评估或 MD。</li>
+                      <li data-bohrium-i18n="stepThree">对弛豫后的结构运行 Quantum Espresso / ABACUS 能带计算。</li>
+                      <li data-bohrium-i18n="stepFour">把 bands.dat.gnu 等结果重新导入上方 DFT 预览，与 ARPES 对照。</li>
+                    </ol>
+                    <p class="bohrium-openlam-privacy" data-bohrium-i18n="privacy">结构文件只在浏览器本地校验；本站不会保存或上传 Bohrium AccessKey，也不会自动产生计费任务。</p>
+                  </div>
+                  <div class="bohrium-openlam-controls">
+                    <input id="bohriumStructureInput" class="bohrium-openlam-native-input" type="file" accept=".cif,.vasp,.poscar,.contcar,.xyz,chemical/x-cif" tabindex="-1" aria-hidden="true">
+                    <button id="bohriumChooseStructureBtn" type="button" data-bohrium-i18n="chooseStructure">选择原子结构</button>
+                    <div class="bohrium-openlam-file" id="bohriumStructureSummary" role="status" aria-live="polite" data-bohrium-i18n="noStructure">尚未选择结构文件</div>
+                    <div class="bohrium-openlam-fields">
+                      <label><span data-bohrium-i18n="openlamTask">OpenLAM 阶段</span>
+                        <select id="bohriumOpenlamTask">
+                          <option value="relax" data-bohrium-i18n="taskRelax">结构预弛豫</option>
+                          <option value="energy_force" data-bohrium-i18n="taskEnergyForce">能量 / 力评估</option>
+                          <option value="md" data-bohrium-i18n="taskMd">分子动力学</option>
+                        </select>
+                      </label>
+                      <label><span data-bohrium-i18n="bandEngine">后续能带计算</span>
+                        <select id="bohriumBandEngine">
+                          <option value="quantum_espresso">Quantum Espresso</option>
+                          <option value="abacus">ABACUS</option>
+                        </select>
+                      </label>
+                    </div>
+                    <div class="bohrium-openlam-actions">
+                      <button class="primary" id="bohriumExportHandoffBtn" type="button" disabled data-bohrium-i18n="exportHandoff">导出计算接力清单</button>
+                      <a href="https://www.bohrium.com/" target="_blank" rel="noopener noreferrer" data-bohrium-i18n="openBohrium">打开玻尔空间站</a>
+                      <a href="https://www.aissquare.com/openlam" target="_blank" rel="noopener noreferrer" data-bohrium-i18n="openOpenlam">查看 OpenLAM 模型</a>
+                    </div>
+                    <p class="bohrium-openlam-hint" id="bohriumOpenlamHint" data-bohrium-i18n="handoffHint">导出的 JSON 只记录结构文件指纹、任务选择和 ARPES 数据引用；请把结构文件本身一同上传到 Bohrium。</p>
+                  </div>
+                </div>
+              </details>
+              <div class="arpes-dft-metric"><span>ARPES</span><strong id="arpesDftArpesMetric">等待数据</strong></div>
+            </div>
+            <div class="arpes-dft-chart-panel">
+              <div class="arpes-dft-chart-head"><strong data-arpes-dft-i18n="chartTitle">DFT 独立预览</strong><span class="muted">QE · DAT · CSV</span></div>
+              <div class="arpes-dft-chart-wrap"><canvas id="arpesDftCanvas" width="760" height="320" role="img" aria-label="DFT band preview"></canvas></div>
+              <div class="arpes-dft-metrics">
+                <div class="arpes-dft-metric"><span data-arpes-dft-i18n="metricBands">能带</span><strong id="arpesDftMetricBands">–</strong></div>
+                <div class="arpes-dft-metric"><span data-arpes-dft-i18n="metricK">k 范围</span><strong id="arpesDftMetricK">–</strong></div>
+                <div class="arpes-dft-metric"><span data-arpes-dft-i18n="metricEnergy">能量范围</span><strong id="arpesDftMetricEnergy">–</strong></div>
+              </div>
             </div>
           </div>
         </div>
@@ -24057,12 +24162,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
     }
 
-    async function renderIgorWavePreview(parsed, wave, filename) {
+    async function renderIgorWavePreview(parsed, wave, filename, sourceIdentity = {}) {
       if (!window.IgorPxtReader || !wave?.data) return null;
       const plan = window.IgorPxtReader.buildPreviewPlan(wave);
       const dims = window.IgorPxtReader.selectPreviewDims(wave);
       const sample = window.IgorPxtReader.sampleWave(wave, dims);
-      drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename });
+      drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename, ...sourceIdentity });
       updateHDF5PreviewInfo(plan, sample, filename);
       updateIgorMeta(parsed, wave);
       return { plan, sample };
@@ -24096,13 +24201,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         currentH5Detection = null;
         currentH5Path = "";
         renderIgorTree(parsed);
-        const preview = await renderIgorWavePreview(parsed, parsed.primary, file.name);
         const shouldPersist = options.persist !== false;
         const sourceRecord = !shouldPersist
           ? null
           : await trySaveRepositorySourceFile(file, "igor", { sourceArchive: options.sourceArchive || "" });
         currentRepositorySourceId = options.sourceId || sourceRecord?.id || "";
         parsed.repositorySourceId = currentRepositorySourceId;
+        const preview = await renderIgorWavePreview(parsed, parsed.primary, file.name, {
+          sourceId: currentRepositorySourceId,
+          sourceArchive: options.sourceArchive || "",
+          sourceSize: file.size || null,
+          sourceLastModified: file.lastModified || null
+        });
         const persisted = shouldPersist
           ? !!sourceRecord && await saveIgorImportSummary(file, parsed, preview, currentRepositorySourceId)
           : null;
@@ -24337,7 +24447,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         currentH5 = null;
         currentH5Detection = null;
         currentH5Path = "";
-        drawHDF5Heatmap(hdf5PreviewCanvas, parsed.sample, parsed.plan, { filename });
+        const shouldPersist = options.persist !== false;
+        const sourceRecord = !shouldPersist
+          ? null
+          : await trySaveRepositorySourceFile(file, "raw-map", { sourceArchive: options.sourceArchive || "" });
+        currentRepositorySourceId = options.sourceId || sourceRecord?.id || "";
+        drawHDF5Heatmap(hdf5PreviewCanvas, parsed.sample, parsed.plan, {
+          filename,
+          sourceId: currentRepositorySourceId,
+          sourceArchive: options.sourceArchive || "",
+          sourceSize: file.size || null,
+          sourceLastModified: file.lastModified || null
+        });
         updateHDF5PreviewInfo(parsed.plan, parsed.sample, filename);
         if (hdf5Tree) {
           hdf5Tree.innerHTML = `<div class="dataset">📊 ${esc(parsed.regionName)} <span class="muted">[${parsed.plan.shape.join("×")}] raw-text</span></div>`;
@@ -24350,11 +24471,6 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             `<div>${esc(filename)}</div>`
           ].join("<br>");
         }
-        const shouldPersist = options.persist !== false;
-        const sourceRecord = !shouldPersist
-          ? null
-          : await trySaveRepositorySourceFile(file, "raw-map", { sourceArchive: options.sourceArchive || "" });
-        currentRepositorySourceId = options.sourceId || sourceRecord?.id || "";
         const persisted = shouldPersist
           ? !!sourceRecord && await saveRawMapTextSummary(file, parsed, currentRepositorySourceId)
           : null;
@@ -24422,7 +24538,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         : `✅ Loaded: ${filename} (${formatBytes(buffer.byteLength)})`);
       const detection = autoScanARPES(h5, filename);
       currentH5Detection = detection;
-      const preview = await renderAutomaticHDF5Preview(h5, detection, filename);
+      const preview = await renderAutomaticHDF5Preview(h5, detection, filename, {
+        sourceId: currentRepositorySourceId,
+        sourceArchive: options.sourceArchive || "",
+        sourceSize: buffer.byteLength
+      });
       let summariesSaved = null;
       if (options.addSummaries) {
         try {
@@ -24869,9 +24989,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       currentRepositorySourceId = options.sourceId || "";
       if (isMap) {
         const selection = hdf5SelectionForPlan(plan, [previewBetaCenter, Math.floor(previewHeight / 2), previewEnergyCenter]);
-        drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename: file.name, selection, basePlan: plan });
+        drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, {
+          filename: file.name,
+          sourceId: currentRepositorySourceId,
+          sourceSize: file.size || null,
+          sourceLastModified: file.lastModified || null,
+          selection,
+          basePlan: plan
+        });
       } else {
-        drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename: file.name });
+        drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, {
+          filename: file.name,
+          sourceId: currentRepositorySourceId,
+          sourceSize: file.size || null,
+          sourceLastModified: file.lastModified || null
+        });
       }
       updateHDF5PreviewInfo(plan, sample, file.name);
       if (hdf5Tree) {
@@ -24981,6 +25113,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           if (sesPreviewState) {
             drawHDF5Heatmap(hdf5PreviewCanvas, sesPreviewState.sourceSample || sesPreviewState.sample, sesPreviewState.plan, {
               filename: sesPreviewState.filename || file.name,
+              sourceIdentity: sesPreviewState.sourceIdentity,
               selection: sesPreviewState.selection,
               slicerCache: sesPreviewState.slicerCache,
               basePlan: sesPreviewState.basePlan
@@ -25463,6 +25596,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const tokens = new Set(hdf5Tokens(hdf5DatasetSearchText(dataset)));
       const has = words => words.some(word => tokens.has(word));
       const text = hdf5DatasetSearchText(dataset).toLowerCase();
+      if (has(["photon", "photonenergy", "excitation", "incident", "hv", "hnu"])
+        || /photon[ _-]*energy|excitation[ _-]*energy|h\s*[νv]/i.test(text)) return "photon_energy";
       if (has(["ev", "e", "energy", "energies", "binding", "kinetic", "bindingenergy", "kineticenergy"])) return "energy";
       if (has(["alpha", "beta", "theta", "phi", "angle", "angles", "emission", "emissionangle"])) return "angle";
       if (has(["k", "kx", "ky", "kz", "kparallel", "kpar", "momentum", "wavevector"])) return "momentum";
@@ -25474,7 +25609,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function hdf5AxisLabel(axis) {
       const name = normalizeHDF5Name(axis?.name || axis?.path || "") || `dim ${axis?.dim ?? ""}`;
-      if (axis?.kind === "energy") return /kinetic/.test(name) ? "Kinetic energy (eV)" : "Energy (eV)";
+      const text = hdf5DatasetSearchText(axis).toLowerCase();
+      const unit = /(?:^|[^a-z])mev(?:[^a-z]|$)/.test(text)
+        ? "meV"
+        : (/(?:^|[^a-z])(?:uev|µev|μev)(?:[^a-z]|$)/.test(text)
+            ? "µeV"
+            : (/(?:^|[^a-z])kev(?:[^a-z]|$)/.test(text)
+                ? "keV"
+                : (/(?:^|[^a-z])ev(?:[^a-z]|$)/.test(text) ? "eV" : "")));
+      const withUnit = label => unit ? `${label} (${unit})` : label;
+      if (axis?.kind === "photon_energy") return withUnit("Photon energy");
+      if (axis?.kind === "energy") {
+        if (/binding/.test(text)) return withUnit("Binding Energy");
+        if (/kinetic/.test(text)) return withUnit("Kinetic Energy");
+        return withUnit("Energy");
+      }
       if (axis?.kind === "angle") return `${name || "angle"} (deg)`;
       if (axis?.kind === "momentum") return name || "momentum";
       if (axis?.kind === "temperature") return "Temperature (K)";
@@ -26140,6 +26289,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         return true;
       }
 
+      try {
+        window.ArpesDftWorkbench?.drawOverlay?.(ctx, state);
+      } catch (error) {
+        console.warn("Could not draw the ARPES–DFT overlay", error);
+      }
+
       if (state.layout?.erlabStyle) {
         const layout = state.layout;
         const selection = state.selection || {};
@@ -26336,6 +26491,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       cancelHDF5PreviewRedraw();
       drawHDF5Heatmap(hdf5PreviewCanvas, state.sourceSample || state.sample, nextPlan, {
         filename: state.filename,
+        sourceIdentity: state.sourceIdentity,
         selection,
         basePlan
       });
@@ -26588,6 +26744,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         basePlan,
         plan,
         filename: options.filename || "",
+        sourceIdentity: options.sourceIdentity || { filename: options.filename || "", sourceId: "" },
         selection: { col, row, fixed },
         layout: {
           erlabStyle: true,
@@ -26616,11 +26773,27 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function drawHDF5Heatmap(canvas, sample, plan, options = {}) {
       if (!canvas) return;
+      const sourceIdentity = options.sourceIdentity || {
+        filename: options.filename || "",
+        sourceId: Object.prototype.hasOwnProperty.call(options, "sourceId")
+          ? (options.sourceId || "")
+          : (currentRepositorySourceId || ""),
+        sourceArchive: options.sourceArchive || "",
+        sourceSize: options.sourceSize != null && Number.isFinite(Number(options.sourceSize)) ? Number(options.sourceSize) : null,
+        sourceLastModified: options.sourceLastModified != null && Number.isFinite(Number(options.sourceLastModified)) ? Number(options.sourceLastModified) : null
+      };
+      if (!options.compact) {
+        try {
+          plan = window.ArpesDftWorkbench?.transformPreviewPlan?.(plan, sourceIdentity) || plan;
+        } catch (error) {
+          console.warn("Could not apply ARPES energy calibration", error);
+        }
+      }
       if (canvas === hdf5PreviewCanvas && !options.compact) {
         setHDF5PreviewInteractionEnabled(true);
         setHDF5CompareLiteratureReady(true);
       }
-      if (!options.compact && drawHDF5SlicerHeatmap(canvas, sample, plan, options)) return;
+      if (!options.compact && drawHDF5SlicerHeatmap(canvas, sample, plan, { ...options, sourceIdentity })) return;
       if (!options.compact) hideHDF5MainViewControls();
       const ctx = canvas.getContext("2d");
       const W = canvas.width;
@@ -26740,6 +26913,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         sample,
         plan,
         filename: options.filename || "",
+        sourceIdentity,
         selection: { col: crossCol, row: crossRow },
         layout: { margin, plotW, plotH, flipX, flipY, topProfileRect, rightProfileRect }
       };
@@ -26915,6 +27089,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
       drawHDF5Heatmap(canvas, state.sourceSample || state.sample, state.plan, {
         filename: state.filename,
+        sourceIdentity: state.sourceIdentity,
         selection: state.selection,
         slicerCache: state.slicerCache,
         basePlan: state.basePlan
@@ -27048,6 +27223,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
       };
       interactionSurface.addEventListener("click", event => {
+        if (window.ArpesDftWorkbench?.handlePreviewClick?.(event, hdf5PreviewCanvas)) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          return;
+        }
         const zone = hdf5PreviewPointerZone(hdf5PreviewCanvas, event);
         if (zone) setHDF5PreviewSelectionFromEvent(hdf5PreviewCanvas, event, true, zone);
       });
@@ -27269,7 +27449,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const packageSample = hdf5DecodeMatrixU8(packageData);
       if (packageSample) {
         const packagePlan = hdf5PlanFromPackage(packageData, filename, packageSample);
-        drawHDF5Heatmap(hdf5PreviewCanvas, packageSample, packagePlan, { filename });
+        drawHDF5Heatmap(hdf5PreviewCanvas, packageSample, packagePlan, { filename, sourceId: "" });
       } else {
         await drawExternalHDF5PreviewImage(src, title);
       }
@@ -27329,7 +27509,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       delete hdf5PreviewCanvas.__hdf5PreviewState;
     }
 
-    async function renderAutomaticHDF5Preview(h5, detection, filename) {
+    async function renderAutomaticHDF5Preview(h5, detection, filename, sourceIdentity = {}) {
       if (!hdf5PreviewCanvas) return null;
       showHDF5PreviewMessage(t("hdf5PreviewDrawing"));
       await yieldToBrowser();
@@ -27338,7 +27518,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const plan = buildHDF5PreviewPlan(h5, datasetInfo, detection);
           if (!plan) continue;
           const sample = sampleHDF5Dataset(plan);
-          drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename });
+          drawHDF5Heatmap(hdf5PreviewCanvas, sample, plan, { filename, ...sourceIdentity });
           updateHDF5PreviewInfo(plan, sample, filename);
           return { plan, sample };
         } catch (error) {
