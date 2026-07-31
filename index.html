@@ -3014,12 +3014,16 @@
 
     .roundtable-model-status span {
       max-width: 100%;
-      overflow: hidden;
       color: rgba(214,240,248,0.74);
       font-size: 9px;
       line-height: 1.25;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .roundtable-center[data-synthesis-state="ready"] {
+      border-color: rgba(45,212,191,0.7);
+      box-shadow: 0 0 30px rgba(45,212,191,0.3), inset 0 0 24px rgba(20,184,166,0.22);
     }
 
     .center-crystal {
@@ -9206,7 +9210,7 @@
             </div>
             <div class="roundtable-panel" aria-label="Module round table">
               <div class="roundtable-surface"></div>
-              <button class="round-module one active" type="button" data-ai-model="gpt-5.6-luna">
+              <button class="round-module one" type="button" data-ai-model="gpt-5.6-luna">
                 <span class="module-cube">
                   <span class="module-cube-face front"><span><span class="round-module-model">GPT</span><span class="round-module-role">general reasoning</span></span></span>
                   <span class="module-cube-face top"></span>
@@ -9250,8 +9254,8 @@
               </button>
               <div class="roundtable-center">
                 <div class="roundtable-model-status" aria-live="polite">
-                  <strong data-roundtable-model-title>GPT</strong>
-                  <span data-roundtable-model-hint>gpt-5.6-luna · 通用推理、实验方案和跨模块问答。</span>
+                  <strong data-roundtable-model-title>综合研判模型</strong>
+                  <span data-roundtable-model-hint>Consensus Synthesizer · 汇总外圈模型答案，不自行生成科学结论。</span>
                 </div>
                 <div class="crucible-panel periodic-crucible-panel" id="periodicCruciblePanel" tabindex="0" aria-label="模型合集中央坩埚">
                   <h3>坩埚预测 <span id="roundtableCrucibleFormula">等待元素</span></h3>
@@ -16768,20 +16772,7 @@
           ? (zh ? "正在加载已训练的 JARVIS 组成基线…" : "Loading the trained JARVIS composition baseline…")
           : (zh ? "加入至少两种元素后运行已训练的组成基线。" : "Add at least two elements to run the trained composition baseline.");
 
-      return [
-        {
-          name: zh ? "材料研究主持人" : "Materials Research Chair",
-          modelId: "materials-chair-local-v1",
-          role: "host",
-          stage: "task_planning",
-          kind: zh ? "报告主持与任务分配" : "Report orchestration",
-          state: hasComposition ? "ready" : "idle",
-          status: hasComposition ? (zh ? "等待各模型报告" : "Awaiting model reports") : (zh ? "等待组合" : "Awaiting composition"),
-          prediction: zh
-            ? "汇集下方各模型的独立报告，合并相似结论、标记冲突、分配验证任务，再生成可追踪的执行报告。"
-            : "Collects the independent reports below, merges similar findings, flags conflicts, assigns validation tasks, and produces a traceable execution report.",
-          meta: zh ? "主持人不计入科学共识，也不会自动提交付费作业" : "The chair is excluded from scientific consensus and never auto-submits paid jobs"
-        },
+      const workerRows = [
         {
           name: "GPT",
           modelId: chatAgentSelect?.value || "gpt-5.6-luna",
@@ -16855,12 +16846,50 @@
           meta: zh ? "ScienceOne 数据库任务 · 尚未查询" : "ScienceOne database task · not queried"
         }
       ];
+
+      const evidenceRows = workerRows.filter(row => row.state === "ready" && ["llm", "rule", "ml", "database", "dft", "experiment"].includes(row.stage));
+      const planningRows = workerRows.filter(row => row.stage === "task_planning");
+      const runningRows = workerRows.filter(row => row.state === "running");
+      const sourceNames = evidenceRows.map(row => row.name).join(zh ? "、" : ", ");
+      let synthesisState = "idle";
+      let synthesisStatus = zh ? "等待组合" : "Awaiting composition";
+      let synthesisPrediction = zh
+        ? "加入至少两种元素后，综合研判模型会汇总所有已返回答案、区分实际结果与任务计划，并标出共识、冲突和证据缺口。"
+        : "Add at least two elements. The synthesis model will merge returned answers, separate results from plans, and surface agreement, conflicts, and evidence gaps.";
+      if (hasComposition) {
+        synthesisState = runningRows.length ? "running" : (evidenceRows.length ? "ready" : "idle");
+        synthesisStatus = runningRows.length
+          ? (zh ? `正在汇总 · ${runningRows.length} 项运行中` : `Synthesizing · ${runningRows.length} running`)
+          : (zh ? `已汇总 ${evidenceRows.length} 项结果` : `${evidenceRows.length} results synthesized`);
+        synthesisPrediction = zh
+          ? `已汇总 ${evidenceRows.length} 项实际结果${sourceNames ? `（${sourceNames}）` : ""}和 ${planningRows.length} 项验证计划。当前共同结论：${model.classificationLabel}，探索排序 ${model.score}/100 只用于安排下一步，不是超导概率。尚无两组同结构、同条件的独立数值结果，不能形成正式数值共识；仍需补充晶体结构、DFT 与实验验证。`
+          : `Synthesized ${evidenceRows.length} returned result(s)${sourceNames ? ` (${sourceNames})` : ""} and ${planningRows.length} validation plan(s). Shared conclusion: ${model.classificationLabel}; the ${model.score}/100 exploration rank only prioritizes follow-up work and is not a superconductivity probability. There are not yet two independent numeric results for the same structure and conditions, so no formal numeric consensus is claimed; crystal structure, DFT, and experiment are still required.`;
+      }
+      const synthesisRow = {
+        name: zh ? "综合研判模型" : "Consensus Synthesizer",
+        modelId: "consensus-synthesizer-local-v1",
+        role: "host",
+        stage: "task_planning",
+        kind: zh ? "答案汇总与冲突审计" : "Answer synthesis and conflict audit",
+        state: synthesisState,
+        status: synthesisStatus,
+        prediction: synthesisPrediction,
+        meta: zh ? "专用本地综合器 · 不调用 GPT · 不计入科学证据" : "Dedicated local synthesizer · does not call GPT · excluded from scientific evidence"
+      };
+
+      return [synthesisRow, ...workerRows];
     }
 
     function renderMultiModelPredictions(model = predictMixturePotential()) {
       if (!multiModelPredictionList) return;
       const zh = currentLang === "zh";
       const rows = multiModelPredictionRows(model);
+      const synthesisRow = rows.find(row => row.role === "host");
+      renderRoundtableSynthesisCenter(document.querySelector(".roundtable-center"), {
+        formula: model.formula,
+        state: synthesisRow?.state,
+        status: synthesisRow?.status
+      });
       if (multiModelPredictionTitle) multiModelPredictionTitle.textContent = zh ? "多模型预测" : "Multi-model Predictions";
       if (multiModelPredictionHint) {
         multiModelPredictionHint.textContent = zh
@@ -18093,7 +18122,7 @@
           }
           const targetId = btn.dataset.moduleTarget;
           const [titleKey, hintKey] = moduleHints[targetId] || ["moduleMaterialIndex", "moduleMaterialIndexHint"];
-          updateRoundtableCenterStatus(center, t(titleKey), t(hintKey));
+          renderRoundtableSynthesisCenter(center, { source: `${t(titleKey)} · ${t(hintKey)}` });
           const target = document.getElementById(targetId);
           if (targetId === "advancedLibrary" || targetId === "section-search") showAppPage("literature");
           else if (targetId === "section-hdf5") showAppPage("data");
@@ -18104,8 +18133,7 @@
           else if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
         });
       });
-      const activeModel = [...buttons].find(btn => btn.classList.contains("active") && btn.dataset.aiModel)?.dataset.aiModel;
-      if (activeModel) renderRoundtableAiCenter(activeModel, center);
+      renderRoundtableSynthesisCenter(center);
     }
 
     function openRoundtableScienceOneTool(panelName, center) {
@@ -18127,7 +18155,7 @@
         }
       };
       const tool = tools[panelName] || tools.crystal;
-      updateRoundtableCenterStatus(center, tool.title, `ScienceOne · ${currentLang === "zh" ? tool.zh : tool.en}`);
+      renderRoundtableSynthesisCenter(center, { source: `${tool.title} · ScienceOne` });
       showAppPage("model");
       showScienceOnePanel(panelName in tools ? panelName : "crystal");
       requestAnimationFrame(() => {
@@ -18165,24 +18193,28 @@
       document.querySelectorAll(".round-module[data-ai-model]").forEach(button => {
         button.classList.toggle("active", button.dataset.aiModel === selectedModelName);
       });
-      renderRoundtableAiCenter(selectedModelName, center || document.querySelector(".roundtable-center"));
+      renderRoundtableSynthesisCenter(center || document.querySelector(".roundtable-center"), { source: model.title });
       renderModelRegistry();
       if (options.notify !== false) showToast(`${t("aiRoundtableSelected")} ${model.title}`);
       return model;
     }
 
-    function renderRoundtableAiCenter(modelName, center) {
-      if (!center) return;
-      const selectedModelName = roundtableAiModels[modelName] ? modelName : DEFAULT_CHAT_AGENT;
-      const model = roundtableAiModels[selectedModelName];
-      const hint = currentLang === "zh" ? model.zh : model.en;
-      updateRoundtableCenterStatus(center, model.title, `${selectedModelName} · ${hint}`);
-    }
-
-    function updateRoundtableCenterStatus(center, title, hint) {
+    function renderRoundtableSynthesisCenter(center, options = {}) {
       if (!center) return;
       const titleNode = center.querySelector("[data-roundtable-model-title]");
       const hintNode = center.querySelector("[data-roundtable-model-hint]");
+      const formula = options.formula || modelMixtureFormula();
+      const title = currentLang === "zh" ? "综合研判模型" : "Consensus Synthesizer";
+      let hint = currentLang === "zh"
+        ? "专门汇总外圈模型答案，区分结果与计划，不自行生成科学结论。"
+        : "Dedicated to summarizing outer-model answers, separating results from plans, without inventing scientific conclusions.";
+      if (formula && options.status) hint = `${formula} · ${options.status}`;
+      else if (options.source) {
+        hint = currentLang === "zh"
+          ? `已选择答案源：${options.source}；综合模型保持独立。`
+          : `Answer source selected: ${options.source}; the synthesis model remains independent.`;
+      }
+      center.dataset.synthesisState = options.state || (formula ? "running" : "idle");
       if (titleNode) titleNode.textContent = title;
       if (hintNode) {
         hintNode.textContent = hint;
