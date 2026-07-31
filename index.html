@@ -8698,6 +8698,7 @@
 <script defer src="arpes-dft.js"></script>
 <script defer src="bohrium-openlam.js"></script>
 <script defer src="material-consensus.js"></script>
+<script defer src="material-baseline.js"></script>
 <script>
   window.jsfive = window.jsfive || window.hdf5;
   window.addEventListener("error", event => {
@@ -16698,6 +16699,9 @@
       const nearest = model.nearestMatches[0]?.row;
       const currentAi = state.mixtureAi?.signature === mixtureSignature() ? state.mixtureAi : null;
       const scienceOne = scienceOnePredictionConnection();
+      const trainedBaseline = hasComposition && window.ARPESMaterialBaseline
+        ? window.ARPESMaterialBaseline.predictCounts(model.counts)
+        : { state: "idle" };
 
       let gptState = "idle";
       let gptStatus = zh ? "待运行" : "Ready to run";
@@ -16756,6 +16760,14 @@
           ? `${formula} 可先检索带隙、金属性、费米能级和磁序；${nearest ? `本地最近邻为 ${nearest.display_name || nearest.material}。` : "当前尚无可直接查询的 Materials Project ID。"}`
           : `${formula} can be screened by gap, metallicity, Fermi level, and magnetic ordering; ${nearest ? `the nearest local seed is ${nearest.display_name || nearest.material}.` : "no directly queryable Materials Project ID is available yet."}`);
 
+      const baselinePrediction = trainedBaseline.state === "ready"
+        ? (zh
+          ? `JARVIS 组成基线：形成能 ${trainedBaseline.formation_energy_eV_atom} eV/atom（测试误差 Q90 ±${trainedBaseline.formation_error_q90_eV_atom}）；金属性倾向分数 ${trainedBaseline.metallic_tendency_score}；若为非金属，带隙约 ${trainedBaseline.conditional_nonmetal_band_gap_eV} eV（Q90 ±${trainedBaseline.band_gap_error_q90_eV}）。已知超导数据库条件下 Tc 回归约 ${trainedBaseline.conditional_known_superconductor_tc_K} K（Q90 ±${trainedBaseline.tc_error_q90_K} K），不是超导概率。`
+          : `JARVIS composition baseline: formation energy ${trainedBaseline.formation_energy_eV_atom} eV/atom (test Q90 ±${trainedBaseline.formation_error_q90_eV_atom}); metallic tendency score ${trainedBaseline.metallic_tendency_score}; conditional non-metal gap ${trainedBaseline.conditional_nonmetal_band_gap_eV} eV (Q90 ±${trainedBaseline.band_gap_error_q90_eV}). Tc within the known-superconductor dataset is ${trainedBaseline.conditional_known_superconductor_tc_K} K (Q90 ±${trainedBaseline.tc_error_q90_K} K), not a superconductivity probability.`)
+        : trainedBaseline.state === "loading"
+          ? (zh ? "正在加载已训练的 JARVIS 组成基线…" : "Loading the trained JARVIS composition baseline…")
+          : (zh ? "加入至少两种元素后运行已训练的组成基线。" : "Add at least two elements to run the trained composition baseline.");
+
       return [
         {
           name: zh ? "材料研究主持人" : "Materials Research Chair",
@@ -16799,6 +16811,18 @@
           status: hasElements ? (zh ? "本地结果" : "Local result") : (zh ? "等待元素" : "Awaiting elements"),
           prediction: arpesPrediction,
           meta: zh ? "本地证据规则 · 无需 API" : "Local evidence rules · no API required"
+        },
+        {
+          name: "JARVIS Baseline v1",
+          modelId: trainedBaseline.version || "jarvis-composition-baseline-2026.07.31",
+          stage: trainedBaseline.state === "ready" ? "ml" : "task_planning",
+          kind: zh ? "组成性质基线" : "Composition property baseline",
+          state: trainedBaseline.state === "ready" ? "ready" : (trainedBaseline.state === "loading" ? "running" : "idle"),
+          status: trainedBaseline.state === "ready"
+            ? (zh ? "已训练" : "Trained")
+            : (trainedBaseline.state === "loading" ? (zh ? "加载中" : "Loading") : (zh ? "等待组合" : "Awaiting composition")),
+          prediction: baselinePrediction,
+          meta: zh ? "JARVIS 公开数据 · 组成输入 · 需结构/DFT/实验复核" : "Public JARVIS data · composition input · structure/DFT/experiment validation required"
         },
         {
           name: "CrystalStructureGen",
@@ -28883,6 +28907,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     // ===== 启动页面 =====
     installModelHub();
+    window.addEventListener("arpes:material-baseline-ready", () => renderPeriodicCruciblePanel());
     initAiConfigForm();
     probeChatEndpoint().catch(() => {});
     initScienceOneTools();
