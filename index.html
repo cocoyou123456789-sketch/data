@@ -7,6 +7,7 @@
   <title>ARPES Superconductivity Explorer | 超导材料探索器</title>
   <link rel="stylesheet" href="arpes-dft.css">
   <link rel="stylesheet" href="bohrium-openlam.css">
+  <link rel="stylesheet" href="material-consensus.css">
   <style>
     :root {
       --bg: #0a0e14;
@@ -8696,6 +8697,7 @@
 <script defer src="band-ai.js"></script>
 <script defer src="arpes-dft.js"></script>
 <script defer src="bohrium-openlam.js"></script>
+<script defer src="material-consensus.js"></script>
 <script>
   window.jsfive = window.jsfive || window.hdf5;
   window.addEventListener("error", event => {
@@ -9187,7 +9189,10 @@
                   <h3 id="multiModelPredictionTitle">多模型预测</h3>
                   <p id="multiModelPredictionHint">各模型针对当前元素组合给出独立的预览或验证任务。</p>
                 </div>
-                <span class="multi-model-prediction-formula" id="multiModelPredictionFormula">等待元素</span>
+                <div class="material-consensus-jump">
+                  <span class="multi-model-prediction-formula" id="multiModelPredictionFormula">等待元素</span>
+                  <button id="materialConsensusOpenBtn" type="button" data-consensus-i18n="openConsensus">查看共识报告</button>
+                </div>
               </div>
               <div class="multi-model-prediction-list" id="multiModelPredictionList" aria-live="polite"></div>
             </section>
@@ -9959,6 +9964,183 @@
             </aside>
           </div>
           <div class="model-output" id="modelOutput" data-i18n="modelOutputDefault">等待模型输入。当前先返回规则化预览，后续可接入真实计算模型。</div>
+          <section class="material-consensus" id="materialConsensusWorkbench" aria-labelledby="materialConsensusTitle">
+            <div class="material-consensus-head">
+              <div>
+                <span class="material-consensus-kicker" data-consensus-i18n="kicker">材料智能中枢</span>
+                <h3 id="materialConsensusTitle" data-consensus-i18n="title">多模型预测与共识报告</h3>
+                <p data-consensus-i18n="subtitle">汇总不同模型的候选、数值与建议，保守合并相同成分和相似结论，突出共识、分歧及下一步验证。</p>
+              </div>
+              <span class="material-consensus-mode" data-consensus-i18n="mode">本地归纳 · 不替代实验</span>
+            </div>
+
+            <div class="material-consensus-priority" aria-label="Material discovery priorities">
+              <article>
+                <span>01</span>
+                <strong data-consensus-i18n="priorityStability">身份与稳定性闸门</strong>
+                <small data-consensus-i18n="priorityStabilityHint">先核对结构、条件与版本，再比较弛豫、形成能、凸包能和动力学稳定性。</small>
+              </article>
+              <article>
+                <span>02</span>
+                <strong data-consensus-i18n="priorityProperty">目标性质</strong>
+                <small data-consensus-i18n="priorityPropertyHint">再筛选 Tc、带隙、磁性、催化或用户指定性质。</small>
+              </article>
+              <article>
+                <span>03</span>
+                <strong data-consensus-i18n="priorityNovelty">新颖性与可合成性</strong>
+                <small data-consensus-i18n="priorityNoveltyHint">数据库和文献查重后，才标记为“待验证的新候选”。</small>
+              </article>
+            </div>
+
+            <section class="material-chair" id="materialChair" aria-labelledby="materialChairTitle">
+              <div class="material-chair-head">
+                <div>
+                  <span class="material-chair-kicker">ORCHESTRATOR</span>
+                  <h4 id="materialChairTitle" data-consensus-i18n="chairTitle">材料研究主持人</h4>
+                  <p data-consensus-i18n="chairSubtitle">收集各模型的独立报告，合并结论与冲突，分配下一轮任务，并持续更新执行报告。</p>
+                </div>
+                <span class="material-chair-mode" data-consensus-i18n="chairMode">本地主持规则 v1 · 不计入科学共识</span>
+              </div>
+              <ol class="material-chair-flow" aria-label="Orchestration workflow">
+                <li><span>01</span><strong data-consensus-i18n="chairStepReports">收取模型报告</strong></li>
+                <li><span>02</span><strong data-consensus-i18n="chairStepSynthesis">归纳与冲突审计</strong></li>
+                <li><span>03</span><strong data-consensus-i18n="chairStepTasks">分配验证任务</strong></li>
+                <li><span>04</span><strong data-consensus-i18n="chairStepExecution">生成执行报告</strong></li>
+              </ol>
+              <div class="material-chair-toolbar">
+                <button class="primary" id="materialChairRunBtn" type="button" data-consensus-i18n="chairRun">生成 / 更新主持方案</button>
+                <button id="materialChairTaskBtn" type="button" disabled data-consensus-i18n="chairTaskPackage">下载任务包</button>
+                <button id="materialChairReportBtn" type="button" disabled data-consensus-i18n="chairExecutionReport">下载执行报告</button>
+              </div>
+              <div class="material-chair-metrics">
+                <div><span data-consensus-i18n="chairReportsMetric">模型报告</span><strong id="materialChairReportCount">0</strong></div>
+                <div><span data-consensus-i18n="chairTasksMetric">分配任务</span><strong id="materialChairTaskCount">0</strong></div>
+                <div><span data-consensus-i18n="chairReturnedMetric">已返回结果</span><strong id="materialChairReturnedCount">0</strong></div>
+                <div><span data-consensus-i18n="chairPendingMetric">待执行</span><strong id="materialChairPendingCount">0</strong></div>
+              </div>
+              <div class="material-chair-empty" id="materialChairEmpty" data-consensus-i18n="chairEmpty">导入或收集至少一份模型建议后，主持人会生成独立报告、任务分工与执行摘要。</div>
+              <div class="material-chair-content" id="materialChairContent" hidden>
+                <details class="material-chair-reports" open>
+                  <summary data-consensus-i18n="chairModelReports">各模型独立报告</summary>
+                  <div class="material-chair-report-grid" id="materialChairReports"></div>
+                </details>
+                <div class="material-chair-board">
+                  <h5 data-consensus-i18n="chairTaskBoard">主持人任务板</h5>
+                  <div class="material-chair-table-wrap">
+                    <table>
+                      <thead><tr>
+                        <th data-consensus-i18n="chairColOwner">负责模型 / 团队</th>
+                        <th data-consensus-i18n="chairColTask">任务</th>
+                        <th data-consensus-i18n="chairColCandidate">候选</th>
+                        <th data-consensus-i18n="chairColDeliverable">交付物</th>
+                        <th data-consensus-i18n="chairColStatus">状态</th>
+                      </tr></thead>
+                      <tbody id="materialChairTaskBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="material-chair-summary">
+                  <h5 data-consensus-i18n="chairFinalSummary">执行摘要</h5>
+                  <p id="materialChairSummary"></p>
+                </div>
+              </div>
+              <p class="material-chair-boundary" data-consensus-i18n="chairBoundary">主持人只组织已有结果并安排验证，不调用付费计算、不修改证据等级，也不把模型意见当作新材料发现。</p>
+            </section>
+
+            <div class="material-consensus-layout">
+              <div class="material-consensus-inputs">
+                <div class="material-consensus-campaign">
+                  <label><span data-consensus-i18n="targetProperty">预测目标</span>
+                    <select id="materialConsensusTarget">
+                      <option value="stability" data-consensus-i18n="targetStability">热力学 / 结构稳定性</option>
+                      <option value="tc_K" data-consensus-i18n="targetTc">超导转变温度 Tc</option>
+                      <option value="band_gap_eV" data-consensus-i18n="targetBandGap">带隙</option>
+                      <option value="magnetic" data-consensus-i18n="targetMagnetic">磁性</option>
+                      <option value="custom" data-consensus-i18n="targetCustom">自定义性质</option>
+                    </select>
+                  </label>
+                  <label><span data-consensus-i18n="targetValue">目标值 / 下限</span>
+                    <input id="materialConsensusTargetValue" type="number" step="any" placeholder="例如 40">
+                  </label>
+                  <label><span data-consensus-i18n="allowedElements">允许元素</span>
+                    <input id="materialConsensusAllowed" autocomplete="off" placeholder="Fe, Se, S">
+                  </label>
+                  <label><span data-consensus-i18n="excludedElements">排除元素</span>
+                    <input id="materialConsensusExcluded" autocomplete="off" placeholder="Pb, Cd">
+                  </label>
+                </div>
+                <div class="material-consensus-toolbar">
+                  <input id="materialConsensusFileInput" class="material-consensus-native-input" type="file" accept=".json,.csv,.tsv,application/json,text/csv,text/tab-separated-values" multiple tabindex="-1" aria-hidden="true">
+                  <button class="primary" id="materialConsensusImportBtn" type="button" data-consensus-i18n="importResults">导入模型结果</button>
+                  <button id="materialConsensusCollectBtn" type="button" data-consensus-i18n="collectCurrent">收集当前模型建议</button>
+                  <button id="materialConsensusExampleBtn" type="button" data-consensus-i18n="loadExample">载入示例</button>
+                  <button id="materialConsensusClearBtn" type="button" data-consensus-i18n="clear">清空</button>
+                </div>
+                <div class="material-consensus-status" id="materialConsensusStatus" role="status" aria-live="polite" data-consensus-i18n="emptyStatus">尚未导入模型结果。支持统一 JSON、普通 JSON 数组、CSV 或 TSV。</div>
+                <details class="material-consensus-paste">
+                  <summary data-consensus-i18n="pasteTitle">粘贴模型返回内容或查看接入格式</summary>
+                  <div>
+                    <textarea id="materialConsensusPaste" spellcheck="false" data-consensus-i18n-placeholder="pastePlaceholder" placeholder='[{"model":"MatterSim","formula":"FeSe","stage":"ml","e_above_hull_eV_atom":0.03,"confidence":0.78,"recommendation":"建议 DFT 与声子验证"}]'></textarea>
+                    <div class="material-consensus-paste-actions">
+                      <button id="materialConsensusPasteBtn" type="button" data-consensus-i18n="addPasted">加入归纳</button>
+                      <button id="materialConsensusTemplateBtn" type="button" data-consensus-i18n="downloadTemplate">下载 JSON 模板</button>
+                    </div>
+                    <p data-consensus-i18n="formatHint">建议包含 model、model_family、formula、结构命名空间/ID、evidence_id / run_id、单位、计算条件、数值性质、recommendation 与 source。外部导入默认未核验；也可调用 window.MaterialConsensusHub.ingest(...)。</p>
+                  </div>
+                </details>
+              </div>
+
+              <aside class="material-consensus-pipeline" aria-labelledby="materialConsensusPipelineTitle">
+                <h4 id="materialConsensusPipelineTitle" data-consensus-i18n="pipelineTitle">预测新材料的推荐模型链</h4>
+                <ol>
+                  <li><strong>MatterGen / CrystalStructureGen</strong><span data-consensus-i18n="pipelineGenerate">按目标性质生成晶体候选。</span></li>
+                  <li><strong>MatterSim / CHGNet / OpenLAM</strong><span data-consensus-i18n="pipelineScreen">快速弛豫并筛查能量、力和稳定性。</span></li>
+                  <li><strong>DFT · QE / ABACUS</strong><span data-consensus-i18n="pipelineVerify">复算形成能、能带、声子与目标性质。</span></li>
+                  <li><strong data-consensus-i18n="pipelineDatabaseTitle">数据库与实验</strong><span data-consensus-i18n="pipelineDatabase">查重、合成并用结构和物性实验验证。</span></li>
+                </ol>
+                <div class="material-consensus-links">
+                  <a href="https://github.com/microsoft/mattergen" target="_blank" rel="noopener noreferrer">MatterGen</a>
+                  <a href="https://github.com/microsoft/mattersim" target="_blank" rel="noopener noreferrer">MatterSim</a>
+                  <a href="https://github.com/CederGroupHub/chgnet" target="_blank" rel="noopener noreferrer">CHGNet</a>
+                </div>
+              </aside>
+            </div>
+
+            <div class="material-consensus-results" id="materialConsensusResults">
+              <div class="material-consensus-metrics">
+                <div><span data-consensus-i18n="metricCandidates">归并候选</span><strong id="materialConsensusCandidateCount">0</strong></div>
+                <div><span data-consensus-i18n="metricModels">模型来源</span><strong id="materialConsensusModelCount">0</strong></div>
+                <div><span data-consensus-i18n="metricAgreement">有效数值共识</span><strong id="materialConsensusAgreementCount">0</strong></div>
+                <div><span data-consensus-i18n="metricConflicts">数值分歧</span><strong id="materialConsensusConflictCount">0</strong></div>
+              </div>
+              <div class="material-consensus-empty" id="materialConsensusEmpty">
+                <strong data-consensus-i18n="emptyTitle">等待多模型结果</strong>
+                <span data-consensus-i18n="emptyHint">导入各模型输出后，这里会生成归并表格、共识摘要和验证优先级。</span>
+              </div>
+              <div class="material-consensus-table-wrap" id="materialConsensusTableWrap" hidden>
+                <table>
+                  <thead>
+                    <tr>
+                      <th data-consensus-i18n="colCandidate">候选材料</th>
+                      <th data-consensus-i18n="colConsensus">核查优先级</th>
+                      <th data-consensus-i18n="colModels">模型来源</th>
+                      <th data-consensus-i18n="colProperties">关键性质</th>
+                      <th data-consensus-i18n="colNovelty">新颖性状态</th>
+                      <th data-consensus-i18n="colSummary">合并结论与分歧</th>
+                      <th data-consensus-i18n="colNext">下一步</th>
+                    </tr>
+                  </thead>
+                  <tbody id="materialConsensusTableBody"></tbody>
+                </table>
+              </div>
+              <div class="material-consensus-report-actions">
+                <button class="primary" id="materialConsensusReportBtn" type="button" disabled data-consensus-i18n="exportReport">下载分析报告</button>
+                <button id="materialConsensusJsonBtn" type="button" disabled data-consensus-i18n="exportJson">导出归一 JSON</button>
+                <button id="materialConsensusCampaignBtn" type="button" data-consensus-i18n="exportCampaign">导出新材料预测任务</button>
+              </div>
+              <p class="material-consensus-boundary" data-consensus-i18n="boundary">“历史未收录”只表示当前查重结果，不能证明材料从未被发现。所有生成候选均须经过数据库、文献、DFT 与实验验证后才能作为发现结论。</p>
+            </div>
+          </section>
           <section class="scienceone-tools" aria-labelledby="scienceOneToolsTitle">
             <div class="scienceone-tools-head">
               <div>
@@ -16576,7 +16758,22 @@
 
       return [
         {
+          name: zh ? "材料研究主持人" : "Materials Research Chair",
+          modelId: "materials-chair-local-v1",
+          role: "host",
+          stage: "task_planning",
+          kind: zh ? "报告主持与任务分配" : "Report orchestration",
+          state: hasComposition ? "ready" : "idle",
+          status: hasComposition ? (zh ? "等待各模型报告" : "Awaiting model reports") : (zh ? "等待组合" : "Awaiting composition"),
+          prediction: zh
+            ? "汇集下方各模型的独立报告，合并相似结论、标记冲突、分配验证任务，再生成可追踪的执行报告。"
+            : "Collects the independent reports below, merges similar findings, flags conflicts, assigns validation tasks, and produces a traceable execution report.",
+          meta: zh ? "主持人不计入科学共识，也不会自动提交付费作业" : "The chair is excluded from scientific consensus and never auto-submits paid jobs"
+        },
+        {
           name: "GPT",
+          modelId: chatAgentSelect?.value || "gpt-5.6-luna",
+          stage: gptState === "ready" ? "llm" : "task_planning",
           kind: zh ? "综合材料假设" : "Material synthesis",
           state: gptState,
           status: hasComposition ? gptStatus : (zh ? "等待组合" : "Awaiting composition"),
@@ -16585,6 +16782,8 @@
         },
         {
           name: "DeepSeek",
+          modelId: "deepseek-planning-preview",
+          stage: "task_planning",
           kind: zh ? "计算路线" : "Computation route",
           state: hasComposition ? "ready" : "idle",
           status: hasComposition ? (zh ? "任务建议" : "Task preview") : (zh ? "等待组合" : "Awaiting composition"),
@@ -16593,6 +16792,8 @@
         },
         {
           name: "ARPES Rules",
+          modelId: "arpes-rules-preview",
+          stage: "rule",
           kind: zh ? "实验可观测量" : "Experimental observables",
           state: hasElements ? "ready" : "idle",
           status: hasElements ? (zh ? "本地结果" : "Local result") : (zh ? "等待元素" : "Awaiting elements"),
@@ -16601,6 +16802,8 @@
         },
         {
           name: "CrystalStructureGen",
+          modelId: "scienceone-crystal-task-preview",
+          stage: "task_planning",
           kind: zh ? "晶体结构" : "Crystal structure",
           state: hasComposition ? scienceOne.state : "idle",
           status: scienceOne.label,
@@ -16609,6 +16812,8 @@
         },
         {
           name: "Quantum Espresso",
+          modelId: "scienceone-qe-task-preview",
+          stage: "task_planning",
           kind: zh ? "第一性原理计算" : "First-principles calculation",
           state: hasComposition ? scienceOne.state : "idle",
           status: scienceOne.label,
@@ -16617,6 +16822,8 @@
         },
         {
           name: zh ? "电子能带查询" : "Band Query",
+          modelId: "scienceone-materials-project-task-preview",
+          stage: "task_planning",
           kind: "Materials Project",
           state: hasComposition ? scienceOne.state : "idle",
           status: scienceOne.label,
@@ -16629,6 +16836,7 @@
     function renderMultiModelPredictions(model = predictMixturePotential()) {
       if (!multiModelPredictionList) return;
       const zh = currentLang === "zh";
+      const rows = multiModelPredictionRows(model);
       if (multiModelPredictionTitle) multiModelPredictionTitle.textContent = zh ? "多模型预测" : "Multi-model Predictions";
       if (multiModelPredictionHint) {
         multiModelPredictionHint.textContent = zh
@@ -16638,8 +16846,27 @@
       if (multiModelPredictionFormula) {
         multiModelPredictionFormula.textContent = model.formula || (zh ? "等待元素" : "Awaiting elements");
       }
-      multiModelPredictionList.innerHTML = multiModelPredictionRows(model).map(row => `
-        <article class="multi-model-prediction-row" data-state="${esc(row.state)}">
+      const suggestionRows = rows.map(row => Object.freeze({
+        model: row.name,
+        model_id: row.modelId,
+        role: row.role || "worker",
+        stage: row.stage,
+        kind: row.kind,
+        status: row.status,
+        recommendation: row.prediction,
+        provenance: row.meta
+      }));
+      const suggestionSnapshot = Object.freeze({
+        schema: "arpes-current-model-suggestions/v1",
+        formula: model.formula || "",
+        target: "superconductivity_screening",
+        generated_at: new Date().toISOString(),
+        rows: Object.freeze(suggestionRows)
+      });
+      window.ARPESCurrentModelSuggestions = suggestionSnapshot;
+      window.dispatchEvent(new CustomEvent("arpes:model-suggestions", { detail: suggestionSnapshot }));
+      multiModelPredictionList.innerHTML = rows.map(row => `
+        <article class="multi-model-prediction-row" data-state="${esc(row.state)}" data-role="${esc(row.role || "worker")}">
           <div class="multi-model-prediction-identity">
             <strong>${esc(row.name)}</strong>
             <span class="multi-model-prediction-kind">${esc(row.kind)}</span>
