@@ -1,0 +1,32 @@
+{
+  "version": "jarvis-composition-baseline-2026.07.31",
+  "formation_energy_eV_atom": {
+    "mae": 0.409634,
+    "rmse": 0.592378,
+    "r2": 0.709264,
+    "absolute_error_q90": 0.923826,
+    "test_records": 7596
+  },
+  "nonmetal_band_gap_eV": {
+    "mae": 0.957962,
+    "rmse": 1.279733,
+    "r2": 0.452283,
+    "absolute_error_q90": 2.167291,
+    "test_records": 2149
+  },
+  "known_superconductor_tc_K": {
+    "mae": 10.755644,
+    "rmse": 18.07056,
+    "r2": 0.53997,
+    "absolute_error_q90": 32.149406,
+    "test_records": 1577
+  },
+  "metal_classifier": {
+    "accuracy": 0.841232,
+    "balanced_accuracy": 0.769414,
+    "f1": 0.894118,
+    "roc_auc": 0.902556,
+    "test_records": 7596,
+    "metal_fraction_test": 0.717088
+  }
+}
