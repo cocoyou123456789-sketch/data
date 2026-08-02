@@ -1103,6 +1103,223 @@ const completeStructureCoveragePlan = Core.createOrchestration(
 assert.equal(completeStructureCoveragePlan.tasks.find(task => task.task_id === multiSourceStructureTask.task_id).status, "verified");
 assert.ok(completeStructureCoveragePlan.synthesis.analysis.groups.every(group => group.identity_resolved));
 assert.deepEqual(completeStructureCoveragePlan.synthesis.analysis.groups.flatMap(group => group.records.map(record => record.properties.tc_K)).sort((a, b) => a - b), [8, 9]);
+
+const lateStructureSourceA = trustedWithCompleteness({
+  model: "Late structure source A",
+  model_family: "late-structure-source-a",
+  evidence_id: "run:late-structure-source-a",
+  formula: "FeSe",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  recommendation: "Create a frozen structure task for source A"
+}, false);
+const lateStructureInitialPlan = Core.createOrchestration([lateStructureSourceA], { target: "tc_K" });
+const lateStructureOriginalTask = lateStructureInitialPlan.tasks.find(task => task.step === "structure");
+const lateStructureSourceB = trustedWithCompleteness({
+  model: "Late structure source B",
+  model_family: "late-structure-source-b",
+  evidence_id: "run:late-structure-source-b",
+  formula: "FeSe",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 9,
+  recommendation: "Arrived after source A's task snapshot"
+}, false);
+const lateStructureReturnA = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:late-structure-return-a",
+  formula: "FeSe",
+  structure_id: "late-structure-polymorph-a",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  assigned_task_id: lateStructureOriginalTask.task_id,
+  recommendation: "Resolve only frozen source A"
+}, false);
+const lateStructureMigrationPlan = Core.createOrchestration(
+  [lateStructureSourceA, lateStructureSourceB, lateStructureReturnA],
+  { target: "tc_K" },
+  { tasks: lateStructureInitialPlan.tasks }
+);
+assert.equal(lateStructureMigrationPlan.tasks.find(task => task.task_id === lateStructureOriginalTask.task_id).status, "verified");
+const activeLateStructureSourceB = lateStructureMigrationPlan.synthesis.analysis.groups.flatMap(group => group.records)
+  .find(record => record.evidence_ids.includes(lateStructureSourceB.evidence_id));
+assert.ok(activeLateStructureSourceB, "a source added after the frozen migration snapshot remains active");
+assert.equal(activeLateStructureSourceB.properties.tc_K, 9);
+const lateStructureRemainderTasks = lateStructureMigrationPlan.tasks.filter(task => task.step === "structure"
+  && task.task_id !== lateStructureOriginalTask.task_id
+  && task.status !== "superseded");
+assert.equal(lateStructureRemainderTasks.length, 1);
+assert.deepEqual(lateStructureRemainderTasks[0].required_property_values.tc_K, [9]);
+assert.deepEqual(lateStructureRemainderTasks[0].required_source_claims.flatMap(claim => claim.evidence_ids), [lateStructureSourceB.evidence_id]);
+
+const duplicateStructureExpandedPlan = Core.createOrchestration(
+  [lateStructureSourceA, lateStructureSourceB],
+  { target: "tc_K" }
+);
+const duplicateStructureExpandedTask = duplicateStructureExpandedPlan.tasks.find(task => task.step === "structure");
+const duplicateStructureNarrowReturn = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:duplicate-structure-narrow-return",
+  formula: "FeSe",
+  structure_id: "duplicate-authority-polymorph-x",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  assigned_task_id: lateStructureOriginalTask.task_id,
+  recommendation: "One return for the narrow structure task"
+}, false);
+const duplicateStructureExpandedReturnA = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:duplicate-structure-expanded-return-a",
+  formula: "FeSe",
+  structure_id: "duplicate-authority-polymorph-x",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  assigned_task_id: duplicateStructureExpandedTask.task_id,
+  recommendation: "Expanded task return covering source A"
+}, false);
+const duplicateStructureExpandedReturnB = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:duplicate-structure-expanded-return-b",
+  formula: "FeSe",
+  structure_id: "duplicate-authority-polymorph-x",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 9,
+  assigned_task_id: duplicateStructureExpandedTask.task_id,
+  recommendation: "Expanded task return covering source B"
+}, false);
+const duplicateStructureAuthorityPlan = Core.createOrchestration(
+  [
+    lateStructureSourceA,
+    lateStructureSourceB,
+    duplicateStructureNarrowReturn,
+    duplicateStructureExpandedReturnA,
+    duplicateStructureExpandedReturnB
+  ],
+  { target: "tc_K" },
+  { tasks: [...lateStructureInitialPlan.tasks, ...duplicateStructureExpandedPlan.tasks] }
+);
+assert.equal(duplicateStructureAuthorityPlan.tasks.find(task => task.task_id === duplicateStructureExpandedTask.task_id).status, "verified");
+assert.equal(duplicateStructureAuthorityPlan.tasks.find(task => task.task_id === lateStructureOriginalTask.task_id).status, "superseded");
+const duplicateStructureBranchRecords = duplicateStructureAuthorityPlan.synthesis.analysis.groups
+  .flatMap(group => group.records)
+  .filter(record => record.structure_id === "duplicate-authority-polymorph-x");
+assert.deepEqual(new Set(duplicateStructureBranchRecords.map(record => record.evidence_id)), new Set([
+  duplicateStructureNarrowReturn.evidence_id,
+  duplicateStructureExpandedReturnA.evidence_id,
+  duplicateStructureExpandedReturnB.evidence_id
+]));
+const duplicateStructureDownstreamTasks = duplicateStructureAuthorityPlan.tasks.filter(task =>
+  task.status !== "superseded"
+  && task.source_identity_key === duplicateStructureExpandedReturnA.identity_key
+  && task.step !== "structure");
+assert.ok(duplicateStructureDownstreamTasks.length > 0);
+duplicateStructureDownstreamTasks.forEach(task => {
+  assert.ok(task.depends_on.includes(duplicateStructureExpandedTask.task_id));
+  assert.equal(task.depends_on.includes(lateStructureOriginalTask.task_id), false);
+});
+
+const duplicateStructureDistinctBranchReturn = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:duplicate-structure-distinct-branch",
+  formula: "FeSe",
+  structure_id: "duplicate-authority-polymorph-y",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  assigned_task_id: lateStructureOriginalTask.task_id,
+  recommendation: "A distinct resolved branch retains its own migration provenance"
+}, false);
+const distinctStructureBranchesPlan = Core.createOrchestration(
+  [
+    lateStructureSourceA,
+    lateStructureSourceB,
+    duplicateStructureDistinctBranchReturn,
+    duplicateStructureExpandedReturnA,
+    duplicateStructureExpandedReturnB
+  ],
+  { target: "tc_K" },
+  { tasks: [...lateStructureInitialPlan.tasks, ...duplicateStructureExpandedPlan.tasks] }
+);
+assert.equal(distinctStructureBranchesPlan.tasks.find(task => task.task_id === duplicateStructureExpandedTask.task_id).status, "verified");
+assert.equal(distinctStructureBranchesPlan.tasks.find(task => task.task_id === lateStructureOriginalTask.task_id).status, "verified");
+for (const [branchRecord, expectedParentId, excludedParentId] of [
+  [duplicateStructureExpandedReturnA, duplicateStructureExpandedTask.task_id, lateStructureOriginalTask.task_id],
+  [duplicateStructureDistinctBranchReturn, lateStructureOriginalTask.task_id, duplicateStructureExpandedTask.task_id]
+]) {
+  const downstream = distinctStructureBranchesPlan.tasks.filter(task => task.status !== "superseded"
+    && task.source_identity_key === branchRecord.identity_key
+    && task.step !== "structure");
+  assert.ok(downstream.length > 0);
+  downstream.forEach(task => {
+    assert.ok(task.depends_on.includes(expectedParentId));
+    assert.equal(task.depends_on.includes(excludedParentId), false);
+  });
+}
+
+const lateConditionsSourceA = trustedWithCompleteness({
+  model: "Late conditions source A",
+  model_family: "late-conditions-source-a",
+  evidence_id: "run:late-conditions-source-a",
+  formula: "FeSe",
+  structure_id: "late-conditions-structure",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  recommendation: "Create a frozen conditions task for source A"
+}, false);
+const lateConditionsInitialPlan = Core.createOrchestration([lateConditionsSourceA], { target: "tc_K" });
+const lateConditionsOriginalTask = lateConditionsInitialPlan.tasks.find(task => task.step === "conditions");
+const lateConditionsSourceB = trustedWithCompleteness({
+  model: "Late conditions source B",
+  model_family: "late-conditions-source-b",
+  evidence_id: "run:late-conditions-source-b",
+  formula: "FeSe",
+  structure_id: "late-conditions-structure",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 9,
+  recommendation: "Arrived after source A's conditions snapshot"
+}, false);
+const lateConditionsReturnA = trustedWithCompleteness({
+  model: "Late conditions source A",
+  model_family: "late-conditions-source-a",
+  evidence_id: "run:late-conditions-return-a",
+  formula: "FeSe",
+  structure_id: "late-conditions-structure",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  extra_conditions: { sample: "late-batch-a" },
+  assigned_task_id: lateConditionsOriginalTask.task_id,
+  recommendation: "Complete only frozen source A conditions"
+}, true);
+const lateConditionsMigrationPlan = Core.createOrchestration(
+  [lateConditionsSourceA, lateConditionsSourceB, lateConditionsReturnA],
+  { target: "tc_K" },
+  { tasks: lateConditionsInitialPlan.tasks }
+);
+assert.equal(lateConditionsMigrationPlan.tasks.find(task => task.task_id === lateConditionsOriginalTask.task_id).status, "verified");
+const activeLateConditionsSourceB = lateConditionsMigrationPlan.synthesis.analysis.groups.flatMap(group => group.records)
+  .find(record => record.evidence_ids.includes(lateConditionsSourceB.evidence_id));
+assert.ok(activeLateConditionsSourceB, "a late source survives a frozen conditions migration");
+assert.equal(activeLateConditionsSourceB.properties.tc_K, 9);
+const lateConditionsRemainderTasks = lateConditionsMigrationPlan.tasks.filter(task => task.step === "conditions"
+  && task.task_id !== lateConditionsOriginalTask.task_id
+  && task.status !== "superseded");
+assert.equal(lateConditionsRemainderTasks.length, 1);
+assert.deepEqual(lateConditionsRemainderTasks[0].required_property_values.tc_K, [9]);
+assert.deepEqual(lateConditionsRemainderTasks[0].required_source_claims.flatMap(claim => claim.evidence_ids), [lateConditionsSourceB.evidence_id]);
+
 const truncatedStructureManifest = JSON.parse(JSON.stringify(multiSourceStructurePlan.tasks));
 const truncatedStructureTask = truncatedStructureManifest.find(task => task.task_id === multiSourceStructureTask.task_id);
 truncatedStructureTask.required_source_claims = truncatedStructureTask.required_source_claims.slice(0, 1);
@@ -1201,6 +1418,201 @@ const snapshotConditionResult = Core.createOrchestration(
 );
 assert.equal(snapshotConditionResult.tasks.find(task => task.task_id === snapshotConditionTask.task_id).status, "verified");
 assert.ok(snapshotConditionResult.synthesis.analysis.groups.some(group => group.extra_conditions.sample === "batch-a"));
+
+const parallelSnapshotSeed = trusted({
+  model: "Parallel snapshot seed",
+  model_family: "parallel-snapshot-seed",
+  evidence_id: "run:parallel-snapshot-seed",
+  formula: "FeSe",
+  structure_id: "parallel-snapshot-structure",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  recommendation: "Parallel snapshot baseline"
+});
+const parallelSnapshotPlan = Core.createOrchestration([parallelSnapshotSeed], { target: "tc_K" });
+const parallelNoveltyTask = parallelSnapshotPlan.tasks.find(task => task.step === "novelty");
+const parallelTaskByStep = new Map(parallelSnapshotPlan.tasks.map(task => [task.step, task]));
+const parallelNoveltyReturn = trusted({
+  model: "Materials Project",
+  model_family: "materials-project",
+  evidence_id: "run:parallel-snapshot-novelty",
+  formula: "FeSe",
+  structure_id: "parallel-snapshot-structure",
+  target: "tc_K",
+  stage: "database",
+  novelty_status: "known_reference",
+  data_cutoff: "2026-01-01",
+  source: "https://example.org/snapshots/parallel-snapshot",
+  assigned_task_id: parallelNoveltyTask.task_id,
+  recommendation: "Known reference without unrelated numeric claims"
+});
+const parallelSnapshotResult = Core.createOrchestration(
+  [parallelSnapshotSeed, parallelNoveltyReturn],
+  { target: "tc_K" },
+  { tasks: parallelSnapshotPlan.tasks }
+);
+for (const step of ["stability", "target", "experiment"]) {
+  const originalTask = parallelTaskByStep.get(step);
+  const activeLogicalTasks = parallelSnapshotResult.tasks.filter(task => task.status !== "superseded"
+    && task.candidate_key === originalTask.candidate_key
+    && task.source_identity_key === originalTask.source_identity_key
+    && task.step === step);
+  assert.equal(activeLogicalTasks.length, 1, `a parallel novelty return must not duplicate the active ${step} task`);
+  assert.equal(activeLogicalTasks[0].task_id, originalTask.task_id, `the frozen ${step} manifest remains authoritative`);
+}
+assert.equal(parallelSnapshotResult.synthesis.invalid_task_manifest_ids.length, 0);
+assert.equal(parallelSnapshotResult.synthesis.quarantined_return_record_count, 0);
+
+const ancestorSnapshotStabilityTask = parallelTaskByStep.get("stability");
+const ancestorSnapshotTargetTask = parallelTaskByStep.get("target");
+const ancestorSnapshotExperimentTask = parallelTaskByStep.get("experiment");
+const ancestorSnapshotStabilityReturn = trusted({
+  model: "MatterSim",
+  model_family: "MatterSim",
+  evidence_id: "run:ancestor-snapshot-stability",
+  formula: "FeSe",
+  structure_id: "parallel-snapshot-structure",
+  target: "tc_K",
+  stage: "ml",
+  e_above_hull_eV_atom: 0.01,
+  assigned_task_id: ancestorSnapshotStabilityTask.task_id,
+  recommendation: "A valid ancestor result must not expand descendant source manifests"
+});
+const ancestorSnapshotResult = Core.createOrchestration(
+  [parallelSnapshotSeed, ancestorSnapshotStabilityReturn],
+  { target: "tc_K" },
+  { tasks: parallelSnapshotPlan.tasks }
+);
+assert.equal(ancestorSnapshotResult.tasks.find(task => task.task_id === ancestorSnapshotStabilityTask.task_id).status, "verified");
+assert.equal(ancestorSnapshotResult.synthesis.quarantined_return_record_count, 0);
+assert.equal(ancestorSnapshotResult.synthesis.invalid_task_manifest_ids.includes(ancestorSnapshotTargetTask.task_id), false,
+  "a valid stability return must not invalidate the frozen target manifest");
+assert.equal(ancestorSnapshotResult.synthesis.invalid_task_manifest_ids.includes(ancestorSnapshotExperimentTask.task_id), false,
+  "a valid stability return must not invalidate the frozen experiment manifest");
+assert.ok(ancestorSnapshotResult.tasks.some(task => task.task_id === ancestorSnapshotTargetTask.task_id));
+assert.ok(ancestorSnapshotResult.tasks.some(task => task.task_id === ancestorSnapshotExperimentTask.task_id));
+
+const historicalParallelObservation = trusted({
+  model: "Materials Project",
+  model_family: "materials-project",
+  evidence_id: "run:historical-parallel-observation",
+  formula: "FeSe",
+  structure_id: "parallel-snapshot-structure",
+  target: "tc_K",
+  stage: "database",
+  novelty_status: "known_reference",
+  data_cutoff: "2026-01-01",
+  source: "https://example.org/snapshots/historical-parallel",
+  recommendation: "Independent observation added after the original task snapshot"
+});
+const expandedParallelPlan = Core.createOrchestration(
+  [parallelSnapshotSeed, historicalParallelObservation],
+  { target: "tc_K" }
+);
+const expandedParallelStabilityTask = expandedParallelPlan.tasks.find(task => task.step === "stability");
+assert.notEqual(expandedParallelStabilityTask.task_id, ancestorSnapshotStabilityTask.task_id);
+assert.equal(expandedParallelStabilityTask.candidate_key, ancestorSnapshotStabilityTask.candidate_key);
+assert.equal(expandedParallelStabilityTask.source_identity_key, ancestorSnapshotStabilityTask.source_identity_key);
+const historicalDuplicateRoundTrip = Core.createOrchestration(
+  [parallelSnapshotSeed, historicalParallelObservation],
+  { target: "tc_K" },
+  { tasks: [ancestorSnapshotStabilityTask, expandedParallelStabilityTask] }
+);
+const preservedOriginalLogicalTask = historicalDuplicateRoundTrip.tasks.find(task => task.task_id === ancestorSnapshotStabilityTask.task_id);
+const auditedDuplicateLogicalTask = historicalDuplicateRoundTrip.tasks.find(task => task.task_id === expandedParallelStabilityTask.task_id);
+assert.equal(historicalDuplicateRoundTrip.synthesis.invalid_task_manifest_ids.length, 0);
+assert.notEqual(preservedOriginalLogicalTask.status, "superseded");
+assert.equal(auditedDuplicateLogicalTask.status, "superseded");
+assert.equal(auditedDuplicateLogicalTask.superseded_reason, "duplicate_logical_task");
+assert.deepEqual(auditedDuplicateLogicalTask.superseded_by, [ancestorSnapshotStabilityTask.task_id]);
+
+const expandedParallelStabilityReturn = trusted({
+  model: "MatterSim",
+  model_family: "MatterSim",
+  evidence_id: "run:expanded-parallel-stability-return",
+  formula: "FeSe",
+  structure_id: "parallel-snapshot-structure",
+  target: "tc_K",
+  stage: "ml",
+  e_above_hull_eV_atom: 0.012,
+  assigned_task_id: expandedParallelStabilityTask.task_id,
+  recommendation: "Complete the expanded two-source stability task"
+});
+const returnedExpandedDuplicatePlan = Core.createOrchestration(
+  [parallelSnapshotSeed, historicalParallelObservation, expandedParallelStabilityReturn],
+  { target: "tc_K" },
+  { tasks: [ancestorSnapshotStabilityTask, expandedParallelStabilityTask] }
+);
+const returnedExpandedTask = returnedExpandedDuplicatePlan.tasks.find(task => task.task_id === expandedParallelStabilityTask.task_id);
+const supersededNarrowTask = returnedExpandedDuplicatePlan.tasks.find(task => task.task_id === ancestorSnapshotStabilityTask.task_id);
+assert.equal(returnedExpandedTask.status, "verified", "the duplicate manifest with a valid return becomes authoritative");
+assert.equal(supersededNarrowTask.status, "superseded");
+assert.deepEqual(supersededNarrowTask.superseded_by, [expandedParallelStabilityTask.task_id]);
+
+const oldParallelTargetTask = parallelSnapshotPlan.tasks.find(task => task.step === "target");
+const oldParallelExperimentTask = parallelSnapshotPlan.tasks.find(task => task.step === "experiment");
+const expandedParallelTargetTask = expandedParallelPlan.tasks.find(task => task.step === "target");
+const expandedParallelExperimentTask = expandedParallelPlan.tasks.find(task => task.step === "experiment");
+const duplicateGenerationTasks = [...parallelSnapshotPlan.tasks, ...expandedParallelPlan.tasks];
+const coherentDuplicateGenerationPlan = previousTasks => Core.createOrchestration(
+  [parallelSnapshotSeed, historicalParallelObservation, expandedParallelStabilityReturn],
+  { target: "tc_K" },
+  { tasks: previousTasks }
+);
+const coherentForwardPlan = coherentDuplicateGenerationPlan(duplicateGenerationTasks);
+const coherentReversePlan = coherentDuplicateGenerationPlan([...duplicateGenerationTasks].reverse());
+for (const plan of [coherentForwardPlan, coherentReversePlan]) {
+  const activeTasks = plan.tasks.filter(task => task.status !== "superseded");
+  const activeTaskIds = new Set(activeTasks.map(task => task.task_id));
+  activeTasks.forEach(task => task.depends_on.forEach(dependencyId => {
+    assert.ok(activeTaskIds.has(dependencyId), `active task ${task.task_id} must not depend on superseded ${dependencyId}`);
+  }));
+  assert.equal(plan.tasks.find(task => task.task_id === expandedParallelStabilityTask.task_id).status, "verified");
+  assert.notEqual(plan.tasks.find(task => task.task_id === expandedParallelTargetTask.task_id).status, "superseded");
+  assert.notEqual(plan.tasks.find(task => task.task_id === expandedParallelExperimentTask.task_id).status, "superseded");
+  assert.equal(plan.tasks.find(task => task.task_id === oldParallelTargetTask.task_id).status, "superseded");
+  assert.equal(plan.tasks.find(task => task.task_id === oldParallelExperimentTask.task_id).status, "superseded");
+}
+const activeTaskSignature = plan => plan.tasks.filter(task => task.status !== "superseded")
+  .map(task => ({ task_id: task.task_id, status: task.status, depends_on: task.depends_on }))
+  .sort((left, right) => left.task_id.localeCompare(right.task_id));
+assert.deepEqual(activeTaskSignature(coherentForwardPlan), activeTaskSignature(coherentReversePlan),
+  "authoritative manifest generation selection must not depend on previousTasks order");
+
+const betaTargetReturn = trusted({
+  model: "Quantum Espresso",
+  model_family: "quantum-espresso",
+  evidence_id: "run:beta-target-return",
+  formula: "FeSe",
+  structure_id: "parallel-snapshot-structure",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 10,
+  calibration: { tc_K: { q90: 1, unit: "K", applicability: 0.9, validation_set: "beta-target-validation" } },
+  assigned_task_id: expandedParallelTargetTask.task_id,
+  recommendation: "A valid downstream Beta result should select its full dependency cohort"
+});
+const betaCohortPlan = previousTasks => Core.createOrchestration(
+  [parallelSnapshotSeed, historicalParallelObservation, betaTargetReturn],
+  { target: "tc_K" },
+  { tasks: previousTasks }
+);
+const betaCohortForwardPlan = betaCohortPlan(duplicateGenerationTasks);
+const betaCohortReversePlan = betaCohortPlan([...duplicateGenerationTasks].reverse());
+for (const plan of [betaCohortForwardPlan, betaCohortReversePlan]) {
+  const activeTasks = plan.tasks.filter(task => task.status !== "superseded");
+  const activeTaskIds = new Set(activeTasks.map(task => task.task_id));
+  assert.equal(plan.tasks.find(task => task.task_id === expandedParallelTargetTask.task_id).status, "verified");
+  assert.equal(plan.final_report.pending_task_ids.includes(expandedParallelTargetTask.task_id), false,
+    "a valid early target return must not be scheduled for rerun while its stability dependency is pending");
+  assert.notEqual(plan.tasks.find(task => task.task_id === expandedParallelStabilityTask.task_id).status, "superseded",
+    "the downstream verified return score propagates to its Beta stability ancestor");
+  assert.equal(plan.tasks.find(task => task.task_id === ancestorSnapshotStabilityTask.task_id).status, "superseded");
+  activeTasks.forEach(task => task.depends_on.forEach(dependencyId => assert.ok(activeTaskIds.has(dependencyId))));
+}
+assert.deepEqual(activeTaskSignature(betaCohortForwardPlan), activeTaskSignature(betaCohortReversePlan),
+  "global cohort selection with a downstream return remains order-independent");
 
 const publicVerificationSeed = Core.normalizeCandidate({ model: "Verifier", model_family: "verifier", formula: "FeSe", structure_namespace: "test-fixture", structure_id: "verification-structure", target: "tc_K", stage: "dft", tc_K: 8, recommendation: "Unverified source claim" });
 const verificationPlan = Core.createOrchestration([publicVerificationSeed], { target: "tc_K" });

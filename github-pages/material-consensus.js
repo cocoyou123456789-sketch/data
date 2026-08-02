@@ -2437,6 +2437,14 @@
     return JSON.stringify({ task_schema: 2, manifest_digest: taskManifestDigest(task) });
   }
 
+  function taskLogicalKey(task) {
+    return JSON.stringify({
+      candidate_key: task.candidate_key || "",
+      source_identity_key: task.source_identity_key || "",
+      step: task.step || ""
+    });
+  }
+
   function taskConditionState(source = {}) {
     return {
       pressure_GPa: source.pressure_GPa ?? null,
@@ -2593,11 +2601,28 @@
   function taskMatchesCurrentSourceManifest(task, preliminaryAnalysis) {
     const currentGroup = preliminaryAnalysis.groups.find(group => group.key === task.source_identity_key);
     if (!currentGroup) return false;
+    const frozenClaims = Array.isArray(task.required_source_claims) ? task.required_source_claims : [];
+    if (!frozenClaims.length) return false;
     const allowedAncestorTaskIds = new Set(task.depends_on || []);
-    const sourceRecords = currentGroup.records.filter(record => record.assigned_task_id !== task.task_id
+    const availableSourceRecords = currentGroup.records.filter(record => record.assigned_task_id !== task.task_id
       && (!record.assigned_task_id || allowedAncestorTaskIds.has(record.assigned_task_id)));
-    if (!sourceRecords.length) return false;
-    const rebuiltAnalysis = analyzeRecords(sourceRecords);
+    const unmatchedSourceRecords = [...availableSourceRecords];
+    const frozenSourceRecords = [];
+    const claimsMatch = [...frozenClaims]
+      .sort((left, right) => left.source_record_key.localeCompare(right.source_record_key))
+      .every(claim => {
+        const matchIndex = unmatchedSourceRecords.findIndex(record => {
+          if (sourceRecordKey(record) !== claim.source_record_key) return false;
+          return JSON.stringify(canonicalTaskValue(sourceClaimSnapshot(record)))
+            === JSON.stringify(canonicalTaskValue(claim));
+        });
+        if (matchIndex < 0) return false;
+        frozenSourceRecords.push(unmatchedSourceRecords[matchIndex]);
+        unmatchedSourceRecords.splice(matchIndex, 1);
+        return true;
+      });
+    if (!claimsMatch || frozenSourceRecords.length !== frozenClaims.length) return false;
+    const rebuiltAnalysis = analyzeRecords(frozenSourceRecords);
     const rebuiltGroup = rebuiltAnalysis.groups.find(group => group.key === task.source_identity_key);
     if (!rebuiltGroup) return false;
     const expected = createTaskDefinition(task.step, rebuiltGroup, task.candidate_key, task.depends_on || []);
@@ -2610,17 +2635,125 @@
     const priorTasks = previousTasks.map(safePreviousTask).filter(Boolean);
     const priorTaskById = new Map(priorTasks.map(task => [task.task_id, task]));
     const allRecords = Array.isArray(taskRecords) ? taskRecords : analysis.groups.flatMap(group => group.records);
+    const taskReturnSummaryCache = new Map();
+    const taskReturnSummary = task => {
+      if (taskReturnSummaryCache.has(task.task_id)) return taskReturnSummaryCache.get(task.task_id);
+      const returnedRecords = allRecords.filter(record => !quarantinedReturnRecords.has(record)
+        && record.assigned_task_id === task.task_id
+        && taskMatchesLineage(task, record)
+        && taskExecutorAuthorized(task, record));
+      const currentGroup = analysis.groups.find(group => returnedRecords.some(record => group.records.includes(record)))
+        || analysis.groups.find(group => group.key === task.candidate_key)
+        || { target_definition: task.target_definition, conflicts: [] };
+      const verifiedRecords = returnedRecords.filter(record => (!["structure", "conditions"].includes(task.step) || acceptedMigrationRecords.has(record))
+        && (task.step !== "verification" || acceptedVerificationRecords.has(record))
+        && (task.step !== "conflict" || acceptedConflictResolutionRecords.has(record))
+        && taskResultSatisfies(task.step, record, {
+          ...currentGroup,
+          conflict_properties: task.conflict_properties,
+          required_properties: task.required_properties,
+          required_experiment_properties: task.required_experiment_properties,
+          required_source_claims: task.required_source_claims,
+          required_property_values: task.required_property_values
+        }));
+      const summary = { returnedRecords, verifiedRecords };
+      taskReturnSummaryCache.set(task.task_id, summary);
+      return summary;
+    };
+    const priorTasksByLogicalKey = new Map();
+    priorTasks.forEach(task => {
+      const logicalKey = taskLogicalKey(task);
+      if (!priorTasksByLogicalKey.has(logicalKey)) priorTasksByLogicalKey.set(logicalKey, []);
+      priorTasksByLogicalKey.get(logicalKey).push(task);
+    });
+    const closureVerifiedReturnScore = new Map(priorTasks.map(task => [
+      task.task_id,
+      taskReturnSummary(task).verifiedRecords.length
+    ]));
+    priorTasks.forEach(task => {
+      const contribution = taskReturnSummary(task).verifiedRecords.length;
+      if (!contribution) return;
+      const visitedDependencies = new Set();
+      const pendingDependencies = [...(task.depends_on || [])];
+      while (pendingDependencies.length) {
+        const dependencyId = pendingDependencies.pop();
+        if (visitedDependencies.has(dependencyId)) continue;
+        visitedDependencies.add(dependencyId);
+        const dependencyTask = priorTaskById.get(dependencyId);
+        if (!dependencyTask) continue;
+        closureVerifiedReturnScore.set(dependencyId,
+          (closureVerifiedReturnScore.get(dependencyId) || 0) + contribution);
+        pendingDependencies.push(...(dependencyTask.depends_on || []));
+      }
+    });
+    const taskStepOrder = ["structure", "verification", "conditions", "novelty", "stability", "conflict", "target", "experiment"];
+    const taskStepRank = new Map(taskStepOrder.map((step, index) => [step, index]));
+    const compareAuthoritativeTasks = (left, right) => {
+      const leftClosureScore = closureVerifiedReturnScore.get(left.task_id) || 0;
+      const rightClosureScore = closureVerifiedReturnScore.get(right.task_id) || 0;
+      if (leftClosureScore !== rightClosureScore) return rightClosureScore - leftClosureScore;
+      const leftVerifiedReturnCount = taskReturnSummary(left).verifiedRecords.length;
+      const rightVerifiedReturnCount = taskReturnSummary(right).verifiedRecords.length;
+      if (leftVerifiedReturnCount !== rightVerifiedReturnCount) return rightVerifiedReturnCount - leftVerifiedReturnCount;
+      if (leftClosureScore > 0 && left.required_source_claims.length !== right.required_source_claims.length) {
+        return right.required_source_claims.length - left.required_source_claims.length;
+      }
+      if (leftClosureScore === 0 && left.required_source_claims.length !== right.required_source_claims.length) {
+        return left.required_source_claims.length - right.required_source_claims.length;
+      }
+      return left.task_id.localeCompare(right.task_id);
+    };
+    const priorTaskByLogicalKey = new Map();
+    Array.from(priorTasksByLogicalKey.entries())
+      .sort(([leftKey, leftTasks], [rightKey, rightTasks]) =>
+        (taskStepRank.get(leftTasks[0].step) ?? taskStepOrder.length)
+          - (taskStepRank.get(rightTasks[0].step) ?? taskStepOrder.length)
+        || leftKey.localeCompare(rightKey))
+      .forEach(([logicalKey, candidates]) => {
+        const compatibleCandidates = candidates.filter(candidate => (candidate.depends_on || []).every(dependencyId => {
+          const dependencyTask = priorTaskById.get(dependencyId);
+          if (!dependencyTask) return false;
+          return priorTaskByLogicalKey.get(taskLogicalKey(dependencyTask))?.task_id === dependencyId;
+        }));
+        const authoritative = [...compatibleCandidates].sort(compareAuthoritativeTasks)[0];
+        if (authoritative) priorTaskByLogicalKey.set(logicalKey, authoritative);
+      });
+    const migrationParentTaskByReturn = new Map();
+    const protectedMigrationParentTaskIds = new Set();
+    const migrationReturnKey = (taskId, destinationIdentity) => JSON.stringify([taskId, destinationIdentity]);
+    priorTasksByLogicalKey.forEach(candidates => {
+      if (!["structure", "conditions"].includes(candidates[0]?.step)) return;
+      const candidatesByDestination = new Map();
+      candidates.forEach(candidate => {
+        const destinations = new Set(taskReturnSummary(candidate).verifiedRecords.map(record => record.identity_key));
+        destinations.forEach(destinationIdentity => {
+          if (!candidatesByDestination.has(destinationIdentity)) candidatesByDestination.set(destinationIdentity, []);
+          candidatesByDestination.get(destinationIdentity).push(candidate);
+        });
+      });
+      candidatesByDestination.forEach((destinationCandidates, destinationIdentity) => {
+        const parentTask = [...destinationCandidates].sort(compareAuthoritativeTasks)[0];
+        if (!parentTask) return;
+        protectedMigrationParentTaskIds.add(parentTask.task_id);
+        destinationCandidates.forEach(candidate => {
+          migrationParentTaskByReturn.set(migrationReturnKey(candidate.task_id, destinationIdentity), parentTask);
+        });
+      });
+    });
     const migratedLineages = new Map();
     const completedMigrationSteps = new Map();
     const branchLineages = new Map();
     const migrationParentsByIdentity = new Map();
+    const migrationParentsBySourceIdentity = new Map();
     allRecords.forEach(record => {
-      const priorTask = priorTaskById.get(record.assigned_task_id);
-      if (!priorTask || !["structure", "conditions"].includes(priorTask.step)) return;
-      if (!taskMatchesLineage(priorTask, record)
-        || !taskExecutorAuthorized(priorTask, record)
+      const returnedTask = priorTaskById.get(record.assigned_task_id);
+      if (!returnedTask || !["structure", "conditions"].includes(returnedTask.step)) return;
+      const priorTask = migrationParentTaskByReturn.get(migrationReturnKey(returnedTask.task_id, record.identity_key));
+      if (!priorTask) return;
+      if (!taskMatchesLineage(returnedTask, record)
+        || !taskExecutorAuthorized(returnedTask, record)
         || !acceptedMigrationRecords.has(record)
-        || !taskResultSatisfies(priorTask.step, record, priorTask)) return;
+        || !taskResultSatisfies(returnedTask.step, record, returnedTask)) return;
       const branchDescriptor = priorTask.step === "structure"
         ? JSON.stringify({ namespace: record.structure_namespace, id: record.structure_id, hash: record.structure_hash, space_group: record.space_group })
         : JSON.stringify(taskConditionState(record));
@@ -2628,6 +2761,13 @@
       migratedLineages.set(record.identity_key, branchLineage);
       if (!migrationParentsByIdentity.has(record.identity_key)) migrationParentsByIdentity.set(record.identity_key, []);
       migrationParentsByIdentity.get(record.identity_key).push({ task_id: priorTask.task_id, step: priorTask.step, branch_lineage: branchLineage });
+      const sourceIdentity = priorTask.source_identity_key || priorTask.candidate_key;
+      if (!migrationParentsBySourceIdentity.has(sourceIdentity)) migrationParentsBySourceIdentity.set(sourceIdentity, []);
+      migrationParentsBySourceIdentity.get(sourceIdentity).push({
+        task_id: priorTask.task_id,
+        step: priorTask.step,
+        parent_lineage: priorTask.candidate_key
+      });
       if (!completedMigrationSteps.has(priorTask.candidate_key)) completedMigrationSteps.set(priorTask.candidate_key, new Set());
       completedMigrationSteps.get(priorTask.candidate_key).add(priorTask.step);
       if (!branchLineages.has(priorTask.candidate_key)) branchLineages.set(priorTask.candidate_key, new Set());
@@ -2635,10 +2775,21 @@
     });
     const tasks = [];
     analysis.groups.forEach(group => {
-      if (completedMigrationSteps.has(group.key) && !migratedLineages.has(group.key)) return;
-      const lineageKey = migratedLineages.get(group.key) || group.key;
+      const sourceMigrationParents = migrationParentsBySourceIdentity.get(group.key) || [];
+      const remainingSourceRecordKeys = group.records.filter(record => !record.assigned_task_id)
+        .map(sourceRecordKey).sort();
+      const remainderLineage = sourceMigrationParents.length && remainingSourceRecordKeys.length
+        ? `${group.key}|remainder:${stableWorkflowId("lineage", JSON.stringify({
+          parent_task_ids: Array.from(new Set(sourceMigrationParents.map(parent => parent.task_id))).sort(),
+          remaining_source_record_keys: remainingSourceRecordKeys
+        }))}`
+        : "";
+      const lineageKey = migratedLineages.get(group.key) || remainderLineage || group.key;
       const groupTasks = [];
       const byStep = new Map();
+      priorTaskByLogicalKey.forEach(task => {
+        if (task.candidate_key === lineageKey && task.source_identity_key === group.key) byStep.set(task.step, task);
+      });
       orchestrationSteps(group).forEach(step => {
         const dependsOn = (TASK_DEPENDENCY_STEPS[step] || []).map(dependencyStep => byStep.get(dependencyStep)?.task_id).filter(Boolean);
         (migrationParentsByIdentity.get(group.key) || []).forEach(parent => {
@@ -2647,7 +2798,9 @@
             : step !== "conditions";
           if (needsParent) dependsOn.push(parent.task_id);
         });
-        const task = createTaskDefinition(step, group, lineageKey, dependsOn);
+        const logicalKey = taskLogicalKey({ candidate_key: lineageKey, source_identity_key: group.key, step });
+        const task = priorTaskByLogicalKey.get(logicalKey)
+          || createTaskDefinition(step, group, lineageKey, dependsOn);
         groupTasks.push(task);
         byStep.set(step, task);
       });
@@ -2659,44 +2812,53 @@
     });
     tasks.splice(0, tasks.length, ...uniqueFreshTasks.values());
     const taskById = new Map(tasks.map(task => [task.task_id, task]));
+    const taskByLogicalKey = new Map(tasks.map(task => [taskLogicalKey(task), task]));
     priorTasks.forEach(task => {
       if (!taskById.has(task.task_id)) {
+        const logicalKey = taskLogicalKey(task);
+        const authoritativePriorTask = priorTaskByLogicalKey.get(logicalKey);
+        const generatedActiveLogicalTask = taskByLogicalKey.get(logicalKey);
+        const protectedMigrationParent = protectedMigrationParentTaskIds.has(task.task_id);
+        if (!protectedMigrationParent && (!authoritativePriorTask || authoritativePriorTask.task_id !== task.task_id)) {
+          const activeLogicalTask = generatedActiveLogicalTask || authoritativePriorTask;
+          task.status = "superseded";
+          task.superseded_by = activeLogicalTask && activeLogicalTask.task_id !== task.task_id
+            ? [activeLogicalTask.task_id]
+            : [];
+          task.superseded_reason = activeLogicalTask ? "duplicate_logical_task" : "incompatible_dependency_manifest";
+          taskById.set(task.task_id, task);
+          tasks.push(task);
+          return;
+        }
+        if (!protectedMigrationParent && generatedActiveLogicalTask) {
+          task.status = "superseded";
+          task.superseded_by = [generatedActiveLogicalTask.task_id];
+          task.superseded_reason = "duplicate_logical_task";
+          taskById.set(task.task_id, task);
+          tasks.push(task);
+          return;
+        }
         const migrationSteps = completedMigrationSteps.get(task.candidate_key);
         if (migrationSteps && !migrationSteps.has(task.step)) {
           task.status = "superseded";
           task.superseded_by = Array.from(branchLineages.get(task.candidate_key) || []).sort();
         }
         taskById.set(task.task_id, task);
+        if (authoritativePriorTask?.task_id === task.task_id) taskByLogicalKey.set(taskLogicalKey(task), task);
         tasks.push(task);
       }
     });
     tasks.forEach(task => {
       if (task.status === "superseded") return;
-      const returnedRecords = allRecords.filter(record => !quarantinedReturnRecords.has(record)
-        && record.assigned_task_id === task.task_id
-        && taskMatchesLineage(task, record)
-        && taskExecutorAuthorized(task, record));
-      const currentGroup = analysis.groups.find(group => returnedRecords.some(record => group.records.includes(record)))
-        || analysis.groups.find(group => group.key === task.candidate_key)
-        || { target_definition: task.target_definition, conflicts: [] };
+      const { returnedRecords, verifiedRecords } = taskReturnSummary(task);
       task.returned_record_count = returnedRecords.length;
-      task.status = returnedRecords.some(record => (!["structure", "conditions"].includes(task.step) || acceptedMigrationRecords.has(record))
-        && (task.step !== "verification" || acceptedVerificationRecords.has(record))
-        && (task.step !== "conflict" || acceptedConflictResolutionRecords.has(record))
-        && taskResultSatisfies(task.step, record, {
-          ...currentGroup,
-          conflict_properties: task.conflict_properties,
-          required_properties: task.required_properties,
-          required_experiment_properties: task.required_experiment_properties,
-          required_source_claims: task.required_source_claims,
-          required_property_values: task.required_property_values
-        }))
+      task.status = verifiedRecords.length
         ? "verified"
         : (returnedRecords.length ? "returned_unverified" : "assigned");
     });
     const taskMap = new Map(tasks.map(task => [task.task_id, task]));
     tasks.forEach(task => {
-      if (task.status !== "superseded" && ["assigned", "verified"].includes(task.status)
+      if (task.status !== "superseded" && task.status === "assigned"
         && task.depends_on.some(id => taskMap.get(id)?.status !== "verified")) task.status = "blocked";
     });
     if (tasks.length > MAX_TASKS) throw new Error("TASK_LIMIT_EXCEEDED");
@@ -2725,6 +2887,7 @@
       if (!taskMatchesLineage(task, record) || !taskExecutorAuthorized(task, record)) quarantinedRecords.add(record);
     });
     const successfulMigrationRecordsBySource = new Map();
+    const migratedSourceRecordKeysBySource = new Map();
     const acceptedMigrationRecords = new Set();
     const migrations = [];
     const migrationCandidatesByTask = new Map();
@@ -2782,6 +2945,9 @@
         return true;
       });
       if (!sourcesCovered) return;
+      const sourceIdentity = task.source_identity_key || task.candidate_key;
+      if (!migratedSourceRecordKeysBySource.has(sourceIdentity)) migratedSourceRecordKeysBySource.set(sourceIdentity, new Set());
+      sourceClaims.forEach(claim => migratedSourceRecordKeysBySource.get(sourceIdentity).add(claim.source_record_key));
       validItems.forEach(acceptMigration);
     });
 
@@ -2897,8 +3063,9 @@
       if (quarantinedRecords.has(record)) {
         return false;
       }
+      const migratedSourceRecordKeys = migratedSourceRecordKeysBySource.get(record.identity_key);
       const migrationLeaves = successfulMigrationRecordsBySource.get(record.identity_key);
-      if (migrationLeaves && !migrationLeaves.has(record)) {
+      if (migratedSourceRecordKeys?.has(sourceRecordKey(record)) && !migrationLeaves?.has(record)) {
         supersededRecords.add(record);
         return false;
       }
