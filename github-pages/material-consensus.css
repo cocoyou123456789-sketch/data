@@ -410,6 +410,12 @@
   color: #aebdca;
 }
 
+.material-chair-task-status[data-status="superseded"] {
+  border-color: rgba(142, 162, 182, 0.3);
+  color: #8ea2b6;
+  text-decoration: line-through;
+}
+
 .material-chair-summary p,
 .material-chair-boundary {
   margin: 0;

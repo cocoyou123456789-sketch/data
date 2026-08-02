@@ -683,6 +683,680 @@ assert.match(markdown, /不能证明材料从未被发现/);
 assert.match(markdown, /不是材料成功概率或模型置信度/);
 assert.match(markdown, /MgB2/);
 
+// The local chair creates one independent report per worker, remains outside the
+// evidence count, and is deterministic under import-order changes.
+const chairInputs = [
+  { model: "GPT planning", model_family: "gpt", formula: "FeSe", stage: "task_planning", recommendation: "Resolve the structure and run DFT." },
+  { model: "DeepSeek planning", model_family: "deepseek", formula: "SeFe", stage: "task_planning", recommendation: "Check structure, stability, and literature." }
+];
+const chairA = Core.createOrchestration(chairInputs, { target: "stability" });
+const chairB = Core.createOrchestration([...chairInputs].reverse(), { target: "stability" });
+assert.equal(chairA.schema, Core.ORCHESTRATION_SCHEMA);
+assert.equal(chairA.model_reports.length, 2);
+assert.equal(chairA.host.scientific_evidence_contribution, 0);
+assert.equal(chairA.synthesis.analysis.model_count, 2);
+assert.equal(chairA.orchestration_id, chairB.orchestration_id);
+assert.deepEqual(chairA.model_reports.map(report => report.report_id), chairB.model_reports.map(report => report.report_id));
+assert.deepEqual(chairA.tasks.map(task => task.task_id), chairB.tasks.map(task => task.task_id));
+
+const equivalentFormulaForward = Core.createOrchestration([
+  { model: "Equivalent", model_family: "equivalent", formula: "FeSe", stage: "task_planning", recommendation: "Same plan" },
+  { model: "Equivalent", model_family: "equivalent", formula: "SeFe", stage: "task_planning", recommendation: "Same plan" }
+]);
+const equivalentFormulaReverse = Core.createOrchestration([
+  { model: "Equivalent", model_family: "equivalent", formula: "SeFe", stage: "task_planning", recommendation: "Same plan" },
+  { model: "Equivalent", model_family: "equivalent", formula: "FeSe", stage: "task_planning", recommendation: "Same plan" }
+]);
+assert.equal(equivalentFormulaForward.orchestration_id, equivalentFormulaReverse.orchestration_id, "equivalent formula display aliases have a deterministic winner");
+assert.deepEqual(equivalentFormulaForward.model_reports, equivalentFormulaReverse.model_reports);
+
+const hostExcluded = Core.analyzeRecords([
+  ...chairInputs,
+  { role: "host", model: "Materials Research Chair", model_family: "chair", formula: "FeSe", stage: "dft", tc_K: 999, recommendation: "Host narrative must not become evidence." }
+]);
+assert.equal(hostExcluded.model_count, 2);
+assert.equal(hostExcluded.groups.some(group => group.models.includes("Materials Research Chair")), false);
+
+const oneWorkerPlan = Core.createOrchestration([chairInputs[0]]);
+const twoWorkerPlan = Core.createOrchestration(chairInputs);
+const oneWorkerTaskIds = new Set(oneWorkerPlan.tasks.map(task => task.task_id));
+assert.equal(twoWorkerPlan.tasks.some(task => oneWorkerTaskIds.has(task.task_id)), false, "changing the source/owner manifest creates new tamper-evident task IDs");
+assert.ok(twoWorkerPlan.tasks.every(task => /^task-manifest-[a-f0-9]{16}$/.test(task.manifest_digest)));
+
+const taskPackage = Core.createTaskPackage(chairA);
+assert.equal(taskPackage.schema, Core.TASK_PACKAGE_SCHEMA);
+assert.equal(taskPackage.security.credentials_included, false);
+assert.equal(taskPackage.security.paid_job_submitted, false);
+assert.ok(taskPackage.tasks.every(task => task.paid_job_submitted === false));
+assert.doesNotMatch(JSON.stringify(taskPackage), /api[_-]?key|client[_-]?secret|bearer\s+/i);
+const redactedCampaignPlan = Core.createOrchestration(chairInputs, { target: "api_key=TOP-SECRET" });
+assert.doesNotMatch(JSON.stringify(redactedCampaignPlan), /TOP-SECRET/);
+
+// Canonical records remain idempotent after JSON persistence, including empty
+// or custom condition maps and task/evidence links.
+const roundTripTaskId = chairA.tasks[0].task_id;
+const roundTripA = Core.normalizeCandidate({
+  model: "Roundtrip",
+  model_family: "roundtrip-family",
+  formula: "FeSe",
+  structure_namespace: "test-fixture",
+  structure_id: "roundtrip-structure",
+  stage: "dft",
+  tc_K: 8,
+  extra_conditions: { k_mesh: "8x8x8" },
+  evidence_ids: ["run:roundtrip-001"],
+  assigned_task_id: roundTripTaskId,
+  recommendation: "Round-trip record"
+});
+const roundTripB = Core.normalizeCandidate(JSON.parse(JSON.stringify(roundTripA)));
+assert.deepEqual(roundTripB.extra_conditions, { k_mesh: "8x8x8" });
+assert.equal(roundTripB.extra_conditions_invalid, false);
+assert.deepEqual(roundTripB.evidence_ids, ["run:roundtrip-001"]);
+assert.equal(roundTripB.assigned_task_id, roundTripTaskId);
+const emptyExtraRoundTrip = Core.normalizeCandidate(Core.normalizeCandidate({ model: "Empty extra", formula: "FeSe", recommendation: "empty extra" }));
+assert.equal(emptyExtraRoundTrip.extra_conditions_invalid, false);
+const kMeshSplit = Core.analyzeRecords([
+  Core.normalizeCandidate(Core.normalizeCandidate({ model: "Mesh A", formula: "FeSe", structure_namespace: "test-fixture", structure_id: "mesh", stage: "dft", tc_K: 8, extra_conditions: { k_mesh: "8x8x8" }, recommendation: "mesh" })),
+  Core.normalizeCandidate(Core.normalizeCandidate({ model: "Mesh B", formula: "FeSe", structure_namespace: "test-fixture", structure_id: "mesh", stage: "dft", tc_K: 8, extra_conditions: { k_mesh: "12x12x12" }, recommendation: "mesh" }))
+]);
+assert.equal(kMeshSplit.candidate_count, 2);
+
+assert.throws(() => Core.normalizeCandidate({ model: "Bad", formula: "FeSe", tc_K: { value: 8, mean: false }, recommendation: "bad" }), /INVALID_PROPERTY_VALUE/);
+assert.throws(() => Core.normalizeCandidate({ model: "Bad", formula: "FeSe", tc_K: { value: 8, mean: 100 }, recommendation: "bad" }), /CONFLICTING_PROPERTY_ALIASES/);
+assert.throws(() => Core.normalizeCandidate({ model: "Bad", formula: "FeSe", pressure_GPa: { value: 0, mean: 10 }, recommendation: "bad" }), /CONFLICTING_PRESSURE_VALUE_ALIASES/);
+assert.throws(() => Core.normalizeCandidate({ model: "Bad", formula: "FeSe", functional: "PBE", dft_functional: "LDA", recommendation: "bad" }), /CONFLICTING_CONDITION_ALIASES/);
+assert.throws(() => Core.normalizeCandidate({ model: "Bad", formula: "FeSe", conditions: { api_key: "SECRET" }, recommendation: "bad" }), /SENSITIVE_CREDENTIAL/);
+assert.throws(() => Core.normalizeCandidate({ model: "Bad", formula: "FeSe", tc_K: "0x10", recommendation: "bad" }), /INVALID_PROPERTY_VALUE/);
+assert.equal(Core.normalizeCandidate({ model: "Legal", model_family: "robotbcontroller", formula: "FeSe", structure_namespace: "test-fixture", structure_id: "testbatch-run-001", recommendation: "legal identifiers" }).structure_identity_resolved, true);
+assert.equal(Object.isFrozen(Core.PROPERTY_META.tc_K), true);
+
+const noFormulaDifferentStructures = Core.analyzeRecords([
+  trusted({ model: "Text structure A", model_family: "text-structure-a", structure_namespace: "test-fixture", structure_id: "structure-1", stage: "dft", tc_K: 8.1, recommendation: "Identical recommendation for the candidate" }),
+  trusted({ model: "Text structure B", model_family: "text-structure-b", structure_namespace: "test-fixture", structure_id: "structure-2", stage: "dft", tc_K: 8.2, recommendation: "Identical recommendation for the candidate" })
+]);
+assert.equal(noFormulaDifferentStructures.candidate_count, 2, "text similarity never merges distinct structure identities");
+assert.equal(noFormulaDifferentStructures.agreement_count, 0);
+
+const trustedWithCompleteness = (input, conditionsComplete) => Core.__testNormalizeTrustedCandidate({
+  evidence_id: input.evidence_id || `run:${String(input.model || "executor").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${String(input.structure_id || "candidate").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${String(input.assigned_task_id || "seed").slice(-8)}`,
+  ...input,
+  ...(input.structure_id && !input.structure_namespace && !input.structure_hash ? { structure_namespace: "test-fixture" } : {})
+}, {
+  verified: true,
+  trustedSourceFamily: true,
+  eligibleForConsensus: true,
+  trustedEvidence: true,
+  conditionsComplete
+});
+
+// Structure returns create independent polymorph branches; the unresolved
+// parent leaves active synthesis but remains in the audit/task history.
+const unresolvedSeedForTasks = trustedWithCompleteness({
+  model: "Seed model",
+  model_family: "seed-family",
+  evidence_id: "run:seed-unresolved-001",
+  formula: "FeSe",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  recommendation: "Resolve this composition"
+}, false);
+const unresolvedPlan = Core.createOrchestration([unresolvedSeedForTasks], { target: "tc_K" });
+const structureTask = unresolvedPlan.tasks.find(task => task.step === "structure");
+assert.ok(structureTask);
+const polymorphAResult = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:polymorph-a-001",
+  formula: "FeSe",
+  structure_id: "polymorph-a",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  assigned_task_id: structureTask.task_id,
+  recommendation: "Resolved polymorph A"
+}, false);
+const polymorphBResult = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:polymorph-b-001",
+  formula: "FeSe",
+  structure_id: "polymorph-b",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  assigned_task_id: structureTask.task_id,
+  recommendation: "Resolved polymorph B"
+}, false);
+const branchedPlan = Core.createOrchestration(
+  [unresolvedSeedForTasks, polymorphAResult, polymorphBResult],
+  { target: "tc_K" },
+  { tasks: unresolvedPlan.tasks }
+);
+assert.equal(branchedPlan.synthesis.analysis.candidate_count, 2);
+assert.ok(branchedPlan.synthesis.analysis.groups.every(group => group.identity_resolved));
+assert.equal(branchedPlan.tasks.find(task => task.task_id === structureTask.task_id).status, "verified");
+const branchConditionTasks = branchedPlan.tasks.filter(task => task.step === "conditions" && task.status !== "superseded");
+assert.equal(branchConditionTasks.length, 2);
+assert.equal(new Set(branchConditionTasks.map(task => task.candidate_key)).size, 2);
+assert.equal(new Set(branchedPlan.tasks.map(task => task.task_id)).size, branchedPlan.tasks.length, "task IDs are unique across branches");
+assert.ok(branchedPlan.final_report.superseded_task_ids.length > 0);
+const branchedPackage = Core.createTaskPackage(branchedPlan);
+assert.equal(branchedPackage.tasks.some(task => task.status === "superseded"), false);
+assert.ok(branchedPackage.superseded_tasks.length > 0);
+
+const polymorphAConditionTask = branchConditionTasks.find(task => task.source_identity_key === polymorphAResult.identity_key);
+assert.ok(polymorphAConditionTask);
+const conditionsResultA = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:conditions-a-001",
+  formula: "FeSe",
+  structure_id: "polymorph-a",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  extra_conditions: { sample: "batch-a" },
+  assigned_task_id: polymorphAConditionTask.task_id,
+  recommendation: "Completed batch-A conditions"
+}, true);
+const conditionsPlan = Core.createOrchestration(
+  [unresolvedSeedForTasks, polymorphAResult, polymorphBResult, conditionsResultA],
+  { target: "tc_K" },
+  { tasks: branchedPlan.tasks }
+);
+assert.equal(conditionsPlan.synthesis.analysis.candidate_count, 2);
+assert.ok(conditionsPlan.synthesis.analysis.groups.some(group => group.extra_conditions.sample === "batch-a"));
+assert.equal(conditionsPlan.tasks.find(task => task.task_id === polymorphAConditionTask.task_id).status, "verified");
+const batchAStabilityTask = conditionsPlan.tasks.find(task => task.step === "stability"
+  && task.status !== "superseded"
+  && task.condition_state.extra_conditions.sample === "batch-a");
+assert.ok(batchAStabilityTask);
+const wrongOldConditionResult = trustedWithCompleteness({
+  model: "Quantum Espresso",
+  model_family: "quantum-espresso",
+  evidence_id: "run:wrong-old-condition-001",
+  formula: "FeSe",
+  structure_id: "polymorph-a",
+  target: "tc_K",
+  stage: "dft",
+  formation_energy_eV_atom: -0.2,
+  assigned_task_id: batchAStabilityTask.task_id,
+  recommendation: "Wrongly omitted batch-A condition"
+}, true);
+const wrongConditionPlan = Core.createOrchestration(
+  [unresolvedSeedForTasks, polymorphAResult, polymorphBResult, conditionsResultA, wrongOldConditionResult],
+  { target: "tc_K" },
+  { tasks: conditionsPlan.tasks }
+);
+assert.notEqual(wrongConditionPlan.tasks.find(task => task.task_id === batchAStabilityTask.task_id).status, "verified");
+assert.ok(wrongConditionPlan.synthesis.mismatched_return_task_ids.includes(batchAStabilityTask.task_id));
+assert.equal(wrongConditionPlan.synthesis.analysis.groups.some(group => group.extra_conditions.sample === "batch-a"), true);
+
+// Space group and executor authorization are part of task lineage.
+const spaceGroupSeed = trusted({
+  model: "Quantum Espresso",
+  model_family: "quantum-espresso",
+  evidence_id: "run:space-group-seed-001",
+  formula: "FeSe",
+  structure_id: "sg-structure",
+  space_group: "P4/nmm",
+  target: "stability",
+  stage: "dft",
+  recommendation: "Need stability"
+});
+const spaceGroupPlan = Core.createOrchestration([spaceGroupSeed], { target: "stability" });
+const spaceGroupStabilityTask = spaceGroupPlan.tasks.find(task => task.step === "stability");
+const validSpaceGroupReturn = trusted({
+  model: "Quantum Espresso",
+  model_family: "quantum-espresso",
+  evidence_id: "run:space-group-valid-001",
+  formula: "FeSe",
+  structure_id: "sg-structure",
+  space_group: "P4/nmm",
+  target: "stability",
+  stage: "dft",
+  e_above_hull_eV_atom: 0.01,
+  assigned_task_id: spaceGroupStabilityTask.task_id,
+  recommendation: "Same-space-group stability"
+});
+const validSpaceGroupPlan = Core.createOrchestration([spaceGroupSeed, validSpaceGroupReturn], { target: "stability" }, { tasks: spaceGroupPlan.tasks });
+assert.equal(validSpaceGroupPlan.tasks.find(task => task.task_id === spaceGroupStabilityTask.task_id).status, "verified");
+const wrongSpaceGroupReturn = trusted({
+  model: "Quantum Espresso",
+  model_family: "quantum-espresso",
+  evidence_id: "run:space-group-wrong-001",
+  formula: "FeSe",
+  structure_id: "sg-structure",
+  space_group: "Fm-3m",
+  target: "stability",
+  stage: "dft",
+  e_above_hull_eV_atom: 0.01,
+  assigned_task_id: spaceGroupStabilityTask.task_id,
+  recommendation: "Different-space-group result"
+});
+const wrongSpaceGroupPlan = Core.createOrchestration([spaceGroupSeed, wrongSpaceGroupReturn], { target: "stability" }, { tasks: spaceGroupPlan.tasks });
+assert.notEqual(wrongSpaceGroupPlan.tasks.find(task => task.task_id === spaceGroupStabilityTask.task_id).status, "verified");
+assert.ok(wrongSpaceGroupPlan.synthesis.mismatched_return_task_ids.includes(spaceGroupStabilityTask.task_id));
+
+const ownerSeed = trustedWithCompleteness({
+  model: "OwnerA",
+  model_family: "owner-a",
+  evidence_id: "run:owner-seed-001",
+  formula: "FeSe",
+  structure_id: "owner-structure",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  recommendation: "Conditions incomplete"
+}, false);
+const ownerPlan = Core.createOrchestration([ownerSeed], { target: "tc_K" });
+const ownerConditionTask = ownerPlan.tasks.find(task => task.step === "conditions");
+const intruderReturn = trustedWithCompleteness({
+  model: "Intruder",
+  model_family: "intruder",
+  evidence_id: "run:intruder-001",
+  formula: "FeSe",
+  structure_id: "owner-structure",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8.1,
+  assigned_task_id: ownerConditionTask.task_id,
+  recommendation: "Unauthorized completion"
+}, true);
+const intruderPlan = Core.createOrchestration([ownerSeed, intruderReturn], { target: "tc_K" }, { tasks: ownerPlan.tasks });
+assert.notEqual(intruderPlan.tasks.find(task => task.task_id === ownerConditionTask.task_id).status, "verified");
+assert.ok(intruderPlan.synthesis.unauthorized_return_task_ids.includes(ownerConditionTask.task_id));
+assert.equal(intruderPlan.synthesis.quarantined_return_record_count, 1);
+assert.equal(intruderPlan.synthesis.analysis.groups[0].models.includes("Intruder"), false);
+
+const unknownTaskReturn = trusted({
+  model: "Unknown return",
+  model_family: "unknown-return",
+  evidence_id: "run:return-task-001",
+  formula: "FeSe",
+  structure_id: "unknown-task-structure",
+  stage: "dft",
+  tc_K: 8,
+  assigned_task_id: "material-task-1234567890abcdef",
+  recommendation: "Unknown task return"
+});
+const unknownTaskPlan = Core.createOrchestration([unknownTaskReturn]);
+assert.ok(unknownTaskPlan.synthesis.unmatched_return_task_ids.includes("material-task-1234567890abcdef"));
+assert.equal(unknownTaskPlan.synthesis.analysis.candidate_count, 0, "unknown linked returns are quarantined from synthesis");
+assert.equal(unknownTaskPlan.final_report.execution_status, "partial");
+
+// Conflict closure requires an accepted, same-lineage, trusted supersession.
+const conflictARecord = trusted({ model: "Conflict A", model_family: "conflict-a", evidence_id: "run:conflict-a-001", formula: "MgB2", structure_id: "conflict-structure", target: "tc_K", stage: "dft", tc_K: 8, recommendation: "Conflict A" });
+const conflictBRecord = trusted({ model: "Conflict B", model_family: "conflict-b", evidence_id: "run:conflict-b-001", formula: "MgB2", structure_id: "conflict-structure", target: "tc_K", stage: "dft", tc_K: 100, recommendation: "Conflict B" });
+const conflictPlan = Core.createOrchestration([conflictARecord, conflictBRecord], { target: "tc_K" });
+const conflictTask = conflictPlan.tasks.find(task => task.step === "conflict");
+assert.ok(conflictTask);
+const wrongConflictCorrection = trusted({
+  model: "Conflict B",
+  model_family: "conflict-b",
+  evidence_id: "run:conflict-wrong-001",
+  formula: "MgB2",
+  structure_id: "conflict-structure",
+  target: "tc_K",
+  stage: "independent_reproduction",
+  tc_K: 8.1,
+  supersedes_evidence_id: "run:absent-ref-999",
+  assigned_task_id: conflictTask.task_id,
+  recommendation: "Invalid supersession reference"
+});
+const wrongConflictPlan = Core.createOrchestration([conflictARecord, conflictBRecord, wrongConflictCorrection], { target: "tc_K" }, { tasks: conflictPlan.tasks });
+assert.notEqual(wrongConflictPlan.tasks.find(task => task.task_id === conflictTask.task_id).status, "verified");
+assert.equal(wrongConflictPlan.synthesis.superseded_evidence_ids.length, 0);
+assert.equal(wrongConflictPlan.synthesis.conflict_count, 1, "same-model contradictory runs stay visible until explicitly superseded");
+const validConflictCorrection = trusted({
+  model: "Conflict B",
+  model_family: "conflict-b",
+  evidence_id: "run:conflict-valid-001",
+  formula: "MgB2",
+  structure_id: "conflict-structure",
+  target: "tc_K",
+  stage: "independent_reproduction",
+  tc_K: 8.1,
+  supersedes_evidence_ids: [conflictBRecord.evidence_id],
+  assigned_task_id: conflictTask.task_id,
+  recommendation: "Audited correction"
+});
+const resolvedConflictPlan = Core.createOrchestration([conflictARecord, conflictBRecord, validConflictCorrection], { target: "tc_K" }, { tasks: conflictPlan.tasks });
+assert.equal(resolvedConflictPlan.tasks.find(task => task.task_id === conflictTask.task_id).status, "verified");
+assert.equal(resolvedConflictPlan.synthesis.conflict_count, 0);
+assert.deepEqual(resolvedConflictPlan.synthesis.superseded_evidence_ids, [conflictBRecord.evidence_id]);
+
+// A target-specific experiment cannot be completed with an unrelated stability
+// measurement, and a fully satisfied candidate needs no artificial task.
+const targetExperimentSeed = trusted({ model: "Target seed", model_family: "target-seed", evidence_id: "run:target-seed-001", formula: "FeSe", structure_id: "target-experiment", target: "tc_K", stage: "dft", tc_K: 8, recommendation: "Need experiment" });
+const targetExperimentPlan = Core.createOrchestration([targetExperimentSeed], { target: "tc_K" });
+const targetExperimentTask = targetExperimentPlan.tasks.find(task => task.step === "experiment");
+const unrelatedExperimentReturn = trusted({
+  model: "NSRL",
+  model_family: "nsrl",
+  evidence_id: "run:unrelated-experiment-001",
+  formula: "FeSe",
+  structure_id: "target-experiment",
+  target: "tc_K",
+  stage: "experiment",
+  e_above_hull_eV_atom: 0.01,
+  experimental_method: "XRD and calorimetry",
+  raw_data_url: "https://example.org/raw/unrelated-experiment",
+  assigned_task_id: targetExperimentTask.task_id,
+  recommendation: "Stability only"
+});
+const unrelatedExperimentPlan = Core.createOrchestration([targetExperimentSeed, unrelatedExperimentReturn], { target: "tc_K" }, { tasks: targetExperimentPlan.tasks });
+assert.notEqual(unrelatedExperimentPlan.tasks.find(task => task.task_id === targetExperimentTask.task_id).status, "verified");
+
+const completeRecords = [
+  trusted({ model: "Stable A", model_family: "stable-a", evidence_id: "run:stable-a-001", formula: "FeSe", structure_id: "complete-candidate", target: "stability", stage: "dft", e_above_hull_eV_atom: 0.01, novelty_status: "known_reference", source: "https://example.org/reference/a", recommendation: "Stable A" }),
+  trusted({ model: "Stable B", model_family: "stable-b", evidence_id: "run:stable-b-001", formula: "FeSe", structure_id: "complete-candidate", target: "stability", stage: "dft", e_above_hull_eV_atom: 0.012, novelty_status: "known_reference", source: "https://example.org/reference/b", recommendation: "Stable B" }),
+  trusted({ model: "Complete lab", model_family: "complete-lab", evidence_id: "run:complete-lab-001", formula: "FeSe", structure_id: "complete-candidate", target: "stability", stage: "experiment", e_above_hull_eV_atom: 0.011, novelty_status: "known_reference", source: "https://example.org/reference/lab", experimental_method: "XRD and calorimetry", raw_data_url: "https://example.org/raw/complete-lab", recommendation: "Experimental support" })
+];
+const completePlan = Core.createOrchestration(completeRecords, { target: "stability" });
+assert.equal(completePlan.tasks.length, 0);
+assert.equal(completePlan.final_report.execution_status, "complete");
+assert.equal(completePlan.final_report.claim_status, "experimentally_supported_candidate");
+
+const rewrittenStructureResult = trustedWithCompleteness({
+  model: "CrystalStructureGen",
+  model_family: "crystalstructuregen",
+  evidence_id: "run:rewritten-structure-001",
+  formula: "FeSe",
+  structure_id: "rewritten-polymorph",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 200,
+  assigned_task_id: structureTask.task_id,
+  recommendation: "Structure result must not rewrite Tc"
+}, false);
+const rewrittenStructurePlan = Core.createOrchestration(
+  [unresolvedSeedForTasks, rewrittenStructureResult],
+  { target: "tc_K" },
+  { tasks: unresolvedPlan.tasks }
+);
+assert.notEqual(rewrittenStructurePlan.tasks.find(task => task.task_id === structureTask.task_id).status, "verified");
+assert.ok(rewrittenStructurePlan.synthesis.invalid_return_task_ids.includes(structureTask.task_id));
+assert.equal(rewrittenStructurePlan.synthesis.analysis.groups[0].identity_resolved, false);
+
+const unresolvedStructureSourceA = trustedWithCompleteness({ model: "Structure source A", model_family: "structure-source-a", evidence_id: "run:structure-source-a", formula: "FeSe", target: "tc_K", stage: "dft", tc_K: 8, recommendation: "source A" }, false);
+const unresolvedStructureSourceB = trustedWithCompleteness({ model: "Structure source B", model_family: "structure-source-b", evidence_id: "run:structure-source-b", formula: "FeSe", target: "tc_K", stage: "dft", tc_K: 9, recommendation: "source B" }, false);
+const multiSourceStructurePlan = Core.createOrchestration([unresolvedStructureSourceA, unresolvedStructureSourceB], { target: "tc_K" });
+const multiSourceStructureTask = multiSourceStructurePlan.tasks.find(task => task.step === "structure");
+const onlyFirstStructureReturn = trustedWithCompleteness({ model: "CrystalStructureGen", model_family: "crystalstructuregen", evidence_id: "run:structure-only-first", formula: "FeSe", structure_id: "coverage-polymorph", target: "tc_K", stage: "dft", tc_K: 8, assigned_task_id: multiSourceStructureTask.task_id, recommendation: "only source A covered" }, false);
+const incompleteStructureCoveragePlan = Core.createOrchestration(
+  [unresolvedStructureSourceA, unresolvedStructureSourceB, onlyFirstStructureReturn],
+  { target: "tc_K" },
+  { tasks: multiSourceStructurePlan.tasks }
+);
+assert.notEqual(incompleteStructureCoveragePlan.tasks.find(task => task.task_id === multiSourceStructureTask.task_id).status, "verified");
+assert.ok(incompleteStructureCoveragePlan.synthesis.invalid_return_task_ids.includes(multiSourceStructureTask.task_id));
+assert.equal(incompleteStructureCoveragePlan.synthesis.analysis.groups[0].identity_resolved, false);
+assert.deepEqual(incompleteStructureCoveragePlan.synthesis.analysis.groups[0].records.map(record => record.properties.tc_K).sort((a, b) => a - b), [8, 9]);
+const secondStructureReturn = trustedWithCompleteness({ model: "CrystalStructureGen", model_family: "crystalstructuregen", evidence_id: "run:structure-second", formula: "FeSe", structure_id: "coverage-polymorph", target: "tc_K", stage: "dft", tc_K: 9, assigned_task_id: multiSourceStructureTask.task_id, recommendation: "source B covered" }, false);
+const completeStructureCoveragePlan = Core.createOrchestration(
+  [unresolvedStructureSourceA, unresolvedStructureSourceB, onlyFirstStructureReturn, secondStructureReturn],
+  { target: "tc_K" },
+  { tasks: multiSourceStructurePlan.tasks }
+);
+assert.equal(completeStructureCoveragePlan.tasks.find(task => task.task_id === multiSourceStructureTask.task_id).status, "verified");
+assert.ok(completeStructureCoveragePlan.synthesis.analysis.groups.every(group => group.identity_resolved));
+assert.deepEqual(completeStructureCoveragePlan.synthesis.analysis.groups.flatMap(group => group.records.map(record => record.properties.tc_K)).sort((a, b) => a - b), [8, 9]);
+const truncatedStructureManifest = JSON.parse(JSON.stringify(multiSourceStructurePlan.tasks));
+const truncatedStructureTask = truncatedStructureManifest.find(task => task.task_id === multiSourceStructureTask.task_id);
+truncatedStructureTask.required_source_claims = truncatedStructureTask.required_source_claims.slice(0, 1);
+const rejectedTruncatedManifestPlan = Core.createOrchestration(
+  [unresolvedStructureSourceA, unresolvedStructureSourceB, onlyFirstStructureReturn],
+  { target: "tc_K" },
+  { tasks: truncatedStructureManifest }
+);
+assert.notEqual(rejectedTruncatedManifestPlan.tasks.find(task => task.task_id === multiSourceStructureTask.task_id).status, "verified");
+assert.ok(rejectedTruncatedManifestPlan.synthesis.manifest_missing_return_task_ids.includes(multiSourceStructureTask.task_id));
+assert.equal(rejectedTruncatedManifestPlan.synthesis.analysis.groups[0].identity_resolved, false);
+assert.deepEqual(rejectedTruncatedManifestPlan.synthesis.analysis.groups[0].records.map(record => record.properties.tc_K).sort((a, b) => a - b), [8, 9]);
+
+const manyValueStructureSources = Array.from({ length: 101 }, (_, index) => trustedWithCompleteness({
+  model: `Many-value source ${index + 1}`,
+  model_family: `many-value-family-${index + 1}`,
+  evidence_id: `run:many-value-${String(index + 1).padStart(3, "0")}`,
+  formula: "FeSe",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: index + 1,
+  recommendation: "many-value manifest round-trip"
+}, false));
+const manyValueStructurePlan = Core.createOrchestration(manyValueStructureSources, { target: "tc_K" });
+const manyValueStructureTask = manyValueStructurePlan.tasks.find(task => task.step === "structure");
+assert.equal(manyValueStructureTask.required_property_values.tc_K.length, 101);
+const manyValueSingleReturn = trustedWithCompleteness({ model: "CrystalStructureGen", model_family: "crystalstructuregen", evidence_id: "run:many-value-single-return", formula: "FeSe", structure_id: "many-value-polymorph", target: "tc_K", stage: "dft", tc_K: 1, assigned_task_id: manyValueStructureTask.task_id, recommendation: "only one of 101 source claims" }, false);
+const manyValueRoundTripPlan = Core.createOrchestration(
+  [...manyValueStructureSources, manyValueSingleReturn],
+  { target: "tc_K" },
+  { tasks: manyValueStructurePlan.tasks }
+);
+assert.equal(manyValueRoundTripPlan.synthesis.manifest_missing_return_task_ids.includes(manyValueStructureTask.task_id), false);
+assert.ok(manyValueRoundTripPlan.synthesis.invalid_return_task_ids.includes(manyValueStructureTask.task_id));
+
+const manyEvidenceStructureSeed = trustedWithCompleteness({
+  model: "Many evidence source",
+  model_family: "many-evidence-source",
+  evidence_id: "run:multi-ref-primary-001",
+  evidence_ids: Array.from({ length: 40 }, (_, index) => `run:multi-ref-${String(index + 1).padStart(3, "0")}`),
+  formula: "FeSe",
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8,
+  recommendation: "evidence-list manifest round-trip"
+}, false);
+const manyEvidenceStructurePlan = Core.createOrchestration([manyEvidenceStructureSeed], { target: "tc_K" });
+const manyEvidenceStructureTask = manyEvidenceStructurePlan.tasks.find(task => task.step === "structure");
+assert.ok(manyEvidenceStructureTask.required_source_claims[0].evidence_ids.length > 32);
+const manyEvidenceStructureReturn = trustedWithCompleteness({ model: "CrystalStructureGen", model_family: "crystalstructuregen", evidence_id: "run:multi-ref-structure-return", formula: "FeSe", structure_id: "multi-ref-polymorph", target: "tc_K", stage: "dft", tc_K: 8, assigned_task_id: manyEvidenceStructureTask.task_id, recommendation: "resolved structure with a long source evidence list" }, false);
+const manyEvidenceRoundTripPlan = Core.createOrchestration(
+  [manyEvidenceStructureSeed, manyEvidenceStructureReturn],
+  { target: "tc_K" },
+  { tasks: manyEvidenceStructurePlan.tasks }
+);
+assert.equal(manyEvidenceRoundTripPlan.synthesis.manifest_missing_return_task_ids.includes(manyEvidenceStructureTask.task_id), false);
+assert.equal(manyEvidenceRoundTripPlan.tasks.find(task => task.task_id === manyEvidenceStructureTask.task_id).status, "verified");
+
+const driftedConditionsReturn = trustedWithCompleteness({
+  model: "OwnerA",
+  model_family: "owner-a",
+  evidence_id: "run:conditions-drift-001",
+  formula: "FeSe",
+  structure_id: "owner-structure",
+  target: "tc_K",
+  pressure_GPa: 200,
+  stage: "dft",
+  tc_K: 200,
+  assigned_task_id: ownerConditionTask.task_id,
+  recommendation: "Changed value is a recomputation, not a condition annotation"
+}, true);
+const driftedConditionsPlan = Core.createOrchestration([ownerSeed, driftedConditionsReturn], { target: "tc_K" }, { tasks: ownerPlan.tasks });
+assert.notEqual(driftedConditionsPlan.tasks.find(task => task.task_id === ownerConditionTask.task_id).status, "verified");
+assert.ok(driftedConditionsPlan.synthesis.invalid_return_task_ids.includes(ownerConditionTask.task_id));
+assert.equal(driftedConditionsPlan.synthesis.analysis.groups[0].properties.tc_K.value, 8);
+
+const sameExecutorIncompleteA = trustedWithCompleteness({ model: "Same executor", model_family: "same-executor", evidence_id: "run:same-executor-a", formula: "FeSe", structure_id: "same-executor-structure", target: "tc_K", stage: "dft", tc_K: 8, recommendation: "first run" }, false);
+const sameExecutorIncompleteB = trustedWithCompleteness({ model: "Same executor", model_family: "same-executor", evidence_id: "run:same-executor-b", formula: "FeSe", structure_id: "same-executor-structure", target: "tc_K", stage: "dft", tc_K: 9, recommendation: "second run" }, false);
+const sameExecutorPlan = Core.createOrchestration([sameExecutorIncompleteA, sameExecutorIncompleteB], { target: "tc_K" });
+const sameExecutorConditionsTask = sameExecutorPlan.tasks.find(task => task.step === "conditions");
+const oneOfTwoConditionsReturns = trustedWithCompleteness({ model: "Same executor", model_family: "same-executor", evidence_id: "run:same-executor-return", formula: "FeSe", structure_id: "same-executor-structure", target: "tc_K", stage: "dft", tc_K: 8, extra_conditions: { sample: "only-one-run" }, assigned_task_id: sameExecutorConditionsTask.task_id, recommendation: "only one source run covered" }, true);
+const incompleteCoveragePlan = Core.createOrchestration([sameExecutorIncompleteA, sameExecutorIncompleteB, oneOfTwoConditionsReturns], { target: "tc_K" }, { tasks: sameExecutorPlan.tasks });
+assert.notEqual(incompleteCoveragePlan.tasks.find(task => task.task_id === sameExecutorConditionsTask.task_id).status, "verified");
+assert.ok(incompleteCoveragePlan.synthesis.invalid_return_task_ids.includes(sameExecutorConditionsTask.task_id));
+
+const snapshotConditionSeed = trustedWithCompleteness({ model: "OwnerA", model_family: "owner-a", evidence_id: "run:snapshot-condition-seed", formula: "FeSe", structure_id: "snapshot-condition", target: "tc_K", stage: "dft", tc_K: 8, recommendation: "needs conditions" }, false);
+const snapshotConditionPlan = Core.createOrchestration([snapshotConditionSeed], { target: "tc_K" });
+const snapshotConditionTask = snapshotConditionPlan.tasks.find(task => task.step === "conditions");
+const snapshotStabilityTask = snapshotConditionPlan.tasks.find(task => task.step === "stability");
+const snapshotConditionReturn = trustedWithCompleteness({ model: "OwnerA", model_family: "owner-a", evidence_id: "run:snapshot-condition-return", formula: "FeSe", structure_id: "snapshot-condition", target: "tc_K", stage: "dft", tc_K: 8, extra_conditions: { sample: "batch-a" }, assigned_task_id: snapshotConditionTask.task_id, recommendation: "conditions completed" }, true);
+const unrelatedOldLineageStabilityReturn = trustedWithCompleteness({ model: "Quantum Espresso", model_family: "quantum-espresso", evidence_id: "run:snapshot-unrelated-stability", formula: "FeSe", structure_id: "snapshot-condition", target: "tc_K", stage: "dft", e_above_hull_eV_atom: 0.01, assigned_task_id: snapshotStabilityTask.task_id, recommendation: "unrelated later task return" }, true);
+const snapshotConditionResult = Core.createOrchestration(
+  [snapshotConditionSeed, snapshotConditionReturn, unrelatedOldLineageStabilityReturn],
+  { target: "tc_K" },
+  { tasks: snapshotConditionPlan.tasks }
+);
+assert.equal(snapshotConditionResult.tasks.find(task => task.task_id === snapshotConditionTask.task_id).status, "verified");
+assert.ok(snapshotConditionResult.synthesis.analysis.groups.some(group => group.extra_conditions.sample === "batch-a"));
+
+const publicVerificationSeed = Core.normalizeCandidate({ model: "Verifier", model_family: "verifier", formula: "FeSe", structure_namespace: "test-fixture", structure_id: "verification-structure", target: "tc_K", stage: "dft", tc_K: 8, recommendation: "Unverified source claim" });
+const verificationPlan = Core.createOrchestration([publicVerificationSeed], { target: "tc_K" });
+const verificationTask = verificationPlan.tasks.find(task => task.step === "verification");
+const emptyVerificationReturn = trusted({ model: "Verifier", model_family: "verifier", evidence_id: "run:empty-verification", formula: "FeSe", structure_id: "verification-structure", target: "tc_K", stage: "dft", assigned_task_id: verificationTask.task_id, recommendation: "Empty shell" });
+const emptyVerificationPlan = Core.createOrchestration([publicVerificationSeed, emptyVerificationReturn], { target: "tc_K" }, { tasks: verificationPlan.tasks });
+assert.notEqual(emptyVerificationPlan.tasks.find(task => task.task_id === verificationTask.task_id).status, "verified");
+const rewrittenVerificationReturn = trusted({ model: "Verifier", model_family: "verifier", evidence_id: "run:rewritten-verification", formula: "FeSe", structure_id: "verification-structure", target: "tc_K", stage: "dft", tc_K: 200, assigned_task_id: verificationTask.task_id, recommendation: "Changed claim" });
+const rewrittenVerificationPlan = Core.createOrchestration([publicVerificationSeed, rewrittenVerificationReturn], { target: "tc_K" }, { tasks: verificationPlan.tasks });
+assert.notEqual(rewrittenVerificationPlan.tasks.find(task => task.task_id === verificationTask.task_id).status, "verified");
+const validVerificationReturn = trusted({ model: "Verifier", model_family: "verifier", evidence_id: "run:valid-verification", formula: "FeSe", structure_id: "verification-structure", target: "tc_K", stage: "dft", tc_K: 8, assigned_task_id: verificationTask.task_id, recommendation: "Verified original claim" });
+const validVerificationPlan = Core.createOrchestration([publicVerificationSeed, validVerificationReturn], { target: "tc_K" }, { tasks: verificationPlan.tasks });
+assert.equal(validVerificationPlan.tasks.find(task => task.task_id === verificationTask.task_id).status, "verified");
+const verificationSnapshotStabilityTask = verificationPlan.tasks.find(task => task.step === "stability");
+const verificationSnapshotStabilityReturn = trusted({ model: "Quantum Espresso", model_family: "quantum-espresso", evidence_id: "run:verification-snapshot-stability", formula: "FeSe", structure_id: "verification-structure", target: "tc_K", stage: "dft", e_above_hull_eV_atom: 0.01, assigned_task_id: verificationSnapshotStabilityTask.task_id, recommendation: "later stability return" });
+const verificationSnapshotPlan = Core.createOrchestration(
+  [publicVerificationSeed, validVerificationReturn, verificationSnapshotStabilityReturn],
+  { target: "tc_K" },
+  { tasks: verificationPlan.tasks }
+);
+assert.equal(verificationSnapshotPlan.tasks.find(task => task.task_id === verificationTask.task_id).status, "verified");
+
+const noveltySeed = trusted({ model: "Novelty seed", model_family: "novelty-seed", evidence_id: "run:novelty-seed", formula: "FeSe", structure_id: "novelty-structure", target: "stability", stage: "dft", e_above_hull_eV_atom: 0.01, recommendation: "Novelty not checked" });
+const noveltyPlan = Core.createOrchestration([noveltySeed], { target: "stability" });
+const noveltyTask = noveltyPlan.tasks.find(task => task.step === "novelty");
+const tamperedNoveltyManifest = JSON.parse(JSON.stringify(noveltyPlan.tasks));
+tamperedNoveltyManifest.find(task => task.task_id === noveltyTask.task_id).assigned_to = ["Evil adapter"];
+const evilNoveltyReturn = trusted({ model: "Evil adapter", model_family: "evil-adapter", evidence_id: "run:tampered-owner-return", formula: "FeSe", structure_id: "novelty-structure", target: "stability", stage: "database", e_above_hull_eV_atom: 0.01, novelty_status: "known_reference", data_cutoff: "2026-01-01", source: "https://example.org/tampered-owner/snapshot", assigned_task_id: noveltyTask.task_id, recommendation: "must not self-authorize by changing the task owner" });
+const rejectedOwnerTamperPlan = Core.createOrchestration([noveltySeed, evilNoveltyReturn], { target: "stability" }, { tasks: tamperedNoveltyManifest });
+assert.notEqual(rejectedOwnerTamperPlan.tasks.find(task => task.task_id === noveltyTask.task_id).status, "verified");
+assert.ok(rejectedOwnerTamperPlan.synthesis.manifest_missing_return_task_ids.includes(noveltyTask.task_id));
+assert.notEqual(rejectedOwnerTamperPlan.synthesis.analysis.groups[0].novelty_status, "known_reference");
+const noveltyReturn = trusted({ model: "Materials Project", model_family: "materials-project", evidence_id: "run:novelty-return", formula: "FeSe", structure_id: "novelty-structure", target: "stability", stage: "database", e_above_hull_eV_atom: 0.01, novelty_status: "known_reference", data_cutoff: "2026-01-01", source: "https://example.org/materials-project/snapshot", assigned_task_id: noveltyTask.task_id, recommendation: "Known reference match" });
+const resolvedNoveltyPlan = Core.createOrchestration([noveltySeed, noveltyReturn], { target: "stability" }, { tasks: noveltyPlan.tasks });
+assert.equal(resolvedNoveltyPlan.tasks.find(task => task.task_id === noveltyTask.task_id).status, "verified");
+assert.equal(resolvedNoveltyPlan.synthesis.analysis.groups[0].novelty_status, "known_reference");
+assert.equal(resolvedNoveltyPlan.synthesis.analysis.groups[0].next_steps.includes("novelty"), false);
+const spoofedNoveltyReturn = trusted({ model: "Project", model_family: "unrelated-project", evidence_id: "run:spoofed-novelty", formula: "FeSe", structure_id: "novelty-structure", target: "stability", stage: "database", e_above_hull_eV_atom: 0.01, novelty_status: "known_reference", data_cutoff: "2026-01-01", source: "https://example.org/spoofed/snapshot", assigned_task_id: noveltyTask.task_id, recommendation: "Substring spoof" });
+const spoofedNoveltyPlan = Core.createOrchestration([noveltySeed, spoofedNoveltyReturn], { target: "stability" }, { tasks: noveltyPlan.tasks });
+assert.ok(spoofedNoveltyPlan.synthesis.unauthorized_return_task_ids.includes(noveltyTask.task_id));
+
+const targetCalibrationSeeds = [
+  trusted({ model: "Target stability A", model_family: "target-stability-a", evidence_id: "run:target-stability-a", formula: "FeSe", structure_id: "target-calibration", target: "tc_K", stage: "dft", e_above_hull_eV_atom: 0.01, novelty_status: "known_reference", source: "https://example.org/ref/target-a", recommendation: "stable" }),
+  trusted({ model: "Target stability B", model_family: "target-stability-b", evidence_id: "run:target-stability-b", formula: "FeSe", structure_id: "target-calibration", target: "tc_K", stage: "dft", e_above_hull_eV_atom: 0.012, novelty_status: "known_reference", source: "https://example.org/ref/target-b", recommendation: "stable" })
+];
+const targetCalibrationPlan = Core.createOrchestration(targetCalibrationSeeds, { target: "tc_K" });
+const targetTask = targetCalibrationPlan.tasks.find(task => task.step === "target");
+const uncalibratedTargetReturn = trusted({ model: "Quantum Espresso", model_family: "quantum-espresso", evidence_id: "run:uncalibrated-target", formula: "FeSe", structure_id: "target-calibration", target: "tc_K", stage: "dft", tc_K: 40, assigned_task_id: targetTask.task_id, recommendation: "No calibration metadata" });
+const uncalibratedTargetPlan = Core.createOrchestration([...targetCalibrationSeeds, uncalibratedTargetReturn], { target: "tc_K" }, { tasks: targetCalibrationPlan.tasks });
+assert.notEqual(uncalibratedTargetPlan.tasks.find(task => task.task_id === targetTask.task_id).status, "verified");
+
+const generalExperimentSeeds = [
+  trusted({ model: "General A", model_family: "general-a", evidence_id: "run:general-a", formula: "FeSe", structure_id: "general-experiment", stage: "dft", tc_K: 8, e_above_hull_eV_atom: 0.01, novelty_status: "known_reference", source: "https://example.org/ref/general-a", recommendation: "general evidence" }),
+  trusted({ model: "General B", model_family: "general-b", evidence_id: "run:general-b", formula: "FeSe", structure_id: "general-experiment", stage: "dft", tc_K: 8.1, e_above_hull_eV_atom: 0.012, novelty_status: "known_reference", source: "https://example.org/ref/general-b", recommendation: "general evidence" })
+];
+const generalExperimentPlan = Core.createOrchestration(generalExperimentSeeds, { target: "custom" });
+const generalExperimentTask = generalExperimentPlan.tasks.find(task => task.step === "experiment");
+const unrelatedGeneralExperiment = trusted({ model: "NSRL", model_family: "nsrl", evidence_id: "run:general-unrelated", formula: "FeSe", structure_id: "general-experiment", stage: "experiment", band_gap_eV: 2, experimental_method: "Optical spectroscopy", raw_data_url: "https://example.org/raw/general-unrelated", assigned_task_id: generalExperimentTask.task_id, recommendation: "Unrelated property" });
+const unrelatedGeneralPlan = Core.createOrchestration([...generalExperimentSeeds, unrelatedGeneralExperiment], { target: "custom" }, { tasks: generalExperimentPlan.tasks });
+assert.notEqual(unrelatedGeneralPlan.tasks.find(task => task.task_id === generalExperimentTask.task_id).status, "verified");
+
+const unverifiedSideClaim = Core.normalizeCandidate({ model: "Unverified optics", model_family: "unverified-optics", evidence_id: "run:unverified-side-claim", formula: "FeSe", structure_namespace: "test-fixture", structure_id: "general-experiment", target: "general", stage: "ml", band_gap_eV: 2, novelty_status: "known_reference", source: "https://example.org/unverified-side", recommendation: "comparative side claim" });
+const sideClaimExperimentPlan = Core.createOrchestration([...generalExperimentSeeds, unverifiedSideClaim], { target: "custom" });
+const sideClaimExperimentTask = sideClaimExperimentPlan.tasks.find(task => task.step === "experiment");
+assert.deepEqual(sideClaimExperimentTask.required_experiment_properties.sort(), ["e_above_hull_eV_atom", "tc_K"]);
+const sideClaimOnlyExperiment = trusted({ model: "NSRL", model_family: "nsrl", evidence_id: "run:side-claim-only-experiment", formula: "FeSe", structure_id: "general-experiment", target: "general", stage: "experiment", band_gap_eV: 2, experimental_method: "Optical spectroscopy", raw_data_url: "https://example.org/raw/side-claim-only", assigned_task_id: sideClaimExperimentTask.task_id, recommendation: "measured only the unverified side claim" });
+const rejectedSideClaimExperimentPlan = Core.createOrchestration(
+  [...generalExperimentSeeds, unverifiedSideClaim, sideClaimOnlyExperiment],
+  { target: "custom" },
+  { tasks: sideClaimExperimentPlan.tasks }
+);
+assert.notEqual(rejectedSideClaimExperimentPlan.tasks.find(task => task.task_id === sideClaimExperimentTask.task_id).status, "verified");
+assert.ok(rejectedSideClaimExperimentPlan.synthesis.invalid_return_task_ids.includes(sideClaimExperimentTask.task_id));
+assert.equal(rejectedSideClaimExperimentPlan.final_report.execution_status, "partial");
+assert.equal(rejectedSideClaimExperimentPlan.final_report.claim_status, "computational_candidate");
+
+const targetAlignedSeeds = [
+  trusted({ model: "Target aligned A", model_family: "target-aligned-a", evidence_id: "run:target-aligned-a", formula: "FeSe", structure_id: "target-aligned", target: "tc_K", stage: "dft", tc_K: 40, e_above_hull_eV_atom: 0.01, novelty_status: "known_reference", source: "https://example.org/target-aligned/a", recommendation: "target evidence" }),
+  trusted({ model: "Target aligned B", model_family: "target-aligned-b", evidence_id: "run:target-aligned-b", formula: "FeSe", structure_id: "target-aligned", target: "tc_K", stage: "dft", tc_K: 40.2, e_above_hull_eV_atom: 0.012, novelty_status: "known_reference", source: "https://example.org/target-aligned/b", recommendation: "target evidence" })
+];
+const stabilityOnlyStandaloneExperiment = trusted({ model: "NSRL", model_family: "nsrl", evidence_id: "run:stability-only-standalone", formula: "FeSe", structure_id: "target-aligned", target: "tc_K", stage: "experiment", e_above_hull_eV_atom: 0.011, novelty_status: "known_reference", source: "https://example.org/target-aligned/experiment", experimental_method: "Calorimetry", raw_data_url: "https://example.org/raw/stability-only", recommendation: "stability measured without Tc" });
+const targetAlignedPlan = Core.createOrchestration([...targetAlignedSeeds, stabilityOnlyStandaloneExperiment], { target: "tc_K" });
+assert.ok(targetAlignedPlan.tasks.some(task => task.step === "experiment"));
+assert.ok(targetAlignedPlan.synthesis.analysis.groups[0].next_steps.includes("experiment"));
+assert.equal(targetAlignedPlan.final_report.execution_status, "partial");
+assert.equal(targetAlignedPlan.final_report.claim_status, "computational_candidate");
+
+const missingManifestSeeds = [
+  trusted({ model: "Missing manifest A", model_family: "manifest-a", evidence_id: "run:orphaned-task-a-001", formula: "FeSe", structure_id: "orphaned-task-structure", target: "stability", stage: "dft", e_above_hull_eV_atom: 0.01, novelty_status: "known_reference", source: "https://example.org/orphaned/a", recommendation: "stable" }),
+  trusted({ model: "Missing manifest B", model_family: "manifest-b", evidence_id: "run:orphaned-task-b-001", formula: "FeSe", structure_id: "orphaned-task-structure", target: "stability", stage: "dft", e_above_hull_eV_atom: 0.012, novelty_status: "known_reference", source: "https://example.org/orphaned/b", recommendation: "stable" })
+];
+const missingManifestBasePlan = Core.createOrchestration(missingManifestSeeds, { target: "stability" });
+const missingManifestExperimentTask = missingManifestBasePlan.tasks.find(task => task.step === "experiment");
+const missingManifestReturn = trusted({ model: "NSRL", model_family: "nsrl", evidence_id: "run:orphaned-task-return-001", formula: "FeSe", structure_id: "orphaned-task-structure", target: "stability", stage: "experiment", e_above_hull_eV_atom: 0.011, novelty_status: "known_reference", source: "https://example.org/orphaned/experiment", experimental_method: "Calorimetry", raw_data_url: "https://example.org/raw/orphaned-task", assigned_task_id: missingManifestExperimentTask.task_id, recommendation: "valid result without original task manifest" });
+const missingManifestPlan = Core.createOrchestration([...missingManifestSeeds, missingManifestReturn], { target: "stability" });
+const rebuiltMissingManifestTask = missingManifestPlan.tasks.find(task => task.task_id === missingManifestExperimentTask.task_id);
+assert.notEqual(rebuiltMissingManifestTask.status, "verified");
+assert.equal(rebuiltMissingManifestTask.returned_record_count, 0);
+assert.ok(missingManifestPlan.synthesis.manifest_missing_return_task_ids.includes(missingManifestExperimentTask.task_id));
+assert.equal(missingManifestPlan.synthesis.analysis.groups[0].records.some(record => record.stage === "experiment"), false);
+
+const campaignScopePlan = Core.createOrchestration([
+  trusted({ model: "Lead oxide", model_family: "lead-oxide", evidence_id: "run:lead-oxide", formula: "PbO", structure_id: "lead-oxide", stage: "dft", e_above_hull_eV_atom: 0.01, recommendation: "out of scope" })
+], { target: "stability", allowed_elements: "Fe, Se", excluded_elements: "Pb" });
+assert.equal(campaignScopePlan.synthesis.candidate_count, 0);
+assert.equal(campaignScopePlan.synthesis.out_of_scope_candidate_count, 1);
+assert.equal(Core.createTaskPackage(campaignScopePlan).tasks.length, 0);
+const belowThresholdPlan = Core.createOrchestration([
+  trusted({ model: "Low target", model_family: "low-target", evidence_id: "run:low-target", formula: "FeSe", structure_id: "low-target", target: "tc_K", stage: "dft", tc_K: 8, recommendation: "below threshold" })
+], { target: "tc_K", target_value: 40 });
+assert.equal(belowThresholdPlan.synthesis.candidate_count, 0);
+assert.equal(belowThresholdPlan.synthesis.out_of_scope_candidates[0].reason, "below_target_threshold");
+
+const conflictWithExtraPropertyA = trusted({ model: "Conflict extra A", model_family: "conflict-extra-a", evidence_id: "run:conflict-extra-a", formula: "MgB2", structure_id: "conflict-extra", target: "tc_K", stage: "dft", tc_K: 8, e_above_hull_eV_atom: 0.02, recommendation: "Tc and stability" });
+const conflictWithExtraPropertyB = trusted({ model: "Conflict extra B", model_family: "conflict-extra-b", evidence_id: "run:conflict-extra-b", formula: "MgB2", structure_id: "conflict-extra", target: "tc_K", stage: "dft", tc_K: 100, recommendation: "Tc conflict" });
+const conflictExtraPlan = Core.createOrchestration([conflictWithExtraPropertyA, conflictWithExtraPropertyB], { target: "tc_K" });
+const conflictExtraTask = conflictExtraPlan.tasks.find(task => task.step === "conflict");
+const incompleteConflictReplacement = trusted({ model: "Conflict extra A", model_family: "conflict-extra-a", evidence_id: "run:conflict-extra-replacement", formula: "MgB2", structure_id: "conflict-extra", target: "tc_K", stage: "independent_reproduction", tc_K: 99, supersedes_evidence_ids: [conflictWithExtraPropertyA.evidence_id], assigned_task_id: conflictExtraTask.task_id, recommendation: "Would drop e-hull" });
+const incompleteConflictReplacementPlan = Core.createOrchestration([conflictWithExtraPropertyA, conflictWithExtraPropertyB, incompleteConflictReplacement], { target: "tc_K" }, { tasks: conflictExtraPlan.tasks });
+assert.notEqual(incompleteConflictReplacementPlan.tasks.find(task => task.task_id === conflictExtraTask.task_id).status, "verified");
+assert.equal(incompleteConflictReplacementPlan.synthesis.analysis.groups[0].properties.e_above_hull_eV_atom.value, 0.02);
+
+const scaleSeeds = Array.from({ length: 230 }, (_, index) => trustedWithCompleteness({
+  model: `Scale model ${index}`,
+  model_family: `scale-family-${index}`,
+  evidence_id: `run:scale-${index}`,
+  formula: "FeSe",
+  structure_id: `scale-structure-${index}`,
+  target: "tc_K",
+  stage: "dft",
+  tc_K: 8 + (index % 10) / 10,
+  recommendation: "large task-manifest regression"
+}, false));
+const scalePlan = Core.createOrchestration(scaleSeeds, { target: "tc_K" });
+assert.ok(scalePlan.tasks.length > 1000);
+const lateExperimentTask = scalePlan.tasks.find((task, index) => index >= 1000 && task.step === "experiment");
+assert.ok(lateExperimentTask, "a task beyond the old 1000-task cutoff exists");
+const lateSeedIndex = Number(lateExperimentTask.structure_id.replace("scale-structure-", ""));
+const lateExperimentReturn = trustedWithCompleteness({
+  model: "NSRL",
+  model_family: "nsrl",
+  evidence_id: "run:scale-late-experiment",
+  formula: "FeSe",
+  structure_id: lateExperimentTask.structure_id,
+  target: "tc_K",
+  stage: "experiment",
+  tc_K: 8 + (lateSeedIndex % 10) / 10,
+  experimental_method: "Transport",
+  raw_data_url: "https://example.org/raw/scale-late",
+  assigned_task_id: lateExperimentTask.task_id,
+  recommendation: "late manifest task return"
+}, true);
+const scaleReturnPlan = Core.createOrchestration([...scaleSeeds, lateExperimentReturn], { target: "tc_K" }, { tasks: scalePlan.tasks });
+assert.equal(scaleReturnPlan.synthesis.manifest_missing_return_task_ids.includes(lateExperimentTask.task_id), false);
+assert.ok(scaleReturnPlan.synthesis.analysis.groups.some(group => group.records.some(record => record.evidence_id === lateExperimentReturn.evidence_id)));
+
 const modulePath = require.resolve("../github-pages/material-consensus.js");
 delete require.cache[modulePath];
 const publicCore = require(modulePath);
