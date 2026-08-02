@@ -12,6 +12,10 @@ assert.doesNotMatch(center[1], />GPT</);
 assert.doesNotMatch(center[1], /gpt-5\.6-luna/);
 assert.match(html, /consensus-synthesizer-local-v1/);
 assert.match(html, /不调用 GPT/);
+assert.match(html, /<script defer src="material-synthesizer\.js"><\/script>/);
+assert.match(html, /window\.ARPESMaterialSynthesizer\.synthesize/);
+assert.match(html, /evidence_eligible: row\.evidenceEligible === true/);
+assert.match(html, /claims: Object\.freeze/);
 assert.match(html, /return \[synthesisRow, \.\.\.workerRows\]/);
 
 console.log("Roundtable synthesizer tests passed");

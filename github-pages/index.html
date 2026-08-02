@@ -8703,6 +8703,7 @@
 <script defer src="bohrium-openlam.js"></script>
 <script defer src="material-consensus.js"></script>
 <script defer src="material-baseline.js"></script>
+<script defer src="material-synthesizer.js"></script>
 <script>
   window.jsfive = window.jsfive || window.hdf5;
   window.addEventListener("error", event => {
@@ -16776,7 +16777,11 @@
         {
           name: "GPT",
           modelId: chatAgentSelect?.value || "gpt-5.6-luna",
+          modelFamily: "gpt",
           stage: gptState === "ready" ? "llm" : "task_planning",
+          evidenceEligible: false,
+          structureResolved: false,
+          claims: [],
           kind: zh ? "综合材料假设" : "Material synthesis",
           state: gptState,
           status: hasComposition ? gptStatus : (zh ? "等待组合" : "Awaiting composition"),
@@ -16786,7 +16791,11 @@
         {
           name: "DeepSeek",
           modelId: "deepseek-planning-preview",
+          modelFamily: "deepseek",
           stage: "task_planning",
+          evidenceEligible: false,
+          structureResolved: false,
+          claims: [],
           kind: zh ? "计算路线" : "Computation route",
           state: hasComposition ? "ready" : "idle",
           status: hasComposition ? (zh ? "任务建议" : "Task preview") : (zh ? "等待组合" : "Awaiting composition"),
@@ -16796,7 +16805,11 @@
         {
           name: "ARPES Rules",
           modelId: "arpes-rules-preview",
+          modelFamily: "arpes-rules",
           stage: "rule",
+          evidenceEligible: false,
+          structureResolved: false,
+          claims: [],
           kind: zh ? "实验可观测量" : "Experimental observables",
           state: hasElements ? "ready" : "idle",
           status: hasElements ? (zh ? "本地结果" : "Local result") : (zh ? "等待元素" : "Awaiting elements"),
@@ -16806,7 +16819,39 @@
         {
           name: "JARVIS Baseline v1",
           modelId: trainedBaseline.version || "jarvis-composition-baseline-2026.07.31",
+          modelFamily: "jarvis-composition-baseline",
           stage: trainedBaseline.state === "ready" ? "ml" : "task_planning",
+          evidenceEligible: false,
+          structureResolved: false,
+          claims: trainedBaseline.state === "ready" ? [
+            {
+              property: "formation_energy_eV_atom",
+              value: trainedBaseline.formation_energy_eV_atom,
+              unit: "eV/atom",
+              uncertainty: trainedBaseline.formation_error_q90_eV_atom,
+              contextKey: "composition-only|structure-unresolved",
+              conditional: false,
+              eligibleForConsensus: false
+            },
+            {
+              property: "band_gap_eV",
+              value: trainedBaseline.conditional_nonmetal_band_gap_eV,
+              unit: "eV",
+              uncertainty: trainedBaseline.band_gap_error_q90_eV,
+              contextKey: "composition-only|structure-unresolved|nonmetal-conditional",
+              conditional: true,
+              eligibleForConsensus: false
+            },
+            {
+              property: "tc_K",
+              value: trainedBaseline.conditional_known_superconductor_tc_K,
+              unit: "K",
+              uncertainty: trainedBaseline.tc_error_q90_K,
+              contextKey: "composition-only|structure-unresolved|known-superconductor-conditional",
+              conditional: true,
+              eligibleForConsensus: false
+            }
+          ] : [],
           kind: zh ? "组成性质基线" : "Composition property baseline",
           state: trainedBaseline.state === "ready" ? "ready" : (trainedBaseline.state === "loading" ? "running" : "idle"),
           status: trainedBaseline.state === "ready"
@@ -16818,7 +16863,11 @@
         {
           name: "CrystalStructureGen",
           modelId: "scienceone-crystal-task-preview",
+          modelFamily: "scienceone-crystal-structure-gen",
           stage: "task_planning",
+          evidenceEligible: false,
+          structureResolved: false,
+          claims: [],
           kind: zh ? "晶体结构" : "Crystal structure",
           state: hasComposition ? scienceOne.state : "idle",
           status: scienceOne.label,
@@ -16828,7 +16877,11 @@
         {
           name: "Quantum Espresso",
           modelId: "scienceone-qe-task-preview",
+          modelFamily: "scienceone-quantum-espresso",
           stage: "task_planning",
+          evidenceEligible: false,
+          structureResolved: false,
+          claims: [],
           kind: zh ? "第一性原理计算" : "First-principles calculation",
           state: hasComposition ? scienceOne.state : "idle",
           status: scienceOne.label,
@@ -16838,7 +16891,11 @@
         {
           name: zh ? "电子能带查询" : "Band Query",
           modelId: "scienceone-materials-project-task-preview",
+          modelFamily: "scienceone-materials-project",
           stage: "task_planning",
+          evidenceEligible: false,
+          structureResolved: false,
+          claims: [],
           kind: "Materials Project",
           state: hasComposition ? scienceOne.state : "idle",
           status: scienceOne.label,
@@ -16847,34 +16904,38 @@
         }
       ];
 
-      const evidenceRows = workerRows.filter(row => row.state === "ready" && ["llm", "rule", "ml", "database", "dft", "experiment"].includes(row.stage));
-      const planningRows = workerRows.filter(row => row.stage === "task_planning");
-      const runningRows = workerRows.filter(row => row.state === "running");
-      const sourceNames = evidenceRows.map(row => row.name).join(zh ? "、" : ", ");
-      let synthesisState = "idle";
-      let synthesisStatus = zh ? "等待组合" : "Awaiting composition";
-      let synthesisPrediction = zh
-        ? "加入至少两种元素后，综合研判模型会汇总所有已返回答案、区分实际结果与任务计划，并标出共识、冲突和证据缺口。"
-        : "Add at least two elements. The synthesis model will merge returned answers, separate results from plans, and surface agreement, conflicts, and evidence gaps.";
-      if (hasComposition) {
-        synthesisState = runningRows.length ? "running" : (evidenceRows.length ? "ready" : "idle");
-        synthesisStatus = runningRows.length
-          ? (zh ? `正在汇总 · ${runningRows.length} 项运行中` : `Synthesizing · ${runningRows.length} running`)
-          : (zh ? `已汇总 ${evidenceRows.length} 项结果` : `${evidenceRows.length} results synthesized`);
-        synthesisPrediction = zh
-          ? `已汇总 ${evidenceRows.length} 项实际结果${sourceNames ? `（${sourceNames}）` : ""}和 ${planningRows.length} 项验证计划。当前共同结论：${model.classificationLabel}，探索排序 ${model.score}/100 只用于安排下一步，不是超导概率。尚无两组同结构、同条件的独立数值结果，不能形成正式数值共识；仍需补充晶体结构、DFT 与实验验证。`
-          : `Synthesized ${evidenceRows.length} returned result(s)${sourceNames ? ` (${sourceNames})` : ""} and ${planningRows.length} validation plan(s). Shared conclusion: ${model.classificationLabel}; the ${model.score}/100 exploration rank only prioritizes follow-up work and is not a superconductivity probability. There are not yet two independent numeric results for the same structure and conditions, so no formal numeric consensus is claimed; crystal structure, DFT, and experiment are still required.`;
-      }
+      const synthesis = window.ARPESMaterialSynthesizer
+        ? window.ARPESMaterialSynthesizer.synthesize({
+            language: zh ? "zh" : "en",
+            formula,
+            hasComposition,
+            classificationLabel: model.classificationLabel,
+            score: model.score,
+            rows: workerRows
+          })
+        : {
+            version: "loading",
+            state: "idle",
+            status: zh ? "综合模块加载中" : "Synthesizer loading",
+            summary: zh
+              ? "综合模块正在加载，模型席位与现有预测功能不受影响。"
+              : "The synthesis module is loading; model seats and existing predictions remain available."
+          };
       const synthesisRow = {
         name: zh ? "综合研判模型" : "Consensus Synthesizer",
-        modelId: "consensus-synthesizer-local-v1",
+        modelId: `consensus-synthesizer-local-v1.${synthesis.version || "0"}`,
+        modelFamily: "arpes-consensus-synthesizer",
         role: "host",
         stage: "task_planning",
+        evidenceEligible: false,
+        structureResolved: false,
+        claims: [],
         kind: zh ? "答案汇总与冲突审计" : "Answer synthesis and conflict audit",
-        state: synthesisState,
-        status: synthesisStatus,
-        prediction: synthesisPrediction,
-        meta: zh ? "专用本地综合器 · 不调用 GPT · 不计入科学证据" : "Dedicated local synthesizer · does not call GPT · excluded from scientific evidence"
+        state: synthesis.state,
+        status: synthesis.status,
+        prediction: synthesis.summary,
+        meta: zh ? "专用本地综合器 · 不调用 GPT · 不计入科学证据" : "Dedicated local synthesizer · does not call GPT · excluded from scientific evidence",
+        synthesis
       };
 
       return [synthesisRow, ...workerRows];
@@ -16904,6 +16965,11 @@
         model_id: row.modelId,
         role: row.role || "worker",
         stage: row.stage,
+        state: row.state,
+        model_family: row.modelFamily || row.modelId,
+        evidence_eligible: row.evidenceEligible === true,
+        structure_resolved: row.structureResolved === true,
+        claims: Object.freeze([...(row.claims || [])]),
         kind: row.kind,
         status: row.status,
         recommendation: row.prediction,
