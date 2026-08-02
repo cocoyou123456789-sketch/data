@@ -2666,13 +2666,19 @@
       if (!priorTasksByLogicalKey.has(logicalKey)) priorTasksByLogicalKey.set(logicalKey, []);
       priorTasksByLogicalKey.get(logicalKey).push(task);
     });
-    const closureVerifiedReturnScore = new Map(priorTasks.map(task => [
-      task.task_id,
-      taskReturnSummary(task).verifiedRecords.length
-    ]));
+    const taskStepOrder = ["structure", "verification", "conditions", "novelty", "stability", "conflict", "target", "experiment"];
+    const downstreamProgressSteps = [...taskStepOrder].reverse();
+    const downstreamProgressRank = new Map(downstreamProgressSteps.map((step, index) => [step, index]));
+    const emptyProgressVector = () => Array(downstreamProgressSteps.length).fill(0);
+    const closureVerifiedProgress = new Map(priorTasks.map(task => {
+      const progress = emptyProgressVector();
+      progress[downstreamProgressRank.get(task.step) ?? progress.length - 1] = taskReturnSummary(task).verifiedRecords.length;
+      return [task.task_id, progress];
+    }));
     priorTasks.forEach(task => {
       const contribution = taskReturnSummary(task).verifiedRecords.length;
       if (!contribution) return;
+      const contributionRank = downstreamProgressRank.get(task.step) ?? downstreamProgressSteps.length - 1;
       const visitedDependencies = new Set();
       const pendingDependencies = [...(task.depends_on || [])];
       while (pendingDependencies.length) {
@@ -2681,24 +2687,24 @@
         visitedDependencies.add(dependencyId);
         const dependencyTask = priorTaskById.get(dependencyId);
         if (!dependencyTask) continue;
-        closureVerifiedReturnScore.set(dependencyId,
-          (closureVerifiedReturnScore.get(dependencyId) || 0) + contribution);
+        const dependencyProgress = closureVerifiedProgress.get(dependencyId) || emptyProgressVector();
+        dependencyProgress[contributionRank] += contribution;
+        closureVerifiedProgress.set(dependencyId, dependencyProgress);
         pendingDependencies.push(...(dependencyTask.depends_on || []));
       }
     });
-    const taskStepOrder = ["structure", "verification", "conditions", "novelty", "stability", "conflict", "target", "experiment"];
     const taskStepRank = new Map(taskStepOrder.map((step, index) => [step, index]));
     const compareAuthoritativeTasks = (left, right) => {
-      const leftClosureScore = closureVerifiedReturnScore.get(left.task_id) || 0;
-      const rightClosureScore = closureVerifiedReturnScore.get(right.task_id) || 0;
-      if (leftClosureScore !== rightClosureScore) return rightClosureScore - leftClosureScore;
-      const leftVerifiedReturnCount = taskReturnSummary(left).verifiedRecords.length;
-      const rightVerifiedReturnCount = taskReturnSummary(right).verifiedRecords.length;
-      if (leftVerifiedReturnCount !== rightVerifiedReturnCount) return rightVerifiedReturnCount - leftVerifiedReturnCount;
-      if (leftClosureScore > 0 && left.required_source_claims.length !== right.required_source_claims.length) {
+      const leftProgress = closureVerifiedProgress.get(left.task_id) || emptyProgressVector();
+      const rightProgress = closureVerifiedProgress.get(right.task_id) || emptyProgressVector();
+      for (let index = 0; index < downstreamProgressSteps.length; index += 1) {
+        if (leftProgress[index] !== rightProgress[index]) return rightProgress[index] - leftProgress[index];
+      }
+      const hasVerifiedProgress = leftProgress.some(Boolean);
+      if (hasVerifiedProgress && left.required_source_claims.length !== right.required_source_claims.length) {
         return right.required_source_claims.length - left.required_source_claims.length;
       }
-      if (leftClosureScore === 0 && left.required_source_claims.length !== right.required_source_claims.length) {
+      if (!hasVerifiedProgress && left.required_source_claims.length !== right.required_source_claims.length) {
         return left.required_source_claims.length - right.required_source_claims.length;
       }
       return left.task_id.localeCompare(right.task_id);
@@ -2721,6 +2727,19 @@
     const migrationParentTaskByReturn = new Map();
     const protectedMigrationParentTaskIds = new Set();
     const migrationReturnKey = (taskId, destinationIdentity) => JSON.stringify([taskId, destinationIdentity]);
+    const verifiedDependencyClosure = task => {
+      const closure = new Set();
+      const pendingDependencies = [...(task.depends_on || [])];
+      while (pendingDependencies.length) {
+        const dependencyId = pendingDependencies.pop();
+        if (closure.has(dependencyId)) continue;
+        const dependencyTask = priorTaskById.get(dependencyId);
+        if (!dependencyTask || !taskReturnSummary(dependencyTask).verifiedRecords.length) return null;
+        closure.add(dependencyId);
+        pendingDependencies.push(...(dependencyTask.depends_on || []));
+      }
+      return closure;
+    };
     priorTasksByLogicalKey.forEach(candidates => {
       if (!["structure", "conditions"].includes(candidates[0]?.step)) return;
       const candidatesByDestination = new Map();
@@ -2732,9 +2751,15 @@
         });
       });
       candidatesByDestination.forEach((destinationCandidates, destinationIdentity) => {
-        const parentTask = [...destinationCandidates].sort(compareAuthoritativeTasks)[0];
+        const eligibleParents = destinationCandidates.map(candidate => ({
+          candidate,
+          dependencyClosure: verifiedDependencyClosure(candidate)
+        })).filter(item => item.dependencyClosure !== null);
+        const parentTask = eligibleParents.map(item => item.candidate).sort(compareAuthoritativeTasks)[0];
         if (!parentTask) return;
+        const parentDependencyClosure = eligibleParents.find(item => item.candidate.task_id === parentTask.task_id)?.dependencyClosure || new Set();
         protectedMigrationParentTaskIds.add(parentTask.task_id);
+        parentDependencyClosure.forEach(taskId => protectedMigrationParentTaskIds.add(taskId));
         destinationCandidates.forEach(candidate => {
           migrationParentTaskByReturn.set(migrationReturnKey(candidate.task_id, destinationIdentity), parentTask);
         });
