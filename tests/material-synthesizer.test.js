@@ -4,6 +4,7 @@ const Synthesizer = require("../github-pages/material-synthesizer.js");
 const idle = Synthesizer.synthesize({ language: "zh", hasComposition: false, rows: [] });
 assert.equal(idle.state, "idle");
 assert.match(idle.summary, /至少两种元素/);
+assert.match(idle.summary, /材料研究主持人/);
 
 const baseRows = [
   { name: "ARPES Rules", modelFamily: "arpes-rules", stage: "rule", state: "ready" },

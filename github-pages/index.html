@@ -2959,7 +2959,7 @@
       min-height: 282px;
       transform: translateX(-50%) translateZ(118px);
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
       align-content: start;
       place-items: stretch;
       text-align: center;
@@ -3004,6 +3004,30 @@
       gap: 1px;
       padding: 2px 4px 5px;
       pointer-events: none;
+    }
+
+    .roundtable-center .crucible-visual .roundtable-model-status {
+      position: absolute;
+      z-index: 6;
+      top: 5px;
+      left: 50%;
+      width: min(154px, 82%);
+      min-height: 34px;
+      padding: 4px 8px;
+      transform: translateX(-50%);
+      border: 1px solid rgba(96,208,255,0.5);
+      border-radius: 999px;
+      background: rgba(4,22,32,0.86);
+      box-shadow: 0 0 18px rgba(96,208,255,0.2), inset 0 0 12px rgba(20,184,166,0.12);
+      place-content: center;
+    }
+
+    .roundtable-host-kicker {
+      color: var(--accent-glow) !important;
+      font-size: 7px !important;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
     }
 
     .roundtable-model-status strong {
@@ -3447,7 +3471,7 @@
     }
 
     .roundtable-center .periodic-crucible-panel .crucible-body {
-      max-height: 72px;
+      max-height: 100px;
       padding: 0 4px 4px;
       gap: 3px;
       align-content: start;
@@ -3463,6 +3487,28 @@
       margin: 0;
       font-size: 9px;
       line-height: 1.25;
+    }
+
+    .roundtable-chair-hint {
+      color: rgba(214,240,248,0.76);
+    }
+
+    .roundtable-chair-open {
+      min-height: 24px;
+      justify-self: center;
+      padding: 3px 9px;
+      border-color: rgba(45,212,191,0.5);
+      background: rgba(15,118,110,0.2);
+      color: #dcfffa;
+      font-size: 9px;
+      font-weight: 780;
+    }
+
+    .roundtable-chair-open:hover,
+    .roundtable-chair-open:focus-visible {
+      border-color: rgba(94,234,212,0.9);
+      background: rgba(15,118,110,0.42);
+      box-shadow: 0 0 14px rgba(45,212,191,0.22);
     }
 
     .roundtable-center .periodic-crucible-panel .chips {
@@ -8427,7 +8473,7 @@
       }
 
       .roundtable-center .periodic-crucible-panel .crucible-body {
-        max-height: 42px;
+        max-height: 68px;
       }
 
       .round-module {
@@ -9253,22 +9299,24 @@
                   <span class="module-cube-face right"></span>
                 </span>
               </button>
-              <div class="roundtable-center">
-                <div class="roundtable-model-status" aria-live="polite">
-                  <strong data-roundtable-model-title>综合研判模型</strong>
-                  <span data-roundtable-model-hint>Consensus Synthesizer · 汇总外圈模型答案，不自行生成科学结论。</span>
-                </div>
-                <div class="crucible-panel periodic-crucible-panel" id="periodicCruciblePanel" tabindex="0" aria-label="模型合集中央坩埚">
-                  <h3>坩埚预测 <span id="roundtableCrucibleFormula">等待元素</span></h3>
+              <div class="roundtable-center" data-roundtable-host="materials-research-chair">
+                <div class="crucible-panel periodic-crucible-panel" id="periodicCruciblePanel" tabindex="0" aria-label="材料研究主持人中央坩埚">
+                  <h3>主持坩埚 <span id="roundtableCrucibleFormula">等待元素</span></h3>
                   <div class="crucible-visual" role="group" aria-label="拖入元素的坩埚">
                     <div class="crucible-bubbles" aria-hidden="true"><span></span><span></span><span></span></div>
                     <div class="crucible-bowl" aria-hidden="true"></div>
+                    <div class="roundtable-model-status" aria-live="polite">
+                      <span class="roundtable-host-kicker">ORCHESTRATOR</span>
+                      <strong data-roundtable-model-title>材料研究主持人</strong>
+                    </div>
                     <div class="roundtable-crucible-elements" aria-live="polite">
                       <span class="roundtable-crucible-empty">拖入，或点元素后点这里</span>
                     </div>
                   </div>
                   <div class="crucible-body">
+                    <p class="roundtable-chair-hint" data-roundtable-model-hint>汇总外圈模型报告、审计冲突、分配验证任务并生成执行报告。</p>
                     <p class="muted">拖入元素，或先点元素再点坩埚，生成组合与探索建议。</p>
+                    <button class="roundtable-chair-open" id="roundtableChairOpenBtn" type="button">进入主持工作台</button>
                   </div>
                 </div>
               </div>
@@ -16922,19 +16970,19 @@
               : "The synthesis module is loading; model seats and existing predictions remain available."
           };
       const synthesisRow = {
-        name: zh ? "综合研判模型" : "Consensus Synthesizer",
-        modelId: `consensus-synthesizer-local-v1.${synthesis.version || "0"}`,
-        modelFamily: "arpes-consensus-synthesizer",
+        name: zh ? "材料研究主持人" : "Materials Research Chair",
+        modelId: `materials-chair-local-v1.${synthesis.version || "0"}`,
+        modelFamily: "materials-research-chair",
         role: "host",
         stage: "task_planning",
         evidenceEligible: false,
         structureResolved: false,
         claims: [],
-        kind: zh ? "答案汇总与冲突审计" : "Answer synthesis and conflict audit",
+        kind: zh ? "报告归纳、冲突审计与任务调度" : "Report synthesis, conflict audit, and task orchestration",
         state: synthesis.state,
         status: synthesis.status,
         prediction: synthesis.summary,
-        meta: zh ? "专用本地综合器 · 不调用 GPT · 不计入科学证据" : "Dedicated local synthesizer · does not call GPT · excluded from scientific evidence",
+        meta: zh ? "本地主持器 · 不调用 GPT · 不计入科学证据" : "Local research chair · does not call GPT · excluded from scientific evidence",
         synthesis
       };
 
@@ -18270,15 +18318,15 @@
       const titleNode = center.querySelector("[data-roundtable-model-title]");
       const hintNode = center.querySelector("[data-roundtable-model-hint]");
       const formula = options.formula || modelMixtureFormula();
-      const title = currentLang === "zh" ? "综合研判模型" : "Consensus Synthesizer";
+      const title = currentLang === "zh" ? "材料研究主持人" : "Materials Research Chair";
       let hint = currentLang === "zh"
-        ? "专门汇总外圈模型答案，区分结果与计划，不自行生成科学结论。"
-        : "Dedicated to summarizing outer-model answers, separating results from plans, without inventing scientific conclusions.";
+        ? "主持外圈模型：收取独立报告、归并结论与冲突、分配验证任务并形成执行报告。"
+        : "Chairs the outer models: collects independent reports, merges findings and conflicts, assigns validation tasks, and produces an execution report.";
       if (formula && options.status) hint = `${formula} · ${options.status}`;
       else if (options.source) {
         hint = currentLang === "zh"
-          ? `已选择答案源：${options.source}；综合模型保持独立。`
-          : `Answer source selected: ${options.source}; the synthesis model remains independent.`;
+          ? `已选择外圈答案源：${options.source}；主持人保持独立，不把选择当成结论。`
+          : `Outer answer source selected: ${options.source}; the chair remains independent and does not treat a selection as a conclusion.`;
       }
       center.dataset.synthesisState = options.state || (formula ? "running" : "idle");
       if (titleNode) titleNode.textContent = title;
@@ -19431,9 +19479,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const model = predictMixturePotential();
       const hasMixture = model.symbols.length > 0;
       const loading = state.mixtureAi?.status === "loading" && state.mixtureAi.signature === mixtureSignature();
+      periodicCruciblePanel.setAttribute("aria-label", currentLang === "zh" ? "材料研究主持人中央坩埚" : "Materials Research Chair central crucible");
       periodicCruciblePanel.innerHTML = `
         <h3>
-          ${currentLang === "zh" ? "组合候选筛选" : "Composition Screening"}
+          ${currentLang === "zh" ? "主持坩埚" : "Chair Crucible"}
           <span id="roundtableCrucibleFormula"></span>
           ${hasMixture ? `
             <button class="roundtable-crucible-clear" type="button" id="roundtableCrucibleClearBtn"
@@ -19443,6 +19492,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         </h3>
         ${crucibleVisualHtml()}
         <div class="crucible-body">
+          <p class="roundtable-chair-hint" data-roundtable-model-hint>${esc(currentLang === "zh"
+            ? "主持外圈模型：归纳报告、审计冲突、分配验证任务并形成执行报告。"
+            : "Chairs the outer models: synthesizes reports, audits conflicts, assigns validation tasks, and produces an execution report.")}</p>
           ${hasMixture ? `
             <div class="prediction-score">
               <strong>${currentLang === "zh" ? "探索排序（非概率）" : "Exploration rank (not probability)"}: ${model.score}/100</strong>
@@ -19462,12 +19514,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
               ? "把任意元素拖进锅里，或先点元素再点坩埚。亮色已有资料，灰色资料稀疏但同样可分析。"
               : "Drag any element into the crucible, or select it and tap the crucible. Bright cells have data; grey cells are sparse but remain screenable.")}</p>
           `}
+          <button class="roundtable-chair-open" id="roundtableChairOpenBtn" type="button">${currentLang === "zh" ? "进入主持工作台" : "Open chair workspace"}</button>
         </div>
       `;
       renderRoundtableCrucibleElements();
       renderMixtureAnalysis(model);
       renderMultiModelPredictions(model);
       $("#runCrucibleBtn")?.addEventListener("click", runCrucibleAiAnalysis);
+      $("#roundtableChairOpenBtn")?.addEventListener("click", openRoundtableChair);
       $("#roundtableCrucibleClearBtn")?.addEventListener("click", event => {
         event.stopPropagation();
         clearModelElements({ announce: true });
@@ -19525,9 +19579,25 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         <div class="crucible-visual" role="group" aria-label="${esc(currentLang === "zh" ? "拖入元素的坩埚" : "Crucible element drop target")}">
           <div class="crucible-bubbles" aria-hidden="true"><span></span><span></span><span></span></div>
           <div class="crucible-bowl" aria-hidden="true"></div>
+          <div class="roundtable-model-status" aria-live="polite">
+            <span class="roundtable-host-kicker">ORCHESTRATOR</span>
+            <strong data-roundtable-model-title>${esc(currentLang === "zh" ? "材料研究主持人" : "Materials Research Chair")}</strong>
+          </div>
           <div class="roundtable-crucible-elements" aria-live="polite"></div>
         </div>
       `;
+    }
+
+    function openRoundtableChair(event) {
+      event?.preventDefault();
+      event?.stopPropagation();
+      showAppPage("model");
+      requestAnimationFrame(() => {
+        const workbench = document.querySelector("#materialConsensusWorkbench");
+        const chairButton = document.querySelector("#materialChairRunBtn");
+        workbench?.scrollIntoView({ behavior: "smooth", block: "start" });
+        chairButton?.focus({ preventScroll: true });
+      });
     }
 
     function elementHistoryEvents(symbol, rows, articleRows) {
