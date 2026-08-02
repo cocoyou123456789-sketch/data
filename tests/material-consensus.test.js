@@ -1361,6 +1361,68 @@ nestedActiveTasks.forEach(task => task.depends_on.forEach(dependencyId => {
 assert.ok(nestedDuplicateMigrationPlan.tasks.find(task => task.task_id === nestedNarrowConditionsTask.task_id)
   .depends_on.every(dependencyId => nestedDuplicateMigrationPlan.tasks.find(task => task.task_id === dependencyId).status === "verified"));
 
+const partialDuplicateMigrationBaseRecords = [
+  lateStructureSourceA,
+  lateStructureSourceB,
+  duplicateStructureNarrowReturn,
+  duplicateStructureExpandedReturnA,
+  duplicateStructureExpandedReturnB
+];
+const partialDuplicateMigrationRun = (conditionReturns, previousTasks) => Core.createOrchestration(
+  [...partialDuplicateMigrationBaseRecords, ...conditionReturns],
+  { target: "tc_K" },
+  { tasks: previousTasks }
+);
+const partialMigrationActiveSignature = plan => plan.tasks.filter(task => task.status !== "superseded")
+  .map(task => ({
+    task_id: task.task_id,
+    status: task.status,
+    depends_on: task.depends_on,
+    required_source_record_keys: task.required_source_claims.map(claim => claim.source_record_key)
+  }))
+  .sort((left, right) => left.task_id.localeCompare(right.task_id));
+const assertPartialConditionsRemainder = (plan, expectedEvidenceIds) => {
+  const activeTasks = plan.tasks.filter(task => task.status !== "superseded");
+  const activeTaskIds = new Set(activeTasks.map(task => task.task_id));
+  activeTasks.forEach(task => task.depends_on.forEach(dependencyId => assert.ok(activeTaskIds.has(dependencyId))));
+  const remainderTasks = activeTasks.filter(task => task.step === "conditions"
+    && ![nestedNarrowConditionsTask.task_id, nestedExpandedConditionsTask.task_id].includes(task.task_id));
+  assert.equal(remainderTasks.length, 1, "the still-incomplete assigned structure returns receive one remainder conditions task");
+  assert.deepEqual(remainderTasks[0].required_source_claims.flatMap(claim => claim.evidence_ids).sort(), [...expectedEvidenceIds].sort());
+  assert.ok(remainderTasks[0].candidate_key.includes("|remainder:"));
+};
+
+const narrowOnlyPartialForwardPlan = partialDuplicateMigrationRun(
+  [nestedNarrowConditionsReturn],
+  nestedDuplicateMigrationTasks
+);
+const narrowOnlyPartialReversePlan = partialDuplicateMigrationRun(
+  [nestedNarrowConditionsReturn],
+  [...nestedDuplicateMigrationTasks].reverse()
+);
+for (const plan of [narrowOnlyPartialForwardPlan, narrowOnlyPartialReversePlan]) {
+  assert.equal(plan.tasks.find(task => task.task_id === nestedNarrowConditionsTask.task_id).status, "verified");
+  assertPartialConditionsRemainder(plan, [
+    duplicateStructureExpandedReturnA.evidence_id,
+    duplicateStructureExpandedReturnB.evidence_id
+  ]);
+}
+assert.deepEqual(partialMigrationActiveSignature(narrowOnlyPartialForwardPlan), partialMigrationActiveSignature(narrowOnlyPartialReversePlan));
+
+const expandedOnlyPartialForwardPlan = partialDuplicateMigrationRun(
+  [nestedExpandedConditionsReturnA, nestedExpandedConditionsReturnB],
+  nestedDuplicateMigrationTasks
+);
+const expandedOnlyPartialReversePlan = partialDuplicateMigrationRun(
+  [nestedExpandedConditionsReturnA, nestedExpandedConditionsReturnB],
+  [...nestedDuplicateMigrationTasks].reverse()
+);
+for (const plan of [expandedOnlyPartialForwardPlan, expandedOnlyPartialReversePlan]) {
+  assert.equal(plan.tasks.find(task => task.task_id === nestedExpandedConditionsTask.task_id).status, "verified");
+  assertPartialConditionsRemainder(plan, [duplicateStructureNarrowReturn.evidence_id]);
+}
+assert.deepEqual(partialMigrationActiveSignature(expandedOnlyPartialForwardPlan), partialMigrationActiveSignature(expandedOnlyPartialReversePlan));
+
 const lateConditionsSourceA = trustedWithCompleteness({
   model: "Late conditions source A",
   model_family: "late-conditions-source-a",
