@@ -9,6 +9,7 @@
   const EXECUTION_REPORT_SCHEMA = "material-execution-report/v1";
   const TASK_PACKAGE_SCHEMA = "material-task-package/v1";
   const MAX_RECORDS = 5000;
+  const MAX_TASKS = MAX_RECORDS * 8;
   const MAX_FILE_BYTES = 5 * 1024 * 1024;
   const MAX_FALLBACK_BYTES = 3.5 * 1024 * 1024;
   const STORAGE_KEY = "arpes-material-consensus-v1";
@@ -115,6 +116,7 @@
       chairStatusReturned: "结果已返回 · 待核验",
       chairStatusVerified: "已核验",
       chairStatusBlocked: "前置条件不足",
+      chairStatusSuperseded: "已归档 · 被新分支替代",
       chairGenerated: "主持方案已更新：{reports} 份模型报告，{tasks} 项任务。",
       chairDownloadedTasks: "主持人任务包已下载。",
       chairDownloadedReport: "执行报告已下载。",
@@ -242,6 +244,7 @@
       chairStatusReturned: "Result returned · unverified",
       chairStatusVerified: "Verified",
       chairStatusBlocked: "Blocked by prerequisites",
+      chairStatusSuperseded: "Archived · superseded by a new branch",
       chairGenerated: "Chair plan updated: {reports} model reports and {tasks} tasks.",
       chairDownloadedTasks: "Chair task package downloaded.",
       chairDownloadedReport: "Execution report downloaded.",
@@ -1321,7 +1324,7 @@
       : {};
     if (JSON.stringify(extraConditions).length > 6000) throw new Error("CONDITIONS_TOO_LONG");
     const extraConditionsInvalid = source.extra_conditions_invalid === true || (hasExplicitConditions
-      ? (!validConditionsObject || containsPlaceholderDeep(explicitConditions))
+      ? (!validConditionsObject || (Object.keys(explicitConditions).length > 0 && containsPlaceholderDeep(explicitConditions)))
       : false);
     const modelAliases = allValues(source, ["model", "model_name", "source_model"]).map(value => scalarText(value, 160)).filter(Boolean);
     if (new Set(modelAliases.map(value => value.normalize("NFKC").toLowerCase())).size > 1) throw new Error("CONFLICTING_MODEL_ALIASES");
@@ -1329,6 +1332,10 @@
     const modelVersions = allValues(source, ["model_version", "version", "checkpoint"]).map(value => scalarText(value, 120)).filter(Boolean);
     if (new Set(modelVersions.map(value => value.normalize("NFKC").toLowerCase())).size > 1) throw new Error("CONFLICTING_MODEL_VERSION_ALIASES");
     const modelVersion = modelVersions[0] || "";
+    const roleAliases = allValues(source, ["role", "model_role", "participant_role"])
+      .map(value => scalarText(value, 80).toLowerCase()).filter(Boolean);
+    if (new Set(roleAliases).size > 1) throw new Error("CONFLICTING_MODEL_ROLE_ALIASES");
+    const actorRole = /^(?:host|chair|orchestrator|coordinator)$/.test(roleAliases[0] || "") ? "orchestrator" : "worker";
     const familyAliases = allValues(source, ["model_family", "family"]).map(value => scalarText(value, 120).toLowerCase()).filter(Boolean);
     if (new Set(familyAliases.map(canonicalFamilyKey)).size > 1) throw new Error("CONFLICTING_MODEL_FAMILY_ALIASES");
     const rawModelFamily = familyAliases[0] || scalarText(defaults.modelFamily, 120).toLowerCase();
@@ -1362,6 +1369,10 @@
       .flatMap(value => Array.isArray(value) ? value : [value]);
     const evidenceIds = Array.from(new Set(evidenceIdValues.map(normalizedEvidenceId)));
     const evidenceId = evidenceIds[0] || "";
+    const supersededEvidenceInputs = allValues(source, ["supersedes_evidence_id", "supersedes_evidence_ids", "retracts_evidence_id", "retracts_evidence_ids"])
+      .flatMap(value => Array.isArray(value) ? value : [value]);
+    if (supersededEvidenceInputs.length > 64) throw new Error("TOO_MANY_SUPERSEDED_EVIDENCE_IDS");
+    const supersedesEvidenceIds = Array.from(new Set(supersededEvidenceInputs.map(normalizedEvidenceId).filter(Boolean)));
     const taskIds = allValues(source, ["task_id", "assigned_task_id", "orchestration_task_id"]).map(value => scalarText(value, 241));
     if (taskIds.some(value => value.length > 240)) throw new Error("TASK_ID_TOO_LONG");
     if (new Set(taskIds).size > 1) throw new Error("CONFLICTING_TASK_ID_ALIASES");
@@ -1392,7 +1403,7 @@
       structure_namespace: structureNamespace,
       structure_id: structureId
     }).length > 0;
-    const eligibleForConsensus = adapterTrusted && defaults.eligibleForConsensus === true
+    const eligibleForConsensus = actorRole === "worker" && adapterTrusted && defaults.eligibleForConsensus === true
       && defaults.verified === true
       && defaults.trustedEvidence === true
       && sourceFamilyVerified
@@ -1430,6 +1441,7 @@
       schema: SCHEMA,
       model,
       model_version: modelVersion,
+      actor_role: actorRole,
       model_family: modelFamily,
       model_family_key: modelFamilyKey,
       stage,
@@ -1476,6 +1488,7 @@
       raw_data_refs: rawDataRefs,
       evidence_id: evidenceId,
       evidence_ids: evidenceIds,
+      supersedes_evidence_ids: supersedesEvidenceIds,
       assigned_task_id: assignedTaskId,
       novelty_status: normalizeNovelty(source, { structureResolved: structureIdentityResolved, sourceLabel, doi, dataCutoff }),
       claim_state: claimState,
@@ -1718,11 +1731,13 @@
       const entry = { record, value, weight: Math.max(0.01, weight), calibrated, calibration, eligible: propertyEligible };
       rawEntries.push(entry);
     });
-    const entries = capNumericFamilyWeights(deduplicateNumericModels(rawEntries));
+    const entries = capNumericFamilyWeights(rawEntries);
     if (!entries.length) return null;
     const eligibleEntries = capNumericFamilyWeights(deduplicateIndependentEvidence(deduplicateNumericModels(rawEntries.filter(entry => entry.eligible))));
+    const eligibleAuditEntries = capNumericFamilyWeights(rawEntries.filter(entry => entry.eligible));
     const allStats = summarizeNumericEntries(entries, property, false);
     const eligibleStats = summarizeNumericEntries(eligibleEntries, property, true);
+    const eligibleAuditStats = summarizeNumericEntries(eligibleAuditEntries, property, true);
     const eligibleFamilies = new Set(eligibleEntries.map(entry => entry.record.model_family_key));
     if (!identityResolved && entries.length > 1) {
       return {
@@ -1754,9 +1769,9 @@
       calibrated_count: eligibleEntries.filter(entry => entry.calibrated).length,
       eligible_count: eligibleEntries.length,
       eligible_family_count: eligibleFamilies.size,
-      eligible_conflict: eligibleStats ? eligibleStats.conflict : true,
+      eligible_conflict: eligibleStats ? (eligibleStats.conflict || Boolean(eligibleAuditStats?.conflict)) : true,
       eligible_precision_ok: eligibleStats ? eligibleStats.precision_ok : false,
-      conflict: allStats.conflict || Boolean(eligibleStats?.conflict),
+      conflict: allStats.conflict || Boolean(eligibleStats?.conflict) || Boolean(eligibleAuditStats?.conflict),
       tolerance: eligibleStats?.tolerance ?? allStats.tolerance,
       unit: PROPERTY_META[property].unit,
       incomparable: false,
@@ -1822,6 +1837,40 @@
     };
   }
 
+  function eligibleExperimentalProperties(group) {
+    return Object.keys(group.properties || {}).filter(property => !(group.conflicts || []).includes(property)
+      && group.records.some(record => record.eligible_for_consensus === true
+        && Object.prototype.hasOwnProperty.call(record.properties || {}, property)
+        && propertyConditionsComplete(record, property)));
+  }
+
+  function requiredExperimentalPropertiesForGroup(group) {
+    const target = group.target_definition || group.records?.[0]?.target_definition || "general";
+    if (target === "general") {
+      const consensus = (group.consensus_properties || []).filter(property => !(group.conflicts || []).includes(property));
+      return (consensus.length ? consensus : eligibleExperimentalProperties(group)).sort();
+    }
+    if (target === "stability") return ["formation_energy_eV_atom", "e_above_hull_eV_atom"];
+    return PROPERTY_META[target] ? [target] : [];
+  }
+
+  function recordIsTargetAlignedExperiment(record, group) {
+    if (record.eligible_for_consensus !== true
+      || record.stage !== "experiment"
+      || record.claim_state !== "experimental_observation") return false;
+    return requiredExperimentalPropertiesForGroup(group).some(property =>
+      Object.prototype.hasOwnProperty.call(record.properties || {}, property)
+      && propertyConditionsComplete(record, property));
+  }
+
+  function formalExperimentSupportProperties(group) {
+    const consensus = (group.consensus_properties || []).filter(property => !(group.conflicts || []).includes(property));
+    const target = group.target_definition || group.records?.[0]?.target_definition || "general";
+    if (target === "general") return consensus;
+    if (target === "stability") return consensus.filter(property => ["formation_energy_eV_atom", "e_above_hull_eV_atom"].includes(property));
+    return consensus.includes(target) ? [target] : [];
+  }
+
   function nextSteps(group) {
     const steps = [];
     if (!group.records.some(record => record.structure_identity_resolved)) steps.push("structure");
@@ -1836,7 +1885,7 @@
       ? stabilitySatisfied
       : group.consensus_properties.includes(target);
     if (!["general", "stability"].includes(target) && !targetSatisfied) steps.push("target");
-    if (!group.records.some(record => record.claim_state === "experimental_observation")) steps.push("experiment");
+    if (!group.records.some(record => recordIsTargetAlignedExperiment(record, group))) steps.push("experiment");
     return [...new Set(steps)].slice(0, 4);
   }
 
@@ -1846,9 +1895,15 @@
       const normalized = record?.schema === SCHEMA && TRUSTED_NORMALIZED_RECORDS.has(record)
         ? record
         : normalizeCandidate(record);
-      const numericKey = JSON.stringify(normalized.properties);
-      const duplicateKey = [normalized.model.toLowerCase(), normalized.identity_key, numericKey, normalized.recommendation].join("|");
-      if (!deduplicated.has(duplicateKey)) deduplicated.set(duplicateKey, normalized);
+      if (normalized.actor_role === "orchestrator") return;
+      const evidenceInstance = canonicalRecordProjection(normalized);
+      delete evidenceInstance.formula;
+      const duplicateKey = JSON.stringify(evidenceInstance);
+      const current = deduplicated.get(duplicateKey);
+      if (!current
+        || JSON.stringify(canonicalRecordProjection(normalized)).localeCompare(JSON.stringify(canonicalRecordProjection(current))) < 0) {
+        deduplicated.set(duplicateKey, normalized);
+      }
     });
     const records = Array.from(deduplicated.values()).sort((left, right) =>
       JSON.stringify(canonicalRecordProjection(left)).localeCompare(JSON.stringify(canonicalRecordProjection(right))));
@@ -1859,6 +1914,12 @@
         const conditions = record.identity_key.split("|conditions:")[1] || "";
         const match = Array.from(buckets.values()).find(bucket =>
           !bucket.records[0].composition_key &&
+          !bucket.records[0].structure_identity_resolved &&
+          !record.structure_identity_resolved &&
+          !bucket.records[0].structure_id && !record.structure_id &&
+          !bucket.records[0].structure_hash && !record.structure_hash &&
+          !bucket.records[0].structure_namespace && !record.structure_namespace &&
+          !bucket.records[0].space_group && !record.space_group &&
           (bucket.records[0].identity_key.split("|conditions:")[1] || "") === conditions &&
           jaccard(textFeatures(bucket.records[0].recommendation), textFeatures(record.recommendation)) >= 0.78
         );
@@ -1943,6 +2004,7 @@
       schema: record.schema,
       model: record.model,
       model_version: record.model_version,
+      actor_role: record.actor_role,
       model_family: record.model_family,
       model_family_key: record.model_family_key,
       stage: record.stage,
@@ -1976,6 +2038,7 @@
       doi_refs: [...(record.doi_refs || [])].sort(),
       raw_data_refs: [...(record.raw_data_refs || [])].sort(),
       evidence_ids: [...(record.evidence_ids || [])].sort(),
+      supersedes_evidence_ids: [...(record.supersedes_evidence_ids || [])].sort(),
       data_cutoff: record.data_cutoff,
       experimental_method: record.experimental_method,
       novelty_status: record.novelty_status,
@@ -2025,9 +2088,13 @@
         value,
         unit: PROPERTY_META[property]?.unit || "",
         evidence_status: record.eligible_for_consensus ? "verified_adapter" : "comparative_only"
-      })));
+      }))).sort((left, right) => left.candidate.localeCompare(right.candidate)
+        || left.property.localeCompare(right.property)
+        || left.value - right.value);
       const evidenceRefs = Array.from(new Set(records.flatMap(independentEvidenceKeys))).sort();
-      const recommendations = recommendationClusters(records).map(item => ({ text: item.text, supporting_models: item.models }));
+      const recommendations = recommendationClusters(records)
+        .map(item => ({ text: item.text, supporting_models: [...item.models].sort() }))
+        .sort((left, right) => left.text.localeCompare(right.text));
       const canonicalKey = JSON.stringify({
         model: bucket.model,
         families,
@@ -2058,7 +2125,8 @@
         returned_task_ids: Array.from(new Set(records.map(record => record.assigned_task_id).filter(Boolean))).sort(),
         verification_status: hasVerified ? "verified_internal" : "imported_unverified"
       };
-    }).sort((left, right) => left.author.model_name.localeCompare(right.author.model_name));
+    }).sort((left, right) => left.author.model_name.toLowerCase().localeCompare(right.author.model_name.toLowerCase())
+      || left.report_id.localeCompare(right.report_id));
   }
 
   function taskSpec(step, group) {
@@ -2071,8 +2139,8 @@
         owners: ["CrystalStructureGen"],
         objective_zh: "补齐并核验候选结构身份",
         objective_en: "Resolve and verify the candidate structure identity",
-        deliverable_zh: "CIF、命名空间结构 ID、空间群与结构哈希",
-        deliverable_en: "CIF, namespaced structure ID, space group, and structure hash"
+        deliverable_zh: "CIF、命名空间结构 ID、空间群、结构哈希，以及对原有数值声明的逐分支复算",
+        deliverable_en: "CIF, namespaced structure ID, space group, structure hash, and branch-specific recalculation of existing numeric claims"
       },
       verification: {
         owners: contributors.length ? contributors : ["Source model adapter"],
@@ -2128,12 +2196,109 @@
   }
 
   function orchestrationSteps(group) {
-    const steps = new Set(group.next_steps || []);
+    const steps = new Set();
     if (!group.identity_resolved) steps.add("structure");
+    if (!group.records.some(record => record.eligible_for_consensus)) steps.add("verification");
+    if (group.records.some(record => record.eligible_for_consensus
+      && Object.keys(record.properties || {}).some(property => !propertyConditionsComplete(record, property)))) steps.add("conditions");
+    if (group.novelty_status !== "known_reference") steps.add("novelty");
     if (!group.consensus_properties.some(property => ["formation_energy_eV_atom", "e_above_hull_eV_atom"].includes(property))) steps.add("stability");
-    if (!group.records.some(record => record.claim_state === "experimental_observation")) steps.add("experiment");
+    if (group.conflicts.length) steps.add("conflict");
     if (!["general", "stability"].includes(group.target_definition) && !group.consensus_properties.includes(group.target_definition)) steps.add("target");
+    if (!group.records.some(record => recordIsTargetAlignedExperiment(record, group))) steps.add("experiment");
     return Array.from(steps);
+  }
+
+  function sourceRecordKey(record) {
+    return stableWorkflowId("source-record", JSON.stringify(canonicalRecordProjection(record)));
+  }
+
+  function sourceClaimSnapshot(record) {
+    return {
+      source_record_key: sourceRecordKey(record),
+      evidence_ids: [...(record.evidence_ids || [])].sort().slice(0, MAX_RECORDS),
+      model_token: executorToken(record.model),
+      properties: Object.fromEntries(Object.entries(record.properties || {})
+        .map(([property, value]) => [property, finiteNumber(value)])
+        .filter(([, value]) => value !== null)
+        .sort(([left], [right]) => left.localeCompare(right)))
+    };
+  }
+
+  function sourceClaimMatchesRecord(claim, record, requireSameExecutor = false) {
+    if (!claim || typeof claim !== "object") return false;
+    if (requireSameExecutor && claim.model_token !== executorToken(record.model)) return false;
+    return Object.entries(claim.properties || {}).every(([property, sourceValue]) => {
+      const returnedValue = finiteNumber(record.properties?.[property]);
+      return returnedValue !== null && Number.isFinite(sourceValue)
+        && Math.abs(returnedValue - sourceValue) <= Math.max(1e-12, Math.abs(sourceValue) * 1e-12);
+    });
+  }
+
+  function taskSourceRecords(step, group) {
+    if (step === "structure") return group.records;
+    if (step === "verification") return group.records.filter(record => record.eligible_for_consensus !== true);
+    if (step === "conditions") return group.records.filter(record => record.eligible_for_consensus === true
+      && Object.keys(record.properties || {}).some(property => !propertyConditionsComplete(record, property)));
+    return group.records;
+  }
+
+  const TASK_PRIORITIES = Object.freeze({ structure: 100, verification: 96, conditions: 94, conflict: 90, novelty: 86, stability: 82, target: 72, experiment: 60 });
+  const TASK_DEPENDENCY_STEPS = Object.freeze({
+    novelty: Object.freeze(["structure"]),
+    stability: Object.freeze(["structure", "conditions"]),
+    conflict: Object.freeze(["conditions"]),
+    target: Object.freeze(["structure", "stability"]),
+    experiment: Object.freeze(["stability", "target"])
+  });
+
+  function createTaskDefinition(step, group, lineageKey, dependsOn = []) {
+    const spec = taskSpec(step, group);
+    const sourceRecords = taskSourceRecords(step, group);
+    const requiredProperties = Array.from(new Set(sourceRecords.flatMap(record => Object.keys(record.properties || {})))).sort();
+    const task = {
+      task_id: "",
+      canonical_key: "",
+      manifest_digest: "",
+      candidate_key: lineageKey,
+      source_identity_key: group.key,
+      candidate: group.formula || group.structure_id || "Text candidate",
+      composition_key: group.records[0]?.composition_key || "",
+      structure_identity_resolved: group.identity_resolved,
+      structure_id: group.structure_id || "",
+      structure_hash: group.structure_hash || "",
+      structure_namespace: group.structure_namespace || "",
+      space_group: group.space_group || "",
+      target_definition: group.target_definition,
+      condition_fingerprint: (group.records[0]?.identity_key.split("|conditions:")[1] || "").replace(/\|demo:(?:yes|no)$/, ""),
+      condition_state: taskConditionState(group),
+      conflict_properties: [...(group.conflicts || [])].sort(),
+      required_properties: requiredProperties,
+      required_experiment_properties: requiredExperimentalPropertiesForGroup(group),
+      required_source_claims: sourceRecords.map(sourceClaimSnapshot)
+        .sort((left, right) => left.source_record_key.localeCompare(right.source_record_key)),
+      required_property_values: Object.fromEntries(requiredProperties.map(property => [
+        property,
+        Array.from(new Set(sourceRecords.map(record => finiteNumber(record.properties?.[property]))
+          .filter(value => value !== null))).sort((left, right) => left - right)
+      ])),
+      step,
+      assigned_to: spec.owners,
+      objective_zh: spec.objective_zh,
+      objective_en: spec.objective_en,
+      deliverable_zh: spec.deliverable_zh,
+      deliverable_en: spec.deliverable_en,
+      expected_output_schema: SCHEMA,
+      priority: TASK_PRIORITIES[step] || 50,
+      status: dependsOn.length ? "blocked" : "assigned",
+      depends_on: Array.from(new Set(dependsOn)).sort(),
+      returned_record_count: 0,
+      paid_job_submitted: false
+    };
+    task.manifest_digest = taskManifestDigest(task);
+    task.canonical_key = taskCanonicalKey(task);
+    task.task_id = stableWorkflowId("material-task", task.canonical_key);
+    return task;
   }
 
   function taskResultSatisfies(step, record, context = {}) {
@@ -2143,27 +2308,162 @@
     const target = context.target_definition || "general";
     const targetProperties = PROPERTY_META[target] ? [target] : propertyNames;
     const hasTarget = targetProperties.some(property => Object.prototype.hasOwnProperty.call(record.properties || {}, property) && propertyConditionsComplete(record, property));
-    if (step === "structure") return record.eligible_for_consensus === true && record.structure_identity_resolved === true;
-    if (step === "verification") return record.eligible_for_consensus === true;
-    if (step === "conditions") return record.eligible_for_consensus === true
+    const requiredProperties = Array.isArray(context.required_properties) ? context.required_properties : [];
+    const requiredSourceClaims = Array.isArray(context.required_source_claims) ? context.required_source_claims : [];
+    const preservesAnySourceClaim = requiredSourceClaims.some(claim => sourceClaimMatchesRecord(
+      claim,
+      record,
+      ["verification", "conditions"].includes(step)
+    ));
+    const coversRequiredProperties = requiredProperties.every(property => Object.prototype.hasOwnProperty.call(record.properties || {}, property));
+    const preservesRequiredValues = requiredProperties.every(property => {
+      const allowed = Array.isArray(context.required_property_values?.[property]) ? context.required_property_values[property] : [];
+      const value = finiteNumber(record.properties?.[property]);
+      return value !== null && (!allowed.length || allowed.some(sourceValue =>
+        Math.abs(value - sourceValue) <= Math.max(1e-12, Math.abs(sourceValue) * 1e-12)));
+    });
+    if (step === "structure") return record.eligible_for_consensus === true
+      && record.structure_identity_resolved === true
+      && (requiredSourceClaims.length ? preservesAnySourceClaim : (coversRequiredProperties && preservesRequiredValues));
+    if (step === "verification") return record.eligible_for_consensus === true
       && propertyNames.length > 0
-      && propertyNames.every(property => propertyConditionsComplete(record, property));
+      && (requiredSourceClaims.length ? preservesAnySourceClaim : (coversRequiredProperties && preservesRequiredValues));
+    if (step === "conditions") {
+      return record.eligible_for_consensus === true
+        && propertyNames.length > 0
+        && (requiredSourceClaims.length ? preservesAnySourceClaim : (requiredProperties.every(property =>
+          Object.prototype.hasOwnProperty.call(record.properties || {}, property)) && preservesRequiredValues))
+        && propertyNames.every(property => propertyConditionsComplete(record, property));
+    }
     if (step === "novelty") return record.eligible_for_consensus === true
       && ["known_reference", "screened_unverified"].includes(record.novelty_status)
       && validSnapshotDate(record.data_cutoff)
-      && independentEvidenceKeys(record).some(key => /^(?:doi|url|database-(?:hash|id)):/.test(key));
+      && independentEvidenceKeys(record).some(key => /^(?:doi|url|database-(?:hash|id)):/.test(key))
+      && (!context.novelty_status || context.novelty_status === record.novelty_status);
     if (step === "stability") return record.eligible_for_consensus === true && hasStability;
-    if (step === "target") return record.eligible_for_consensus === true && hasTarget;
-    if (step === "experiment") return record.eligible_for_consensus === true
-      && record.stage === "experiment"
-      && record.claim_state === "experimental_observation"
-      && (hasTarget || hasStability);
-    if (step === "conflict") return record.eligible_for_consensus === true && Array.isArray(context.conflicts) && context.conflicts.length === 0;
+    if (step === "target") {
+      const hasCalibratedTarget = targetProperties.some(property => {
+        const calibration = record.calibration?.[property];
+        return Object.prototype.hasOwnProperty.call(record.properties || {}, property)
+          && propertyConditionsComplete(record, property)
+          && calibration?.q90 > 0
+          && calibration?.applicability > 0
+          && meaningfulCondition(calibration?.validation_set);
+      });
+      return record.eligible_for_consensus === true
+        && hasTarget
+        && hasCalibratedTarget
+        && record.evidence_ids?.length > 0;
+    }
+    if (step === "experiment") {
+      const requiredExperimentProperties = Array.isArray(context.required_experiment_properties)
+        ? context.required_experiment_properties
+        : requiredProperties;
+      const hasGeneralOverlap = requiredExperimentProperties.some(property => Object.prototype.hasOwnProperty.call(record.properties || {}, property)
+        && propertyConditionsComplete(record, property));
+      const hasRequiredExperimentProperty = target === "general"
+        ? (requiredExperimentProperties.length ? hasGeneralOverlap : false)
+        : (target === "stability" ? hasStability : hasTarget);
+      return record.eligible_for_consensus === true
+        && record.stage === "experiment"
+        && record.claim_state === "experimental_observation"
+        && hasRequiredExperimentProperty;
+    }
+    if (step === "conflict") {
+      const conflictProperties = Array.isArray(context.conflict_properties) ? context.conflict_properties : [];
+      const coversConflict = conflictProperties.length
+        ? conflictProperties.some(property => Object.prototype.hasOwnProperty.call(record.properties || {}, property))
+        : propertyNames.length > 0;
+      return record.eligible_for_consensus === true
+        && Array.isArray(record.supersedes_evidence_ids)
+        && record.supersedes_evidence_ids.length > 0
+        && coversConflict
+        && Array.isArray(context.conflicts)
+        && context.conflicts.length === 0;
+    }
     return false;
   }
 
-  function taskCanonicalKey(candidateKey, step) {
-    return JSON.stringify({ task_schema: 1, candidate_lineage: candidateKey, step });
+  function canonicalTaskValue(value) {
+    if (Array.isArray(value)) return value.map(canonicalTaskValue);
+    if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort()
+      .map(key => [key, canonicalTaskValue(value[key])]));
+    return value;
+  }
+
+  function taskManifestProjection(task) {
+    return canonicalTaskValue({
+      task_schema: 2,
+      candidate_key: task.candidate_key || "",
+      source_identity_key: task.source_identity_key || "",
+      candidate: task.candidate || "Text candidate",
+      composition_key: task.composition_key || "",
+      structure_identity_resolved: task.structure_identity_resolved === true,
+      structure_id: task.structure_id || "",
+      structure_hash: task.structure_hash || "",
+      structure_namespace: task.structure_namespace || "",
+      space_group: task.space_group || "",
+      target_definition: task.target_definition || "general",
+      condition_fingerprint: task.condition_fingerprint || "",
+      condition_state: taskConditionState(task.condition_state || {}),
+      conflict_properties: [...(task.conflict_properties || [])].sort(),
+      required_properties: [...(task.required_properties || [])].sort(),
+      required_experiment_properties: [...(task.required_experiment_properties || [])].sort(),
+      required_source_claims: [...(task.required_source_claims || [])].map(claim => ({
+        source_record_key: claim.source_record_key || "",
+        evidence_ids: [...(claim.evidence_ids || [])].sort(),
+        model_token: claim.model_token || "",
+        properties: canonicalTaskValue(claim.properties || {})
+      })).sort((left, right) => left.source_record_key.localeCompare(right.source_record_key)),
+      required_property_values: canonicalTaskValue(task.required_property_values || {}),
+      step: task.step || "",
+      assigned_to: [...(task.assigned_to || [])].sort(),
+      objective_zh: task.objective_zh || "",
+      objective_en: task.objective_en || "",
+      deliverable_zh: task.deliverable_zh || "",
+      deliverable_en: task.deliverable_en || "",
+      expected_output_schema: SCHEMA,
+      priority: Number.isFinite(task.priority) ? task.priority : 50,
+      depends_on: [...(task.depends_on || [])].sort(),
+      paid_job_submitted: false
+    });
+  }
+
+  function taskManifestDigest(task) {
+    return stableWorkflowId("task-manifest", JSON.stringify(taskManifestProjection(task)));
+  }
+
+  function taskCanonicalKey(task) {
+    return JSON.stringify({ task_schema: 2, manifest_digest: taskManifestDigest(task) });
+  }
+
+  function taskConditionState(source = {}) {
+    return {
+      pressure_GPa: source.pressure_GPa ?? null,
+      temperature_K: source.temperature_K ?? null,
+      doping: source.doping || "",
+      functional: source.functional || "",
+      gap_type: source.gap_type || "",
+      spin_orbit_coupling: source.spin_orbit_coupling || "",
+      hubbard_u: source.hubbard_u || "",
+      magnetic_order: source.magnetic_order || "",
+      strain: source.strain || "",
+      dimensionality: source.dimensionality || "",
+      substrate: source.substrate || "",
+      phase_label: source.phase_label || "",
+      extra_conditions: source.extra_conditions && typeof source.extra_conditions === "object" ? source.extra_conditions : {}
+    };
+  }
+
+  function conditionsTransitionAllowed(task, record) {
+    const before = task.condition_state || {};
+    const after = taskConditionState(record);
+    const unspecified = value => value === null || value === "" || value === "not provided";
+    for (const key of ["pressure_GPa", "temperature_K", "doping", "functional", "gap_type", "spin_orbit_coupling", "hubbard_u", "magnetic_order", "strain", "dimensionality", "substrate", "phase_label"]) {
+      if (!unspecified(before[key]) && conditionKeyPart(before[key]) !== conditionKeyPart(after[key])) return false;
+    }
+    return Object.entries(before.extra_conditions || {}).every(([key, value]) =>
+      !meaningfulCondition(value) || conditionKeyPart(value) === conditionKeyPart(after.extra_conditions?.[key]));
   }
 
   function taskMatchesLineage(task, record) {
@@ -2173,41 +2473,96 @@
       return false;
     }
     if (record.target_definition !== task.target_definition) return false;
+    const sourceIdentity = typeof task.source_identity_key === "string" ? task.source_identity_key : "";
+    const recordStructurePrefix = record.identity_key.split("|conditions:")[0] || "";
+    const sourceStructurePrefix = sourceIdentity.split("|conditions:")[0] || "";
     const recordConditions = (record.identity_key.split("|conditions:")[1] || "").replace(/\|demo:(?:yes|no)$/, "");
-    if (task.step !== "conditions" && recordConditions !== task.condition_fingerprint) return false;
+    if (task.step === "conditions") {
+      if (sourceStructurePrefix && recordStructurePrefix !== sourceStructurePrefix) return false;
+      if (!conditionsTransitionAllowed(task, record)) return false;
+    } else if (recordConditions !== task.condition_fingerprint) return false;
+    if (!["structure", "conditions"].includes(task.step) && sourceIdentity && record.identity_key !== sourceIdentity) return false;
     if (task.step !== "structure" && record.structure_identity_resolved !== task.structure_identity_resolved) return false;
     if (task.structure_identity_resolved && task.step !== "structure") {
       if (task.structure_hash && record.structure_hash !== task.structure_hash) return false;
       if (!task.structure_hash && (record.structure_namespace !== task.structure_namespace || record.structure_id !== task.structure_id)) return false;
+      if (conditionKeyPart(record.space_group) !== conditionKeyPart(task.space_group)) return false;
     }
     return true;
   }
 
+  function executorToken(value) {
+    return safeText(value, 180).normalize("NFKC").toLowerCase().replace(/[^a-z0-9\u3400-\u9fff]+/g, "");
+  }
+
+  function taskExecutorAuthorized(task, record) {
+    const candidates = [record.model, record.model_family, record.model_family_key].map(executorToken).filter(Boolean);
+    const owners = (task.assigned_to || []).flatMap(owner => String(owner).split(/(?:\s*\/\s*|\s*·\s*|\s*,\s*|\s+or\s+)/i))
+      .map(executorToken).filter(Boolean);
+    return candidates.some(candidate => owners.some(owner => owner === candidate));
+  }
+
   function safePreviousTask(task) {
     if (!task || typeof task !== "object" || Array.isArray(task)) return null;
+    if (containsPotentialCredentials(task)) return null;
     const step = scalarText(task.step, 40);
     const candidateRaw = typeof task.candidate_key === "string" ? task.candidate_key.replace(/\u0000/g, "").trim() : "";
-    if (candidateRaw.length > 8000) return null;
+    if (candidateRaw.length > 20000) return null;
     const candidateKey = candidateRaw;
     const taskId = scalarText(task.task_id, 80);
     if (!["structure", "verification", "conditions", "novelty", "stability", "conflict", "target", "experiment"].includes(step) || !candidateKey) return null;
-    const canonicalKey = taskCanonicalKey(candidateKey, step);
-    if (taskId !== stableWorkflowId("material-task", canonicalKey)) return null;
     const assignedTo = Array.isArray(task.assigned_to)
       ? task.assigned_to.map(value => redactSensitiveText(value, 160)).filter(Boolean).slice(0, 8)
       : [];
-    return {
+    const sanitized = {
       task_id: taskId,
-      canonical_key: canonicalKey,
+      canonical_key: "",
+      manifest_digest: "",
       candidate_key: candidateKey,
+      source_identity_key: typeof task.source_identity_key === "string" ? safeText(task.source_identity_key, 16000) : candidateKey,
       candidate: redactSensitiveText(task.candidate || "Text candidate", 160),
       composition_key: scalarText(task.composition_key, 500),
       structure_identity_resolved: task.structure_identity_resolved === true,
       structure_id: scalarText(task.structure_id, 240),
       structure_hash: scalarText(task.structure_hash, 240),
       structure_namespace: scalarText(task.structure_namespace, 80),
+      space_group: scalarText(task.space_group, 160),
       target_definition: scalarText(task.target_definition, 160) || "general",
-      condition_fingerprint: typeof task.condition_fingerprint === "string" ? safeText(task.condition_fingerprint, 7000) : "",
+      condition_fingerprint: typeof task.condition_fingerprint === "string" ? safeText(task.condition_fingerprint, 16000) : "",
+      condition_state: taskConditionState(task.condition_state || {}),
+      conflict_properties: Array.isArray(task.conflict_properties)
+        ? task.conflict_properties.map(canonicalPropertyName).filter(Boolean).slice(0, Object.keys(PROPERTY_META).length)
+        : [],
+      required_properties: Array.isArray(task.required_properties)
+        ? task.required_properties.map(canonicalPropertyName).filter(Boolean).slice(0, Object.keys(PROPERTY_META).length)
+        : [],
+      required_experiment_properties: Array.isArray(task.required_experiment_properties)
+        ? task.required_experiment_properties.map(canonicalPropertyName).filter(Boolean).slice(0, Object.keys(PROPERTY_META).length)
+        : [],
+      required_source_claims: Array.isArray(task.required_source_claims)
+        ? task.required_source_claims.flatMap(claim => {
+          if (!claim || typeof claim !== "object") return [];
+          const sourceRecordKeyValue = scalarText(claim.source_record_key, 80);
+          if (!/^source-record-[a-f0-9]{16}$/i.test(sourceRecordKeyValue)) return [];
+          const properties = Object.fromEntries(Object.entries(claim.properties || {}).flatMap(([property, value]) => {
+            const canonical = canonicalPropertyName(property);
+            const numeric = finiteNumber(value);
+            return canonical && numeric !== null ? [[canonical, numeric]] : [];
+          }));
+          return [{
+            source_record_key: sourceRecordKeyValue,
+            evidence_ids: Array.isArray(claim.evidence_ids) ? claim.evidence_ids.map(value => safeText(value, 240)).filter(Boolean).slice(0, MAX_RECORDS).sort() : [],
+            model_token: executorToken(claim.model_token),
+            properties
+          }];
+        }).slice(0, MAX_RECORDS)
+        : [],
+      required_property_values: Object.fromEntries(Object.entries(task.required_property_values || {}).flatMap(([property, values]) => {
+        const canonical = canonicalPropertyName(property);
+        if (!canonical || !Array.isArray(values)) return [];
+        const normalized = Array.from(new Set(values.map(finiteNumber).filter(value => value !== null))).sort((left, right) => left - right).slice(0, MAX_RECORDS);
+        return normalized.length ? [[canonical, normalized]] : [];
+      })),
       step,
       assigned_to: assignedTo,
       objective_zh: redactSensitiveText(task.objective_zh, 300),
@@ -2219,118 +2574,459 @@
       status: "assigned",
       depends_on: Array.isArray(task.depends_on) ? task.depends_on.filter(value => /^material-task-[a-f0-9]{16}$/i.test(String(value))).slice(0, 8) : [],
       returned_record_count: 0,
+      superseded_by: Array.isArray(task.superseded_by)
+        ? task.superseded_by.map(value => safeText(value, 20000)).filter(Boolean).slice(0, 32)
+        : [],
       paid_job_submitted: false
     };
+    const manifestDigest = taskManifestDigest(sanitized);
+    const canonicalKey = taskCanonicalKey(sanitized);
+    if (scalarText(task.manifest_digest, 80) !== manifestDigest
+      || typeof task.canonical_key !== "string"
+      || task.canonical_key !== canonicalKey
+      || taskId !== stableWorkflowId("material-task", canonicalKey)) return null;
+    sanitized.manifest_digest = manifestDigest;
+    sanitized.canonical_key = canonicalKey;
+    return sanitized;
   }
 
-  function createTaskPlan(analysis, previousTasks = []) {
-    const priorities = { structure: 100, verification: 96, conditions: 94, conflict: 90, novelty: 86, stability: 82, target: 72, experiment: 60 };
-    const priorTasks = previousTasks.slice(0, 1000).map(safePreviousTask).filter(Boolean);
+  function taskMatchesCurrentSourceManifest(task, preliminaryAnalysis) {
+    const currentGroup = preliminaryAnalysis.groups.find(group => group.key === task.source_identity_key);
+    if (!currentGroup) return false;
+    const allowedAncestorTaskIds = new Set(task.depends_on || []);
+    const sourceRecords = currentGroup.records.filter(record => record.assigned_task_id !== task.task_id
+      && (!record.assigned_task_id || allowedAncestorTaskIds.has(record.assigned_task_id)));
+    if (!sourceRecords.length) return false;
+    const rebuiltAnalysis = analyzeRecords(sourceRecords);
+    const rebuiltGroup = rebuiltAnalysis.groups.find(group => group.key === task.source_identity_key);
+    if (!rebuiltGroup) return false;
+    const expected = createTaskDefinition(task.step, rebuiltGroup, task.candidate_key, task.depends_on || []);
+    return expected.task_id === task.task_id
+      && JSON.stringify(taskManifestProjection(expected)) === JSON.stringify(taskManifestProjection(task));
+  }
+
+  function createTaskPlan(analysis, previousTasks = [], taskRecords = null, acceptedConflictResolutionRecords = new Set(), acceptedMigrationRecords = new Set(), acceptedVerificationRecords = new Set(), quarantinedReturnRecords = new Set()) {
+    if (previousTasks.length > MAX_TASKS) throw new Error("TASK_LIMIT_EXCEEDED");
+    const priorTasks = previousTasks.map(safePreviousTask).filter(Boolean);
     const priorTaskById = new Map(priorTasks.map(task => [task.task_id, task]));
-    const allRecords = analysis.groups.flatMap(group => group.records);
+    const allRecords = Array.isArray(taskRecords) ? taskRecords : analysis.groups.flatMap(group => group.records);
     const migratedLineages = new Map();
+    const completedMigrationSteps = new Map();
+    const branchLineages = new Map();
+    const migrationParentsByIdentity = new Map();
     allRecords.forEach(record => {
       const priorTask = priorTaskById.get(record.assigned_task_id);
       if (!priorTask || !["structure", "conditions"].includes(priorTask.step)) return;
-      if (!taskMatchesLineage(priorTask, record) || !taskResultSatisfies(priorTask.step, record, priorTask)) return;
-      migratedLineages.set(record.identity_key, priorTask.candidate_key);
+      if (!taskMatchesLineage(priorTask, record)
+        || !taskExecutorAuthorized(priorTask, record)
+        || !acceptedMigrationRecords.has(record)
+        || !taskResultSatisfies(priorTask.step, record, priorTask)) return;
+      const branchDescriptor = priorTask.step === "structure"
+        ? JSON.stringify({ namespace: record.structure_namespace, id: record.structure_id, hash: record.structure_hash, space_group: record.space_group })
+        : JSON.stringify(taskConditionState(record));
+      const branchLineage = `${priorTask.candidate_key}|branch:${priorTask.step}:${stableWorkflowId("lineage", branchDescriptor)}`;
+      migratedLineages.set(record.identity_key, branchLineage);
+      if (!migrationParentsByIdentity.has(record.identity_key)) migrationParentsByIdentity.set(record.identity_key, []);
+      migrationParentsByIdentity.get(record.identity_key).push({ task_id: priorTask.task_id, step: priorTask.step, branch_lineage: branchLineage });
+      if (!completedMigrationSteps.has(priorTask.candidate_key)) completedMigrationSteps.set(priorTask.candidate_key, new Set());
+      completedMigrationSteps.get(priorTask.candidate_key).add(priorTask.step);
+      if (!branchLineages.has(priorTask.candidate_key)) branchLineages.set(priorTask.candidate_key, new Set());
+      branchLineages.get(priorTask.candidate_key).add(branchLineage);
     });
     const tasks = [];
     analysis.groups.forEach(group => {
+      if (completedMigrationSteps.has(group.key) && !migratedLineages.has(group.key)) return;
       const lineageKey = migratedLineages.get(group.key) || group.key;
-      const groupTasks = orchestrationSteps(group).map(step => {
-        const spec = taskSpec(step, group);
-        const canonicalKey = taskCanonicalKey(lineageKey, step);
-        const taskId = stableWorkflowId("material-task", canonicalKey);
-        return {
-          task_id: taskId,
-          canonical_key: canonicalKey,
-          candidate_key: lineageKey,
-          candidate: group.formula || group.structure_id || "Text candidate",
-          composition_key: group.records[0]?.composition_key || "",
-          structure_identity_resolved: group.identity_resolved,
-          structure_id: group.structure_id || "",
-          structure_hash: group.structure_hash || "",
-          structure_namespace: group.structure_namespace || "",
-          target_definition: group.target_definition,
-          condition_fingerprint: (group.records[0]?.identity_key.split("|conditions:")[1] || "").replace(/\|demo:(?:yes|no)$/, ""),
-          step,
-          assigned_to: spec.owners,
-          objective_zh: spec.objective_zh,
-          objective_en: spec.objective_en,
-          deliverable_zh: spec.deliverable_zh,
-          deliverable_en: spec.deliverable_en,
-          expected_output_schema: SCHEMA,
-          priority: priorities[step] || 50,
-          status: "assigned",
-          depends_on: [],
-          returned_record_count: 0,
-          paid_job_submitted: false
-        };
-      });
-      const byStep = new Map(groupTasks.map(task => [task.step, task]));
-      const dependencies = {
-        novelty: ["structure"],
-        stability: ["structure", "conditions"],
-        conflict: ["conditions"],
-        target: ["structure", "stability"],
-        experiment: ["stability", "target"]
-      };
-      const localTaskMap = new Map(groupTasks.map(task => [task.task_id, task]));
-      groupTasks.forEach(task => {
-        task.depends_on = (dependencies[task.step] || []).map(step => byStep.get(step)?.task_id).filter(Boolean);
-        if (task.status === "assigned" && task.depends_on.some(id => localTaskMap.get(id)?.status !== "verified")) {
-          task.status = "blocked";
-        }
+      const groupTasks = [];
+      const byStep = new Map();
+      orchestrationSteps(group).forEach(step => {
+        const dependsOn = (TASK_DEPENDENCY_STEPS[step] || []).map(dependencyStep => byStep.get(dependencyStep)?.task_id).filter(Boolean);
+        (migrationParentsByIdentity.get(group.key) || []).forEach(parent => {
+          const needsParent = parent.step === "structure"
+            ? step !== "structure"
+            : step !== "conditions";
+          if (needsParent) dependsOn.push(parent.task_id);
+        });
+        const task = createTaskDefinition(step, group, lineageKey, dependsOn);
+        groupTasks.push(task);
+        byStep.set(step, task);
       });
       tasks.push(...groupTasks);
     });
+    const uniqueFreshTasks = new Map();
+    tasks.forEach(task => {
+      if (!uniqueFreshTasks.has(task.task_id)) uniqueFreshTasks.set(task.task_id, task);
+    });
+    tasks.splice(0, tasks.length, ...uniqueFreshTasks.values());
     const taskById = new Map(tasks.map(task => [task.task_id, task]));
     priorTasks.forEach(task => {
       if (!taskById.has(task.task_id)) {
+        const migrationSteps = completedMigrationSteps.get(task.candidate_key);
+        if (migrationSteps && !migrationSteps.has(task.step)) {
+          task.status = "superseded";
+          task.superseded_by = Array.from(branchLineages.get(task.candidate_key) || []).sort();
+        }
         taskById.set(task.task_id, task);
         tasks.push(task);
       }
     });
     tasks.forEach(task => {
-      const returnedRecords = allRecords.filter(record => record.assigned_task_id === task.task_id && taskMatchesLineage(task, record));
+      if (task.status === "superseded") return;
+      const returnedRecords = allRecords.filter(record => !quarantinedReturnRecords.has(record)
+        && record.assigned_task_id === task.task_id
+        && taskMatchesLineage(task, record)
+        && taskExecutorAuthorized(task, record));
       const currentGroup = analysis.groups.find(group => returnedRecords.some(record => group.records.includes(record)))
         || analysis.groups.find(group => group.key === task.candidate_key)
         || { target_definition: task.target_definition, conflicts: [] };
       task.returned_record_count = returnedRecords.length;
-      task.status = returnedRecords.some(record => taskResultSatisfies(task.step, record, currentGroup))
+      task.status = returnedRecords.some(record => (!["structure", "conditions"].includes(task.step) || acceptedMigrationRecords.has(record))
+        && (task.step !== "verification" || acceptedVerificationRecords.has(record))
+        && (task.step !== "conflict" || acceptedConflictResolutionRecords.has(record))
+        && taskResultSatisfies(task.step, record, {
+          ...currentGroup,
+          conflict_properties: task.conflict_properties,
+          required_properties: task.required_properties,
+          required_experiment_properties: task.required_experiment_properties,
+          required_source_claims: task.required_source_claims,
+          required_property_values: task.required_property_values
+        }))
         ? "verified"
         : (returnedRecords.length ? "returned_unverified" : "assigned");
     });
     const taskMap = new Map(tasks.map(task => [task.task_id, task]));
     tasks.forEach(task => {
-      if (task.status === "assigned" && task.depends_on.some(id => taskMap.get(id)?.status !== "verified")) task.status = "blocked";
+      if (task.status !== "superseded" && ["assigned", "verified"].includes(task.status)
+        && task.depends_on.some(id => taskMap.get(id)?.status !== "verified")) task.status = "blocked";
     });
+    if (tasks.length > MAX_TASKS) throw new Error("TASK_LIMIT_EXCEEDED");
     return tasks.sort((left, right) => right.priority - left.priority || left.candidate_key.localeCompare(right.candidate_key) || left.step.localeCompare(right.step));
   }
 
+  function prepareActiveSynthesis(preliminaryAnalysis, previousTasks = []) {
+    const allRecords = preliminaryAnalysis.groups.flatMap(group => group.records);
+    if (previousTasks.length > MAX_TASKS) throw new Error("TASK_LIMIT_EXCEEDED");
+    const parsedPriorTasks = previousTasks.map(safePreviousTask);
+    const priorTasks = parsedPriorTasks.filter(task => task && taskMatchesCurrentSourceManifest(task, preliminaryAnalysis));
+    const validPriorTaskIds = new Set(priorTasks.map(task => task.task_id));
+    const invalidManifestTaskIds = Array.from(new Set(previousTasks.map(task => scalarText(task?.task_id, 80))
+      .filter(taskId => taskId && !validPriorTaskIds.has(taskId)))).sort();
+    const priorTaskById = new Map(priorTasks.map(task => [task.task_id, task]));
+    const quarantinedRecords = new Set();
+    const manifestMissingRecords = new Set();
+    allRecords.forEach(record => {
+      if (!record.assigned_task_id) return;
+      const task = priorTaskById.get(record.assigned_task_id);
+      if (!task) {
+        quarantinedRecords.add(record);
+        manifestMissingRecords.add(record);
+        return;
+      }
+      if (!taskMatchesLineage(task, record) || !taskExecutorAuthorized(task, record)) quarantinedRecords.add(record);
+    });
+    const successfulMigrationRecordsBySource = new Map();
+    const acceptedMigrationRecords = new Set();
+    const migrations = [];
+    const migrationCandidatesByTask = new Map();
+    allRecords.forEach(record => {
+      if (quarantinedRecords.has(record)) return;
+      const task = priorTaskById.get(record.assigned_task_id);
+      if (!task || !["structure", "conditions"].includes(task.step)) return;
+      if (!taskMatchesLineage(task, record) || !taskResultSatisfies(task.step, record, task)) return;
+      if (!migrationCandidatesByTask.has(task.task_id)) migrationCandidatesByTask.set(task.task_id, []);
+      migrationCandidatesByTask.get(task.task_id).push({ task, record });
+    });
+    const acceptMigration = ({ task, record }) => {
+      const sourceIdentity = task.source_identity_key || task.candidate_key;
+      if (!successfulMigrationRecordsBySource.has(sourceIdentity)) successfulMigrationRecordsBySource.set(sourceIdentity, new Set());
+      successfulMigrationRecordsBySource.get(sourceIdentity).add(record);
+      acceptedMigrationRecords.add(record);
+      migrations.push({
+        task_id: task.task_id,
+        step: task.step,
+        parent_lineage: task.candidate_key,
+        source_identity_key: sourceIdentity,
+        destination_identity_key: record.identity_key
+      });
+    };
+    const sourceClaimsForTask = task => {
+      const snapshots = Array.isArray(task.required_source_claims) ? task.required_source_claims : [];
+      if (snapshots.length) {
+        const availableKeys = new Set(allRecords.filter(record => !quarantinedRecords.has(record)).map(sourceRecordKey));
+        if (snapshots.some(claim => !availableKeys.has(claim.source_record_key))) return null;
+        return snapshots;
+      }
+      const sourceIdentity = task.source_identity_key || task.candidate_key;
+      return allRecords.filter(record => record.identity_key === sourceIdentity
+        && !quarantinedRecords.has(record)
+        && record.assigned_task_id !== task.task_id
+        && (!record.assigned_task_id || (task.depends_on || []).includes(record.assigned_task_id)))
+        .map(sourceClaimSnapshot);
+    };
+    migrationCandidatesByTask.forEach(items => {
+      const task = items[0].task;
+      const sourceClaims = sourceClaimsForTask(task);
+      if (!sourceClaims?.length) return;
+      const itemMatchesSource = (item, claim) => sourceClaimMatchesRecord(
+        claim,
+        item.record,
+        task.step === "conditions"
+      );
+      const validItems = items.filter(item => sourceClaims.some(claim => itemMatchesSource(item, claim)));
+      const unmatchedItems = [...validItems].sort((left, right) => JSON.stringify(canonicalRecordProjection(left.record))
+        .localeCompare(JSON.stringify(canonicalRecordProjection(right.record))));
+      const sourcesCovered = [...sourceClaims].sort((left, right) => left.source_record_key.localeCompare(right.source_record_key)).every(claim => {
+        const matchIndex = unmatchedItems.findIndex(item => itemMatchesSource(item, claim));
+        if (matchIndex < 0) return false;
+        unmatchedItems.splice(matchIndex, 1);
+        return true;
+      });
+      if (!sourcesCovered) return;
+      validItems.forEach(acceptMigration);
+    });
+
+    const acceptedVerificationRecords = new Set();
+    const verificationCandidatesByTask = new Map();
+    allRecords.forEach(record => {
+      if (quarantinedRecords.has(record)) return;
+      const task = priorTaskById.get(record.assigned_task_id);
+      if (!task || task.step !== "verification" || !taskResultSatisfies("verification", record, task)) return;
+      if (!verificationCandidatesByTask.has(task.task_id)) verificationCandidatesByTask.set(task.task_id, []);
+      verificationCandidatesByTask.get(task.task_id).push({ task, record });
+    });
+    verificationCandidatesByTask.forEach(items => {
+      const task = items[0].task;
+      const sourceClaims = sourceClaimsForTask(task);
+      if (!sourceClaims?.length) return;
+      const unused = [...items].sort((left, right) => JSON.stringify(canonicalRecordProjection(left.record))
+        .localeCompare(JSON.stringify(canonicalRecordProjection(right.record))));
+      const covered = [...sourceClaims].sort((left, right) => left.source_record_key.localeCompare(right.source_record_key)).every(claim => {
+        const matchIndex = unused.findIndex(item => sourceClaimMatchesRecord(claim, item.record, true));
+        if (matchIndex < 0) return false;
+        unused.splice(matchIndex, 1);
+        return true;
+      });
+      if (covered) items.forEach(item => acceptedVerificationRecords.add(item.record));
+    });
+
+    const noveltyCandidatesBySource = new Map();
+    allRecords.forEach(record => {
+      if (quarantinedRecords.has(record)) return;
+      const task = priorTaskById.get(record.assigned_task_id);
+      if (!task || task.step !== "novelty" || !taskResultSatisfies("novelty", record, {})) return;
+      const sourceIdentity = task.source_identity_key || record.identity_key;
+      if (!noveltyCandidatesBySource.has(sourceIdentity)) noveltyCandidatesBySource.set(sourceIdentity, []);
+      noveltyCandidatesBySource.get(sourceIdentity).push({ task, record });
+    });
+    const noveltyResolutions = [];
+    const acceptedNoveltyRecords = new Set();
+    noveltyCandidatesBySource.forEach((items, sourceIdentity) => {
+      const statuses = new Set(items.map(item => item.record.novelty_status));
+      if (statuses.size !== 1) return;
+      const selected = [...items].sort((left, right) => JSON.stringify(canonicalRecordProjection(left.record))
+        .localeCompare(JSON.stringify(canonicalRecordProjection(right.record))))[0];
+      noveltyResolutions.push({
+        task_id: selected.task.task_id,
+        source_identity_key: sourceIdentity,
+        novelty_status: selected.record.novelty_status,
+        evidence_id: selected.record.evidence_id
+      });
+      items.forEach(item => acceptedNoveltyRecords.add(item.record));
+    });
+
+    const conflictResolutionRecords = new Set();
+    const supersededEvidenceByIdentity = new Map();
+    const conflictResolutions = [];
+    allRecords.forEach(record => {
+      if (quarantinedRecords.has(record)) return;
+      const task = priorTaskById.get(record.assigned_task_id);
+      if (!task || task.step !== "conflict" || record.eligible_for_consensus !== true) return;
+      if (!taskMatchesLineage(task, record) || !record.supersedes_evidence_ids?.length) return;
+      const sourceIdentity = task.source_identity_key || record.identity_key;
+      const sourceGroup = preliminaryAnalysis.groups.find(group => group.key === sourceIdentity);
+      const conflictProperties = task.conflict_properties?.length ? task.conflict_properties : (sourceGroup?.conflicts || []);
+      if (!conflictProperties.length
+        || !conflictProperties.some(property => Object.prototype.hasOwnProperty.call(record.properties || {}, property))) return;
+      const availableRecords = allRecords
+        .filter(candidate => candidate !== record
+          && candidate.identity_key === sourceIdentity
+          && candidate.assigned_task_id !== task.task_id
+          && conflictProperties.some(property => Object.prototype.hasOwnProperty.call(candidate.properties || {}, property)))
+        ;
+      const requested = record.supersedes_evidence_ids.map(value => value.toLowerCase());
+      if (!requested.length || requested.some(value => !availableRecords.some(candidate =>
+        (candidate.evidence_ids || []).some(id => id.toLowerCase() === value)))) return;
+      const replacementProperties = new Set(Object.keys(record.properties || {}));
+      const supersededRecordsForRequest = availableRecords.filter(candidate => (candidate.evidence_ids || [])
+        .some(id => requested.includes(id.toLowerCase())));
+      if (supersededRecordsForRequest.some(candidate => Object.keys(candidate.properties || {})
+        .some(property => !replacementProperties.has(property)))) return;
+      if (!supersededEvidenceByIdentity.has(sourceIdentity)) supersededEvidenceByIdentity.set(sourceIdentity, new Set());
+      requested.forEach(value => supersededEvidenceByIdentity.get(sourceIdentity).add(value));
+      conflictResolutionRecords.add(record);
+      conflictResolutions.push({
+        task_id: task.task_id,
+        source_identity_key: sourceIdentity,
+        resolution_evidence_id: record.evidence_id,
+        superseded_evidence_ids: [...record.supersedes_evidence_ids].sort()
+      });
+    });
+
+    const semanticallyRejectedRecords = new Set();
+    allRecords.forEach(record => {
+      if (!record.assigned_task_id || quarantinedRecords.has(record)) return;
+      const task = priorTaskById.get(record.assigned_task_id);
+      if (!task) return;
+      let accepted = false;
+      if (["structure", "conditions"].includes(task.step)) accepted = acceptedMigrationRecords.has(record);
+      else if (task.step === "verification") accepted = acceptedVerificationRecords.has(record);
+      else if (task.step === "conflict") accepted = conflictResolutionRecords.has(record);
+      else if (task.step === "novelty") accepted = acceptedNoveltyRecords.has(record);
+      else {
+        const sourceGroup = preliminaryAnalysis.groups.find(group => group.key === (task.source_identity_key || task.candidate_key));
+        accepted = taskResultSatisfies(task.step, record, { ...(sourceGroup || {}), ...task });
+      }
+      if (!accepted) {
+        semanticallyRejectedRecords.add(record);
+        quarantinedRecords.add(record);
+      }
+    });
+
+    const supersededRecords = new Set();
+    const activeRecords = allRecords.filter(record => {
+      if (quarantinedRecords.has(record)) {
+        return false;
+      }
+      const migrationLeaves = successfulMigrationRecordsBySource.get(record.identity_key);
+      if (migrationLeaves && !migrationLeaves.has(record)) {
+        supersededRecords.add(record);
+        return false;
+      }
+      const supersededIds = supersededEvidenceByIdentity.get(record.identity_key);
+      if (supersededIds && !conflictResolutionRecords.has(record)
+        && (record.evidence_ids || []).some(value => supersededIds.has(value.toLowerCase()))) {
+        supersededRecords.add(record);
+        return false;
+      }
+      return true;
+    });
+    return {
+      allRecords,
+      activeRecords,
+      migrations,
+      acceptedMigrationRecords,
+      acceptedVerificationRecords,
+      noveltyResolutions,
+      conflictResolutions,
+      acceptedConflictResolutionRecords: conflictResolutionRecords,
+      validatedPreviousTasks: priorTasks,
+      invalidManifestTaskIds,
+      quarantinedRecords: Array.from(quarantinedRecords),
+      manifestMissingRecords: Array.from(manifestMissingRecords),
+      semanticallyRejectedRecords: Array.from(semanticallyRejectedRecords),
+      supersededRecords: Array.from(supersededRecords),
+      supersededSourceIdentities: Array.from(successfulMigrationRecordsBySource.keys()).sort(),
+      supersededEvidenceIds: Array.from(new Set(conflictResolutions.flatMap(item => item.superseded_evidence_ids))).sort()
+    };
+  }
+
   function createOrchestration(inputRecords = [], campaign = {}, previousOrchestration = null) {
-    const analysis = analyzeRecords(inputRecords);
-    const modelReports = createModelReports(analysis);
+    const campaignData = campaignManifest(campaign);
     const previousTasks = Array.isArray(previousOrchestration)
       ? previousOrchestration
       : (Array.isArray(previousOrchestration?.tasks) ? previousOrchestration.tasks : []);
-    const tasks = createTaskPlan(analysis, previousTasks);
-    const normalizedRecords = analysis.groups.flatMap(group => group.records);
-    const inputCanonical = normalizedRecords.map(record => JSON.stringify(canonicalRecordProjection(record))).sort().join("|");
+    const preliminaryAnalysis = analyzeRecords(inputRecords);
+    const prepared = prepareActiveSynthesis(preliminaryAnalysis, previousTasks);
+    const unscopedAnalysis = analyzeRecords(prepared.activeRecords);
+    prepared.noveltyResolutions.forEach(resolution => {
+      const group = unscopedAnalysis.groups.find(item => item.key === resolution.source_identity_key);
+      if (!group) return;
+      group.novelty_status = resolution.novelty_status;
+      group.next_steps = nextSteps(group);
+    });
+    const allowedElements = new Set(campaignData.objective.allowed_elements || []);
+    const excludedElements = new Set(campaignData.objective.excluded_elements || []);
+    const thresholdProperty = {
+      tc_K: "tc_K",
+      band_gap_eV: "band_gap_eV",
+      magnetic: "magnetic_moment_muB"
+    }[campaignData.objective.target] || "";
+    const threshold = campaignData.objective.target_value;
+    const groupScopeReason = group => {
+      const elements = new Set(group.records[0]?.elements || []);
+      if (excludedElements.size && [...elements].some(element => excludedElements.has(element))) return "excluded_element";
+      if (allowedElements.size && elements.size && [...elements].some(element => !allowedElements.has(element))) return "outside_allowed_elements";
+      const targetAggregate = thresholdProperty ? group.properties?.[thresholdProperty] : null;
+      if (threshold !== null && targetAggregate && Number.isFinite(targetAggregate.max) && targetAggregate.max < threshold) return "below_target_threshold";
+      return "";
+    };
+    const outOfScopeCandidates = unscopedAnalysis.groups.map(group => ({ group, reason: groupScopeReason(group) })).filter(item => item.reason);
+    const groups = unscopedAnalysis.groups.filter(group => !groupScopeReason(group));
+    const scopedRecords = groups.flatMap(group => group.records);
+    const analysis = {
+      ...unscopedAnalysis,
+      normalized_count: scopedRecords.length,
+      model_count: new Set(scopedRecords.map(record => record.model)).size,
+      candidate_count: groups.length,
+      agreement_count: groups.filter(group => group.has_consensus_claim).length,
+      conflict_count: groups.filter(group => group.conflicts.length > 0).length,
+      groups
+    };
+    const modelReports = createModelReports(preliminaryAnalysis);
+    const tasks = createTaskPlan(
+      analysis,
+      prepared.validatedPreviousTasks,
+      prepared.allRecords,
+      prepared.acceptedConflictResolutionRecords,
+      prepared.acceptedMigrationRecords,
+      prepared.acceptedVerificationRecords,
+      new Set(prepared.quarantinedRecords)
+    );
+    const outOfScopeKeys = new Set(outOfScopeCandidates.map(item => item.group.key));
+    tasks.forEach(task => {
+      if (outOfScopeKeys.has(task.source_identity_key) || outOfScopeKeys.has(task.candidate_key)) {
+        task.status = "superseded";
+        task.superseded_reason = "campaign_scope";
+      }
+    });
+    const inputCanonical = prepared.allRecords.map(record => JSON.stringify(canonicalRecordProjection(record))).sort().join("|");
     const inputDigest = stableWorkflowId("input", inputCanonical);
-    const verifiedTasks = tasks.filter(task => task.status === "verified");
-    const returnedTasks = tasks.filter(task => task.status === "returned_unverified");
-    const pendingTasks = tasks.filter(task => ["assigned", "blocked"].includes(task.status));
-    const hasExperimentalSupport = analysis.groups.some(group => group.consensus_properties.some(property =>
-      !group.conflicts.includes(property) && group.records.some(record => record.eligible_for_consensus
-        && record.stage === "experiment"
-        && record.claim_state === "experimental_observation"
-        && Object.prototype.hasOwnProperty.call(record.properties || {}, property)
-        && propertyConditionsComplete(record, property))));
+    const activeTasks = tasks.filter(task => task.status !== "superseded");
+    const supersededTasks = tasks.filter(task => task.status === "superseded");
+    const verifiedTasks = activeTasks.filter(task => task.status === "verified");
+    const returnedTasks = activeTasks.filter(task => task.status === "returned_unverified");
+    const pendingTasks = activeTasks.filter(task => ["assigned", "blocked"].includes(task.status));
+    const knownTaskIds = new Set(tasks.map(task => task.task_id));
+    const unmatchedReturnTaskIds = Array.from(new Set(prepared.allRecords.map(record => record.assigned_task_id)
+      .filter(taskId => taskId && !knownTaskIds.has(taskId)))).sort();
+    const taskByReturnId = new Map(tasks.map(task => [task.task_id, task]));
+    const mismatchedReturnTaskIds = Array.from(new Set(prepared.allRecords.filter(record => {
+      const task = taskByReturnId.get(record.assigned_task_id);
+      return task && !taskMatchesLineage(task, record);
+    }).map(record => record.assigned_task_id))).sort();
+    const unauthorizedReturnTaskIds = Array.from(new Set(prepared.allRecords.filter(record => {
+      const task = taskByReturnId.get(record.assigned_task_id);
+      return task && taskMatchesLineage(task, record) && !taskExecutorAuthorized(task, record);
+    }).map(record => record.assigned_task_id))).sort();
+    const invalidReturnTaskIds = Array.from(new Set(prepared.semanticallyRejectedRecords
+      .map(record => record.assigned_task_id).filter(Boolean))).sort();
+    const manifestMissingReturnTaskIds = Array.from(new Set(prepared.manifestMissingRecords
+      .map(record => record.assigned_task_id).filter(Boolean))).sort();
+    const hasExperimentalSupport = analysis.groups.some(group => formalExperimentSupportProperties(group).some(property =>
+      group.records.some(record => recordIsTargetAlignedExperiment(record, group)
+        && Object.prototype.hasOwnProperty.call(record.properties || {}, property))));
     const claimStatus = hasExperimentalSupport ? "experimentally_supported_candidate" : (analysis.agreement_count ? "computational_candidate" : "planning_only");
-    const status = modelReports.length > 0 && verifiedTasks.length === tasks.length ? "complete" : "partial";
-    const canonicalKey = JSON.stringify({ input_digest: inputDigest, campaign: campaignManifest(campaign).objective, task_ids: tasks.map(task => task.task_id) });
+    const status = modelReports.length > 0
+      && analysis.candidate_count > 0
+      && activeTasks.every(task => task.status === "verified")
+      && prepared.quarantinedRecords.length === 0
+      && unmatchedReturnTaskIds.length === 0
+      && mismatchedReturnTaskIds.length === 0
+      && unauthorizedReturnTaskIds.length === 0
+      && prepared.invalidManifestTaskIds.length === 0
+      ? "complete"
+      : "partial";
+    const canonicalKey = JSON.stringify({ input_digest: inputDigest, campaign: campaignData.objective, task_ids: tasks.map(task => task.task_id) });
     return {
       schema: ORCHESTRATION_SCHEMA,
       orchestration_id: stableWorkflowId("orchestration", canonicalKey),
@@ -2345,14 +3041,26 @@
         mode: "deterministic_local",
         scientific_evidence_contribution: 0
       },
-      campaign: campaignManifest(campaign),
+      campaign: campaignData,
       model_reports: modelReports,
       synthesis: {
         analysis,
         candidate_count: analysis.candidate_count,
         agreement_count: analysis.agreement_count,
         conflict_count: analysis.conflict_count,
-        unverified_record_count: normalizedRecords.filter(record => !record.eligible_for_consensus).length,
+        unverified_record_count: prepared.allRecords.filter(record => !record.eligible_for_consensus).length,
+        superseded_record_count: prepared.supersededRecords.length,
+        quarantined_return_record_count: prepared.quarantinedRecords.length,
+        superseded_source_identity_keys: prepared.supersededSourceIdentities,
+        superseded_evidence_ids: prepared.supersededEvidenceIds,
+        out_of_scope_candidate_count: outOfScopeCandidates.length,
+        out_of_scope_candidates: outOfScopeCandidates.map(item => ({ candidate_key: item.group.key, candidate: item.group.formula || item.group.structure_id || "Text candidate", reason: item.reason })),
+        unmatched_return_task_ids: unmatchedReturnTaskIds,
+        mismatched_return_task_ids: mismatchedReturnTaskIds,
+        unauthorized_return_task_ids: unauthorizedReturnTaskIds,
+        invalid_return_task_ids: invalidReturnTaskIds,
+        manifest_missing_return_task_ids: manifestMissingReturnTaskIds,
+        invalid_task_manifest_ids: prepared.invalidManifestTaskIds,
         priority_candidates: analysis.groups.slice(0, 5).map(group => ({
           candidate_key: group.key,
           candidate: group.formula || group.structure_id || "Text candidate",
@@ -2370,29 +3078,55 @@
         verified_task_ids: verifiedTasks.map(task => task.task_id),
         returned_unverified_task_ids: returnedTasks.map(task => task.task_id),
         pending_task_ids: pendingTasks.map(task => task.task_id),
+        superseded_task_ids: supersededTasks.map(task => task.task_id),
+        unmatched_return_task_ids: unmatchedReturnTaskIds,
+        mismatched_return_task_ids: mismatchedReturnTaskIds,
+        unauthorized_return_task_ids: unauthorizedReturnTaskIds,
+        invalid_return_task_ids: invalidReturnTaskIds,
+        manifest_missing_return_task_ids: manifestMissingReturnTaskIds,
+        invalid_task_manifest_ids: prepared.invalidManifestTaskIds,
         limitations: [
           "The local chair does not execute external models or paid jobs.",
           "A returned task result remains unverified until a trusted adapter and traceable evidence validate it.",
+          "Structure-resolution branches never inherit numeric claims from an unresolved parent; each polymorph requires new calculations.",
           "No orchestration state can by itself support a new-material discovery claim."
         ]
       },
-      security: { credentials_included: normalizedRecords.some(containsPotentialCredentials), paid_job_submitted: false },
+      security: { credentials_included: prepared.allRecords.some(containsPotentialCredentials), paid_job_submitted: false },
       audit_log: [
         { event: "reports_collected", count: modelReports.length },
         { event: "deterministic_synthesis_created", candidate_count: analysis.candidate_count },
-        { event: "tasks_assigned", count: tasks.length }
+        { event: "lineage_migrations_applied", count: prepared.migrations.length, superseded_record_count: prepared.supersededRecords.length },
+        { event: "novelty_resolutions_applied", count: prepared.noveltyResolutions.length },
+        { event: "campaign_scope_applied", included_candidate_count: analysis.candidate_count, excluded_candidate_count: outOfScopeCandidates.length },
+        { event: "conflict_resolutions_applied", count: prepared.conflictResolutions.length, superseded_evidence_ids: prepared.supersededEvidenceIds },
+        { event: "task_returns_quarantined", count: prepared.quarantinedRecords.length, manifest_missing_task_ids: manifestMissingReturnTaskIds, invalid_manifest_task_ids: prepared.invalidManifestTaskIds, unauthorized_task_ids: unauthorizedReturnTaskIds, invalid_task_ids: invalidReturnTaskIds },
+        { event: "tasks_assigned", count: activeTasks.length }
       ]
     };
   }
 
   function createTaskPackage(orchestration) {
-    const tasks = Array.isArray(orchestration?.tasks) ? orchestration.tasks.map(task => ({
+    const serializeTask = task => ({
       task_id: task.task_id,
+      manifest_digest: task.manifest_digest,
       candidate_key: task.candidate_key,
+      source_identity_key: task.source_identity_key,
       candidate: task.candidate,
       composition_key: task.composition_key,
+      structure_identity_resolved: task.structure_identity_resolved,
+      structure_id: task.structure_id,
+      structure_hash: task.structure_hash,
+      structure_namespace: task.structure_namespace,
+      space_group: task.space_group,
       target_definition: task.target_definition,
       condition_fingerprint: task.condition_fingerprint,
+      condition_state: task.condition_state,
+      conflict_properties: task.conflict_properties,
+      required_properties: task.required_properties,
+      required_experiment_properties: task.required_experiment_properties,
+      required_source_claims: task.required_source_claims,
+      required_property_values: task.required_property_values,
       step: task.step,
       assigned_to: task.assigned_to,
       objective_zh: task.objective_zh,
@@ -2402,9 +3136,14 @@
       expected_output_schema: task.expected_output_schema,
       priority: task.priority,
       status: task.status,
+      superseded_by: task.superseded_by || [],
+      superseded_reason: task.superseded_reason || "",
       depends_on: task.depends_on,
       paid_job_submitted: false
-    })) : [];
+    });
+    const allTasks = Array.isArray(orchestration?.tasks) ? orchestration.tasks : [];
+    const tasks = allTasks.filter(task => task.status !== "superseded").map(serializeTask);
+    const supersededTasks = allTasks.filter(task => task.status === "superseded").map(serializeTask);
     return {
       schema: TASK_PACKAGE_SCHEMA,
       orchestration_id: scalarText(orchestration?.orchestration_id, 100),
@@ -2413,10 +3152,18 @@
       return_contract: {
         schema: SCHEMA,
         required_link_fields: ["assigned_task_id", "formula", "model", "stage"],
-        verification_note: "Returned records remain unverified until accepted by a trusted adapter with traceable evidence."
+        verification_note: "Returned records remain unverified until accepted by a trusted adapter with traceable evidence.",
+        lineage_rules: [
+          "The returned model/executor must match one of assigned_to; reassign a task explicitly before using another executor.",
+          "Structure branches do not inherit numeric properties from an unresolved parent; recalculate properties for every returned polymorph.",
+          "A conditions result must return every property listed in required_properties under the completed condition set.",
+          "A general experiment result must measure at least one property in required_experiment_properties; unverified side claims cannot satisfy experimental validation.",
+          "A conflict result must explicitly list same-lineage evidence IDs in supersedes_evidence_ids; history remains in the audit log."
+        ]
       },
       tasks,
-      security: { credentials_included: tasks.some(containsPotentialCredentials), paid_job_submitted: false }
+      superseded_tasks: supersededTasks,
+      security: { credentials_included: [...tasks, ...supersededTasks].some(containsPotentialCredentials), paid_job_submitted: false }
     };
   }
 
@@ -2447,6 +3194,12 @@
     lines.push(`- ${zh ? "正式数值共识" : "Formal numeric consensus"}: ${orchestration.synthesis.agreement_count}`);
     lines.push(`- ${zh ? "数值冲突" : "Numeric conflicts"}: ${orchestration.synthesis.conflict_count}`);
     lines.push(`- ${zh ? "未核验记录" : "Unverified records"}: ${orchestration.synthesis.unverified_record_count}`);
+    lines.push(`- ${zh ? "未知任务 ID" : "Unknown task IDs"}: ${orchestration.synthesis.unmatched_return_task_ids?.length || 0}`);
+    lines.push(`- ${zh ? "候选身份不匹配的回传" : "Lineage-mismatched returns"}: ${orchestration.synthesis.mismatched_return_task_ids?.length || 0}`);
+    lines.push(`- ${zh ? "执行者未授权的回传" : "Unauthorized executor returns"}: ${orchestration.synthesis.unauthorized_return_task_ids?.length || 0}`);
+    lines.push(`- ${zh ? "交付内容不符合任务的回传" : "Semantically invalid task returns"}: ${orchestration.synthesis.invalid_return_task_ids?.length || 0}`);
+    lines.push(`- ${zh ? "已归档旧记录" : "Superseded records"}: ${orchestration.synthesis.superseded_record_count || 0}`);
+    lines.push(`- ${zh ? "已归档旧任务" : "Superseded tasks"}: ${orchestration.final_report.superseded_task_ids?.length || 0}`);
     lines.push("", `## ${zh ? "任务分配与执行" : "Task assignment and execution"}`, "");
     lines.push(`| ${zh ? "候选" : "Candidate"} | ${zh ? "任务" : "Task"} | ${zh ? "负责人" : "Owner"} | ${zh ? "状态" : "Status"} | ${zh ? "交付物" : "Deliverable"} |`);
     lines.push("|---|---|---|---|---|");
@@ -2607,6 +3360,7 @@
     EXECUTION_REPORT_SCHEMA,
     MAX_FILE_BYTES,
     MAX_RECORDS,
+    MAX_TASKS,
     MODEL_REPORT_SCHEMA,
     ORCHESTRATION_SCHEMA,
     PROPERTY_META,
@@ -2770,7 +3524,7 @@
       ? normalizePayload(saved.records.slice(-MAX_RECORDS)).records
       : [];
     state.records = restored.map(record => deepFreeze(cloneData(record)));
-    state.taskManifest = Array.isArray(saved?.task_manifest) ? cloneData(saved.task_manifest.slice(0, 1000)) : [];
+    state.taskManifest = Array.isArray(saved?.task_manifest) ? cloneData(saved.task_manifest) : [];
     if (nodes.target) nodes.target.value = saved?.campaign?.target || "stability";
     if (nodes.targetValue) nodes.targetValue.value = saved?.campaign?.target_value ?? "";
     if (nodes.allowed) nodes.allowed.value = saved?.campaign?.allowed_elements || "";
@@ -2802,7 +3556,7 @@
       owner_key: ownerKey,
       updated_at: new Date().toISOString(),
       records: cloneData(state.records.slice(-MAX_RECORDS)),
-      task_manifest: cloneData(state.taskManifest.slice(0, 1000)),
+      task_manifest: cloneData(state.taskManifest),
       campaign: cloneData(campaign())
     };
     persistenceQueue = persistenceQueue.catch(() => {}).then(async () => {
@@ -2866,6 +3620,7 @@
       verified: "chairStatusVerified",
       returned_unverified: "chairStatusReturned",
       blocked: "chairStatusBlocked",
+      superseded: "chairStatusSuperseded",
       assigned: "chairStatusAssigned"
     }[status] || "chairStatusAssigned");
   }
@@ -2877,7 +3632,7 @@
     const returned = tasks.filter(task => ["verified", "returned_unverified"].includes(task.status)).length;
     const pending = tasks.filter(task => ["assigned", "blocked"].includes(task.status)).length;
     if (nodes.chairReportCount) nodes.chairReportCount.textContent = reports.length;
-    if (nodes.chairTaskCount) nodes.chairTaskCount.textContent = tasks.length;
+    if (nodes.chairTaskCount) nodes.chairTaskCount.textContent = tasks.filter(task => task.status !== "superseded").length;
     if (nodes.chairReturnedCount) nodes.chairReturnedCount.textContent = returned;
     if (nodes.chairPendingCount) nodes.chairPendingCount.textContent = pending;
     const hasReports = reports.length > 0;
@@ -2910,15 +3665,23 @@
     }
     if (nodes.chairSummary && orchestration) {
       const synthesis = orchestration.synthesis;
+      const unmatched = synthesis.unmatched_return_task_ids?.length || 0;
+      const mismatched = synthesis.mismatched_return_task_ids?.length || 0;
+      const unauthorized = synthesis.unauthorized_return_task_ids?.length || 0;
+      const invalid = synthesis.invalid_return_task_ids?.length || 0;
+      const manifestMissing = synthesis.manifest_missing_return_task_ids?.length || 0;
+      const invalidManifest = synthesis.invalid_task_manifest_ids?.length || 0;
+      const outOfScope = synthesis.out_of_scope_candidate_count || 0;
+      const superseded = orchestration.final_report.superseded_task_ids?.length || 0;
       nodes.chairSummary.textContent = language() === "zh"
-        ? `主持人已归并 ${synthesis.candidate_count} 个候选、${synthesis.agreement_count} 个正式数值共识和 ${synthesis.conflict_count} 个数值分歧；${returned} 项任务已有回传，${pending} 项仍待执行。当前声明状态为 ${orchestration.final_report.claim_status}。主持人本身不计入模型数或科学证据。`
-        : `The chair merged ${synthesis.candidate_count} candidates, ${synthesis.agreement_count} formal numeric consensuses, and ${synthesis.conflict_count} numeric conflicts; ${returned} tasks have returned and ${pending} remain. Current claim status: ${orchestration.final_report.claim_status}. The chair itself is excluded from model and evidence counts.`;
+        ? `主持人已归并 ${synthesis.candidate_count} 个候选、${synthesis.agreement_count} 个正式数值共识和 ${synthesis.conflict_count} 个数值分歧${outOfScope ? `，另有 ${outOfScope} 个候选不符合本轮元素或目标阈值` : ""}；${returned} 项任务已有回传，${pending} 项仍待执行${superseded ? `，${superseded} 项旧任务已归档` : ""}${invalidManifest ? `，${invalidManifest} 项任务清单校验失败` : ""}${manifestMissing ? `，${manifestMissing} 个回传缺少原任务清单` : ""}${unmatched ? `，另有 ${unmatched} 个未知任务 ID` : ""}${mismatched ? `，${mismatched} 个回传与原候选身份不匹配` : ""}${unauthorized ? `，${unauthorized} 个回传执行者未授权` : ""}${invalid ? `，${invalid} 个回传交付内容不合格` : ""}。当前声明状态为 ${orchestration.final_report.claim_status}。主持人本身不计入模型数或科学证据。`
+        : `The chair merged ${synthesis.candidate_count} candidates, ${synthesis.agreement_count} formal numeric consensuses, and ${synthesis.conflict_count} numeric conflicts${outOfScope ? `, with ${outOfScope} candidates outside the element or target threshold scope` : ""}; ${returned} tasks have returned and ${pending} remain${superseded ? `, with ${superseded} obsolete tasks archived` : ""}${invalidManifest ? `, with ${invalidManifest} task manifests failing integrity checks` : ""}${manifestMissing ? `, with ${manifestMissing} returns missing their original task manifest` : ""}${unmatched ? `, with ${unmatched} unknown task IDs` : ""}${mismatched ? ` and ${mismatched} lineage-mismatched returns` : ""}${unauthorized ? ` and ${unauthorized} unauthorized-executor returns` : ""}${invalid ? ` and ${invalid} semantically invalid returns` : ""}. Current claim status: ${orchestration.final_report.claim_status}. The chair itself is excluded from model and evidence counts.`;
     }
   }
 
   function render() {
-    state.analysis = analyzeRecords(state.records);
     state.orchestration = createOrchestration(state.records, campaign(), { tasks: state.taskManifest });
+    state.analysis = state.orchestration.synthesis.analysis;
     state.taskManifest = state.orchestration.tasks.map(task => cloneData(task));
     const analysis = state.analysis;
     if (nodes.candidateCount) nodes.candidateCount.textContent = analysis.candidate_count;
@@ -2988,6 +3751,19 @@
 
   function addPayload(payload, defaults = {}, statusKey = "imported") {
     const result = normalizePayload(payload, { target: campaign().target, ...defaults });
+    const taskById = new Map(state.taskManifest.map(safePreviousTask).filter(Boolean).map(task => [task.task_id, task]));
+    result.records = result.records.filter((record, index) => {
+      if (!record.assigned_task_id) return true;
+      const task = taskById.get(record.assigned_task_id);
+      const message = !task
+        ? "UNKNOWN_ASSIGNED_TASK_ID"
+        : (!taskMatchesLineage(task, record)
+          ? "MISMATCHED_ASSIGNED_TASK_LINEAGE"
+          : (!taskExecutorAuthorized(task, record) ? "UNAUTHORIZED_TASK_EXECUTOR" : ""));
+      if (!message) return true;
+      result.errors.push({ index, message });
+      return false;
+    });
     const internalRecords = result.records.map(record => deepFreeze(cloneData(record)));
     state.records = state.records.concat(internalRecords).slice(-MAX_RECORDS);
     render();
