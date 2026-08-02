@@ -148,8 +148,8 @@
         state: "idle",
         status: zh ? "等待组合" : "Awaiting composition",
         summary: zh
-          ? "加入至少两种元素后，综合研判模型会读取所有模型返回，比较数值条件并输出共识、冲突、证据缺口与下一步。"
-          : "Add at least two elements. The synthesizer will read every model return, compare numeric conditions, and report agreement, conflicts, evidence gaps, and next steps.",
+          ? "加入至少两种元素后，材料研究主持人会读取各模型报告，比较数值条件并输出共识、冲突、证据缺口与下一步任务。"
+          : "Add at least two elements. The Materials Research Chair will read each model report, compare numeric conditions, and report agreement, conflicts, evidence gaps, and next tasks.",
         returnedCount: 0,
         planningCount: 0,
         runningCount: 0,
