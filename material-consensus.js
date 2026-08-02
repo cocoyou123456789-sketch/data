@@ -2801,15 +2801,16 @@
     const tasks = [];
     analysis.groups.forEach(group => {
       const sourceMigrationParents = migrationParentsBySourceIdentity.get(group.key) || [];
-      const remainingSourceRecordKeys = group.records.filter(record => !record.assigned_task_id)
-        .map(sourceRecordKey).sort();
+      const remainingMigrationSourceRecords = Array.from(new Set(sourceMigrationParents.flatMap(parent =>
+        taskSourceRecords(parent.step, group))));
+      const remainingSourceRecordKeys = remainingMigrationSourceRecords.map(sourceRecordKey).sort();
       const remainderLineage = sourceMigrationParents.length && remainingSourceRecordKeys.length
         ? `${group.key}|remainder:${stableWorkflowId("lineage", JSON.stringify({
           parent_task_ids: Array.from(new Set(sourceMigrationParents.map(parent => parent.task_id))).sort(),
           remaining_source_record_keys: remainingSourceRecordKeys
         }))}`
         : "";
-      const lineageKey = migratedLineages.get(group.key) || remainderLineage || group.key;
+      const lineageKey = remainderLineage || migratedLineages.get(group.key) || group.key;
       const groupTasks = [];
       const byStep = new Map();
       priorTaskByLogicalKey.forEach(task => {
