@@ -10830,7 +10830,7 @@
         aiEndpointLabel: "AI 接口地址",
         aiModelLabel: "AI 模型名",
         aiKeyLabel: "服务器密钥状态",
-        aiServerKeyManaged: "由服务器 OPENAI_API_KEY / DEEPSEEK_API_KEY 管理",
+        aiServerKeyManaged: "由服务器 OPENAI_API_KEY / DEEPSEEK_API_KEY / USTC_LLM_API_KEY 管理",
         aiConfigHint: "ChatGPT 与 DeepSeek 均通过服务器端 /api/chat 连接。密钥只配置在 Netlify 或 Vercel 环境变量中，不会保存到浏览器。",
         aiSaveConfigBtn: "保存 AI 配置",
         aiClearConfigBtn: "清除 AI 配置",
@@ -11637,7 +11637,7 @@
         aiEndpointLabel: "AI Endpoint",
         aiModelLabel: "AI Model",
         aiKeyLabel: "Server key status",
-        aiServerKeyManaged: "Managed by server OPENAI_API_KEY / DEEPSEEK_API_KEY",
+        aiServerKeyManaged: "Managed by server OPENAI_API_KEY / DEEPSEEK_API_KEY / USTC_LLM_API_KEY",
         aiConfigHint: "ChatGPT and DeepSeek connect through the server-side /api/chat endpoint. Keys are configured only in Netlify or Vercel environment variables and are never stored in the browser.",
         aiSaveConfigBtn: "Save AI Config",
         aiClearConfigBtn: "Clear AI Config",
@@ -18580,7 +18580,10 @@
           "OPENAI_NOT_CONFIGURED",
           "CHAT_DISABLED",
           "DEEPSEEK_NOT_CONFIGURED",
-          "DEEPSEEK_CHAT_DISABLED"
+          "DEEPSEEK_CHAT_DISABLED",
+          "USTC_LLM_NOT_CONFIGURED",
+          "DEEPSEEK_ENDPOINT_INVALID",
+          "DEEPSEEK_ENDPOINT_NOT_ALLOWED"
         ]);
         const statusKey = unconfiguredCodes.has(error?.code)
           ? "chatAiUnconfigured"
@@ -21469,7 +21472,10 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     function chatProviderDetail(status, provider) {
       const model = String(status?.model || chatProviderLabel(provider));
       const api = status?.api === "chat.completions" ? "DeepSeek Chat Completions API" : "OpenAI Responses API";
-      return `${model} · ${api}`;
+      const deployment = status?.deployment === "ustc"
+        ? "USTC LLM"
+        : (status?.deployment === "deepseek" ? "DeepSeek official" : "");
+      return [model, deployment, api].filter(Boolean).join(" · ");
     }
 
     async function probeChatEndpoint() {
