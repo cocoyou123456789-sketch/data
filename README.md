@@ -85,6 +85,9 @@ USTC_LLM_API_KEY=<从 llm.ustc.edu.cn 控制台生成的测试 Key>
 DEEPSEEK_CHAT_ENABLED=true
 CHAT_DEFAULT_PROVIDER=deepseek
 CHAT_AUTH_REQUIRED=true
+MATERIAL_PREDICT_PROVIDER=deepseek
+MATERIAL_PREDICT_MODEL=deepseek-v4-flash
+MATERIAL_PREDICT_ENABLED=true
 ```
 
 `USTC_LLM_API_KEY` 与官方 `DEEPSEEK_API_KEY` 强制分离，避免更换上游地址时把一个平台的
@@ -98,6 +101,11 @@ CHAT_AUTH_REQUIRED=true
 USTC_LLM_API_KEY=... node scripts/test_ustc_llm_live.js
 node scripts/test_chat_proxy.js
 ```
+
+`/api/material-predict` 是“材料研究主持模型”接口：它接收本地筛选结果和外圈模型报告，
+区分已返回结果与未运行任务，归纳一致点、分歧、证据缺口和下一轮验证。接口复用网站的
+授权会话；访客只得到本地确定性筛选，不会消耗科大或其他付费模型额度。语言模型的归纳
+不进入正式数值共识，正式结果仍要求独立、可追溯且条件可比的计算或实验记录。
 
 ## 文献数据原则
 
