@@ -71,6 +71,34 @@ git push origin codex-gh-pages-deploy:gh-pages
 git branch -D codex-gh-pages-deploy
 ```
 
+## 科大 DeepSeek API
+
+网站只调用服务器端 `/api/chat` 代理。科大 API Key、科大账号和密码不得写入
+`github-pages/`、浏览器存储或 Git；公开网页无法直接安全保存任何 API Key。
+
+Netlify 或 Vercel 环境变量：
+
+```text
+DEEPSEEK_CHAT_COMPLETIONS_URL=https://api.llm.ustc.edu.cn/v1/chat/completions
+DEEPSEEK_CHAT_MODEL=deepseek-v4-flash
+USTC_LLM_API_KEY=<从 llm.ustc.edu.cn 控制台生成的测试 Key>
+DEEPSEEK_CHAT_ENABLED=true
+CHAT_DEFAULT_PROVIDER=deepseek
+CHAT_AUTH_REQUIRED=true
+```
+
+`USTC_LLM_API_KEY` 与官方 `DEEPSEEK_API_KEY` 强制分离，避免更换上游地址时把一个平台的
+密钥误发给另一个平台。科大部署默认只发送标准 OpenAI 兼容字段；模型名称以科大控制台
+`GET /v1/models` 可访问结果为准。
+
+公开站点必须保留服务器端登录、来源白名单和限流。网站测试账号应使用独立密码，不能复用
+科大统一身份认证密码。部署前可运行：
+
+```bash
+USTC_LLM_API_KEY=... node scripts/test_ustc_llm_live.js
+node scripts/test_chat_proxy.js
+```
+
 ## 文献数据原则
 
 - 只有可直接显示且来源明确的论文图，才写入 `figures` 并进入图表画廊。

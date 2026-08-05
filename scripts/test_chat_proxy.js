@@ -4,7 +4,8 @@ const test = require("node:test");
 const {
   handleChatRequest,
   hashChatPassword,
-  normalizeMessages
+  normalizeMessages,
+  runDeepSeekChat
 } = require("../lib/openai-chat");
 
 const ORIGIN = "https://cocoyou123456789-sketch.github.io";
@@ -19,6 +20,7 @@ test("status reports whether the server key is configured", async () => {
   assert.equal(result.payload.api, "responses");
   assert.equal(result.payload.providers.openai.configured, false);
   assert.equal(result.payload.providers.deepseek.model, "deepseek-v4-flash");
+  assert.equal(result.payload.providers.deepseek.deployment, "deepseek");
 });
 
 test("requests from unknown origins are rejected", async () => {
@@ -144,6 +146,90 @@ test("DeepSeek uses its own key and server-selected model", async () => {
   assert.match(upstreamBody.messages[0].content, /DeepSeek/);
   assert.match(upstreamBody.messages[0].content, /FeSe/);
   assert.doesNotMatch(JSON.stringify(upstreamBody), /Ignore server policy/);
+});
+
+test("USTC DeepSeek uses the USTC key and standard OpenAI-compatible fields", async () => {
+  let requestUrl = "";
+  let requestOptions = null;
+  const fetchImpl = async (url, options) => {
+    requestUrl = url;
+    requestOptions = options;
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: "ustc_deepseek_test",
+        model: "deepseek-v4-flash",
+        choices: [{ message: { role: "assistant", content: "科大 DeepSeek 测试回答" } }],
+        usage: { prompt_tokens: 18, completion_tokens: 7 }
+      })
+    };
+  };
+  const env = {
+    USTC_LLM_API_KEY: "ustc-test-key",
+    DEEPSEEK_CHAT_BASE_URL: "https://api.llm.ustc.edu.cn/v1",
+    DEEPSEEK_CHAT_MODEL: "deepseek-v4-flash",
+    DEEPSEEK_CHAT_ENABLED: "true"
+  };
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "ustc-deepseek-test",
+    body: JSON.stringify({ provider: "deepseek", question: "用一句话说明 ARPES" })
+  }, { env, fetchImpl });
+
+  assert.equal(result.statusCode, 200);
+  assert.equal(result.payload.answer, "科大 DeepSeek 测试回答");
+  assert.equal(result.payload.deployment, "ustc");
+  assert.equal(requestUrl, "https://api.llm.ustc.edu.cn/v1/chat/completions");
+  assert.equal(requestOptions.headers.Authorization, "Bearer ustc-test-key");
+  const upstreamBody = JSON.parse(requestOptions.body);
+  assert.equal(upstreamBody.model, "deepseek-v4-flash");
+  assert.equal(upstreamBody.stream, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(upstreamBody, "thinking"), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(upstreamBody, "reasoning_effort"), false);
+});
+
+test("USTC deployment never falls back to the official DeepSeek key", async () => {
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "ustc-key-separation-test",
+    body: JSON.stringify({ provider: "deepseek", question: "hello" })
+  }, {
+    env: {
+      DEEPSEEK_API_KEY: "must-not-be-forwarded-to-ustc",
+      DEEPSEEK_CHAT_COMPLETIONS_URL: "https://api.llm.ustc.edu.cn/v1/chat/completions"
+    }
+  });
+  assert.equal(result.statusCode, 503);
+  assert.equal(result.payload.code, "USTC_LLM_NOT_CONFIGURED");
+});
+
+test("DeepSeek credentials are not sent to unapproved endpoint hosts", async () => {
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "deepseek-host-allowlist-test",
+    body: JSON.stringify({ provider: "deepseek", question: "hello" })
+  }, {
+    env: {
+      DEEPSEEK_API_KEY: "test-key",
+      DEEPSEEK_CHAT_BASE_URL: "https://untrusted.example/v1"
+    }
+  });
+  assert.equal(result.statusCode, 503);
+  assert.equal(result.payload.code, "DEEPSEEK_ENDPOINT_NOT_ALLOWED");
+});
+
+test("direct DeepSeek helper calls cannot bypass the endpoint allowlist", async () => {
+  await assert.rejects(
+    runDeepSeekChat({ question: "hello" }, { ip: "direct-helper-test" }, {
+      env: { DEEPSEEK_API_KEY: "test-key" },
+      endpoint: "https://untrusted.example/v1/chat/completions"
+    }),
+    error => error?.code === "DEEPSEEK_ENDPOINT_NOT_ALLOWED"
+  );
 });
 
 test("DeepSeek requires its own server-side key", async () => {
