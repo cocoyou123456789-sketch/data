@@ -16982,7 +16982,7 @@
         state: synthesis.state,
         status: synthesis.status,
         prediction: synthesis.summary,
-        meta: zh ? "本地主持器 · 不调用 GPT · 不计入科学证据" : "Local research chair · does not call GPT · excluded from scientific evidence",
+        meta: zh ? "本地确定性审计 + 授权后的独立主持接口 · 不计入科学证据" : "Deterministic local audit + authorized chair endpoint · excluded from scientific evidence",
         synthesis
       };
 
@@ -19249,17 +19249,22 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const warningRows = model.warnings.map(item => `<li>${esc(item)}</li>`).join("");
       const validationRows = model.validationSteps.map(item => `<li>${esc(item)}</li>`).join("");
       const aiState = state.mixtureAi || {};
+      const aiProviderLabel = [
+        aiState.role === "materials_research_chair" ? (zh ? "材料研究主持模型" : "Materials Research Chair") : "",
+        aiState.deployment === "ustc" ? "USTC LLM" : (aiState.provider === "deepseek" ? "DeepSeek" : aiState.provider === "openai" ? "OpenAI" : ""),
+        aiState.model || ""
+      ].filter(Boolean).join(" · ");
       const aiOutput = aiState.signature === mixtureSignature() && aiState.status !== "idle"
         ? `
           <section class="mixture-ai-output" data-state="${esc(aiState.status)}">
             <h4>${esc(aiState.status === "loading"
-              ? (zh ? "正在调用 AI 候选分析…" : "Running AI candidate analysis…")
-              : (zh ? "AI / 证据引擎补充分析" : "AI / evidence-engine analysis"))}</h4>
+              ? (zh ? "材料研究主持模型正在归纳…" : "Materials research chair is synthesizing…")
+              : (zh ? "主持模型归纳与冲突审计" : "Chair synthesis and conflict audit"))}</h4>
             <span class="mixture-source-badge">${esc(aiState.source === "server-ai"
-              ? (zh ? "服务端 AI · 仍需实验验证" : "Server AI · experimental validation required")
+              ? `${aiProviderLabel || (zh ? "服务端主持接口" : "Server chair endpoint")} · ${zh ? "仍需验证" : "validation required"}`
               : (zh ? "本地回退 · 未调用可用 AI" : "Local fallback · no available AI call"))}</span>
             <pre>${esc(aiState.status === "loading"
-              ? (zh ? "正在整理相似材料、候选结构、条件、风险与证伪步骤…" : "Organizing analogues, candidate structures, conditions, risks, and falsification steps…")
+              ? (zh ? "正在汇总外圈报告、核对分歧并安排下一轮任务…" : "Synthesizing worker reports, auditing conflicts, and scheduling the next round…")
               : aiState.answer)}</pre>
           </section>
         `
@@ -19312,8 +19317,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function mixtureAiContext(model) {
       return {
-        task: "superconductor_candidate_screening",
+        task: "materials_research_chair_synthesis",
         language: currentLang,
+        chair_role: {
+          name: currentLang === "zh" ? "材料研究主持模型" : "Materials Research Chair",
+          evidence_eligible: false,
+          numeric_consensus_authority: false,
+          duties: ["synthesize_reports", "audit_conflicts", "schedule_validation"]
+        },
         composition: {
           formula_hint: model.formula,
           elements: model.counts,
@@ -19352,7 +19363,23 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           })),
           warnings: model.warnings
         },
+        worker_reports: multiModelPredictionRows(model)
+          .filter(row => row.role !== "host")
+          .slice(0, 12)
+          .map(row => ({
+            model: row.name,
+            model_family: row.modelFamily || row.modelId,
+            stage: row.stage,
+            state: row.state,
+            status: row.status,
+            recommendation: row.prediction,
+            provenance: row.meta,
+            evidence_eligible: row.evidenceEligible === true,
+            structure_resolved: row.structureResolved === true
+          })),
         response_requirements: [
+          "Summarize returned worker reports and separate them from unrun task plans.",
+          "List agreements, conflicts, missing evidence, and the next validation owner.",
           "Separate database evidence from AI hypotheses.",
           "Do not invent a Tc, DOI, stable structure, or experimental result.",
           "State pressure, doping, substrate, stoichiometry, or structure assumptions explicitly.",
@@ -19423,13 +19450,19 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       try {
         const response = await fetch(endpoint, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: chatRequestHeaders({ "Content-Type": "application/json" }),
           signal: controller.signal,
           body: JSON.stringify(mixtureAiContext(model))
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || `Material AI endpoint HTTP ${response.status}`);
-        return String(data.answer || data.analysis || "").trim();
+        return {
+          answer: String(data.answer || data.analysis || "").trim(),
+          provider: String(data.provider || ""),
+          deployment: String(data.deployment || ""),
+          model: String(data.model || ""),
+          role: String(data.role || "")
+        };
       } finally {
         window.clearTimeout(timeout);
         if (mixtureAiAbortController === controller) mixtureAiAbortController = null;
@@ -19443,14 +19476,23 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         return;
       }
       const signature = mixtureSignature();
-      state.mixtureAi = { signature, status: "loading", answer: "", source: "" };
+      state.mixtureAi = { signature, status: "loading", answer: "", source: "", provider: "", deployment: "", model: "", role: "" };
       renderPeriodicCruciblePanel();
       mixtureAnalysisPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
 
       let answer = "";
       let source = "local";
+      let provider = "";
+      let deployment = "";
+      let providerModel = "";
+      let role = "";
       try {
-        answer = await callMaterialPredictEndpoint(model);
+        const serverResult = await callMaterialPredictEndpoint(model);
+        answer = serverResult.answer;
+        provider = serverResult.provider;
+        deployment = serverResult.deployment;
+        providerModel = serverResult.model;
+        role = serverResult.role;
         if (answer) source = "server-ai";
       } catch {
         if (signature !== mixtureSignature()) return;
@@ -19462,6 +19504,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             if (configuredAnswer && configuredAnswer !== t("chatNeedsAi")) {
               answer = configuredAnswer;
               source = "server-ai";
+              provider = chatProviderFromAgent(cfg.model || DEFAULT_CHAT_AGENT);
+              providerModel = cfg.model || DEFAULT_CHAT_AGENT;
             }
           } catch {
             // Keep the deterministic local evidence result below.
@@ -19470,7 +19514,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       }
       if (!answer) answer = buildLocalMixtureAnalysis(model);
       if (signature !== mixtureSignature()) return;
-      state.mixtureAi = { signature, status: "done", answer, source };
+      state.mixtureAi = { signature, status: "done", answer, source, provider, deployment, model: providerModel, role };
       renderPeriodicCruciblePanel();
       if (source !== "server-ai") {
         showToast(currentLang === "zh" ? "AI 服务暂不可用，已保留本地证据预筛" : "AI service unavailable; local evidence screening is shown");
