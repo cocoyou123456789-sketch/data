@@ -5,6 +5,7 @@ const {
   handleChatRequest,
   hashChatPassword,
   normalizeMessages,
+  runArkChat,
   runDeepSeekChat
 } = require("../lib/openai-chat");
 
@@ -21,6 +22,9 @@ test("status reports whether the server key is configured", async () => {
   assert.equal(result.payload.providers.openai.configured, false);
   assert.equal(result.payload.providers.deepseek.model, "deepseek-v4-flash");
   assert.equal(result.payload.providers.deepseek.deployment, "deepseek");
+  assert.equal(result.payload.providers.ark.provider, "ark");
+  assert.equal(result.payload.providers.ark.configured, false);
+  assert.equal(result.payload.providers.ark.configuration_error, "ARK_MODEL_NOT_CONFIGURED");
 });
 
 test("requests from unknown origins are rejected", async () => {
@@ -204,6 +208,80 @@ test("USTC deployment never falls back to the official DeepSeek key", async () =
   });
   assert.equal(result.statusCode, 503);
   assert.equal(result.payload.code, "USTC_LLM_NOT_CONFIGURED");
+});
+
+test("Doubao Ark uses its own key, endpoint, and endpoint-id model", async () => {
+  let requestUrl = "";
+  let requestOptions = null;
+  const fetchImpl = async (url, options) => {
+    requestUrl = url;
+    requestOptions = options;
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: "ark_test",
+        model: "ep-test-123456",
+        choices: [{ message: { role: "assistant", content: "Doubao Ark 测试回答" } }],
+        usage: { prompt_tokens: 16, completion_tokens: 5 }
+      })
+    };
+  };
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "ark-test",
+    body: JSON.stringify({
+      provider: "ark",
+      question: "总结 FeSe 文献导入注意事项"
+    })
+  }, {
+    env: {
+      ARK_API_KEY: "ark-test-key",
+      ARK_CHAT_MODEL: "ep-test-123456",
+      ARK_CHAT_ENABLED: "true"
+    },
+    fetchImpl
+  });
+
+  assert.equal(result.statusCode, 200);
+  assert.equal(result.payload.answer, "Doubao Ark 测试回答");
+  assert.equal(result.payload.provider, "ark");
+  assert.equal(result.payload.deployment, "ark");
+  assert.equal(requestUrl, "https://ark.cn-beijing.volces.com/api/v3/chat/completions");
+  assert.equal(requestOptions.headers.Authorization, "Bearer ark-test-key");
+  const upstreamBody = JSON.parse(requestOptions.body);
+  assert.equal(upstreamBody.model, "ep-test-123456");
+  assert.equal(upstreamBody.stream, false);
+  assert.equal(upstreamBody.max_tokens, 1200);
+  assert.match(upstreamBody.messages[0].content, /Doubao Ark/);
+});
+
+test("Doubao Ark credentials are not sent to unapproved endpoint hosts", async () => {
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "ark-host-allowlist-test",
+    body: JSON.stringify({ provider: "ark", question: "hello" })
+  }, {
+    env: {
+      ARK_API_KEY: "ark-test-key",
+      ARK_CHAT_MODEL: "ep-test-123456",
+      ARK_CHAT_BASE_URL: "https://untrusted.example/api/v3"
+    }
+  });
+  assert.equal(result.statusCode, 503);
+  assert.equal(result.payload.code, "ARK_ENDPOINT_NOT_ALLOWED");
+});
+
+test("direct Ark helper calls cannot bypass the endpoint allowlist", async () => {
+  await assert.rejects(
+    runArkChat({ question: "hello" }, { ip: "direct-ark-helper-test" }, {
+      env: { ARK_API_KEY: "ark-test-key", ARK_CHAT_MODEL: "ep-test-123456" },
+      endpoint: "https://untrusted.example/api/v3/chat/completions"
+    }),
+    error => error?.code === "ARK_ENDPOINT_NOT_ALLOWED"
+  );
 });
 
 test("DeepSeek credentials are not sent to unapproved endpoint hosts", async () => {

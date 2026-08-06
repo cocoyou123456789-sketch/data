@@ -73,7 +73,7 @@ git branch -D codex-gh-pages-deploy
 
 ## 科大 DeepSeek API
 
-网站只调用服务器端 `/api/chat` 代理。科大 API Key、科大账号和密码不得写入
+网站只调用服务器端 `/api/chat` 代理。科大 API Key、火山方舟 API Key、科大账号和密码不得写入
 `github-pages/`、浏览器存储或 Git；公开网页无法直接安全保存任何 API Key。
 
 Netlify 或 Vercel 环境变量：
@@ -88,11 +88,22 @@ CHAT_AUTH_REQUIRED=true
 MATERIAL_PREDICT_PROVIDER=deepseek
 MATERIAL_PREDICT_MODEL=deepseek-v4-flash
 MATERIAL_PREDICT_ENABLED=true
+ARK_CHAT_ENABLED=true
+ARK_API_KEY=<火山方舟控制台生成的 API Key>
+ARK_CHAT_MODEL=<火山方舟接入点 ID，例如 ep-xxxxxxxxxxxx>
+# 可选：材料主持模型单独走 Ark
+# MATERIAL_PREDICT_PROVIDER=ark
+# MATERIAL_PREDICT_MODEL=<同上，或单独的 Ark 接入点 ID>
 ```
 
 `USTC_LLM_API_KEY` 与官方 `DEEPSEEK_API_KEY` 强制分离，避免更换上游地址时把一个平台的
 密钥误发给另一个平台。科大部署默认只发送标准 OpenAI 兼容字段；模型名称以科大控制台
 `GET /v1/models` 可访问结果为准。
+
+Doubao Ark 同样通过服务器端代理接入。`ARK_CHAT_MODEL` 必须填写火山方舟接入点 ID
+（`ep-...`），不能直接写原始模型名。默认上游地址为
+`https://ark.cn-beijing.volces.com/api/v3/chat/completions`；如需私有网关，可改
+`ARK_CHAT_BASE_URL` 或 `ARK_CHAT_COMPLETIONS_URL`，但主机仍会经过白名单校验。
 
 公开站点必须保留服务器端登录、来源白名单和限流。网站测试账号应使用独立密码，不能复用
 科大统一身份认证密码。部署前可运行：

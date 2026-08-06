@@ -101,6 +101,44 @@ test("USTC material prediction never falls back to the official DeepSeek key", a
   );
 });
 
+test("Doubao Ark can run the dedicated materials research chair role", async () => {
+  let requestUrl = "";
+  let requestOptions = null;
+  const fetchImpl = async (url, options) => {
+    requestUrl = url;
+    requestOptions = options;
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: "ark_material_chair_test",
+        model: "ep-material-chair-123456",
+        choices: [{ message: { content: "主持结论：先保留元素范围，再把结构和验证任务拆开。该结果不是超导证明。" } }],
+        usage: { prompt_tokens: 84, completion_tokens: 24 }
+      })
+    };
+  };
+  const env = {
+    MATERIAL_PREDICT_ENABLED: "true",
+    MATERIAL_PREDICT_PROVIDER: "ark",
+    MATERIAL_PREDICT_MODEL: "ep-material-chair-123456",
+    ARK_API_KEY: "ark-material-test-key"
+  };
+  const result = await runMaterialPrediction(normalizePayload(BODY), { env, fetchImpl });
+
+  assert.equal(result.provider, "ark");
+  assert.equal(result.deployment, "ark");
+  assert.equal(result.role, "materials_research_chair");
+  assert.equal(requestUrl, "https://ark.cn-beijing.volces.com/api/v3/chat/completions");
+  assert.equal(requestOptions.headers.Authorization, "Bearer ark-material-test-key");
+  const upstreamBody = JSON.parse(requestOptions.body);
+  assert.equal(upstreamBody.model, "ep-material-chair-123456");
+  assert.equal(upstreamBody.max_tokens, 1400);
+  assert.equal(Object.prototype.hasOwnProperty.call(upstreamBody, "max_completion_tokens"), false);
+  assert.match(upstreamBody.messages[0].content, /材料研究主持模型/);
+  assert.match(upstreamBody.messages[1].content, /worker_reports/);
+});
+
 test("paid chair endpoint requires the existing authorized website session", async () => {
   const result = await handleMaterialPredictRequest({
     method: "POST",

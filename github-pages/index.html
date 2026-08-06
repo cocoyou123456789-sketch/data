@@ -9184,6 +9184,7 @@
                     <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
                       <option value="gpt-5.6-luna">ChatGPT</option>
                       <option value="deepseek-v4-flash" selected>DeepSeek</option>
+                      <option value="doubao-ark-chat">Doubao Ark</option>
                       <option value="arpes-rules-preview">ARPES 本地规则</option>
                     </select>
                   </div>
@@ -10502,13 +10503,13 @@
                   <input id="aiEndpointInput" placeholder="/api/chat 或 https://your-site.vercel.app/api/chat">
                 </label>
                 <label data-label-i18n="aiModelLabel">AI 模型名
-                  <input id="aiModelInput" placeholder="deepseek-v4-flash / gpt-5.6-luna">
+                  <input id="aiModelInput" placeholder="deepseek-v4-flash / doubao-ark-chat / gpt-5.6-luna">
                 </label>
                 <label data-label-i18n="aiKeyLabel">服务器密钥状态
                   <input id="aiKeyInput" type="text" readonly aria-readonly="true" placeholder="由服务器端模型密钥管理">
                 </label>
               </div>
-              <p class="muted" data-i18n="aiConfigHint">ChatGPT 与 DeepSeek 均通过服务器端 /api/chat 连接。密钥只配置在 Netlify 或 Vercel 环境变量中，不会保存到浏览器。</p>
+              <p class="muted" data-i18n="aiConfigHint">ChatGPT、DeepSeek 与 Doubao Ark 均通过服务器端 /api/chat 连接。密钥只配置在 Netlify 或 Vercel 环境变量中，不会保存到浏览器。</p>
               <div class="toolbar">
                 <button id="aiSaveConfigBtn" type="button" data-i18n="aiSaveConfigBtn">保存 AI 配置</button>
                 <button id="aiClearConfigBtn" type="button" data-i18n="aiClearConfigBtn">清除 AI 配置</button>
@@ -10830,8 +10831,8 @@
         aiEndpointLabel: "AI 接口地址",
         aiModelLabel: "AI 模型名",
         aiKeyLabel: "服务器密钥状态",
-        aiServerKeyManaged: "由服务器 OPENAI_API_KEY / DEEPSEEK_API_KEY / USTC_LLM_API_KEY 管理",
-        aiConfigHint: "ChatGPT 与 DeepSeek 均通过服务器端 /api/chat 连接。密钥只配置在 Netlify 或 Vercel 环境变量中，不会保存到浏览器。",
+        aiServerKeyManaged: "由服务器 OPENAI_API_KEY / DEEPSEEK_API_KEY / USTC_LLM_API_KEY / ARK_API_KEY 管理",
+        aiConfigHint: "ChatGPT、DeepSeek 与 Doubao Ark 均通过服务器端 /api/chat 连接。密钥只配置在 Netlify 或 Vercel 环境变量中，不会保存到浏览器。",
         aiSaveConfigBtn: "保存 AI 配置",
         aiClearConfigBtn: "清除 AI 配置",
         aiConfigSaved: "AI 配置已保存",
@@ -10849,7 +10850,7 @@
         chatQuestionRequired: "请先输入问题。",
         chatAiFallback: "所选 AI 模型暂不可用，以下为本地数据预览。请在“材料预测”页检查模型与 AI 接口设置。",
         chatNeedsAi: "AI 接口尚未连接，请在“材料预测”页选择智能体或配置接口。",
-        chatNeedsAuthorizedLogin: "请使用左侧授权账号登录后使用 ChatGPT 或 DeepSeek。访客仍可使用本地规则预览。",
+        chatNeedsAuthorizedLogin: "请使用左侧授权账号登录后使用 ChatGPT、DeepSeek 或 Doubao Ark。访客仍可使用本地规则预览。",
         chatOwnerLoginChecking: "正在验证授权账号...",
         chatOwnerLoginFailed: "账号或密码不正确，或授权服务暂不可用。",
         chatOwnerLoginSuccess: "授权账号已登录，AI 功能可用",
@@ -11637,8 +11638,8 @@
         aiEndpointLabel: "AI Endpoint",
         aiModelLabel: "AI Model",
         aiKeyLabel: "Server key status",
-        aiServerKeyManaged: "Managed by server OPENAI_API_KEY / DEEPSEEK_API_KEY / USTC_LLM_API_KEY",
-        aiConfigHint: "ChatGPT and DeepSeek connect through the server-side /api/chat endpoint. Keys are configured only in Netlify or Vercel environment variables and are never stored in the browser.",
+        aiServerKeyManaged: "Managed by server OPENAI_API_KEY / DEEPSEEK_API_KEY / USTC_LLM_API_KEY / ARK_API_KEY",
+        aiConfigHint: "ChatGPT, DeepSeek, and Doubao Ark connect through the server-side /api/chat endpoint. Keys are configured only in Netlify or Vercel environment variables and are never stored in the browser.",
         aiSaveConfigBtn: "Save AI Config",
         aiClearConfigBtn: "Clear AI Config",
         aiConfigSaved: "AI config saved",
@@ -11656,7 +11657,7 @@
         chatQuestionRequired: "Enter a question first.",
         chatAiFallback: "The selected AI model is unavailable, so a local data preview is shown. Check the model and AI settings on Material Prediction.",
         chatNeedsAi: "No AI endpoint is connected. Select an agent or configure it on Material Prediction.",
-        chatNeedsAuthorizedLogin: "Sign in with the authorized account on the left to use ChatGPT or DeepSeek. Guests can still use the local rules preview.",
+        chatNeedsAuthorizedLogin: "Sign in with the authorized account on the left to use ChatGPT, DeepSeek, or Doubao Ark. Guests can still use the local rules preview.",
         chatOwnerLoginChecking: "Verifying authorized account...",
         chatOwnerLoginFailed: "The account or password is incorrect, or the authorization service is unavailable.",
         chatOwnerLoginSuccess: "Authorized account signed in; AI is available",
@@ -16756,21 +16757,34 @@
         ? window.ARPESMaterialBaseline.predictCounts(model.counts)
         : { state: "idle" };
 
-      let gptState = "idle";
-      let gptStatus = zh ? "待运行" : "Ready to run";
-      let gptPrediction = zh
-        ? "加入至少两种元素后，这里显示综合材料假设；运行 AI 后会替换为实际返回摘要。"
-        : "Add at least two elements to build a material hypothesis; an actual AI response replaces this preview after a run.";
-      if (hasElements) gptPrediction = compactModelPrediction(model.summary);
+      const selectedAgentId = chatAgentSelect?.value || loadAiConfig().model || DEFAULT_CHAT_AGENT;
+      const selectedAgent = roundtableAiModels[selectedAgentId] || roundtableAiModels[DEFAULT_CHAT_AGENT] || { title: "ChatGPT" };
+      const selectedProvider = chatProviderForAgent(selectedAgentId);
+      const selectedModelName = selectedAgent.title || (selectedProvider === "ark"
+        ? "Doubao Ark"
+        : (selectedProvider === "deepseek" ? "DeepSeek" : "ChatGPT"));
+      const selectedModelFamily = selectedAgentId === "arpes-rules-preview"
+        ? "arpes-rules"
+        : (selectedProvider === "ark" ? "ark" : (selectedProvider === "deepseek" ? "deepseek" : "gpt"));
+
+      let activeAiState = "idle";
+      let activeAiStatus = zh ? "待运行" : "Ready to run";
+      let activeAiPrediction = zh
+        ? "加入至少两种元素后，这里显示所选外圈模型的综合预览；主持人总结会显示在下方独立区域。"
+        : "Add at least two elements to preview the selected outer model; the chair summary appears in its own panel below.";
+      if (hasElements) activeAiPrediction = compactModelPrediction(model.summary);
       if (currentAi?.status === "loading") {
-        gptState = "running";
-        gptStatus = zh ? "分析中" : "Analyzing";
-      } else if (currentAi?.status === "done" && currentAi.source === "server-ai") {
-        gptState = "ready";
-        gptStatus = zh ? "已返回" : "Returned";
-        gptPrediction = compactModelPrediction(currentAi.answer) || gptPrediction;
+        activeAiState = "running";
+        activeAiStatus = zh ? "分析中" : "Analyzing";
+      } else if (currentAi?.status === "done" && currentAi.source === "server-ai" && currentAi.role !== "materials_research_chair") {
+        activeAiState = "ready";
+        activeAiStatus = zh ? "已返回" : "Returned";
+        activeAiPrediction = compactModelPrediction(currentAi.answer) || activeAiPrediction;
+      } else if (currentAi?.status === "done" && currentAi.role === "materials_research_chair") {
+        activeAiState = "ready";
+        activeAiStatus = zh ? "已切换到主持人总结" : "Handled by chair";
       } else if (currentAi?.status === "done") {
-        gptStatus = zh ? "本地回退" : "Local fallback";
+        activeAiStatus = zh ? "本地回退" : "Local fallback";
       }
 
       const deepSeekPrediction = !hasComposition
@@ -16823,18 +16837,20 @@
 
       const workerRows = [
         {
-          name: "GPT",
-          modelId: chatAgentSelect?.value || "gpt-5.6-luna",
-          modelFamily: "gpt",
-          stage: gptState === "ready" ? "llm" : "task_planning",
+          name: selectedModelName,
+          modelId: selectedAgentId,
+          modelFamily: selectedModelFamily,
+          stage: activeAiState === "ready" && currentAi?.role !== "materials_research_chair" ? "llm" : "task_planning",
           evidenceEligible: false,
           structureResolved: false,
           claims: [],
           kind: zh ? "综合材料假设" : "Material synthesis",
-          state: gptState,
-          status: hasComposition ? gptStatus : (zh ? "等待组合" : "Awaiting composition"),
-          prediction: gptPrediction,
-          meta: zh ? "实际 AI 结果仅在运行后显示" : "Actual AI output appears only after a run"
+          state: activeAiState,
+          status: hasComposition ? activeAiStatus : (zh ? "等待组合" : "Awaiting composition"),
+          prediction: activeAiPrediction,
+          meta: zh
+            ? "外圈所选模型预览；主持人总结单独显示且不计入科学证据"
+            : "Selected outer-model preview; the chair summary is shown separately and excluded from scientific evidence"
         },
         {
           name: "DeepSeek",
@@ -18133,6 +18149,13 @@
         task: "tc",
         feature: "reasoning, code, Tc prediction"
       },
+      "doubao-ark-chat": {
+        title: "Doubao Ark",
+        zh: "长上下文科研写作、技术综述与网页内对话整合。",
+        en: "Long-context research writing, technical synthesis, and in-page chat orchestration.",
+        task: "identify",
+        feature: "long context, technical writing, literature synthesis"
+      },
       "arpes-rules-preview": {
         title: "ARPES Rules",
         zh: "页面内置规则化预览，不需要外部 API。",
@@ -19251,7 +19274,13 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const aiState = state.mixtureAi || {};
       const aiProviderLabel = [
         aiState.role === "materials_research_chair" ? (zh ? "材料研究主持模型" : "Materials Research Chair") : "",
-        aiState.deployment === "ustc" ? "USTC LLM" : (aiState.provider === "deepseek" ? "DeepSeek" : aiState.provider === "openai" ? "OpenAI" : ""),
+        aiState.deployment === "ustc"
+          ? "USTC LLM"
+          : (aiState.provider === "deepseek"
+            ? "DeepSeek"
+            : (aiState.provider === "ark"
+              ? "Doubao Ark"
+              : (aiState.provider === "openai" ? "OpenAI" : ""))),
         aiState.model || ""
       ].filter(Boolean).join(" · ");
       const aiOutput = aiState.signature === mixtureSignature() && aiState.status !== "idle"
@@ -19504,7 +19533,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
             if (configuredAnswer && configuredAnswer !== t("chatNeedsAi")) {
               answer = configuredAnswer;
               source = "server-ai";
-              provider = chatProviderFromAgent(cfg.model || DEFAULT_CHAT_AGENT);
+              provider = chatProviderForAgent(cfg.model || DEFAULT_CHAT_AGENT);
               providerModel = cfg.model || DEFAULT_CHAT_AGENT;
             }
           } catch {
@@ -21501,11 +21530,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     function chatProviderForAgent(agentName) {
-      return String(agentName || "").toLowerCase().startsWith("deepseek") ? "deepseek" : "openai";
+      const normalized = String(agentName || "").trim().toLowerCase();
+      if (normalized.startsWith("deepseek")) return "deepseek";
+      if (normalized.startsWith("doubao") || normalized.startsWith("ark")) return "ark";
+      return "openai";
     }
 
     function chatProviderLabel(provider) {
-      return provider === "deepseek" ? "DeepSeek" : "ChatGPT";
+      if (provider === "deepseek") return "DeepSeek";
+      if (provider === "ark") return "Doubao Ark";
+      return "ChatGPT";
     }
 
     function chatProviderStatus(payload, provider) {
@@ -21515,10 +21549,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function chatProviderDetail(status, provider) {
       const model = String(status?.model || chatProviderLabel(provider));
-      const api = status?.api === "chat.completions" ? "DeepSeek Chat Completions API" : "OpenAI Responses API";
+      const api = status?.api === "responses"
+        ? "OpenAI Responses API"
+        : (provider === "ark" ? "Volcengine Ark Chat Completions API" : "DeepSeek Chat Completions API");
       const deployment = status?.deployment === "ustc"
         ? "USTC LLM"
-        : (status?.deployment === "deepseek" ? "DeepSeek official" : "");
+        : (status?.deployment === "deepseek"
+          ? "DeepSeek official"
+          : (status?.deployment === "ark" ? "Volcengine Ark" : ""));
       return [model, deployment, api].filter(Boolean).join(" · ");
     }
 
