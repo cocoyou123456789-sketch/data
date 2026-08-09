@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ARPES 模型安全测试台</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #081018;
+      --panel: #111b26;
+      --panel-2: #162230;
+      --line: #26384a;
+      --text: #e8eef5;
+      --muted: #94a7ba;
+      --teal: #18b7aa;
+      --blue: #4c91ff;
+      --good: #42c987;
+      --bad: #ff6b76;
+      --warn: #e8ae43;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .topbar { border-bottom: 1px solid var(--line); background: #0b141e; }
+    .topbar-inner, main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    .topbar-inner { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    h1 { margin: 0; font-size: 22px; letter-spacing: 0; }
+    h2 { margin: 0; font-size: 17px; }
+    a { color: #80b4ff; text-decoration: none; }
+    main { padding: 28px 0 48px; }
+    .notice { margin-bottom: 18px; padding: 12px 14px; border: 1px solid #235459; background: #0d2528; color: #bde9e5; }
+    .panel { margin-bottom: 18px; border: 1px solid var(--line); background: var(--panel); border-radius: 8px; }
+    .panel-head { padding: 15px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .panel-body { padding: 18px; }
+    .auth-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; }
+    label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; }
+    input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 6px; background: #0b141e; color: var(--text); padding: 10px 12px; outline: none; }
+    input:focus, textarea:focus { border-color: var(--blue); }
+    textarea { min-height: 112px; resize: vertical; }
+    .button { min-height: 42px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2); color: var(--text); padding: 9px 14px; font-weight: 650; }
+    .button.primary { border-color: #168d84; background: #137f77; }
+    .button:disabled { opacity: .5; cursor: not-allowed; }
+    .status { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+    .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
+    .status.good::before { background: var(--good); }
+    .status.bad::before { background: var(--bad); }
+    .models { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .model { min-height: 128px; padding: 15px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel-2); display: grid; gap: 8px; align-content: start; }
+    .model-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .badge { padding: 3px 8px; border-radius: 999px; background: #273444; color: var(--muted); font-size: 12px; }
+    .badge.good { background: #123b2b; color: #82ddb0; }
+    .badge.bad { background: #422128; color: #ff9da5; }
+    .model-name, .meta { overflow-wrap: anywhere; }
+    .meta { color: var(--muted); font-size: 13px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .results { display: grid; gap: 12px; }
+    .result { border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 6px; background: #0b141e; padding: 14px; }
+    .result.error { border-left-color: var(--bad); }
+    .result-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .answer { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .error-text { color: #ffadb4; }
+    .empty { color: var(--muted); }
+    @media (max-width: 760px) {
+      .auth-grid, .models { grid-template-columns: 1fr; }
+      .topbar-inner { align-items: flex-start; padding: 14px 0; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>ARPES 模型安全测试台</h1>
+      <a href="./index.html">返回 ARPES 网站</a>
+    </div>
+  </header>
+  <main>
+    <div class="notice">API Key 仅保存在 Netlify 服务端环境变量中。本页面不会读取、保存或显示任何模型密钥。</div>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>授权登录</h2>
+        <span id="authStatus" class="status">未登录</span>
+      </div>
+      <div class="panel-body">
+        <form id="loginForm" class="auth-grid">
+          <label>Email<input id="email" type="email" autocomplete="username" required placeholder="name@nsrl.ac.cn"></label>
+          <label>密码<input id="password" type="password" autocomplete="current-password" required></label>
+          <button class="button primary" type="submit">登录测试台</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>服务端模型状态</h2>
+        <button id="refreshBtn" class="button" type="button">刷新状态</button>
+      </div>
+      <div class="panel-body">
+        <div id="models" class="models"><div class="empty">正在读取服务端状态...</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2>调用测试</h2></div>
+      <div class="panel-body">
+        <label>测试问题<textarea id="prompt">请用两句话解释 ARPES，并说明回答所使用的模型名称。</textarea></label>
+        <div class="actions">
+          <button class="button primary test-btn" type="button" data-provider="openai">测试 ChatGPT</button>
+          <button class="button primary test-btn" type="button" data-provider="deepseek">测试 DeepSeek</button>
+          <button class="button primary test-btn" type="button" data-provider="ark">测试 Doubao Ark</button>
+          <button id="testAllBtn" class="button" type="button">依次测试全部</button>
+          <button id="clearBtn" class="button" type="button">清空结果</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2>测试结果</h2></div>
+      <div class="panel-body"><div id="results" class="results"><div class="empty">尚未运行测试。</div></div></div>
+    </section>
+  </main>
+  <script>
+    const API = "/api/chat";
+    const TOKEN_KEY = "arpes-model-test-session";
+    const labels = { openai: "ChatGPT", deepseek: "DeepSeek", ark: "Doubao Ark" };
+    let token = sessionStorage.getItem(TOKEN_KEY) || "";
+    let statuses = {};
+
+    const $ = selector => document.querySelector(selector);
+    const authStatus = $("#authStatus");
+    const results = $("#results");
+
+    function headers(extra = {}) {
+      return token ? { ...extra, Authorization: `Bearer ${token}` } : extra;
+    }
+
+    function setAuth(text, state = "") {
+      authStatus.textContent = text;
+      authStatus.className = `status ${state}`.trim();
+    }
+
+    function renderModels() {
+      $("#models").innerHTML = ["openai", "deepseek", "ark"].map(provider => {
+        const item = statuses[provider] || {};
+        const ready = item.enabled !== false && item.configured;
+        const reason = item.configuration_error || (!item.enabled ? "服务已停用" : (!item.configured ? "服务端配置不完整" : ""));
+        return `<article class="model">
+          <div class="model-top"><strong>${labels[provider]}</strong><span class="badge ${ready ? "good" : "bad"}">${ready ? "已配置" : "未就绪"}</span></div>
+          <div class="model-name">${escapeHtml(item.model || "未设置模型")}</div>
+          <div class="meta">${escapeHtml(item.api || "-")}${item.deployment ? ` · ${escapeHtml(item.deployment)}` : ""}</div>
+          ${reason ? `<div class="meta error-text">${escapeHtml(reason)}</div>` : ""}
+        </article>`;
+      }).join("");
+    }
+
+    async function refreshStatus() {
+      $("#refreshBtn").disabled = true;
+      try {
+        const response = await fetch(API, { headers: headers({ Accept: "application/json" }), cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+        statuses = data.providers || {};
+        renderModels();
+        if (data.auth?.authenticated) setAuth(`已登录 · ${data.auth.email || "授权账号"}`, "good");
+        else if (data.auth?.required) setAuth("需要授权登录", "bad");
+        else setAuth("无需登录", "good");
+      } catch (error) {
+        $("#models").innerHTML = `<div class="empty error-text">状态接口连接失败：${escapeHtml(error.message)}</div>`;
+        setAuth("连接失败", "bad");
+      } finally {
+        $("#refreshBtn").disabled = false;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+
+    function addResult(provider, payload, elapsed, ok) {
+      const empty = results.querySelector(".empty");
+      if (empty) empty.remove();
+      const article = document.createElement("article");
+      article.className = `result${ok ? "" : " error"}`;
+      const detail = ok
+        ? String(payload.answer || payload.output_text || payload.response || "返回内容为空")
+        : `${payload.error || "调用失败"}${payload.code ? `\n错误码：${payload.code}` : ""}`;
+      article.innerHTML = `<div class="result-head"><strong>${labels[provider]}</strong><span class="meta">${elapsed} ms · ${escapeHtml(payload.model || statuses[provider]?.model || "")}</span></div><div class="answer ${ok ? "" : "error-text"}">${escapeHtml(detail)}</div>`;
+      results.prepend(article);
+    }
+
+    async function testProvider(provider) {
+      const question = $("#prompt").value.trim();
+      if (!question) return;
+      const button = document.querySelector(`[data-provider="${provider}"]`);
+      const original = button.textContent;
+      button.disabled = true;
+      button.textContent = "测试中...";
+      const started = performance.now();
+      try {
+        const response = await fetch(API, {
+          method: "POST",
+          headers: headers({ "Content-Type": "application/json" }),
+          body: JSON.stringify({ provider, question, context: { source: "model-test", lang: "zh" } })
+        });
+        const data = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+        if (response.status === 401) {
+          token = "";
+          sessionStorage.removeItem(TOKEN_KEY);
+          setAuth("登录已失效，请重新登录", "bad");
+        }
+        addResult(provider, data, Math.round(performance.now() - started), response.ok && data.ok);
+      } catch (error) {
+        addResult(provider, { error: error.message, code: "NETWORK_ERROR" }, Math.round(performance.now() - started), false);
+      } finally {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    }
+
+    $("#loginForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      setAuth("正在登录...");
+      try {
+        const response = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "login", email: $("#email").value.trim(), password: $("#password").value })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.token) throw new Error(data.error || `HTTP ${response.status}`);
+        token = data.token;
+        sessionStorage.setItem(TOKEN_KEY, token);
+        $("#password").value = "";
+        setAuth(`已登录 · ${data.auth?.email || $("#email").value.trim()}`, "good");
+        await refreshStatus();
+      } catch (error) {
+        setAuth(error.message, "bad");
+      }
+    });
+
+    document.querySelectorAll(".test-btn").forEach(button => button.addEventListener("click", () => testProvider(button.dataset.provider)));
+    $("#testAllBtn").addEventListener("click", async () => {
+      $("#testAllBtn").disabled = true;
+      for (const provider of ["openai", "deepseek", "ark"]) await testProvider(provider);
+      $("#testAllBtn").disabled = false;
+    });
+    $("#clearBtn").addEventListener("click", () => { results.innerHTML = '<div class="empty">尚未运行测试。</div>'; });
+    $("#refreshBtn").addEventListener("click", refreshStatus);
+    refreshStatus();
+  </script>
+</body>
+</html>
