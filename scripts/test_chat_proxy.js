@@ -35,6 +35,25 @@ test("requests from unknown origins are rejected", async () => {
   assert.equal(result.payload.code, "ORIGIN_DENIED");
 });
 
+test("same-origin status checks may omit the Origin header", async () => {
+  const result = await handleChatRequest({ method: "GET", origin: "", ip: "same-origin-status-test" }, {
+    env: { ARK_API_KEY: "ark-test-key", ARK_CHAT_MODEL: "doubao-test-model" }
+  });
+  assert.equal(result.statusCode, 200);
+  assert.equal(result.payload.providers.ark.configured, true);
+});
+
+test("model calls without an Origin header remain rejected", async () => {
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: "",
+    ip: "missing-origin-chat-test",
+    body: JSON.stringify({ provider: "ark", question: "hello" })
+  }, { env: { ARK_API_KEY: "ark-test-key", ARK_CHAT_MODEL: "doubao-test-model" } });
+  assert.equal(result.statusCode, 403);
+  assert.equal(result.payload.code, "ORIGIN_DENIED");
+});
+
 test("chat requires a server-side API key", async () => {
   const result = await handleChatRequest({
     method: "POST",
