@@ -5252,6 +5252,89 @@
       cursor: pointer;
     }
 
+    .material-ai-console {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #101822;
+      overflow: hidden;
+    }
+
+    .material-ai-console-head,
+    .material-ai-console-body {
+      padding: 16px;
+    }
+
+    .material-ai-console-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .material-ai-console-head h3 { margin: 0; }
+
+    .material-ai-models {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .material-ai-model {
+      min-height: 92px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0c141e;
+      display: grid;
+      gap: 5px;
+    }
+
+    .material-ai-model-top,
+    .material-ai-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .material-ai-model-top { justify-content: space-between; }
+    .material-ai-badge[data-state="ready"] { color: var(--good); }
+    .material-ai-badge[data-state="error"] { color: var(--bad); }
+    .material-ai-badge[data-state="idle"] { color: var(--muted); }
+
+    .material-ai-prompt {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    .material-ai-results {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .material-ai-result {
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 12px;
+      background: #0b121b;
+      white-space: pre-wrap;
+      line-height: 1.55;
+    }
+
+    .material-ai-result.error { border-left-color: var(--bad); }
+
+    @media (max-width: 760px) {
+      .material-ai-models { grid-template-columns: 1fr; }
+      .material-ai-console-head { align-items: flex-start; flex-direction: column; }
+    }
+
     .model-advanced-body {
       padding: 0 12px 12px;
       display: grid;
@@ -8794,6 +8877,17 @@
             <h2 data-i18n="loginTitle">NSRL 光源入口</h2>
             <p class="muted" data-i18n="loginHint">左侧代表 NSRL 的真实实验入口，连接材料、文献和本地实验数据。</p>
           </div>
+        </div>
+        <div class="login-feature">
+          <div class="virtual-access-orbit" aria-hidden="true">
+            <video class="virtual-access-video" autoplay muted loop playsinline preload="metadata" poster="assets/virtual-analysis-loop-v2-poster.jpg" disablepictureinpicture tabindex="-1">
+              <source src="assets/virtual-analysis-loop-v2.mp4" type="video/mp4" media="(min-width: 761px) and (prefers-reduced-motion: no-preference)">
+            </video>
+          </div>
+          <div class="login-virtual-copy">
+            <h2 data-i18n="loginGuestTitle">其他访问者 · 虚拟入口</h2>
+            <p class="muted" data-i18n="loginGuestHint">右侧给非 NSRL 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。</p>
+          </div>
           <div class="login-ustc-panel">
             <h3 data-i18n="loginUstcPanelTitle">AI 授权账号登录</h3>
             <div class="login-mini-grid">
@@ -8809,17 +8903,6 @@
               <button class="primary" id="ustcLoginBtn" type="button" data-i18n="loginUstcBtn">登录并连接 AI</button>
               <button id="ustcGuestBtn" type="button" data-i18n="loginUstcGuestBtn">NSRL 预览</button>
             </div>
-          </div>
-        </div>
-        <div class="login-feature">
-          <div class="virtual-access-orbit" aria-hidden="true">
-            <video class="virtual-access-video" autoplay muted loop playsinline preload="metadata" poster="assets/virtual-analysis-loop-v2-poster.jpg" disablepictureinpicture tabindex="-1">
-              <source src="assets/virtual-analysis-loop-v2.mp4" type="video/mp4" media="(min-width: 761px) and (prefers-reduced-motion: no-preference)">
-            </video>
-          </div>
-          <div class="login-virtual-copy">
-            <h2 data-i18n="loginGuestTitle">其他访问者 · 虚拟入口</h2>
-            <p class="muted" data-i18n="loginGuestHint">右侧给非 NSRL 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。</p>
           </div>
           <div class="login-form-panel">
             <div class="auth-tabs" role="group" aria-label="Authentication mode">
@@ -9063,7 +9146,6 @@
       <button class="primary" type="button" id="generateReportBtn" data-i18n="generateReportBtn" title="Generate the current research report in the selected format">生成调研报告</button>
       <button id="workspaceCatalogBtn" type="button" data-i18n="workspaceCatalogBtn" title="返回材料书架">切换材料界面</button>
       <button id="logoutBtn" type="button" data-i18n="logoutBtn" title="Return to the login screen">注销</button>
-      <a class="chip trusted" href="./model-test.html">AI 模型测试</a>
       <a class="chip trusted" href="https://github.com/cocoyou123456789-sketch/data" target="_blank" rel="noreferrer">📦 GitHub</a>
     </div>
   </header>
@@ -10518,6 +10600,33 @@
               <div class="model-output" id="modelRegistryOutput" data-i18n="modelRegistryDefault">暂无外部模型注册；当前使用规则化预览。</div>
             </div>
           </details>
+          <section class="material-ai-console" id="materialAiConsole" aria-labelledby="materialAiConsoleTitle">
+            <div class="material-ai-console-head">
+              <div>
+                <h3 id="materialAiConsoleTitle">AI 模型</h3>
+                <span class="muted">直接在材料预测页调用服务器端模型；API Key 不会发送到浏览器。</span>
+              </div>
+              <div class="material-ai-actions">
+                <span class="status" id="materialAiAuthStatus">正在检查授权状态</span>
+                <button id="materialAiRefreshBtn" type="button">刷新状态</button>
+              </div>
+            </div>
+            <div class="material-ai-console-body">
+              <div class="material-ai-models" id="materialAiModels" aria-live="polite"></div>
+              <label for="materialAiPrompt"><strong>材料问题</strong></label>
+              <textarea class="material-ai-prompt" id="materialAiPrompt" placeholder="例如：比较 FeSe、Bi2212 和 MgB2 的 ARPES 关注点，并给出可验证的下一步。">比较 FeSe、Bi2212 和 MgB2 的 ARPES 关注点，并给出可验证的下一步。</textarea>
+              <div class="material-ai-actions">
+                <button class="primary" type="button" data-material-ai-provider="ark">使用 Doubao Ark</button>
+                <button type="button" data-material-ai-provider="deepseek">使用 DeepSeek</button>
+                <button type="button" data-material-ai-provider="openai">使用 ChatGPT</button>
+                <button type="button" id="materialAiTestAllBtn">依次测试全部</button>
+                <button type="button" id="materialAiClearBtn">清空结果</button>
+              </div>
+              <div class="material-ai-results" id="materialAiResults" aria-live="polite">
+                <div class="muted">登录后选择模型即可直接使用。</div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </section>
@@ -17865,6 +17974,7 @@
           if (ustcLoginStatus) ustcLoginStatus.textContent = t("chatOwnerLoginSuccess");
           unlockWorkbench(user);
           probeChatEndpoint().catch(() => {});
+          window.refreshMaterialAiConsole?.();
           showToast(t("chatOwnerLoginSuccess"));
         } catch (error) {
           clearChatAuthSession();
@@ -29175,6 +29285,125 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     initFloatingFigurePanel();
     init();
     window.setTimeout(updateHDF5ParserStatus, 0);
+  </script>
+  <script>
+    (() => {
+      const API = (window.location.hostname.includes("github.io") || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "https://arpes-materials-explorer-cocoyou.netlify.app/api/chat"
+        : "/api/chat";
+      const TOKEN_KEY = "arpes-ai-chat-session-v1";
+      const labels = { openai: "ChatGPT", deepseek: "DeepSeek", ark: "Doubao Ark" };
+      const verification = {};
+      let statuses = {};
+      const get = id => document.getElementById(id);
+      const token = () => {
+        try { return sessionStorage.getItem(TOKEN_KEY) || ""; }
+        catch { return ""; }
+      };
+      const headers = extra => token() ? { ...(extra || {}), Authorization: `Bearer ${token()}` } : { ...(extra || {}) };
+
+      function renderModels() {
+        const root = get("materialAiModels");
+        if (!root) return;
+        root.innerHTML = "";
+        ["ark", "deepseek", "openai"].forEach(provider => {
+          const item = statuses[provider] || {};
+          const ready = item.enabled !== false && Boolean(item.configured);
+          const checked = verification[provider];
+          const state = checked?.ok ? "ready" : (checked?.error || !ready ? "error" : "idle");
+          const card = document.createElement("article");
+          card.className = "material-ai-model";
+          const top = document.createElement("div");
+          top.className = "material-ai-model-top";
+          const name = document.createElement("strong");
+          name.textContent = labels[provider];
+          const badge = document.createElement("span");
+          badge.className = "material-ai-badge";
+          badge.dataset.state = state;
+          badge.textContent = checked?.ok ? "已验证" : (checked?.error ? "调用失败" : (ready ? "变量已设置" : "未就绪"));
+          top.append(name, badge);
+          const model = document.createElement("span");
+          model.className = "muted";
+          model.textContent = item.model || "未设置模型";
+          const detail = document.createElement("span");
+          detail.className = "muted";
+          detail.textContent = checked?.error || item.configuration_error || (ready ? "等待实际调用验证" : "服务端配置不完整");
+          card.append(top, model, detail);
+          root.append(card);
+        });
+      }
+
+      async function refresh() {
+        const auth = get("materialAiAuthStatus");
+        const button = get("materialAiRefreshBtn");
+        if (button) button.disabled = true;
+        try {
+          const response = await fetch(API, { headers: headers({ Accept: "application/json" }), cache: "no-store" });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+          statuses = data.providers || {};
+          renderModels();
+          if (auth) auth.textContent = data.auth?.authenticated ? `已授权 · ${data.auth.email || "AI 账号"}` : "请从右侧虚拟入口使用授权账号登录";
+        } catch (error) {
+          if (auth) auth.textContent = `状态检查失败：${error.message}`;
+        } finally {
+          if (button) button.disabled = false;
+        }
+      }
+
+      function addResult(provider, data, elapsed, ok) {
+        verification[provider] = { ok, error: ok ? "" : String(data.error || data.code || "调用失败") };
+        renderModels();
+        const root = get("materialAiResults");
+        if (!root) return;
+        if (root.querySelector(".muted")) root.innerHTML = "";
+        const card = document.createElement("article");
+        card.className = `material-ai-result${ok ? "" : " error"}`;
+        const title = document.createElement("strong");
+        title.textContent = `${labels[provider]} · ${elapsed} ms`;
+        const body = document.createElement("div");
+        body.textContent = ok
+          ? String(data.answer || data.output_text || data.response || "返回内容为空")
+          : `${data.error || "调用失败"}${data.code ? `\n错误码：${data.code}` : ""}`;
+        card.append(title, body);
+        root.prepend(card);
+      }
+
+      async function run(provider) {
+        const prompt = get("materialAiPrompt")?.value.trim();
+        if (!prompt) return;
+        const button = document.querySelector(`[data-material-ai-provider="${provider}"]`);
+        if (button) button.disabled = true;
+        const started = performance.now();
+        try {
+          const response = await fetch(API, {
+            method: "POST",
+            headers: headers({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ provider, question: prompt, context: { source: "materials", lang: document.documentElement.lang || "zh" } })
+          });
+          const data = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+          if (response.status === 401) get("materialAiAuthStatus").textContent = "授权已失效，请注销后从右侧重新登录";
+          addResult(provider, data, Math.round(performance.now() - started), response.ok && data.ok);
+        } catch (error) {
+          addResult(provider, { error: error.message, code: "NETWORK_ERROR" }, Math.round(performance.now() - started), false);
+        } finally {
+          if (button) button.disabled = false;
+        }
+      }
+
+      document.querySelectorAll("[data-material-ai-provider]").forEach(button => {
+        button.addEventListener("click", () => run(button.dataset.materialAiProvider));
+      });
+      get("materialAiRefreshBtn")?.addEventListener("click", refresh);
+      get("materialAiClearBtn")?.addEventListener("click", () => {
+        get("materialAiResults").innerHTML = '<div class="muted">登录后选择模型即可直接使用。</div>';
+      });
+      get("materialAiTestAllBtn")?.addEventListener("click", async () => {
+        for (const provider of ["ark", "deepseek", "openai"]) await run(provider);
+      });
+      window.refreshMaterialAiConsole = refresh;
+      refresh();
+    })();
   </script>
   <script>
     (() => {
