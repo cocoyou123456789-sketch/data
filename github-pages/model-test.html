@@ -76,7 +76,7 @@
     </div>
   </header>
   <main>
-    <div class="notice">API Key 仅保存在 Netlify 服务端环境变量中。本页面不会读取、保存或显示任何模型密钥。</div>
+    <div class="notice">API Key 仅保存在 Netlify 服务端环境变量中。本页面不会读取、保存或显示任何模型密钥。“变量已设置”不代表上游模型可用，只有实际调用成功才会显示“已验证”。</div>
 
     <section class="panel">
       <div class="panel-head">
@@ -127,6 +127,7 @@
     const labels = { openai: "ChatGPT", deepseek: "DeepSeek", ark: "Doubao Ark" };
     let token = sessionStorage.getItem(TOKEN_KEY) || "";
     let statuses = {};
+    const verification = {};
 
     const $ = selector => document.querySelector(selector);
     const authStatus = $("#authStatus");
@@ -145,9 +146,12 @@
       $("#models").innerHTML = ["openai", "deepseek", "ark"].map(provider => {
         const item = statuses[provider] || {};
         const ready = item.enabled !== false && item.configured;
-        const reason = item.configuration_error || (!item.enabled ? "服务已停用" : (!item.configured ? "服务端配置不完整" : ""));
+        const checked = verification[provider];
+        const badgeText = checked?.ok ? "已验证" : (ready ? "变量已设置" : "未就绪");
+        const badgeState = checked?.ok ? "good" : (!ready || checked?.ok === false ? "bad" : "");
+        const reason = checked?.error || item.configuration_error || (!item.enabled ? "服务已停用" : (!item.configured ? "服务端配置不完整" : "等待实际调用验证"));
         return `<article class="model">
-          <div class="model-top"><strong>${labels[provider]}</strong><span class="badge ${ready ? "good" : "bad"}">${ready ? "已配置" : "未就绪"}</span></div>
+          <div class="model-top"><strong>${labels[provider]}</strong><span class="badge ${badgeState}">${badgeText}</span></div>
           <div class="model-name">${escapeHtml(item.model || "未设置模型")}</div>
           <div class="meta">${escapeHtml(item.api || "-")}${item.deployment ? ` · ${escapeHtml(item.deployment)}` : ""}</div>
           ${reason ? `<div class="meta error-text">${escapeHtml(reason)}</div>` : ""}
@@ -179,6 +183,8 @@
     }
 
     function addResult(provider, payload, elapsed, ok) {
+      verification[provider] = { ok, error: ok ? "" : String(payload.error || payload.code || "调用失败") };
+      renderModels();
       const empty = results.querySelector(".empty");
       if (empty) empty.remove();
       const article = document.createElement("article");
