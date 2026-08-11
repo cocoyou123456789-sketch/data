@@ -52,6 +52,7 @@
     .badge { padding: 3px 8px; border-radius: 999px; background: #273444; color: var(--muted); font-size: 12px; }
     .badge.good { background: #123b2b; color: #82ddb0; }
     .badge.bad { background: #422128; color: #ff9da5; }
+    .badge.pending { background: #3c321b; color: #f0c56c; }
     .model-name, .meta { overflow-wrap: anywhere; }
     .meta { color: var(--muted); font-size: 13px; }
     .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
@@ -113,6 +114,7 @@
           <button id="testAllBtn" class="button" type="button">依次测试全部</button>
           <button id="clearBtn" class="button" type="button">清空结果</button>
         </div>
+        <div id="runStatus" class="meta" role="status" aria-live="polite"></div>
       </div>
     </section>
 
@@ -122,12 +124,17 @@
     </section>
   </main>
   <script>
-    const API = "/api/chat";
+    const API = (window.location.hostname.includes("github.io") || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? "https://arpes-materials-explorer-cocoyou.netlify.app/api/chat"
+      : "/api/chat";
+    const CLIENT_TIMEOUT_MS = 40_000;
     const TOKEN_KEY = "arpes-model-test-session";
     const labels = { openai: "ChatGPT", deepseek: "DeepSeek", ark: "Doubao Ark" };
     let token = sessionStorage.getItem(TOKEN_KEY) || "";
     let statuses = {};
     const verification = {};
+    const inFlight = new Map();
+    let batchPromise = null;
 
     const $ = selector => document.querySelector(selector);
     const authStatus = $("#authStatus");
@@ -142,14 +149,29 @@
       authStatus.className = `status ${state}`.trim();
     }
 
+    function setRunStatus(text, isError = false) {
+      const status = $("#runStatus");
+      status.textContent = text;
+      status.className = `meta${isError ? " error-text" : ""}`;
+    }
+
+    function syncTestControls() {
+      document.querySelectorAll(".test-btn").forEach(button => {
+        button.disabled = Boolean(batchPromise) || inFlight.has(button.dataset.provider);
+      });
+      $("#testAllBtn").disabled = Boolean(batchPromise) || inFlight.size > 0;
+    }
+
     function renderModels() {
       $("#models").innerHTML = ["openai", "deepseek", "ark"].map(provider => {
         const item = statuses[provider] || {};
         const ready = item.enabled !== false && item.configured;
         const checked = verification[provider];
-        const badgeText = checked?.ok ? "已验证" : (ready ? "变量已设置" : "未就绪");
-        const badgeState = checked?.ok ? "good" : (!ready || checked?.ok === false ? "bad" : "");
-        const reason = checked?.error || item.configuration_error || (!item.enabled ? "服务已停用" : (!item.configured ? "服务端配置不完整" : "等待实际调用验证"));
+        const badgeText = checked?.pending ? "测试中" : (checked?.ok ? "已验证" : (checked?.ok === false ? "调用失败" : (ready ? "变量已设置" : "未就绪")));
+        const badgeState = checked?.pending ? "pending" : (checked?.ok ? "good" : (!ready || checked?.ok === false ? "bad" : ""));
+        const reason = checked?.pending
+          ? `请求已发送，客户端最多等待约 ${Math.round(CLIENT_TIMEOUT_MS / 1000)} 秒`
+          : (checked?.error || item.configuration_error || (!item.enabled ? "服务已停用" : (!item.configured ? "服务端配置不完整" : "等待实际调用验证")));
         return `<article class="model">
           <div class="model-top"><strong>${labels[provider]}</strong><span class="badge ${badgeState}">${badgeText}</span></div>
           <div class="model-name">${escapeHtml(item.model || "未设置模型")}</div>
@@ -182,47 +204,127 @@
       return String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
     }
 
-    function addResult(provider, payload, elapsed, ok) {
-      verification[provider] = { ok, error: ok ? "" : String(payload.error || payload.code || "调用失败") };
+    function diagnostics(payload = {}) {
+      const upstream = payload.upstream && typeof payload.upstream === "object" ? payload.upstream : {};
+      return {
+        upstreamCode: payload.upstream_code || payload.upstreamCode || upstream.code || "",
+        upstreamStatus: payload.upstream_status || payload.upstreamStatus || upstream.status || "",
+        requestId: payload.request_id || payload.requestId || payload.upstream_request_id || payload.upstreamRequestId || upstream.request_id || upstream.requestId || payload.response_id || ""
+      };
+    }
+
+    function addResult(provider, payload, elapsed, ok, httpStatus = 0) {
+      const { upstreamCode, upstreamStatus, requestId } = diagnostics(payload);
+      const errorSummary = String(payload.error || payload.code || "调用失败");
+      verification[provider] = { ok, pending: false, error: ok ? "" : `${payload.code ? `${payload.code} · ` : ""}${errorSummary}` };
       renderModels();
       const empty = results.querySelector(".empty");
       if (empty) empty.remove();
       const article = document.createElement("article");
       article.className = `result${ok ? "" : " error"}`;
+      const meta = [`${elapsed} ms`];
+      if (httpStatus) meta.push(`HTTP ${httpStatus}`);
+      const model = payload.model || statuses[provider]?.model || "";
+      if (model) meta.push(String(model));
+      if (requestId) meta.push(`请求 ID ${requestId}`);
       const detail = ok
         ? String(payload.answer || payload.output_text || payload.response || "返回内容为空")
-        : `${payload.error || "调用失败"}${payload.code ? `\n错误码：${payload.code}` : ""}`;
-      article.innerHTML = `<div class="result-head"><strong>${labels[provider]}</strong><span class="meta">${elapsed} ms · ${escapeHtml(payload.model || statuses[provider]?.model || "")}</span></div><div class="answer ${ok ? "" : "error-text"}">${escapeHtml(detail)}</div>`;
+        : [payload.error || "调用失败", payload.code ? `错误码：${payload.code}` : "", upstreamStatus ? `上游 HTTP：${upstreamStatus}` : "", upstreamCode ? `上游错误码：${upstreamCode}` : "", requestId ? `请求 ID：${requestId}` : ""].filter(Boolean).join("\n");
+      article.innerHTML = `<div class="result-head"><strong>${labels[provider]}</strong><span class="meta">${escapeHtml(meta.join(" · "))}</span></div><div class="answer ${ok ? "" : "error-text"}">${escapeHtml(detail)}</div>`;
       results.prepend(article);
+      setRunStatus(ok ? `${labels[provider]} 测试完成。` : `${labels[provider]} 测试失败：${payload.code || `HTTP ${httpStatus || "未知"}`}`, !ok);
     }
 
-    async function testProvider(provider) {
+    async function performProviderTest(provider) {
       const question = $("#prompt").value.trim();
-      if (!question) return;
+      if (!question) {
+        setRunStatus("请输入测试问题。", true);
+        $("#prompt").focus();
+        return { ok: false, skipped: true };
+      }
       const button = document.querySelector(`[data-provider="${provider}"]`);
       const original = button.textContent;
-      button.disabled = true;
-      button.textContent = "测试中...";
+      button.setAttribute("aria-busy", "true");
+      button.textContent = `${labels[provider]} 测试中...`;
+      verification[provider] = { pending: true, ok: false, error: "" };
+      renderModels();
+      setRunStatus(`${labels[provider]} 请求已发送，客户端最多等待约 ${Math.round(CLIENT_TIMEOUT_MS / 1000)} 秒。`);
       const started = performance.now();
+      const controller = new AbortController();
+      let clientTimedOut = false;
+      const timeout = window.setTimeout(() => {
+        clientTimedOut = true;
+        controller.abort();
+      }, CLIENT_TIMEOUT_MS);
       try {
         const response = await fetch(API, {
           method: "POST",
           headers: headers({ "Content-Type": "application/json" }),
-          body: JSON.stringify({ provider, question, context: { source: "model-test", lang: "zh" } })
+          body: JSON.stringify({ provider, question, context: { source: "model-test", lang: "zh" } }),
+          signal: controller.signal
         });
         const data = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
-        if (response.status === 401) {
+        if (response.status === 401 && data.code === "CHAT_AUTH_REQUIRED") {
           token = "";
           sessionStorage.removeItem(TOKEN_KEY);
           setAuth("登录已失效，请重新登录", "bad");
         }
-        addResult(provider, data, Math.round(performance.now() - started), response.ok && data.ok);
+        const ok = response.ok && data.ok;
+        addResult(provider, data, Math.round(performance.now() - started), ok, response.status);
+        return { ok, response, data };
       } catch (error) {
-        addResult(provider, { error: error.message, code: "NETWORK_ERROR" }, Math.round(performance.now() - started), false);
+        const timedOut = clientTimedOut || error?.name === "AbortError";
+        const data = timedOut
+          ? { error: `客户端等待超过 ${Math.round(CLIENT_TIMEOUT_MS / 1000)} 秒，已停止等待模型响应。`, code: "CLIENT_TIMEOUT" }
+          : { error: error.message, code: "NETWORK_ERROR" };
+        addResult(provider, data, Math.round(performance.now() - started), false);
+        return { ok: false, data };
       } finally {
-        button.disabled = false;
+        window.clearTimeout(timeout);
+        button.removeAttribute("aria-busy");
         button.textContent = original;
       }
+    }
+
+    function testProvider(provider) {
+      if (inFlight.has(provider)) return inFlight.get(provider);
+      const task = performProviderTest(provider).finally(() => {
+        if (inFlight.get(provider) === task) inFlight.delete(provider);
+        syncTestControls();
+      });
+      inFlight.set(provider, task);
+      syncTestControls();
+      return task;
+    }
+
+    async function performAllTests() {
+      const button = $("#testAllBtn");
+      const original = button.textContent;
+      button.setAttribute("aria-busy", "true");
+      const providers = ["ark", "deepseek", "openai"];
+      try {
+        for (let index = 0; index < providers.length; index += 1) {
+          const provider = providers[index];
+          button.textContent = `正在测试 ${labels[provider]}（${index + 1}/${providers.length}）...`;
+          setRunStatus(`依次测试全部：正在测试 ${labels[provider]}（${index + 1}/${providers.length}）。`);
+          await testProvider(provider);
+        }
+        setRunStatus("全部模型测试已完成。");
+      } finally {
+        button.removeAttribute("aria-busy");
+        button.textContent = original;
+      }
+    }
+
+    function testAllProviders() {
+      if (batchPromise) return batchPromise;
+      const task = Promise.resolve().then(performAllTests).finally(() => {
+        if (batchPromise === task) batchPromise = null;
+        syncTestControls();
+      });
+      batchPromise = task;
+      syncTestControls();
+      return task;
     }
 
     $("#loginForm").addEventListener("submit", async event => {
@@ -247,12 +349,13 @@
     });
 
     document.querySelectorAll(".test-btn").forEach(button => button.addEventListener("click", () => testProvider(button.dataset.provider)));
-    $("#testAllBtn").addEventListener("click", async () => {
-      $("#testAllBtn").disabled = true;
-      for (const provider of ["openai", "deepseek", "ark"]) await testProvider(provider);
-      $("#testAllBtn").disabled = false;
+    $("#testAllBtn").addEventListener("click", testAllProviders);
+    $("#clearBtn").addEventListener("click", () => {
+      results.innerHTML = '<div class="empty">尚未运行测试。</div>';
+      Object.keys(verification).forEach(provider => delete verification[provider]);
+      renderModels();
+      setRunStatus("");
     });
-    $("#clearBtn").addEventListener("click", () => { results.innerHTML = '<div class="empty">尚未运行测试。</div>'; });
     $("#refreshBtn").addEventListener("click", refreshStatus);
     refreshStatus();
   </script>
