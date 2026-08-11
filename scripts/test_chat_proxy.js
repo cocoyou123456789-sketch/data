@@ -2,6 +2,8 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 
 const {
+  arkApiKey,
+  arkChatTimeoutMs,
   handleChatRequest,
   hashChatPassword,
   normalizeMessages,
@@ -256,7 +258,7 @@ test("Doubao Ark uses its own key, endpoint, and endpoint-id model", async () =>
     })
   }, {
     env: {
-      ARK_API_KEY: "ark-test-key",
+      ARK_API_KEY: '  "Bearer ark-test-key"  ',
       ARK_CHAT_MODEL: "ep-test-123456",
       ARK_CHAT_ENABLED: "true"
     },
@@ -273,7 +275,146 @@ test("Doubao Ark uses its own key, endpoint, and endpoint-id model", async () =>
   assert.equal(upstreamBody.model, "ep-test-123456");
   assert.equal(upstreamBody.stream, false);
   assert.equal(upstreamBody.max_tokens, 1200);
+  assert.equal(upstreamBody.thinking.type, "disabled");
   assert.match(upstreamBody.messages[0].content, /Doubao Ark/);
+});
+
+test("Doubao Ark normalizes common API key wrappers without duplicating Bearer", () => {
+  assert.equal(arkApiKey({ ARK_API_KEY: '  "Bearer ark-test-key"  ' }), "ark-test-key");
+  assert.equal(arkApiKey({ ARK_API_KEY: "Bearer 'ark-test-key'" }), "ark-test-key");
+  assert.equal(arkApiKey({ ARK_API_KEY: "ark-test-key" }), "ark-test-key");
+});
+
+test("Doubao Ark rejects API key placeholders before any upstream request", async () => {
+  const invalidKeys = [
+    "${ARK_API_KEY}",
+    "${{secrets.ARK_API_KEY}}",
+    "{{ ARK_API_KEY }}",
+    "process.env.ARK_API_KEY",
+    "<YOUR_API_KEY>",
+    "Bearer",
+    "ARK_API_KEY=ark-super-secret-value",
+    "Bearer Bearer ark-super-secret-value"
+  ];
+  for (const [index, apiKey] of invalidKeys.entries()) {
+    let fetchCalls = 0;
+    const result = await handleChatRequest({
+      method: "POST",
+      origin: ORIGIN,
+      ip: `ark-invalid-key-test-${index}`,
+      body: JSON.stringify({ provider: "ark", question: "hello" })
+    }, {
+      env: { ARK_API_KEY: apiKey, ARK_CHAT_MODEL: "doubao-test-model" },
+      fetchImpl: async () => {
+        fetchCalls += 1;
+        throw new Error("fetch must not be called");
+      }
+    });
+    assert.equal(result.statusCode, 503);
+    assert.equal(result.payload.code, "ARK_API_KEY_INVALID");
+    assert.equal(fetchCalls, 0);
+    assert.doesNotMatch(JSON.stringify(result.payload), /super-secret-value/);
+  }
+
+  const status = await handleChatRequest({
+    method: "GET",
+    origin: ORIGIN,
+    ip: "ark-invalid-key-status-test"
+  }, {
+    env: { ARK_API_KEY: "${ARK_API_KEY}", ARK_CHAT_MODEL: "doubao-test-model" }
+  });
+  assert.equal(status.payload.providers.ark.configured, false);
+  assert.equal(status.payload.providers.ark.configuration_error, "ARK_API_KEY_INVALID");
+});
+
+test("Doubao Ark applies a supported configured thinking mode", async () => {
+  let requestOptions = null;
+  const result = await runArkChat({ question: "hello" }, { ip: "ark-thinking-test" }, {
+    env: {
+      ARK_API_KEY: "ark-test-key",
+      ARK_CHAT_MODEL: "doubao-test-model",
+      ARK_CHAT_THINKING: "enabled"
+    },
+    fetchImpl: async (url, options) => {
+      requestOptions = options;
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: "ark_thinking_test",
+          model: "doubao-test-model",
+          choices: [{ message: { content: "ok" } }]
+        })
+      };
+    }
+  });
+  assert.equal(result.answer, "ok");
+  assert.equal(JSON.parse(requestOptions.body).thinking.type, "enabled");
+});
+
+test("Doubao Ark uses a provider-specific bounded timeout", () => {
+  assert.equal(arkChatTimeoutMs({}), 25_000);
+  assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "12000" }), 12_000);
+  assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "12000" }, 9_000), 9_000);
+  assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "1000" }), 5_000);
+  assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "60000" }), 50_000);
+});
+
+test("Doubao Ark safely returns upstream authentication diagnostics", async () => {
+  const apiKey = "ark-super-secret-value";
+  const requestId = "021786444595107941531497079c912b7846ffe9243569d8a4193";
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "ark-authentication-error-test",
+    body: JSON.stringify({ provider: "ark", question: "hello" })
+  }, {
+    env: { ARK_API_KEY: apiKey, ARK_CHAT_MODEL: "doubao-test-model" },
+    fetchImpl: async (url, options) => {
+      assert.equal(options.headers.Authorization, `Bearer ${apiKey}`);
+      return {
+        ok: false,
+        status: 401,
+        headers: {
+          get: name => name.toLowerCase() === "x-request-id" ? requestId : null
+        },
+        json: async () => ({
+          error: {
+            code: "AuthenticationError",
+            message: `The API key format is incorrect. Request id: ${requestId}`,
+            type: "Unauthorized"
+          }
+        })
+      };
+    }
+  });
+
+  assert.equal(result.statusCode, 401);
+  assert.equal(result.payload.code, "ARK_UPSTREAM_ERROR");
+  assert.equal(result.payload.upstream_status, 401);
+  assert.equal(result.payload.upstream_code, "AuthenticationError");
+  assert.equal(result.payload.upstream_request_id, requestId);
+  assert.match(result.payload.error, /API key format is incorrect/);
+  assert.doesNotMatch(JSON.stringify(result.payload), new RegExp(apiKey));
+});
+
+test("Doubao Ark maps aborted upstream requests to a timeout", async () => {
+  const result = await handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "ark-timeout-error-test",
+    body: JSON.stringify({ provider: "ark", question: "hello" })
+  }, {
+    env: { ARK_API_KEY: "ark-timeout-secret", ARK_CHAT_MODEL: "doubao-test-model" },
+    fetchImpl: async () => {
+      const error = new Error("request aborted");
+      error.name = "AbortError";
+      throw error;
+    }
+  });
+  assert.equal(result.statusCode, 504);
+  assert.equal(result.payload.code, "TIMEOUT");
+  assert.doesNotMatch(JSON.stringify(result.payload), /ark-timeout-secret/);
 });
 
 test("Doubao Ark credentials are not sent to unapproved endpoint hosts", async () => {

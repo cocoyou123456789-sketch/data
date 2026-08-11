@@ -5303,6 +5303,7 @@
     .material-ai-model-top { justify-content: space-between; }
     .material-ai-badge[data-state="ready"] { color: var(--good); }
     .material-ai-badge[data-state="error"] { color: var(--bad); }
+    .material-ai-badge[data-state="pending"] { color: var(--warn); }
     .material-ai-badge[data-state="idle"] { color: var(--muted); }
 
     .material-ai-prompt {
@@ -10622,6 +10623,7 @@
                 <button type="button" id="materialAiTestAllBtn">依次测试全部</button>
                 <button type="button" id="materialAiClearBtn">清空结果</button>
               </div>
+              <div class="muted" id="materialAiRunStatus" role="status" aria-live="polite"></div>
               <div class="material-ai-results" id="materialAiResults" aria-live="polite">
                 <div class="muted">登录后选择模型即可直接使用。</div>
               </div>
@@ -29291,9 +29293,12 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       const API = (window.location.hostname.includes("github.io") || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
         ? "https://arpes-materials-explorer-cocoyou.netlify.app/api/chat"
         : "/api/chat";
+      const CLIENT_TIMEOUT_MS = 40_000;
       const TOKEN_KEY = "arpes-ai-chat-session-v1";
       const labels = { openai: "ChatGPT", deepseek: "DeepSeek", ark: "Doubao Ark" };
       const verification = {};
+      const inFlight = new Map();
+      let batchPromise = null;
       let statuses = {};
       const get = id => document.getElementById(id);
       const token = () => {
@@ -29301,6 +29306,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         catch { return ""; }
       };
       const headers = extra => token() ? { ...(extra || {}), Authorization: `Bearer ${token()}` } : { ...(extra || {}) };
+
+      function setRunStatus(text, isError = false) {
+        const status = get("materialAiRunStatus");
+        if (!status) return;
+        status.textContent = text;
+        status.className = `${isError ? "error-text" : "muted"}`;
+      }
+
+      function syncTestControls() {
+        document.querySelectorAll("[data-material-ai-provider]").forEach(button => {
+          button.disabled = Boolean(batchPromise) || inFlight.has(button.dataset.materialAiProvider);
+        });
+        const allButton = get("materialAiTestAllBtn");
+        if (allButton) allButton.disabled = Boolean(batchPromise) || inFlight.size > 0;
+      }
 
       function renderModels() {
         const root = get("materialAiModels");
@@ -29310,7 +29330,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const item = statuses[provider] || {};
           const ready = item.enabled !== false && Boolean(item.configured);
           const checked = verification[provider];
-          const state = checked?.ok ? "ready" : (checked?.error || !ready ? "error" : "idle");
+          const state = checked?.pending ? "pending" : (checked?.ok ? "ready" : (checked?.error || !ready ? "error" : "idle"));
           const card = document.createElement("article");
           card.className = "material-ai-model";
           const top = document.createElement("div");
@@ -29320,14 +29340,16 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           const badge = document.createElement("span");
           badge.className = "material-ai-badge";
           badge.dataset.state = state;
-          badge.textContent = checked?.ok ? "已验证" : (checked?.error ? "调用失败" : (ready ? "变量已设置" : "未就绪"));
+          badge.textContent = checked?.pending ? "测试中" : (checked?.ok ? "已验证" : (checked?.error ? "调用失败" : (ready ? "变量已设置" : "未就绪")));
           top.append(name, badge);
           const model = document.createElement("span");
           model.className = "muted";
           model.textContent = item.model || "未设置模型";
           const detail = document.createElement("span");
           detail.className = "muted";
-          detail.textContent = checked?.error || item.configuration_error || (ready ? "等待实际调用验证" : "服务端配置不完整");
+          detail.textContent = checked?.pending
+            ? `请求已发送，客户端最多等待约 ${Math.round(CLIENT_TIMEOUT_MS / 1000)} 秒`
+            : (checked?.error || item.configuration_error || (ready ? "等待实际调用验证" : "服务端配置不完整"));
           card.append(top, model, detail);
           root.append(card);
         });
@@ -29351,44 +29373,140 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
       }
 
-      function addResult(provider, data, elapsed, ok) {
-        verification[provider] = { ok, error: ok ? "" : String(data.error || data.code || "调用失败") };
+      function diagnostics(data = {}) {
+        const upstream = data.upstream && typeof data.upstream === "object" ? data.upstream : {};
+        return {
+          upstreamCode: data.upstream_code || data.upstreamCode || upstream.code || "",
+          upstreamStatus: data.upstream_status || data.upstreamStatus || upstream.status || "",
+          requestId: data.request_id || data.requestId || data.upstream_request_id || data.upstreamRequestId || upstream.request_id || upstream.requestId || data.response_id || ""
+        };
+      }
+
+      function addResult(provider, data, elapsed, ok, httpStatus = 0) {
+        const { upstreamCode, upstreamStatus, requestId } = diagnostics(data);
+        const errorSummary = String(data.error || data.code || "调用失败");
+        verification[provider] = { ok, pending: false, error: ok ? "" : `${data.code ? `${data.code} · ` : ""}${errorSummary}` };
         renderModels();
         const root = get("materialAiResults");
         if (!root) return;
-        if (root.querySelector(".muted")) root.innerHTML = "";
+        if (root.children.length === 1 && root.firstElementChild?.classList.contains("muted")) root.innerHTML = "";
         const card = document.createElement("article");
         card.className = `material-ai-result${ok ? "" : " error"}`;
         const title = document.createElement("strong");
-        title.textContent = `${labels[provider]} · ${elapsed} ms`;
+        title.textContent = labels[provider];
+        const meta = document.createElement("span");
+        meta.className = "muted";
+        const metaParts = [`${elapsed} ms`];
+        if (httpStatus) metaParts.push(`HTTP ${httpStatus}`);
+        const model = data.model || statuses[provider]?.model || "";
+        if (model) metaParts.push(String(model));
+        if (requestId) metaParts.push(`请求 ID ${requestId}`);
+        meta.textContent = metaParts.join(" · ");
         const body = document.createElement("div");
         body.textContent = ok
           ? String(data.answer || data.output_text || data.response || "返回内容为空")
-          : `${data.error || "调用失败"}${data.code ? `\n错误码：${data.code}` : ""}`;
-        card.append(title, body);
+          : [data.error || "调用失败", data.code ? `错误码：${data.code}` : "", upstreamStatus ? `上游 HTTP：${upstreamStatus}` : "", upstreamCode ? `上游错误码：${upstreamCode}` : "", requestId ? `请求 ID：${requestId}` : ""].filter(Boolean).join("\n");
+        card.append(title, meta, body);
         root.prepend(card);
+        setRunStatus(ok ? `${labels[provider]} 测试完成。` : `${labels[provider]} 测试失败：${data.code || `HTTP ${httpStatus || "未知"}`}`, !ok);
       }
 
-      async function run(provider) {
+      async function performRun(provider) {
         const prompt = get("materialAiPrompt")?.value.trim();
-        if (!prompt) return;
+        if (!prompt) {
+          setRunStatus("请输入材料问题。", true);
+          get("materialAiPrompt")?.focus();
+          return { ok: false, skipped: true };
+        }
         const button = document.querySelector(`[data-material-ai-provider="${provider}"]`);
-        if (button) button.disabled = true;
+        const original = button?.textContent || "";
+        if (button) {
+          button.setAttribute("aria-busy", "true");
+          button.textContent = `${labels[provider]} 测试中...`;
+        }
+        verification[provider] = { pending: true, ok: false, error: "" };
+        renderModels();
+        setRunStatus(`${labels[provider]} 请求已发送，客户端最多等待约 ${Math.round(CLIENT_TIMEOUT_MS / 1000)} 秒。`);
         const started = performance.now();
+        const controller = new AbortController();
+        let clientTimedOut = false;
+        const timeout = window.setTimeout(() => {
+          clientTimedOut = true;
+          controller.abort();
+        }, CLIENT_TIMEOUT_MS);
         try {
           const response = await fetch(API, {
             method: "POST",
             headers: headers({ "Content-Type": "application/json" }),
-            body: JSON.stringify({ provider, question: prompt, context: { source: "materials", lang: document.documentElement.lang || "zh" } })
+            body: JSON.stringify({ provider, question: prompt, context: { source: "materials", lang: document.documentElement.lang || "zh" } }),
+            signal: controller.signal
           });
           const data = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
-          if (response.status === 401) get("materialAiAuthStatus").textContent = "授权已失效，请注销后从右侧重新登录";
-          addResult(provider, data, Math.round(performance.now() - started), response.ok && data.ok);
+          if (response.status === 401 && data.code === "CHAT_AUTH_REQUIRED") {
+            try { sessionStorage.removeItem(TOKEN_KEY); } catch {}
+            const auth = get("materialAiAuthStatus");
+            if (auth) auth.textContent = "授权已失效，请注销后从右侧重新登录";
+          }
+          const ok = response.ok && data.ok;
+          addResult(provider, data, Math.round(performance.now() - started), ok, response.status);
+          return { ok, response, data };
         } catch (error) {
-          addResult(provider, { error: error.message, code: "NETWORK_ERROR" }, Math.round(performance.now() - started), false);
+          const timedOut = clientTimedOut || error?.name === "AbortError";
+          const data = timedOut
+            ? { error: `客户端等待超过 ${Math.round(CLIENT_TIMEOUT_MS / 1000)} 秒，已停止等待模型响应。`, code: "CLIENT_TIMEOUT" }
+            : { error: error.message, code: "NETWORK_ERROR" };
+          addResult(provider, data, Math.round(performance.now() - started), false);
+          return { ok: false, data };
         } finally {
-          if (button) button.disabled = false;
+          window.clearTimeout(timeout);
+          if (button) {
+            button.removeAttribute("aria-busy");
+            button.textContent = original;
+          }
         }
+      }
+
+      function run(provider) {
+        if (inFlight.has(provider)) return inFlight.get(provider);
+        const task = performRun(provider).finally(() => {
+          if (inFlight.get(provider) === task) inFlight.delete(provider);
+          syncTestControls();
+        });
+        inFlight.set(provider, task);
+        syncTestControls();
+        return task;
+      }
+
+      async function performAllTests() {
+        const button = get("materialAiTestAllBtn");
+        const original = button?.textContent || "依次测试全部";
+        if (button) button.setAttribute("aria-busy", "true");
+        const providers = ["ark", "deepseek", "openai"];
+        try {
+          for (let index = 0; index < providers.length; index += 1) {
+            const provider = providers[index];
+            if (button) button.textContent = `正在测试 ${labels[provider]}（${index + 1}/${providers.length}）...`;
+            setRunStatus(`依次测试全部：正在测试 ${labels[provider]}（${index + 1}/${providers.length}）。`);
+            await run(provider);
+          }
+          setRunStatus("全部模型测试已完成。");
+        } finally {
+          if (button) {
+            button.removeAttribute("aria-busy");
+            button.textContent = original;
+          }
+        }
+      }
+
+      function runAllProviders() {
+        if (batchPromise) return batchPromise;
+        const task = Promise.resolve().then(performAllTests).finally(() => {
+          if (batchPromise === task) batchPromise = null;
+          syncTestControls();
+        });
+        batchPromise = task;
+        syncTestControls();
+        return task;
       }
 
       document.querySelectorAll("[data-material-ai-provider]").forEach(button => {
@@ -29397,10 +29515,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       get("materialAiRefreshBtn")?.addEventListener("click", refresh);
       get("materialAiClearBtn")?.addEventListener("click", () => {
         get("materialAiResults").innerHTML = '<div class="muted">登录后选择模型即可直接使用。</div>';
+        Object.keys(verification).forEach(provider => delete verification[provider]);
+        renderModels();
+        setRunStatus("");
       });
-      get("materialAiTestAllBtn")?.addEventListener("click", async () => {
-        for (const provider of ["ark", "deepseek", "openai"]) await run(provider);
-      });
+      get("materialAiTestAllBtn")?.addEventListener("click", runAllProviders);
       window.refreshMaterialAiConsole = refresh;
       refresh();
     })();
