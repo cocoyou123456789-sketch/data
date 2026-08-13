@@ -1,4 +1,5 @@
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const test = require("node:test");
 
 const {
@@ -243,7 +244,7 @@ test("Doubao Ark uses its own key, endpoint, and endpoint-id model", async () =>
       json: async () => ({
         id: "ark_test",
         model: "ep-test-123456",
-        choices: [{ message: { role: "assistant", content: "Doubao Ark 测试回答" } }],
+        choices: [{ message: { role: "assistant", content: "Doubao Ark 测试回答" }, finish_reason: "length" }],
         usage: { prompt_tokens: 16, completion_tokens: 5 }
       })
     };
@@ -269,12 +270,13 @@ test("Doubao Ark uses its own key, endpoint, and endpoint-id model", async () =>
   assert.equal(result.payload.answer, "Doubao Ark 测试回答");
   assert.equal(result.payload.provider, "ark");
   assert.equal(result.payload.deployment, "ark");
+  assert.equal(result.payload.finish_reason, "length");
   assert.equal(requestUrl, "https://ark.cn-beijing.volces.com/api/v3/chat/completions");
   assert.equal(requestOptions.headers.Authorization, "Bearer ark-test-key");
   const upstreamBody = JSON.parse(requestOptions.body);
   assert.equal(upstreamBody.model, "ep-test-123456");
   assert.equal(upstreamBody.stream, false);
-  assert.equal(upstreamBody.max_tokens, 1200);
+  assert.equal(upstreamBody.max_tokens, 800);
   assert.equal(upstreamBody.thinking.type, "disabled");
   assert.match(upstreamBody.messages[0].content, /Doubao Ark/);
 });
@@ -353,7 +355,7 @@ test("Doubao Ark applies a supported configured thinking mode", async () => {
 });
 
 test("Doubao Ark uses a provider-specific bounded timeout", () => {
-  assert.equal(arkChatTimeoutMs({}), 25_000);
+  assert.equal(arkChatTimeoutMs({}), 45_000);
   assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "12000" }), 12_000);
   assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "12000" }, 9_000), 9_000);
   assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "1000" }), 5_000);
@@ -415,6 +417,80 @@ test("Doubao Ark maps aborted upstream requests to a timeout", async () => {
   assert.equal(result.statusCode, 504);
   assert.equal(result.payload.code, "TIMEOUT");
   assert.doesNotMatch(JSON.stringify(result.payload), /ark-timeout-secret/);
+});
+
+test("Doubao Ark aborts at its configured deadline", async t => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  let aborted = false;
+  const pending = handleChatRequest({
+    method: "POST",
+    origin: ORIGIN,
+    ip: "ark-real-timeout-test",
+    body: JSON.stringify({ provider: "ark", question: "hello" })
+  }, {
+    env: {
+      ARK_API_KEY: "ark-timeout-test-key",
+      ARK_CHAT_MODEL: "doubao-test-model",
+      ARK_CHAT_TIMEOUT_MS: "12000"
+    },
+    fetchImpl: async (url, options) => new Promise((resolve, reject) => {
+      options.signal.addEventListener("abort", () => {
+        aborted = true;
+        const error = new Error("request aborted");
+        error.name = "AbortError";
+        reject(error);
+      }, { once: true });
+    })
+  });
+
+  t.mock.timers.tick(11_999);
+  assert.equal(aborted, false);
+  t.mock.timers.tick(1);
+  const result = await pending;
+  assert.equal(aborted, true);
+  assert.equal(result.statusCode, 504);
+  assert.equal(result.payload.code, "TIMEOUT");
+});
+
+test("Doubao Ark clears its deadline after a successful response", async t => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  let requestSignal = null;
+  let aborted = false;
+  const result = await runArkChat({ question: "hello" }, { ip: "ark-cleared-timeout-test" }, {
+    env: {
+      ARK_API_KEY: "ark-success-test-key",
+      ARK_CHAT_MODEL: "doubao-test-model",
+      ARK_CHAT_TIMEOUT_MS: "12000"
+    },
+    fetchImpl: async (url, options) => {
+      requestSignal = options.signal;
+      requestSignal.addEventListener("abort", () => { aborted = true; }, { once: true });
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: "ark_success_before_deadline",
+          model: "doubao-test-model",
+          choices: [{ message: { content: "ok" }, finish_reason: "stop" }]
+        })
+      };
+    }
+  });
+
+  assert.equal(result.answer, "ok");
+  assert.equal(requestSignal.aborted, false);
+  t.mock.timers.tick(12_001);
+  assert.equal(aborted, false);
+  assert.equal(requestSignal.aborted, false);
+});
+
+test("browser model-test deadlines exceed the maximum Ark deadline", () => {
+  for (const file of ["github-pages/index.html", "github-pages/model-test.html"]) {
+    const html = fs.readFileSync(file, "utf8");
+    const match = html.match(/const CLIENT_TIMEOUT_MS = ([\d_]+);/);
+    assert.ok(match, `${file} declares CLIENT_TIMEOUT_MS`);
+    assert.ok(Number(match[1].replaceAll("_", "")) > arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "999999" }));
+  }
 });
 
 test("Doubao Ark credentials are not sent to unapproved endpoint hosts", async () => {
