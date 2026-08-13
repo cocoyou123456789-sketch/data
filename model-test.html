@@ -127,7 +127,7 @@
     const API = (window.location.hostname.includes("github.io") || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
       ? "https://arpes-materials-explorer-cocoyou.netlify.app/api/chat"
       : "/api/chat";
-    const CLIENT_TIMEOUT_MS = 40_000;
+    const CLIENT_TIMEOUT_MS = 55_000;
     const TOKEN_KEY = "arpes-model-test-session";
     const labels = { openai: "ChatGPT", deepseek: "DeepSeek", ark: "Doubao Ark" };
     let token = sessionStorage.getItem(TOKEN_KEY) || "";
@@ -228,7 +228,7 @@
       if (model) meta.push(String(model));
       if (requestId) meta.push(`请求 ID ${requestId}`);
       const detail = ok
-        ? String(payload.answer || payload.output_text || payload.response || "返回内容为空")
+        ? `${String(payload.answer || payload.output_text || payload.response || "返回内容为空")}${payload.finish_reason === "length" ? "\n\n[回答达到输出上限，已截断]" : ""}`
         : [payload.error || "调用失败", payload.code ? `错误码：${payload.code}` : "", upstreamStatus ? `上游 HTTP：${upstreamStatus}` : "", upstreamCode ? `上游错误码：${upstreamCode}` : "", requestId ? `请求 ID：${requestId}` : ""].filter(Boolean).join("\n");
       article.innerHTML = `<div class="result-head"><strong>${labels[provider]}</strong><span class="meta">${escapeHtml(meta.join(" · "))}</span></div><div class="answer ${ok ? "" : "error-text"}">${escapeHtml(detail)}</div>`;
       results.prepend(article);
