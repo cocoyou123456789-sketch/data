@@ -11,8 +11,63 @@ const {
   runArkChat,
   runDeepSeekChat
 } = require("../lib/openai-chat");
+const { handler: netlifyChatHandler } = require("../netlify/functions/chat");
 
 const ORIGIN = "https://cocoyou123456789-sketch.github.io";
+
+test("Netlify chat OPTIONS responses cache successful CORS preflights", async () => {
+  const result = await netlifyChatHandler({
+    httpMethod: "OPTIONS",
+    headers: { origin: ORIGIN }
+  }, { awsRequestId: "cors-preflight-test" });
+
+  assert.equal(result.statusCode, 204);
+  assert.equal(result.headers["Access-Control-Allow-Origin"], ORIGIN);
+  assert.equal(result.headers["Access-Control-Allow-Headers"], "Content-Type, Authorization");
+  assert.equal(result.headers["Access-Control-Max-Age"], "600");
+  assert.equal(result.body, "");
+});
+
+test("Netlify chat handler returns a CORS JSON error and logs only sanitized metadata", async () => {
+  const secret = "must-not-appear-in-function-logs";
+  const headers = { origin: ORIGIN };
+  Object.defineProperty(headers, "authorization", {
+    get() {
+      const error = new Error(secret);
+      error.name = secret;
+      throw error;
+    }
+  });
+  const logged = [];
+  const originalConsoleError = console.error;
+  console.error = (...values) => logged.push(values.join(" "));
+  let result;
+  try {
+    result = await netlifyChatHandler({
+      httpMethod: "POST",
+      headers,
+      body: JSON.stringify({ token: secret, question: secret })
+    }, { awsRequestId: "function-error-test" });
+  } finally {
+    console.error = originalConsoleError;
+  }
+
+  assert.equal(result.statusCode, 500);
+  assert.equal(result.headers["Access-Control-Allow-Origin"], ORIGIN);
+  assert.equal(result.headers["Content-Type"], "application/json; charset=utf-8");
+  assert.deepEqual(JSON.parse(result.body), {
+    ok: false,
+    error: "Chat function failed unexpectedly.",
+    code: "FUNCTION_ERROR"
+  });
+  assert.equal(logged.length, 1);
+  assert.deepEqual(JSON.parse(logged[0]), {
+    method: "POST",
+    request_id: "function-error-test",
+    error_name: "UnexpectedError"
+  });
+  assert.doesNotMatch(logged[0], new RegExp(secret));
+});
 
 test("status reports whether the server key is configured", async () => {
   const result = await handleChatRequest({ method: "GET", origin: ORIGIN, ip: "status-test" }, {
@@ -490,6 +545,27 @@ test("browser model-test deadlines exceed the maximum Ark deadline", () => {
     const match = html.match(/const CLIENT_TIMEOUT_MS = ([\d_]+);/);
     assert.ok(match, `${file} declares CLIENT_TIMEOUT_MS`);
     assert.ok(Number(match[1].replaceAll("_", "")) > arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "999999" }));
+  }
+});
+
+test("browser network diagnostics use a simple GET health probe without retrying model POSTs", () => {
+  for (const file of ["github-pages/index.html", "github-pages/model-test.html"]) {
+    const html = fs.readFileSync(file, "utf8");
+    const healthBlock = html.match(
+      /async function checkApiHealth\(\) \{([\s\S]*?)\n\s*\}\n\n\s*async function diagnoseNetworkFailure/
+    );
+    assert.ok(healthBlock, `${file} declares checkApiHealth`);
+    assert.match(healthBlock[1], /method: "GET"/);
+    assert.doesNotMatch(healthBlock[1], /headers\s*:/);
+    assert.doesNotMatch(healthBlock[1], /Authorization/i);
+
+    const diagnosticBlock = html.match(
+      /async function diagnoseNetworkFailure\(error\) \{([\s\S]*?)\n\s*\}\n\n\s*function addResult/
+    );
+    assert.ok(diagnosticBlock, `${file} declares diagnoseNetworkFailure`);
+    assert.match(diagnosticBlock[1], /REQUEST_INTERRUPTED/);
+    assert.match(diagnosticBlock[1], /API_UNREACHABLE/);
+    assert.match(html, /: await diagnoseNetworkFailure\(error\)/);
   }
 });
 

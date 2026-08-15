@@ -128,6 +128,7 @@
       ? "https://arpes-materials-explorer-cocoyou.netlify.app/api/chat"
       : "/api/chat";
     const CLIENT_TIMEOUT_MS = 55_000;
+    const API_HEALTH_TIMEOUT_MS = 8_000;
     const TOKEN_KEY = "arpes-model-test-session";
     const labels = { openai: "ChatGPT", deepseek: "DeepSeek", ark: "Doubao Ark" };
     let token = sessionStorage.getItem(TOKEN_KEY) || "";
@@ -213,6 +214,53 @@
       };
     }
 
+    async function checkApiHealth() {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), API_HEALTH_TIMEOUT_MS);
+      try {
+        const response = await fetch(API, {
+          method: "GET",
+          signal: controller.signal
+        });
+        let serverMessage = "";
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          serverMessage = String(payload.error || "").trim();
+        }
+        return { ok: response.ok, status: response.status, error: serverMessage };
+      } catch (error) {
+        return {
+          ok: false,
+          status: 0,
+          error: error?.name === "AbortError"
+            ? `健康检查等待超过 ${Math.round(API_HEALTH_TIMEOUT_MS / 1000)} 秒`
+            : String(error?.message || "网络请求失败")
+        };
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    async function diagnoseNetworkFailure(error) {
+      const originalError = String(error?.message || "模型请求连接中断");
+      const health = await checkApiHealth();
+      if (health.ok) {
+        return {
+          error: `模型请求在浏览器与服务器之间中断（${originalError}）。API 健康检查正常（HTTP ${health.status}）；系统未自动重试模型请求，请稍后仅手动重试一次。`,
+          code: "REQUEST_INTERRUPTED",
+          health_http_status: health.status
+        };
+      }
+      const healthDetail = health.status
+        ? `HTTP ${health.status}${health.error ? ` · ${health.error}` : ""}`
+        : `网络错误：${health.error || "无法连接 API"}`;
+      return {
+        error: `API 健康检查失败（${healthDetail}）。原模型请求错误：${originalError}。请检查网络后再试。`,
+        code: "API_UNREACHABLE",
+        health_http_status: health.status || null
+      };
+    }
+
     function addResult(provider, payload, elapsed, ok, httpStatus = 0) {
       const { upstreamCode, upstreamStatus, requestId } = diagnostics(payload);
       const errorSummary = String(payload.error || payload.code || "调用失败");
@@ -276,7 +324,7 @@
         const timedOut = clientTimedOut || error?.name === "AbortError";
         const data = timedOut
           ? { error: `客户端等待超过 ${Math.round(CLIENT_TIMEOUT_MS / 1000)} 秒，已停止等待模型响应。`, code: "CLIENT_TIMEOUT" }
-          : { error: error.message, code: "NETWORK_ERROR" };
+          : await diagnoseNetworkFailure(error);
         addResult(provider, data, Math.round(performance.now() - started), false);
         return { ok: false, data };
       } finally {
