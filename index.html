@@ -21517,6 +21517,29 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       catch {}
     }
 
+    function uniqueChatPostEndpoint(endpoint) {
+      try {
+        const url = new URL(endpoint, window.location.href);
+        const requestId = window.crypto?.randomUUID?.()
+          || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+        url.searchParams.set("rid", requestId);
+        return url.toString();
+      } catch {
+        return endpoint;
+      }
+    }
+
+    function chatTruncationNotice(data = {}) {
+      if (!data.truncated && data.finish_reason !== "length") return "";
+      if (data.truncation_reason === "server_output_limit") {
+        return "\n\n[回答超过网站响应安全上限，未完整显示]";
+      }
+      if (data.truncation_reason && data.truncation_reason !== "max_output_tokens") {
+        return `\n\n[上游模型未完整返回回答：${data.truncation_reason}]`;
+      }
+      return "\n\n[回答达到模型输出上限，已截断；可缩小问题范围或分段继续提问]";
+    }
+
     function chatRequestHeaders(base = {}) {
       const token = chatSessionToken();
       return token ? { ...base, Authorization: `Bearer ${token}` } : { ...base };
@@ -21529,10 +21552,9 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         error.code = "CHAT_ENDPOINT_MISSING";
         throw error;
       }
-      const response = await fetch(endpoint, {
+      const response = await fetch(uniqueChatPostEndpoint(endpoint), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store",
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
         body: JSON.stringify({ action: "login", email, password })
       });
       const data = await response.json().catch(() => ({}));
@@ -21737,19 +21759,20 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         .filter(message => message.content && message.content !== t("chatThinking"))
         .slice(-8);
       const controller = new AbortController();
-      const timer = window.setTimeout(() => controller.abort(), 35_000);
+      const timer = window.setTimeout(() => controller.abort(), 55_000);
       setChatAiStatus("checking", "chatAiChecking", endpoint);
       try {
-        const response = await fetch(endpoint, {
+        const response = await fetch(uniqueChatPostEndpoint(endpoint), {
           method: "POST",
-          headers: chatRequestHeaders({ "Content-Type": "application/json" }),
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
           signal: controller.signal,
           body: JSON.stringify({
             provider,
             question,
             messages: history,
             context,
-            page_context: context
+            page_context: context,
+            session_token: chatSessionToken()
           })
         });
         const data = await response.json().catch(() => ({}));
@@ -21774,7 +21797,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         }
         setChatAiStatus("online", "chatAiOnline", chatProviderDetail(data, data.provider || provider));
         if (aiKeyInput) aiKeyInput.value = `${chatProviderLabel(data.provider || provider)} · ${t("chatAiOnline")} · ${data.model || ""}`;
-        return answer;
+        return `${answer}${chatTruncationNotice(data)}`;
       } catch (error) {
         if (error?.name === "AbortError") {
           const timeoutError = new Error("AI request timed out.");
@@ -29383,6 +29406,8 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         };
       }
 
+      const truncationNotice = chatTruncationNotice;
+
       async function checkApiHealth() {
         const controller = new AbortController();
         const timeout = window.setTimeout(() => controller.abort(), API_HEALTH_TIMEOUT_MS);
@@ -29452,7 +29477,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         meta.textContent = metaParts.join(" · ");
         const body = document.createElement("div");
         body.textContent = ok
-          ? `${String(data.answer || data.output_text || data.response || "返回内容为空")}${data.finish_reason === "length" ? "\n\n[回答达到输出上限，已截断]" : ""}`
+          ? `${String(data.answer || data.output_text || data.response || "返回内容为空")}${truncationNotice(data)}`
           : [data.error || "调用失败", data.code ? `错误码：${data.code}` : "", upstreamStatus ? `上游 HTTP：${upstreamStatus}` : "", upstreamCode ? `上游错误码：${upstreamCode}` : "", requestId ? `请求 ID：${requestId}` : ""].filter(Boolean).join("\n");
         card.append(title, meta, body);
         root.prepend(card);
@@ -29483,10 +29508,15 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           controller.abort();
         }, CLIENT_TIMEOUT_MS);
         try {
-          const response = await fetch(API, {
+          const response = await fetch(uniqueChatPostEndpoint(API), {
             method: "POST",
-            headers: headers({ "Content-Type": "application/json" }),
-            body: JSON.stringify({ provider, question: prompt, context: { source: "materials", lang: document.documentElement.lang || "zh" } }),
+            headers: { "Content-Type": "text/plain;charset=UTF-8" },
+            body: JSON.stringify({
+              provider,
+              question: prompt,
+              context: { source: "materials", lang: document.documentElement.lang || "zh" },
+              session_token: token()
+            }),
             signal: controller.signal
           });
           const data = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));

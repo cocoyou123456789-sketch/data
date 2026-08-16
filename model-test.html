@@ -145,6 +145,18 @@
       return token ? { ...extra, Authorization: `Bearer ${token}` } : extra;
     }
 
+    function uniqueChatPostEndpoint(endpoint) {
+      try {
+        const url = new URL(endpoint, window.location.href);
+        const requestId = window.crypto?.randomUUID?.()
+          || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+        url.searchParams.set("rid", requestId);
+        return url.toString();
+      } catch {
+        return endpoint;
+      }
+    }
+
     function setAuth(text, state = "") {
       authStatus.textContent = text;
       authStatus.className = `status ${state}`.trim();
@@ -214,6 +226,17 @@
       };
     }
 
+    function truncationNotice(payload = {}) {
+      if (!payload.truncated && payload.finish_reason !== "length") return "";
+      if (payload.truncation_reason === "server_output_limit") {
+        return "\n\n[回答超过网站响应安全上限，未完整显示]";
+      }
+      if (payload.truncation_reason && payload.truncation_reason !== "max_output_tokens") {
+        return `\n\n[上游模型未完整返回回答：${payload.truncation_reason}]`;
+      }
+      return "\n\n[回答达到模型输出上限，已截断；可缩小问题范围或分段继续提问]";
+    }
+
     async function checkApiHealth() {
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), API_HEALTH_TIMEOUT_MS);
@@ -276,7 +299,7 @@
       if (model) meta.push(String(model));
       if (requestId) meta.push(`请求 ID ${requestId}`);
       const detail = ok
-        ? `${String(payload.answer || payload.output_text || payload.response || "返回内容为空")}${payload.finish_reason === "length" ? "\n\n[回答达到输出上限，已截断]" : ""}`
+        ? `${String(payload.answer || payload.output_text || payload.response || "返回内容为空")}${truncationNotice(payload)}`
         : [payload.error || "调用失败", payload.code ? `错误码：${payload.code}` : "", upstreamStatus ? `上游 HTTP：${upstreamStatus}` : "", upstreamCode ? `上游错误码：${upstreamCode}` : "", requestId ? `请求 ID：${requestId}` : ""].filter(Boolean).join("\n");
       article.innerHTML = `<div class="result-head"><strong>${labels[provider]}</strong><span class="meta">${escapeHtml(meta.join(" · "))}</span></div><div class="answer ${ok ? "" : "error-text"}">${escapeHtml(detail)}</div>`;
       results.prepend(article);
@@ -305,10 +328,15 @@
         controller.abort();
       }, CLIENT_TIMEOUT_MS);
       try {
-        const response = await fetch(API, {
+        const response = await fetch(uniqueChatPostEndpoint(API), {
           method: "POST",
-          headers: headers({ "Content-Type": "application/json" }),
-          body: JSON.stringify({ provider, question, context: { source: "model-test", lang: "zh" } }),
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
+          body: JSON.stringify({
+            provider,
+            question,
+            context: { source: "model-test", lang: "zh" },
+            session_token: token
+          }),
           signal: controller.signal
         });
         const data = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
@@ -379,9 +407,9 @@
       event.preventDefault();
       setAuth("正在登录...");
       try {
-        const response = await fetch(API, {
+        const response = await fetch(uniqueChatPostEndpoint(API), {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
           body: JSON.stringify({ action: "login", email: $("#email").value.trim(), password: $("#password").value })
         });
         const data = await response.json().catch(() => ({}));
