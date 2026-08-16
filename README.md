@@ -83,6 +83,12 @@ DEEPSEEK_CHAT_COMPLETIONS_URL=https://api.llm.ustc.edu.cn/v1/chat/completions
 DEEPSEEK_CHAT_MODEL=deepseek-v4-flash
 USTC_LLM_API_KEY=<从 llm.ustc.edu.cn 控制台生成的测试 Key>
 DEEPSEEK_CHAT_ENABLED=true
+CHAT_MAX_OUTPUT_TOKENS=1600
+OPENAI_CHAT_MAX_OUTPUT_TOKENS=1800
+DEEPSEEK_CHAT_MAX_OUTPUT_TOKENS=1800
+CHAT_TIMEOUT_MS=45000
+OPENAI_CHAT_TIMEOUT_MS=45000
+DEEPSEEK_CHAT_TIMEOUT_MS=45000
 CHAT_DEFAULT_PROVIDER=deepseek
 CHAT_AUTH_REQUIRED=true
 MATERIAL_PREDICT_PROVIDER=deepseek
@@ -92,8 +98,8 @@ ARK_CHAT_ENABLED=true
 ARK_API_KEY=<火山方舟控制台生成的裸推理 API Key>
 ARK_CHAT_MODEL=doubao-seed-2-1-pro-260628
 ARK_CHAT_THINKING=disabled
-ARK_CHAT_TIMEOUT_MS=45000
-ARK_CHAT_MAX_OUTPUT_TOKENS=800
+ARK_CHAT_TIMEOUT_MS=50000
+ARK_CHAT_MAX_OUTPUT_TOKENS=1400
 # 可选：材料主持模型单独走 Ark
 # MATERIAL_PREDICT_PROVIDER=ark
 # MATERIAL_PREDICT_MODEL=<同上，或单独的 Ark Model ID / Endpoint ID>
@@ -111,6 +117,24 @@ Secret Key（AK/SK）。当前测试与非流式调用应保持 `ARK_CHAT_THINKI
 （单位毫秒）硬上限为 50000，不适合长推理任务。默认上游地址为
 `https://ark.cn-beijing.volces.com/api/v3/chat/completions`；如需私有网关，可改
 `ARK_CHAT_BASE_URL` 或 `ARK_CHAT_COMPLETIONS_URL`，但主机仍会经过白名单校验。
+
+三家聊天代理都会在服务器端限制输出 token：OpenAI 与 DeepSeek 的安全默认值为 1800，
+Ark 为 1400，所有配置值都会被限制在 200–3000。`CHAT_MAX_OUTPUT_TOKENS` 是通用回退值，
+各家的 `*_CHAT_MAX_OUTPUT_TOKENS` 优先。当前接口保持 `stream: false`；盲目调高 token 上限会
+增加 Netlify 函数超时风险，长篇深度推理应另接支持 SSE 的流式网关，而不是只把上游
+`stream` 改为 `true`。
+
+成功响应会统一返回 `finish_reason`、`truncated` 和 `truncation_reason`。DeepSeek/Ark 的
+`finish_reason: "length"`，以及 OpenAI Responses 的 `status: "incomplete"` 配合
+`incomplete_details.reason: "max_tokens"`/`"max_output_tokens"`，都会标准化为
+`finish_reason: "length"`、`truncated: true`、`truncation_reason: "max_output_tokens"`。
+服务器另有 24000 字符的最终响应安全上限；如果触及该上限，会保留上游停止原因，并返回
+`truncated: true`、`truncation_reason: "server_output_limit"`，前端应明确提示回答未完整显示。
+
+GitHub Pages 跨域调用模型时使用 CORS simple POST：`Content-Type` 为 `text/plain`，短期登录
+会话令牌只放在 HTTPS JSON 请求体的 `session_token` 字段中。服务器完成来源校验与会话验证后
+会立即删除该字段，绝不会把它转发给 OpenAI、DeepSeek 或 Ark。这样可避免长请求前的跨域
+OPTIONS 预检复用故障；API Key 始终只存在于服务器环境变量中。
 
 公开站点必须保留服务器端登录、来源白名单和限流。网站测试账号应使用独立密码，不能复用
 科大统一身份认证密码。部署前可运行：

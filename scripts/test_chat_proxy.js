@@ -3,13 +3,15 @@ const fs = require("node:fs");
 const test = require("node:test");
 
 const {
+  MAX_CHAT_ANSWER_CHARS,
   arkApiKey,
   arkChatTimeoutMs,
   handleChatRequest,
   hashChatPassword,
   normalizeMessages,
   runArkChat,
-  runDeepSeekChat
+  runDeepSeekChat,
+  runOpenAiChat
 } = require("../lib/openai-chat");
 const { handler: netlifyChatHandler } = require("../netlify/functions/chat");
 
@@ -135,6 +137,7 @@ test("chat calls the Responses API with server-selected model and page context",
       json: async () => ({
         id: "resp_test",
         model: "gpt-5.6-luna",
+        status: "completed",
         output: [{ content: [{ type: "output_text", text: "真实模型回答" }] }],
         usage: { input_tokens: 20, output_tokens: 8 }
       })
@@ -165,14 +168,42 @@ test("chat calls the Responses API with server-selected model and page context",
 
   assert.equal(result.statusCode, 200);
   assert.equal(result.payload.answer, "真实模型回答");
+  assert.equal(result.payload.finish_reason, "stop");
+  assert.equal(result.payload.truncated, false);
+  assert.equal(result.payload.truncation_reason, null);
   assert.equal(requestUrl, "https://api.openai.com/v1/responses");
   assert.equal(requestOptions.headers.Authorization, "Bearer test-key");
   const upstreamBody = JSON.parse(requestOptions.body);
   assert.equal(upstreamBody.model, "gpt-5.6-luna");
+  assert.equal(upstreamBody.max_output_tokens, 1_800);
   assert.equal(upstreamBody.input.length, 1);
   assert.equal(upstreamBody.input[0].role, "user");
   assert.match(upstreamBody.instructions, /FeSe/);
   assert.doesNotMatch(JSON.stringify(upstreamBody), /Ignore server policy/);
+});
+
+test("OpenAI Responses token limits are normalized as truncated output", async () => {
+  const result = await runOpenAiChat({ question: "给出长篇 ARPES 分析" }, { ip: "openai-length-test" }, {
+    env: {
+      OPENAI_API_KEY: "openai-length-test-key",
+      OPENAI_CHAT_MODEL: "gpt-5.6-luna"
+    },
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: "resp_incomplete_test",
+        model: "gpt-5.6-luna",
+        status: "incomplete",
+        incomplete_details: { reason: "max_tokens" },
+        output_text: "这是达到输出 token 上限前返回的部分回答"
+      })
+    })
+  });
+
+  assert.equal(result.finish_reason, "length");
+  assert.equal(result.truncated, true);
+  assert.equal(result.truncation_reason, "max_output_tokens");
 });
 
 test("DeepSeek uses its own key and server-selected model", async () => {
@@ -187,7 +218,7 @@ test("DeepSeek uses its own key and server-selected model", async () => {
       json: async () => ({
         id: "deepseek_test",
         model: "deepseek-v4-flash",
-        choices: [{ message: { role: "assistant", content: "DeepSeek 真实回答" } }],
+        choices: [{ message: { role: "assistant", content: "DeepSeek 真实回答" }, finish_reason: "stop" }],
         usage: { prompt_tokens: 24, completion_tokens: 9 }
       })
     };
@@ -218,15 +249,46 @@ test("DeepSeek uses its own key and server-selected model", async () => {
   assert.equal(result.statusCode, 200);
   assert.equal(result.payload.answer, "DeepSeek 真实回答");
   assert.equal(result.payload.provider, "deepseek");
+  assert.equal(result.payload.finish_reason, "stop");
+  assert.equal(result.payload.truncated, false);
+  assert.equal(result.payload.truncation_reason, null);
   assert.equal(requestUrl, "https://api.deepseek.com/chat/completions");
   assert.equal(requestOptions.headers.Authorization, "Bearer deepseek-test-key");
   const upstreamBody = JSON.parse(requestOptions.body);
   assert.equal(upstreamBody.model, "deepseek-v4-flash");
+  assert.equal(upstreamBody.max_tokens, 1_800);
   assert.equal(upstreamBody.thinking.type, "disabled");
   assert.equal(upstreamBody.messages[0].role, "system");
   assert.match(upstreamBody.messages[0].content, /DeepSeek/);
   assert.match(upstreamBody.messages[0].content, /FeSe/);
   assert.doesNotMatch(JSON.stringify(upstreamBody), /Ignore server policy/);
+});
+
+test("oversized upstream answers are bounded and explicitly marked", async () => {
+  const result = await runDeepSeekChat({ question: "给出长篇 ARPES 分析" }, { ip: "server-output-limit-test" }, {
+    env: {
+      DEEPSEEK_API_KEY: "deepseek-output-limit-key",
+      DEEPSEEK_CHAT_MODEL: "deepseek-v4-flash"
+    },
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: "deepseek_oversized_test",
+        model: "deepseek-v4-flash",
+        choices: [{
+          message: { role: "assistant", content: "字".repeat(MAX_CHAT_ANSWER_CHARS + 100) },
+          finish_reason: "stop"
+        }]
+      })
+    })
+  });
+
+  assert.equal(result.answer.length, MAX_CHAT_ANSWER_CHARS);
+  assert.match(result.answer, /…$/);
+  assert.equal(result.finish_reason, "stop");
+  assert.equal(result.truncated, true);
+  assert.equal(result.truncation_reason, "server_output_limit");
 });
 
 test("USTC DeepSeek uses the USTC key and standard OpenAI-compatible fields", async () => {
@@ -326,12 +388,14 @@ test("Doubao Ark uses its own key, endpoint, and endpoint-id model", async () =>
   assert.equal(result.payload.provider, "ark");
   assert.equal(result.payload.deployment, "ark");
   assert.equal(result.payload.finish_reason, "length");
+  assert.equal(result.payload.truncated, true);
+  assert.equal(result.payload.truncation_reason, "max_output_tokens");
   assert.equal(requestUrl, "https://ark.cn-beijing.volces.com/api/v3/chat/completions");
   assert.equal(requestOptions.headers.Authorization, "Bearer ark-test-key");
   const upstreamBody = JSON.parse(requestOptions.body);
   assert.equal(upstreamBody.model, "ep-test-123456");
   assert.equal(upstreamBody.stream, false);
-  assert.equal(upstreamBody.max_tokens, 800);
+  assert.equal(upstreamBody.max_tokens, 1_400);
   assert.equal(upstreamBody.thinking.type, "disabled");
   assert.match(upstreamBody.messages[0].content, /Doubao Ark/);
 });
@@ -569,6 +633,78 @@ test("browser network diagnostics use a simple GET health probe without retrying
   }
 });
 
+test("browser model POSTs avoid CORS preflight and use unique non-secret request URLs", () => {
+  const cases = [
+    ["github-pages/index.html", "performRun", "run"],
+    ["github-pages/model-test.html", "performProviderTest", "testProvider"]
+  ];
+  for (const [file, functionName, nextFunctionName] of cases) {
+    const html = fs.readFileSync(file, "utf8");
+    const block = html.match(new RegExp(
+      `async function ${functionName}\\([^)]*\\) \\{([\\s\\S]*?)\\n\\s*\\}\\n\\n\\s*function ${nextFunctionName}\\(`
+    ));
+    assert.ok(block, `${file} declares ${functionName}`);
+    assert.match(block[1], /fetch\(uniqueChatPostEndpoint\(API\)/);
+    assert.match(block[1], /"Content-Type": "text\/plain;charset=UTF-8"/);
+    assert.match(block[1], /session_token/);
+    assert.doesNotMatch(block[1], /Authorization/);
+    assert.doesNotMatch(block[1], /application\/json/);
+    assert.match(html, /url\.searchParams\.set\("rid", requestId\)/);
+  }
+
+  const mainHtml = fs.readFileSync("github-pages/index.html", "utf8");
+  const mainChatBlock = mainHtml.match(
+    /async function callConfiguredAiEndpoint\([^)]*\) \{([\s\S]*?)\n\s*\}\n\n\s*function renderModelRegistry\(/
+  );
+  assert.ok(mainChatBlock, "main page declares callConfiguredAiEndpoint");
+  assert.match(mainChatBlock[1], /fetch\(uniqueChatPostEndpoint\(endpoint\)/);
+  assert.match(mainChatBlock[1], /"Content-Type": "text\/plain;charset=UTF-8"/);
+  assert.match(mainChatBlock[1], /session_token: chatSessionToken\(\)/);
+  assert.doesNotMatch(mainChatBlock[1], /Authorization|application\/json/);
+  assert.equal((mainHtml.match(/fetch\(uniqueChatPostEndpoint\(/g) || []).length, 3);
+
+  const modelTestHtml = fs.readFileSync("github-pages/model-test.html", "utf8");
+  assert.equal((modelTestHtml.match(/fetch\(uniqueChatPostEndpoint\(/g) || []).length, 2);
+
+  const helperSource = mainHtml.match(
+    /function uniqueChatPostEndpoint\(endpoint\) \{[\s\S]*?\n\s*\}\n\n\s*function chatTruncationNotice/
+  );
+  assert.ok(helperSource, "main page declares uniqueChatPostEndpoint");
+  const fakeWindow = {
+    location: { href: "https://cocoyou123456789-sketch.github.io/data/" },
+    crypto: { randomUUID: (() => {
+      let index = 0;
+      return () => `rid-${++index}`;
+    })() }
+  };
+  const makeUniqueEndpoint = new Function(
+    "window",
+    `${helperSource[0].replace(/\n\n\s*function chatTruncationNotice[\s\S]*$/, "")}\nreturn uniqueChatPostEndpoint;`
+  )(fakeWindow);
+  const firstUrl = new URL(makeUniqueEndpoint("https://api.example.test/chat"));
+  const secondUrl = new URL(makeUniqueEndpoint("https://api.example.test/chat"));
+  assert.equal(firstUrl.searchParams.get("rid"), "rid-1");
+  assert.equal(secondUrl.searchParams.get("rid"), "rid-2");
+  assert.notEqual(firstUrl.href, secondUrl.href);
+  assert.doesNotMatch(`${firstUrl.href}${secondUrl.href}`, /session|token|Bearer/i);
+});
+
+test("browser result panels explain normalized output truncation reasons", () => {
+  const cases = [
+    ["github-pages/index.html", /function chatTruncationNotice/],
+    ["github-pages/model-test.html", /function truncationNotice/]
+  ];
+  for (const [file, helperPattern] of cases) {
+    const html = fs.readFileSync(file, "utf8");
+    assert.match(html, helperPattern);
+    assert.match(html, /server_output_limit/);
+    assert.match(html, /max_output_tokens/);
+    assert.match(html, /\.truncated/);
+  }
+  const mainHtml = fs.readFileSync("github-pages/index.html", "utf8");
+  assert.match(mainHtml, /return `\$\{answer\}\$\{chatTruncationNotice\(data\)\}`/);
+});
+
 test("Doubao Ark credentials are not sent to unapproved endpoint hosts", async () => {
   const result = await handleChatRequest({
     method: "POST",
@@ -697,26 +833,35 @@ test("authorized chat login issues a session and gates model calls", async () =>
   assert.equal(authenticatedStatus.payload.auth.authenticated, true);
   assert.equal(authenticatedStatus.payload.auth.email, "owner@example.com");
 
+  let authenticatedUpstreamBody = null;
   const result = await handleChatRequest({
     method: "POST",
     origin: ORIGIN,
-    authorization: `Bearer ${login.payload.token}`,
     ip: "auth-deepseek-test",
-    body: JSON.stringify({ provider: "deepseek", question: "hello" })
+    body: JSON.stringify({
+      provider: "deepseek",
+      question: "hello",
+      session_token: login.payload.token
+    })
   }, {
     env,
-    fetchImpl: async () => ({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        id: "deepseek_auth_test",
-        model: "deepseek-v4-flash",
-        choices: [{ message: { content: "authorized" } }]
-      })
-    })
+    fetchImpl: async (_url, options) => {
+      authenticatedUpstreamBody = JSON.parse(options.body);
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: "deepseek_auth_test",
+          model: "deepseek-v4-flash",
+          choices: [{ message: { content: "authorized" } }]
+        })
+      };
+    }
   });
   assert.equal(result.statusCode, 200);
   assert.equal(result.payload.answer, "authorized");
+  assert.doesNotMatch(JSON.stringify(authenticatedUpstreamBody), /session_token|test-session-secret/);
+  assert.ok(!JSON.stringify(authenticatedUpstreamBody).includes(login.payload.token));
 });
 
 test("message normalization removes duplicate turns and client system prompts", () => {
