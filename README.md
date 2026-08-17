@@ -57,6 +57,9 @@ file:///Users/cocoyou/data/github-pages/index.html
 ## 发布 GitHub Pages
 
 本仓库的主分支保存完整项目，`gh-pages` 分支保存 `github-pages/` 目录的静态发布内容。
+公开 GitHub Pages 镜像默认会跳转到
+`https://arpes-materials-explorer-cocoyou.netlify.app/`，让网页与 `/api/chat` 保持同源，
+避免长模型请求在跨域链路中断。仅排查静态镜像时可追加 `?stay_on_github=1` 留在 GitHub。
 
 发布命令：
 
@@ -131,10 +134,10 @@ Ark 为 1400，所有配置值都会被限制在 200–3000。`CHAT_MAX_OUTPUT_T
 服务器另有 24000 字符的最终响应安全上限；如果触及该上限，会保留上游停止原因，并返回
 `truncated: true`、`truncation_reason: "server_output_limit"`，前端应明确提示回答未完整显示。
 
-GitHub Pages 跨域调用模型时使用 CORS simple POST：`Content-Type` 为 `text/plain`，短期登录
-会话令牌只放在 HTTPS JSON 请求体的 `session_token` 字段中。服务器完成来源校验与会话验证后
-会立即删除该字段，绝不会把它转发给 OpenAI、DeepSeek 或 Ark。这样可避免长请求前的跨域
-OPTIONS 预检复用故障；API Key 始终只存在于服务器环境变量中。
+GitHub Pages 默认跳转到 Netlify 同源站。显式使用 `?stay_on_github=1` 留在镜像时，跨域模型请求
+仍使用 CORS simple POST：`Content-Type` 为 `text/plain`，短期登录会话令牌只放在 HTTPS JSON
+请求体的 `session_token` 字段中。服务器完成来源校验与会话验证后会立即删除该字段，绝不会把它
+转发给 OpenAI、DeepSeek 或 Ark。API Key 始终只存在于服务器环境变量中。
 
 公开站点必须保留服务器端登录、来源白名单和限流。网站测试账号应使用独立密码，不能复用
 科大统一身份认证密码。部署前可运行：
