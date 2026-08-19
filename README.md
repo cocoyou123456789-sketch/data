@@ -87,7 +87,14 @@ DEEPSEEK_CHAT_MODEL=deepseek-v4-flash
 USTC_LLM_API_KEY=<从 llm.ustc.edu.cn 控制台生成的测试 Key>
 DEEPSEEK_CHAT_ENABLED=true
 CHAT_MAX_OUTPUT_TOKENS=1600
+OPENAI_API_KEY=<OpenAI 项目 API Key>
 OPENAI_CHAT_MAX_OUTPUT_TOKENS=1800
+OPENAI_AGENT_ENABLED=true
+OPENAI_AGENT_MODEL=gpt-5.6-luna
+OPENAI_AGENT_MAX_TURNS=3
+OPENAI_AGENT_MAX_OUTPUT_TOKENS=1200
+OPENAI_AGENT_TIMEOUT_MS=45000
+OPENAI_AGENT_RATE_PER_MINUTE=4
 DEEPSEEK_CHAT_MAX_OUTPUT_TOKENS=1800
 CHAT_TIMEOUT_MS=45000
 OPENAI_CHAT_TIMEOUT_MS=45000
@@ -138,6 +145,28 @@ GitHub Pages 默认跳转到 Netlify 同源站。显式使用 `?stay_on_github=1
 仍使用 CORS simple POST：`Content-Type` 为 `text/plain`，短期登录会话令牌只放在 HTTPS JSON
 请求体的 `session_token` 字段中。服务器完成来源校验与会话验证后会立即删除该字段，绝不会把它
 转发给 OpenAI、DeepSeek 或 Ark。API Key 始终只存在于服务器环境变量中。
+
+## ARPES 研究 Agent
+
+网页聊天模型选择器中的“ARPES 研究 Agent”使用服务器端 OpenAI Agents SDK。第一版保持单 Agent、
+单个只读工具：Agent 可以查询仓库内的超导和二维材料目录，再组织答案、区分本地证据与推断，并给出
+可执行的 ARPES 或文献核验步骤。它不会自动调用 Doubao/DeepSeek，不执行上传、部署、购买或数据库
+写入，也不会把 API Key 发送到浏览器。
+
+安装服务器依赖：
+
+```bash
+npm install
+```
+
+Agent 仍通过 `/api/chat`，并复用现有来源白名单、登录会话、请求限流和输出截断。浏览器只会在选择
+“ARPES 研究 Agent”时发送 `mode: "arpes_research_agent"`；普通 ChatGPT、DeepSeek 和 Doubao 路径
+保持不变。Agent 必须显式设置 `OPENAI_AGENT_ENABLED=true`，且必须开启并配置现有授权登录。
+`OPENAI_AGENT_MAX_TURNS` 被限制在 1–4，默认 3；`OPENAI_AGENT_MAX_OUTPUT_TOKENS` 限制每次模型输出，
+默认 1200；`OPENAI_AGENT_RATE_PER_MINUTE` 默认 4，用于控制 Agent 循环带来的额外调用与费用。
+
+OpenAI 官方建议从一个聚焦 Agent 开始，再逐步增加工具与专业 Agent：
+https://developers.openai.com/api/docs/guides/agents/quickstart
 
 公开站点必须保留服务器端登录、来源白名单和限流。网站测试账号应使用独立密码，不能复用
 科大统一身份认证密码。部署前可运行：

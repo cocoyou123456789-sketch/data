@@ -1,0 +1,12 @@
+# Local Netlify folder
+.netlify
+
+# Installed JavaScript dependencies
+node_modules/
+
+# Local agent development skills
+.agents/
+skills-lock.json
+
+# macOS metadata
+.DS_Store

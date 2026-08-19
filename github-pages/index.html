@@ -9267,6 +9267,7 @@
                   <div class="chat-agent-control">
                     <span class="chat-ai-status" id="chatAiStatus" data-state="checking" data-i18n="chatAiChecking">正在检查</span>
                     <select class="chat-agent-select" id="chatAgentSelect" aria-label="选择智能体" title="选择智能体">
+                      <option value="arpes-research-agent">ARPES 研究 Agent</option>
                       <option value="gpt-5.6-luna">ChatGPT</option>
                       <option value="deepseek-v4-flash" selected>DeepSeek</option>
                       <option value="doubao-ark-chat">Doubao Ark</option>
@@ -18249,6 +18250,13 @@
     }
 
     const roundtableAiModels = {
+      "arpes-research-agent": {
+        title: "ARPES 研究 Agent",
+        zh: "使用 OpenAI Agents SDK，主动查询网站材料目录并组织可核验的研究回答。",
+        en: "Uses the OpenAI Agents SDK to query the site catalog and produce verifiable research answers.",
+        task: "identify",
+        feature: "agent tools, local catalog, ARPES verification"
+      },
       "gpt-5.6-luna": {
         title: "GPT",
         zh: "通用推理、实验方案和跨模块问答。",
@@ -18720,7 +18728,11 @@
           "DEEPSEEK_CHAT_DISABLED",
           "USTC_LLM_NOT_CONFIGURED",
           "DEEPSEEK_ENDPOINT_INVALID",
-          "DEEPSEEK_ENDPOINT_NOT_ALLOWED"
+          "DEEPSEEK_ENDPOINT_NOT_ALLOWED",
+          "AGENT_DISABLED",
+          "AGENT_NOT_CONFIGURED",
+          "AGENT_SDK_UNAVAILABLE",
+          "AGENT_AUTH_NOT_CONFIGURED"
         ]);
         const statusKey = unconfiguredCodes.has(error?.code)
           ? "chatAiUnconfigured"
@@ -21685,9 +21697,11 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
 
     function chatProviderDetail(status, provider) {
       const model = String(status?.model || chatProviderLabel(provider));
-      const api = status?.api === "responses"
+      const api = status?.api === "agents-sdk"
+        ? "OpenAI Agents SDK"
+        : (status?.api === "responses"
         ? "OpenAI Responses API"
-        : (provider === "ark" ? "Volcengine Ark Chat Completions API" : "DeepSeek Chat Completions API");
+        : (provider === "ark" ? "Volcengine Ark Chat Completions API" : "DeepSeek Chat Completions API"));
       const deployment = status?.deployment === "ustc"
         ? "USTC LLM"
         : (status?.deployment === "deepseek"
@@ -21726,17 +21740,21 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || `AI endpoint HTTP ${response.status}`);
         if (token !== chatEndpointProbeToken) return data;
-        const status = chatProviderStatus(data, provider);
+        const isResearchAgent = selectedAgent === "arpes-research-agent";
+        const selectedLabel = isResearchAgent ? "ARPES 研究 Agent" : chatProviderLabel(provider);
+        const status = isResearchAgent
+          ? data?.agents?.arpes_research_agent
+          : chatProviderStatus(data, provider);
         if (data.auth?.required && !data.auth?.authenticated) {
           setChatAiStatus("offline", "chatAiLoginRequired", t("chatNeedsAuthorizedLogin"));
           if (aiKeyInput) aiKeyInput.value = t("chatNeedsAuthorizedLogin");
         } else if (status?.enabled !== false && status?.configured) {
           const detail = chatProviderDetail(status, provider);
           setChatAiStatus("online", "chatAiOnline", detail);
-          if (aiKeyInput) aiKeyInput.value = `${chatProviderLabel(provider)} · ${t("chatAiOnline")} · ${status.model || ""}`;
+          if (aiKeyInput) aiKeyInput.value = `${selectedLabel} · ${t("chatAiOnline")} · ${status.model || ""}`;
         } else {
-          setChatAiStatus("offline", "chatAiUnconfigured", `${chatProviderLabel(provider)} · ${endpoint}`);
-          if (aiKeyInput) aiKeyInput.value = `${chatProviderLabel(provider)} · ${t("chatAiUnconfigured")}`;
+          setChatAiStatus("offline", "chatAiUnconfigured", `${selectedLabel} · ${status?.configuration_error || endpoint}`);
+          if (aiKeyInput) aiKeyInput.value = `${selectedLabel} · ${t("chatAiUnconfigured")}`;
         }
         return data;
       } catch (error) {
@@ -21756,6 +21774,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
       if (!endpoint) return "";
       const selectedAgent = chatAgentSelect?.value || cfg.model || DEFAULT_CHAT_AGENT;
       const provider = chatProviderForAgent(selectedAgent);
+      const mode = selectedAgent === "arpes-research-agent" ? "arpes_research_agent" : undefined;
       const history = (context.chatHistory || [])
         .filter(message => message.content && message.content !== t("chatThinking"))
         .slice(-8);
@@ -21769,6 +21788,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
           signal: controller.signal,
           body: JSON.stringify({
             provider,
+            mode,
             question,
             messages: history,
             context,
