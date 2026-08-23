@@ -1,0 +1,401 @@
+<!doctype html>
+<!--
+  THROWAWAY UI PROTOTYPE — not the production Agent surface.
+  Three variants of a no-login GitHub Pages ARPES Agent demo, switchable via ?variant=A|B|C.
+  The "AI" behavior is deterministic local catalog retrieval: no API key, paid model, login, or persistence.
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071019">
+  <title>ARPES Agent · GitHub Demo Prototype</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050a10;
+      --panel: #0b1621;
+      --panel-2: #0f1d29;
+      --line: rgba(130, 211, 230, .17);
+      --text: #edf8fb;
+      --muted: #8ca5b4;
+      --teal: #5be1cd;
+      --blue: #77bfff;
+      --gold: #ecc86f;
+      --red: #ff94a0;
+      --shadow: 0 24px 70px rgba(0,0,0,.34);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 4%, rgba(38,196,176,.1), transparent 28%),
+        radial-gradient(circle at 88% 8%, rgba(47,120,220,.1), transparent 30%),
+        var(--bg);
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .topbar {
+      width: min(1500px, calc(100% - 30px));
+      min-height: 72px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-orb {
+      width: 38px; height: 38px; border: 1px solid rgba(91,225,205,.42); border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, rgba(91,225,205,.54) 0 3px, transparent 4px), rgba(91,225,205,.06);
+      box-shadow: 0 0 26px rgba(91,225,205,.12), inset 0 0 0 8px rgba(119,191,255,.035);
+    }
+    .brand strong { display: block; font-size: 15px; }
+    .brand small { display: block; margin-top: 3px; color: var(--muted); }
+    .badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+    .badge { padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; color: #bcd0d9; background: rgba(10,23,33,.76); font-size: 10px; }
+    .badge.safe { border-color: rgba(91,225,205,.3); color: #9af1e4; }
+    .prototype-note {
+      width: min(1500px, calc(100% - 30px));
+      margin: 0 auto 12px;
+      padding: 9px 12px;
+      border: 1px dashed rgba(236,200,111,.34);
+      border-radius: 9px;
+      color: #d9c994;
+      background: rgba(79,61,19,.12);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    #app { min-height: calc(100vh - 118px); padding-bottom: 98px; }
+    .button {
+      min-height: 40px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 10px;
+      color: #dbeaf0; background: #10202d; font-weight: 700;
+    }
+    .button:hover { border-color: rgba(91,225,205,.46); }
+    .button.primary { color: #031713; border-color: #52d8c4; background: linear-gradient(135deg, #77e7d6, #3dceb9); }
+    .question {
+      width: 100%; min-height: 50px; padding: 13px 14px; border: 1px solid rgba(91,225,205,.28);
+      border-radius: 12px; outline: none; color: var(--text); background: #07131d;
+    }
+    .question:focus { border-color: rgba(91,225,205,.65); box-shadow: 0 0 0 3px rgba(91,225,205,.06); }
+    .quick-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .quick {
+      padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; color: #a9c0cb;
+      background: rgba(8,20,29,.72); font-size: 11px;
+    }
+    .quick:hover { color: white; border-color: rgba(119,191,255,.36); }
+    .answer { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.72; font-size: 13px; }
+    .eyebrow { color: var(--teal); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .state-view {
+      margin: 0; padding: 11px; border: 1px solid rgba(119,191,255,.13); border-radius: 10px;
+      color: #8fb6cc; background: #050f17; white-space: pre-wrap; overflow-wrap: anywhere;
+      font: 10px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .result-list { display: grid; gap: 8px; }
+    .result-card { padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(9,21,31,.76); }
+    .result-card strong { display: block; font-size: 12px; }
+    .result-card small { display: block; margin-top: 4px; color: var(--muted); line-height: 1.45; }
+
+    /* Variant A — operational console */
+    .variant-a { width: min(1450px, calc(100% - 30px)); margin: 0 auto; display: grid; grid-template-columns: 270px minmax(0,1fr) 310px; gap: 14px; }
+    .a-panel { border: 1px solid var(--line); border-radius: 15px; background: rgba(10,22,33,.88); box-shadow: var(--shadow); }
+    .a-side { padding: 15px; display: grid; align-content: start; gap: 15px; }
+    .a-side h2 { margin: 5px 0 7px; font-size: 17px; }
+    .a-side p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .signal { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-top: 1px solid var(--line); color: #b9ccd5; font-size: 11px; }
+    .signal i { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 10px rgba(91,225,205,.7); }
+    .a-chat { min-height: 680px; display: grid; grid-template-rows: auto minmax(0,1fr) auto; overflow: hidden; }
+    .a-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; }
+    .a-head strong { font-size: 13px; }
+    .a-head span { color: var(--muted); font-size: 10px; }
+    .a-answer-wrap { display: grid; place-content: center; padding: clamp(22px,5vw,70px); }
+    .a-answer-box { max-width: 760px; }
+    .a-answer-box h1 { margin: 8px 0 14px; font-size: clamp(25px,4vw,44px); letter-spacing: -.04em; }
+    .a-answer { padding: 16px; border-left: 2px solid var(--teal); background: rgba(91,225,205,.035); }
+    .a-composer { padding: 14px; border-top: 1px solid var(--line); display: grid; gap: 9px; }
+    .input-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; }
+    .a-evidence { padding: 15px; display: grid; align-content: start; gap: 13px; }
+
+    /* Variant B — discovery canvas */
+    .variant-b { width: min(1280px, calc(100% - 30px)); margin: 0 auto; }
+    .b-hero { padding: clamp(28px,6vw,72px) 0 32px; text-align: center; }
+    .b-hero .eyebrow { justify-content: center; }
+    .b-hero h1 { max-width: 900px; margin: 10px auto 13px; font-size: clamp(34px,7vw,78px); line-height: 1; letter-spacing: -.06em; }
+    .b-hero p { max-width: 650px; margin: 0 auto; color: var(--muted); line-height: 1.65; }
+    .b-search { max-width: 850px; margin: 24px auto 0; padding: 8px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; border: 1px solid rgba(91,225,205,.32); border-radius: 15px; background: rgba(9,22,32,.9); box-shadow: var(--shadow); }
+    .b-search .question { border: 0; background: transparent; }
+    .b-quick { justify-content: center; margin-top: 12px; }
+    .b-canvas { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(300px,.9fr); gap: 14px; }
+    .b-card { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(10,22,33,.8); }
+    .b-card h2 { margin: 7px 0 14px; font-size: 18px; }
+    .b-answer { min-height: 250px; font-size: 14px; }
+    .material-ribbon { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+    .material-ribbon .result-card { min-height: 120px; }
+
+    /* Variant C — lab notebook */
+    .variant-c { width: min(1180px, calc(100% - 30px)); margin: 0 auto; }
+    .c-book { display: grid; grid-template-columns: minmax(0,1fr) minmax(300px,.62fr); min-height: 720px; border: 1px solid rgba(201,190,149,.22); border-radius: 4px 17px 17px 4px; overflow: hidden; background: #101a20; box-shadow: var(--shadow); }
+    .c-page { position: relative; padding: clamp(22px,4vw,48px); background: linear-gradient(90deg, rgba(255,255,255,.012), transparent 10%), #101b22; }
+    .c-page::after { content:""; position:absolute; top:0; right:0; bottom:0; width:1px; background: rgba(224,210,158,.13); }
+    .c-date { color: #a7b9b8; font: 11px ui-monospace, monospace; }
+    .c-page h1 { margin: 12px 0 20px; font: 600 clamp(28px,5vw,54px)/1.05 Georgia, serif; letter-spacing: -.04em; }
+    .c-question { display: grid; gap: 9px; margin-bottom: 24px; }
+    .c-question .input-row { grid-template-columns: minmax(0,1fr) auto; }
+    .c-answer { min-height: 320px; padding: 18px 0 0 22px; border-left: 1px solid rgba(91,225,205,.3); }
+    .c-margin { padding: clamp(20px,3vw,34px); background: #0b151c; }
+    .c-margin h2 { margin: 7px 0 15px; font: 600 20px Georgia, serif; }
+    .c-margin .state-view { margin-top: 16px; }
+
+    .switcher {
+      position: fixed; z-index: 30; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+      display: flex; align-items: center; gap: 6px; padding: 6px; border: 1px solid rgba(255,255,255,.17);
+      border-radius: 999px; background: rgba(4,10,16,.93); box-shadow: 0 18px 50px rgba(0,0,0,.5); backdrop-filter: blur(16px);
+    }
+    .switcher button { width: 34px; height: 34px; border: 0; border-radius: 50%; color: white; background: #142431; }
+    .switcher strong { min-width: 190px; text-align: center; font-size: 11px; }
+
+    @media (max-width: 1050px) {
+      .variant-a { grid-template-columns: 230px minmax(0,1fr); }
+      .variant-a .a-evidence { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; }
+      .b-canvas { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .topbar { align-items: flex-start; padding: 11px 0; }
+      .brand small { display: none; }
+      .badge:not(.safe) { display: none; }
+      .variant-a { grid-template-columns: 1fr; }
+      .a-chat { min-height: 650px; }
+      .variant-a .a-evidence { grid-column: auto; grid-template-columns: 1fr; }
+      .b-hero { padding-top: 28px; }
+      .b-search, .input-row, .c-question .input-row { grid-template-columns: 1fr; }
+      .material-ribbon { grid-template-columns: 1fr; }
+      .c-book { grid-template-columns: 1fr; }
+      .c-page::after { display: none; }
+      .switcher strong { min-width: 155px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-orb" aria-hidden="true"></span><div><strong>ARPES Agent Demo</strong><small>GitHub Pages · public prototype</small></div></div>
+    <div class="badges"><span class="badge safe">无需登录</span><span class="badge">无需 API Key</span><span class="badge">本地只读演示</span></div>
+  </header>
+  <div class="prototype-note">原型说明：这里的 “AI” 是浏览器内运行的材料目录检索与模板化分析，不调用真实模型、不产生费用。用于公开展示交互和内容结构，不代表正式科研结论。</div>
+  <main id="app"></main>
+  <nav class="switcher" aria-label="Prototype variants">
+    <button id="previousVariant" type="button" aria-label="Previous variant">←</button>
+    <strong id="variantLabel">A · Research Console</strong>
+    <button id="nextVariant" type="button" aria-label="Next variant">→</button>
+  </nav>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const VARIANTS = [
+        { key: "A", name: "Research Console" },
+        { key: "B", name: "Evidence Canvas" },
+        { key: "C", name: "Lab Notebook" }
+      ];
+      const state = {
+        variant: "A",
+        status: "loading_catalogs",
+        query: "比较 Bi2212、FeSe 和 MgB2 的 ARPES 特征",
+        sourceCount: 0,
+        matches: [],
+        answer: "正在读取 GitHub 上的本地材料目录…",
+        catalogs: []
+      };
+      const fallbackRecords = [
+        { material: "Bi2212", display_name: "Bi₂Sr₂CaCu₂O₈₊δ", family: "Cuprates", transition_temperature_K: 95, arpes_special_properties: ["d-wave gap", "pseudogap", "nodal/antinodal dichotomy"], q_dependent_observables: ["Fermi arcs", "kink", "gap anisotropy"], photon_arpes_notes: "Polarization and photon energy strongly affect matrix elements.", verification_status: "demo_fallback" },
+        { material: "FeSe", display_name: "FeSe", family: "Iron-based", transition_temperature_K: 9, arpes_special_properties: ["nematic band splitting", "multiband Fermi surface", "orbital selectivity"], q_dependent_observables: ["electron/hole pockets", "gap anisotropy"], photon_arpes_notes: "Temperature-dependent measurements resolve nematic reconstruction.", verification_status: "demo_fallback" },
+        { material: "MgB2", display_name: "MgB₂", family: "Conventional / BCS", transition_temperature_K: 39, arpes_special_properties: ["two-gap superconductivity", "sigma and pi bands"], q_dependent_observables: ["band-dependent gaps", "electron-phonon kink"], photon_arpes_notes: "Photon-energy choice helps separate sigma and pi bands.", verification_status: "demo_fallback" },
+        { material: "graphene", display_name: "Graphene", family: "Graphene / carbon layers", bandgap_eV: 0, arpes_special_properties: ["Dirac cone", "linear dispersion", "velocity renormalization"], q_dependent_observables: ["K-point dispersion", "doping-dependent Fermi surface"], photon_arpes_notes: "Substrate, doping and polarization shift or reshape spectral intensity.", verification_status: "demo_fallback" }
+      ];
+
+      const app = document.querySelector("#app");
+      const variantLabel = document.querySelector("#variantLabel");
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[char]));
+      }
+
+      function familyMap(catalog) {
+        return new Map((catalog.families || []).map(row => [row.id, row.name || row.id]));
+      }
+
+      function normalizeCatalog(catalog, topic) {
+        const families = familyMap(catalog);
+        return (catalog.materials || []).map(row => ({ ...row, topic, family: families.get(row.family) || row.family || "Other" }));
+      }
+
+      async function loadCatalogs() {
+        try {
+          const [superconductors, twoDimensional] = await Promise.all([
+            fetch("./data/superconductivity.json").then(response => {
+              if (!response.ok) throw new Error(`superconductivity HTTP ${response.status}`);
+              return response.json();
+            }),
+            fetch("./data/two_dimensional_materials.json").then(response => {
+              if (!response.ok) throw new Error(`2D materials HTTP ${response.status}`);
+              return response.json();
+            })
+          ]);
+          state.catalogs = [
+            ...normalizeCatalog(superconductors, "superconductivity"),
+            ...normalizeCatalog(twoDimensional, "two_dimensional_materials")
+          ];
+          state.status = "local_catalog_ready";
+        } catch {
+          state.catalogs = fallbackRecords;
+          state.status = "fallback_catalog_ready";
+        }
+        state.sourceCount = state.catalogs.length;
+        runDemo(state.query);
+      }
+
+      function tokens(value) {
+        return String(value || "").toLowerCase().match(/[\p{L}\p{N}_.+\-]+/gu) || [];
+      }
+
+      function recordText(record) {
+        return [record.material, record.display_name, record.family, ...(record.elements || []), ...(record.arpes_special_properties || []), ...(record.q_dependent_observables || [])].join(" ").toLowerCase();
+      }
+
+      function findMatches(query) {
+        const normalizedQuery = query.toLowerCase();
+        const queryTokens = [...new Set(tokens(query).filter(token => token.length > 1))];
+        return state.catalogs.map(record => {
+          const material = String(record.material || "").toLowerCase();
+          const displayName = String(record.display_name || "").toLowerCase();
+          const haystack = recordText(record);
+          let score = 0;
+          if (material && normalizedQuery.includes(material)) score += 90;
+          if (displayName && displayName.length > 2 && normalizedQuery.includes(displayName)) score += 80;
+          for (const token of queryTokens) {
+            if (material === token || displayName === token) score += 40;
+            else if (material.includes(token) || displayName.includes(token)) score += 15;
+            else if (haystack.includes(token)) score += 3;
+          }
+          return { record, score };
+        }).filter(item => item.score > 0).sort((a,b) => b.score - a.score).slice(0, 4).map(item => item.record);
+      }
+
+      function summarize(record) {
+        const name = record.display_name || record.material || "Unknown material";
+        const thermal = record.transition_temperature_K != null ? `Tc≈${record.transition_temperature_K} K` : (record.bandgap_eV != null ? `band gap≈${record.bandgap_eV} eV` : "关键数值需核验");
+        const features = (record.arpes_special_properties || []).slice(0, 3).join("、") || "谱函数与能带色散";
+        const observables = (record.q_dependent_observables || []).slice(0, 2).join("、") || "动量依赖结构";
+        return `• ${name}（${record.family || "未分类"}，${thermal}）：重点观察 ${features}；动量空间关注 ${observables}。`;
+      }
+
+      function buildAnswer(query, matches) {
+        if (!matches.length) {
+          return `本地 Demo 没有从材料目录中找到与“${query}”直接匹配的条目。\n\n可以尝试材料名称或化学式，例如 Bi2212、FeSe、MgB2、graphene。正式 Agent 还会调用真实模型理解更开放的问题。`;
+        }
+        const comparison = matches.map(summarize).join("\n");
+        const notes = matches.map(row => row.photon_arpes_notes).filter(Boolean).slice(0, 2).join("；");
+        return `本地目录检索结果\n\n${comparison}\n\n演示性分析\n这些材料的共同比较轴可以设为：费米面拓扑、能隙对称性/各向异性、轨道选择性、电子-玻色子耦合特征，以及温度或掺杂依赖。${notes ? ` 光子能量与实验注意点：${notes}` : ""}\n\n可信度边界\n以上来自网站种子目录和确定性模板，不是联网文献综述；用于展示 Agent 的检索—组织流程，关键数值和结论仍需回到原始论文核验。`;
+      }
+
+      function stateSnapshot() {
+        return JSON.stringify({
+          mode: "no_login_local_demo",
+          variant: state.variant,
+          status: state.status,
+          query: state.query,
+          source_records: state.sourceCount,
+          matched_materials: state.matches.map(row => row.material),
+          external_api_calls: 0,
+          persisted: false
+        }, null, 2);
+      }
+
+      function resultCards() {
+        if (!state.matches.length) return '<div class="result-card"><strong>无直接匹配</strong><small>尝试输入材料名称或化学式。</small></div>';
+        return state.matches.map(row => `<article class="result-card"><strong>${escapeHtml(row.display_name || row.material)}</strong><small>${escapeHtml(row.family || "未分类")} · ${escapeHtml((row.arpes_special_properties || []).slice(0,2).join(" / ") || "ARPES record")}</small></article>`).join("");
+      }
+
+      function quickButtons() {
+        return `<div class="quick-row">
+          <button class="quick" type="button" data-query="比较 Bi2212、FeSe 和 MgB2 的 ARPES 特征">Bi2212 vs FeSe vs MgB2</button>
+          <button class="quick" type="button" data-query="分析 graphene 的 Dirac cone 和光子能量注意点">Graphene Dirac cone</button>
+          <button class="quick" type="button" data-query="二维 TMD 材料的 ARPES 关注点">二维 TMD</button>
+        </div>`;
+      }
+
+      function variantA() {
+        return `<section class="variant-a">
+          <aside class="a-panel a-side"><div><div class="eyebrow">Public demo</div><h2>零成本 Agent 演示</h2><p>所有检索和回答都在浏览器里完成。适合放 GitHub Pages 给任何人试用。</p></div><div class="signal"><i></i><span>${escapeHtml(state.status)}</span></div>${quickButtons()}<pre class="state-view" data-state></pre></aside>
+          <section class="a-panel a-chat"><header class="a-head"><strong>ARPES Research Console</strong><span>LOCAL RETRIEVAL · 0 API CALLS</span></header><div class="a-answer-wrap"><div class="a-answer-box"><div class="eyebrow">Synthesized locally</div><h1>材料证据，先检索再组织</h1><div class="answer a-answer" data-answer></div></div></div><form class="a-composer" data-form><div class="input-row"><input class="question" data-input aria-label="Demo question" value="${escapeHtml(state.query)}"><button class="button primary" type="submit">运行 Demo</button></div></form></section>
+          <aside class="a-panel a-evidence"><div><div class="eyebrow">Evidence</div><h2>匹配材料</h2></div><div class="result-list" data-results></div></aside>
+        </section>`;
+      }
+
+      function variantB() {
+        return `<section class="variant-b"><div class="b-hero"><div class="eyebrow">Explore before you ask</div><h1>把材料目录变成研究起点</h1><p>无需账号即可体验检索、对比与证据边界。这个版本把搜索放在视觉中心。</p><form class="b-search" data-form><input class="question" data-input aria-label="Demo question" value="${escapeHtml(state.query)}"><button class="button primary" type="submit">探索材料</button></form><div class="b-quick">${quickButtons()}</div></div><div class="b-canvas"><section class="b-card"><div class="eyebrow">Agent response</div><h2>本地分析</h2><div class="answer b-answer" data-answer></div></section><aside class="b-card"><div class="eyebrow">Retrieved records</div><h2>证据画布</h2><div class="material-ribbon" data-results></div><pre class="state-view" data-state></pre></aside></div></section>`;
+      }
+
+      function variantC() {
+        return `<section class="variant-c"><div class="c-book"><article class="c-page"><div class="c-date">PUBLIC LAB NOTE · NO LOGIN · ${new Date().toLocaleDateString()}</div><h1>ARPES research notebook</h1><form class="c-question" data-form><label class="eyebrow">Research question</label><div class="input-row"><input class="question" data-input aria-label="Demo question" value="${escapeHtml(state.query)}"><button class="button primary" type="submit">记录分析</button></div>${quickButtons()}</form><div class="answer c-answer" data-answer></div></article><aside class="c-margin"><div class="eyebrow">Margin evidence</div><h2>目录注记</h2><div class="result-list" data-results></div><pre class="state-view" data-state></pre></aside></div></section>`;
+      }
+
+      function bindVariant() {
+        document.querySelectorAll("[data-answer]").forEach(node => { node.textContent = state.answer; });
+        document.querySelectorAll("[data-results]").forEach(node => { node.innerHTML = resultCards(); });
+        document.querySelectorAll("[data-state]").forEach(node => { node.textContent = stateSnapshot(); });
+        document.querySelectorAll("[data-form]").forEach(form => form.addEventListener("submit", event => {
+          event.preventDefault();
+          runDemo(form.querySelector("[data-input]")?.value || "");
+        }));
+        document.querySelectorAll("[data-query]").forEach(button => button.addEventListener("click", () => runDemo(button.dataset.query || "")));
+      }
+
+      function render() {
+        const renderer = state.variant === "B" ? variantB : (state.variant === "C" ? variantC : variantA);
+        app.innerHTML = renderer();
+        const meta = VARIANTS.find(item => item.key === state.variant) || VARIANTS[0];
+        variantLabel.textContent = `${meta.key} · ${meta.name}`;
+        bindVariant();
+      }
+
+      function runDemo(rawQuery) {
+        const query = String(rawQuery || "").trim().slice(0, 500);
+        state.query = query || "比较 Bi2212、FeSe 和 MgB2 的 ARPES 特征";
+        state.matches = findMatches(state.query);
+        state.answer = buildAnswer(state.query, state.matches);
+        render();
+      }
+
+      function selectVariant(offset) {
+        const index = VARIANTS.findIndex(item => item.key === state.variant);
+        const next = VARIANTS[(index + offset + VARIANTS.length) % VARIANTS.length];
+        state.variant = next.key;
+        const url = new URL(window.location.href);
+        url.searchParams.set("variant", state.variant);
+        window.history.replaceState({}, "", url);
+        render();
+      }
+
+      document.querySelector("#previousVariant").addEventListener("click", () => selectVariant(-1));
+      document.querySelector("#nextVariant").addEventListener("click", () => selectVariant(1));
+      window.addEventListener("keydown", event => {
+        const tag = event.target?.tagName;
+        if (["INPUT", "TEXTAREA"].includes(tag) || event.target?.isContentEditable) return;
+        if (event.key === "ArrowLeft") selectVariant(-1);
+        if (event.key === "ArrowRight") selectVariant(1);
+      });
+
+      const requested = new URLSearchParams(window.location.search).get("variant")?.toUpperCase();
+      state.variant = VARIANTS.some(item => item.key === requested) ? requested : "A";
+      render();
+      loadCatalogs();
+    })();
+  </script>
+</body>
+</html>

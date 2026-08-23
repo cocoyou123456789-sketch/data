@@ -5965,6 +5965,27 @@
       font-size: 12px;
     }
 
+    .chat-agent-workspace-link {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 9px;
+      border: 1px solid rgba(97,230,208,0.28);
+      border-radius: 7px;
+      color: #a7f3e7;
+      background: rgba(20,184,166,0.08);
+      text-decoration: none;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .chat-agent-workspace-link:hover,
+    .chat-agent-workspace-link:focus-visible {
+      border-color: rgba(97,230,208,0.54);
+      color: #ecfffc;
+    }
+
     .chat-agent-control {
       margin-left: auto;
       display: flex;
@@ -6124,6 +6145,10 @@
       .chat-agent-select {
         flex: 0 1 150px;
         max-width: 150px;
+      }
+
+      .chat-agent-workspace-link {
+        display: none;
       }
     }
 
@@ -9273,6 +9298,7 @@
                       <option value="doubao-ark-chat">Doubao Ark</option>
                       <option value="arpes-rules-preview">ARPES 本地规则</option>
                     </select>
+                    <a class="chat-agent-workspace-link" href="./agent.html" title="打开独立的 ARPES Research Agent 工作台">独立工作台 ↗</a>
                   </div>
                 </div>
                 <div class="chat-thread" id="chatThread" aria-live="polite"></div>
