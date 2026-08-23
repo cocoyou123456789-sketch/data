@@ -33,6 +33,10 @@ test("GitHub subpages preserve their path, query, and fragment", () => {
     runAt("https://cocoyou123456789-sketch.github.io/data/model-test.html?probe=1#results"),
     "https://arpes-materials-explorer-cocoyou.netlify.app/model-test.html?probe=1#results"
   );
+  assert.equal(
+    runAt("https://cocoyou123456789-sketch.github.io/data/agent.html?topic=Bi2212#chat"),
+    "https://arpes-materials-explorer-cocoyou.netlify.app/agent.html?topic=Bi2212#chat"
+  );
 });
 
 test("Netlify and the explicit GitHub escape hatch do not redirect", () => {
@@ -43,10 +47,11 @@ test("Netlify and the explicit GitHub escape hatch do not redirect", () => {
   );
 });
 
-test("both browser entry pages load the handoff before application code", () => {
-  for (const file of ["index.html", "model-test.html"]) {
+test("all browser entry pages load the handoff before application code", () => {
+  for (const file of ["index.html", "model-test.html", "agent.html"]) {
     const html = fs.readFileSync(path.join(__dirname, "..", "github-pages", file), "utf8");
-    const handoffIndex = html.indexOf('<script src="./netlify-handoff.js?v=20260817"></script>');
+    const match = html.match(/<script src="\.\/netlify-handoff\.js\?v=\d+"><\/script>/);
+    const handoffIndex = match ? html.indexOf(match[0]) : -1;
     assert.ok(handoffIndex >= 0, `${file} loads the Netlify handoff`);
     assert.ok(handoffIndex < html.indexOf("</head>"), `${file} loads the handoff in <head>`);
   }

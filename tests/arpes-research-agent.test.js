@@ -144,6 +144,49 @@ test("Agents SDK mode uses a server-selected model, one read-only tool, and a fi
   assert.doesNotMatch(JSON.stringify(result), /server-only-test-key/);
 });
 
+test("Agent adds Dropbox knowledge search only when the server integration is enabled", async () => {
+  const sdk = fakeSdk(async agent => {
+    assert.deepEqual(agent.tools.map(tool => tool.name), [
+      "lookup_material_catalog",
+      "search_dropbox_knowledge"
+    ]);
+    const output = JSON.parse(await agent.tools[1].execute({ query: "uploaded FeSe notes", limit: 4 }));
+    assert.equal(output.source, "dropbox_vector_store");
+    assert.equal(output.matches[0].filename, "FeSe-upload.pdf");
+    return { finalOutput: "Dropbox 文件 FeSe-upload.pdf 中的相关证据已检索。" };
+  });
+  const fetchImpl = async (url, options = {}) => {
+    assert.equal(url, "https://api.openai.com/v1/vector_stores/vs_dropbox_test/search");
+    assert.equal(JSON.parse(options.body).query, "uploaded FeSe notes");
+    return new Response(JSON.stringify({
+      data: [{
+        file_id: "file_dropbox_test",
+        filename: "FeSe-upload.pdf",
+        score: 0.88,
+        attributes: { source: "dropbox" },
+        content: [{ type: "text", text: "Uploaded FeSe evidence." }]
+      }]
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+  };
+
+  const result = await runArpesResearchAgent({
+    messages: [{ role: "user", content: "查看我上传的 FeSe 笔记" }],
+    language: "zh",
+    ip: "agent-dropbox-tool-test"
+  }, {
+    env: {
+      OPENAI_API_KEY: "server-agent-key",
+      OPENAI_AGENT_ENABLED: "true",
+      OPENAI_AGENT_RATE_PER_MINUTE: "12",
+      DROPBOX_KNOWLEDGE_ENABLED: "true",
+      OPENAI_VECTOR_STORE_ID: "vs_dropbox_test"
+    },
+    fetchImpl,
+    loadSdk: async () => sdk
+  });
+  assert.equal(result.answer, "Dropbox 文件 FeSe-upload.pdf 中的相关证据已检索。");
+});
+
 test("agent mode reuses the existing login gate before loading the SDK", async () => {
   let sdkLoads = 0;
   const env = {

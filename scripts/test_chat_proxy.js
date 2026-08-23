@@ -5,6 +5,7 @@ const test = require("node:test");
 const {
   MAX_CHAT_ANSWER_CHARS,
   arkApiKey,
+  arkChatMaxOutputTokens,
   arkChatTimeoutMs,
   handleChatRequest,
   hashChatPassword,
@@ -378,7 +379,8 @@ test("Doubao Ark uses its own key, endpoint, and endpoint-id model", async () =>
     env: {
       ARK_API_KEY: '  "Bearer ark-test-key"  ',
       ARK_CHAT_MODEL: "ep-test-123456",
-      ARK_CHAT_ENABLED: "true"
+      ARK_CHAT_ENABLED: "true",
+      ARK_CHAT_MAX_OUTPUT_TOKENS: "1400"
     },
     fetchImpl
   });
@@ -395,7 +397,7 @@ test("Doubao Ark uses its own key, endpoint, and endpoint-id model", async () =>
   const upstreamBody = JSON.parse(requestOptions.body);
   assert.equal(upstreamBody.model, "ep-test-123456");
   assert.equal(upstreamBody.stream, false);
-  assert.equal(upstreamBody.max_tokens, 1_400);
+  assert.equal(upstreamBody.max_tokens, 800);
   assert.equal(upstreamBody.thinking.type, "disabled");
   assert.match(upstreamBody.messages[0].content, /Doubao Ark/);
 });
@@ -479,6 +481,13 @@ test("Doubao Ark uses a provider-specific bounded timeout", () => {
   assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "12000" }, 9_000), 9_000);
   assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "1000" }), 5_000);
   assert.equal(arkChatTimeoutMs({ ARK_CHAT_TIMEOUT_MS: "60000" }), 50_000);
+});
+
+test("Doubao Ark keeps non-streaming output inside the response deadline", () => {
+  assert.equal(arkChatMaxOutputTokens({}), 800);
+  assert.equal(arkChatMaxOutputTokens({ ARK_CHAT_MAX_OUTPUT_TOKENS: "600" }), 600);
+  assert.equal(arkChatMaxOutputTokens({ ARK_CHAT_MAX_OUTPUT_TOKENS: "1400" }), 800);
+  assert.equal(arkChatMaxOutputTokens({ ARK_CHAT_MAX_OUTPUT_TOKENS: "3000" }), 800);
 });
 
 test("Doubao Ark safely returns upstream authentication diagnostics", async () => {

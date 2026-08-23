@@ -95,6 +95,17 @@ OPENAI_AGENT_MAX_TURNS=3
 OPENAI_AGENT_MAX_OUTPUT_TOKENS=1200
 OPENAI_AGENT_TIMEOUT_MS=45000
 OPENAI_AGENT_RATE_PER_MINUTE=4
+DROPBOX_KNOWLEDGE_ENABLED=true
+DROPBOX_DATA_FOLDER=/ARPES-Agent-Data
+DROPBOX_APP_KEY=<Dropbox App key>
+DROPBOX_APP_SECRET=<Dropbox App secret>
+DROPBOX_REFRESH_TOKEN=<Dropbox OAuth offline refresh token>
+OPENAI_DROPBOX_VECTOR_STORE_NAME=arpes-dropbox-knowledge
+DROPBOX_SYNC_MAX_CHANGES=4
+DROPBOX_MAX_FILE_BYTES=8388608
+DROPBOX_ZIP_MAX_FILES=50
+DROPBOX_ZIP_MAX_ENTRY_BYTES=8388608
+DROPBOX_ZIP_MAX_UNCOMPRESSED_BYTES=20971520
 DEEPSEEK_CHAT_MAX_OUTPUT_TOKENS=1800
 CHAT_TIMEOUT_MS=45000
 OPENAI_CHAT_TIMEOUT_MS=45000
@@ -109,7 +120,7 @@ ARK_API_KEY=<火山方舟控制台生成的裸推理 API Key>
 ARK_CHAT_MODEL=doubao-seed-2-1-pro-260628
 ARK_CHAT_THINKING=disabled
 ARK_CHAT_TIMEOUT_MS=50000
-ARK_CHAT_MAX_OUTPUT_TOKENS=1400
+ARK_CHAT_MAX_OUTPUT_TOKENS=800
 # 可选：材料主持模型单独走 Ark
 # MATERIAL_PREDICT_PROVIDER=ark
 # MATERIAL_PREDICT_MODEL=<同上，或单独的 Ark Model ID / Endpoint ID>
@@ -128,11 +139,11 @@ Secret Key（AK/SK）。当前测试与非流式调用应保持 `ARK_CHAT_THINKI
 `https://ark.cn-beijing.volces.com/api/v3/chat/completions`；如需私有网关，可改
 `ARK_CHAT_BASE_URL` 或 `ARK_CHAT_COMPLETIONS_URL`，但主机仍会经过白名单校验。
 
-三家聊天代理都会在服务器端限制输出 token：OpenAI 与 DeepSeek 的安全默认值为 1800，
-Ark 为 1400，所有配置值都会被限制在 200–3000。`CHAT_MAX_OUTPUT_TOKENS` 是通用回退值，
-各家的 `*_CHAT_MAX_OUTPUT_TOKENS` 优先。当前接口保持 `stream: false`；盲目调高 token 上限会
-增加 Netlify 函数超时风险，长篇深度推理应另接支持 SSE 的流式网关，而不是只把上游
-`stream` 改为 `true`。
+三家聊天代理都会在服务器端限制输出 token：OpenAI 与 DeepSeek 的安全默认值为 1800。
+Ark 当前使用非流式 JSON 响应，为确保能在 50 秒截止时间内返回，安全上限固定为 800；即使
+Netlify 中仍残留 `ARK_CHAT_MAX_OUTPUT_TOKENS=1400`，服务器也会自动压到 800。
+`CHAT_MAX_OUTPUT_TOKENS` 是通用回退值，各家的 `*_CHAT_MAX_OUTPUT_TOKENS` 优先。需要更长的豆包回答时，
+应分段继续提问或另接端到端 SSE 流式网关；只调高 token 上限会重新造成 HTTP 504。
 
 成功响应会统一返回 `finish_reason`、`truncated` 和 `truncation_reason`。DeepSeek/Ark 的
 `finish_reason: "length"`，以及 OpenAI Responses 的 `status: "incomplete"` 配合
@@ -165,8 +176,49 @@ Agent 仍通过 `/api/chat`，并复用现有来源白名单、登录会话、�
 `OPENAI_AGENT_MAX_TURNS` 被限制在 1–4，默认 3；`OPENAI_AGENT_MAX_OUTPUT_TOKENS` 限制每次模型输出，
 默认 1200；`OPENAI_AGENT_RATE_PER_MINUTE` 默认 4，用于控制 Agent 循环带来的额外调用与费用。
 
+独立研究工作台位于 `/agent.html`。它与主站共享同一个 `sessionStorage` 授权 token 和 `/api/chat`
+后端，但提供专门的研究会话界面、可选实验背景、快捷研究问题、会话暂存和 Markdown 导出。GitHub Pages
+镜像会先通过 `netlify-handoff.js` 跳转到同源 Netlify 页面，避免长时间 Agent 请求经过跨域连接。
+正式工作台右上角提供无需登录的公开 Demo 入口；Demo 只使用浏览器内材料目录，不调用付费模型。
+
 OpenAI 官方建议从一个聚焦 Agent 开始，再逐步增加工具与专业 Agent：
 https://developers.openai.com/api/docs/guides/agents/quickstart
+
+### Dropbox 自动知识库
+
+生产 Agent 可以把 Dropbox 中的文件同步为 OpenAI 向量知识库。这个过程属于 RAG（检索增强生成）：
+文件新增或修改后，Agent 会在回答时检索相关片段；它不会反复修改模型权重，也不是传统意义上的
+模型训练或微调。
+
+默认流程：
+
+1. 在 Dropbox App Console 创建 scoped app。建议选择 App Folder 权限，只允许访问该 App 的专用目录。
+2. 开启 `files.metadata.read` 与 `files.content.read`，用 OAuth offline access 获取 refresh token。
+3. 在 Dropbox 的 App Folder 内创建 `ARPES-Agent-Data`，放入 `.pdf`、`.docx`、`.pptx`、`.txt`、
+   `.md`、`.csv`、`.json` 或 `.zip` 文件。
+4. 在 Netlify 设置上方的 `DROPBOX_*` 环境变量并重新部署。
+5. 部署后 `dropbox-sync` Scheduled Function 每小时运行一次；第一次可在 Netlify Functions 页面选择
+   `dropbox-sync` 并点击 **Run now**。
+
+同步函数只读取 Dropbox 文件，密钥仅保存在 Netlify 环境变量中。单次默认最多处理 4 个变更、单文件
+最多 8 MiB，以适应 Scheduled Function 的执行时间；积压文件会在后续小时继续处理。Agent 侧新增的
+`search_dropbox_knowledge` 工具是只读检索，返回文件名、相关片段和匹配分数。Dropbox 文件内容始终按
+不可信参考数据处理，不能覆盖 Agent 的系统规则。
+
+ZIP 文件会在 Netlify 内存中逐项解压，原始压缩包不会直接交给模型。默认最多读取 50 个文件，单个
+解压条目最多 8 MiB，整个 ZIP 解压后最多 20 MiB；只导入上述支持的文档类型。系统拒绝绝对路径、
+`../` 路径与加密 ZIP，并忽略嵌套 ZIP 和其他二进制文件。若 ZIP 同步中途失败，下次定时任务会重新
+处理，直到最后一个知识库条目标记为完整。
+
+如果已经手工创建 OpenAI vector store，可额外设置 `OPENAI_VECTOR_STORE_ID=vs_...`；否则同步函数会按
+`OPENAI_DROPBOX_VECTOR_STORE_NAME` 查找或创建同名知识库。长期自动同步应使用 refresh token；
+`DROPBOX_ACCESS_TOKEN` 仅保留给短期测试。
+
+Dropbox OAuth 与文件接口参考：
+https://developers.dropbox.com/oauth-guide
+
+OpenAI Responses API 的 file search / vector store 参考：
+https://developers.openai.com/api/reference/typescript/resources/beta/subresources/responses/methods/create
 
 公开站点必须保留服务器端登录、来源白名单和限流。网站测试账号应使用独立密码，不能复用
 科大统一身份认证密码。部署前可运行：

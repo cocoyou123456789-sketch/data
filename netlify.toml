@@ -2,6 +2,9 @@
   publish = "github-pages"
   functions = "netlify/functions"
 
+[functions."dropbox-sync"]
+  schedule = "@hourly"
+
 [[redirects]]
   from = "/api/chat"
   to = "/.netlify/functions/chat"
