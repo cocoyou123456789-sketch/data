@@ -1,0 +1,33 @@
+name: Publish GitHub Pages branch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "github-pages/**"
+      - ".github/workflows/publish-github-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-pages-branch
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the complete repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Publish the website directory to gh-pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git subtree split --prefix=github-pages -b pages-release
+          git switch pages-release
+          git push origin HEAD:gh-pages

@@ -7,6 +7,7 @@ const ROOT = path.join(__dirname, "..");
 const html = fs.readFileSync(path.join(ROOT, "github-pages", "agent.html"), "utf8");
 const script = fs.readFileSync(path.join(ROOT, "github-pages", "agent-workspace.js"), "utf8");
 const mainHtml = fs.readFileSync(path.join(ROOT, "github-pages", "index.html"), "utf8");
+const pagesWorkflowPath = path.join(ROOT, ".github", "workflows", "publish-github-pages.yml");
 
 test("standalone agent workspace is linked from the main chat and uses the GitHub handoff", () => {
   assert.match(mainHtml, /href="\.\/agent\.html"[^>]*>独立工作台/);
@@ -41,4 +42,12 @@ test("standalone workspace provides bounded context, history, export, and manual
   assert.match(script, /text\/markdown;charset=utf-8/);
   assert.match(script, /系统没有自动重试，避免重复计费/);
   assert.doesNotMatch(script, /fetch\([^)]*\)\s*\.catch\([^)]*fetch/s);
+});
+
+test("GitHub Pages publishes the github-pages directory after main changes", () => {
+  assert.ok(fs.existsSync(pagesWorkflowPath), "missing GitHub Pages publication workflow");
+  const workflow = fs.readFileSync(pagesWorkflowPath, "utf8");
+  assert.match(workflow, /branches:\s*\[main\]/);
+  assert.match(workflow, /git subtree split --prefix[= ]github-pages/);
+  assert.match(workflow, /HEAD:gh-pages/);
 });
