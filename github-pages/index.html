@@ -1508,6 +1508,8 @@
       }
     }
 
+    .chemistry-screen{position:fixed;inset:0;z-index:95;overflow-y:auto;color:#eafcff;background:radial-gradient(circle at 84% 12%,rgba(16,185,129,.2),transparent 30%),linear-gradient(145deg,#061523,#0a2630 52%,#071521)}
+    .chemistry-screen[hidden]{display:none}.chemistry-shell{width:min(1180px,calc(100% - 32px));margin:auto;padding:28px 0 64px}.chemistry-back{border:1px solid rgba(110,231,183,.42);background:rgba(6,78,59,.42);color:#d1fae5}.chemistry-hero{margin-top:20px;border:1px solid rgba(94,234,212,.3);border-radius:24px;padding:clamp(24px,5vw,54px);background:linear-gradient(135deg,rgba(6,78,59,.7),rgba(8,47,73,.72));box-shadow:0 24px 70px rgba(0,0,0,.28)}.chemistry-kicker{color:#6ee7b7;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.chemistry-hero h1{margin:10px 0;font-size:clamp(34px,6vw,64px)}.chemistry-hero p{max-width:780px;margin:0;color:rgba(226,252,247,.82);font-size:16px;line-height:1.7}.chemistry-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:22px 0 28px}.chemistry-progress span{border-top:3px solid #34d399;padding-top:8px;color:#a7f3d0;font-size:12px;font-weight:800}.chemistry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.chemistry-card{border:1px solid rgba(103,232,249,.2);border-radius:18px;background:rgba(5,25,38,.76);overflow:hidden}.chemistry-card summary{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:20px;cursor:pointer;list-style:none}.chemistry-card summary::-webkit-details-marker{display:none}.chemistry-card[open]{border-color:rgba(52,211,153,.54)}.chemistry-level{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;color:#052e2b;background:linear-gradient(135deg,#a7f3d0,#22d3ee);font-weight:950}.chemistry-card h2{margin:0;font-size:18px}.chemistry-card summary p{margin:4px 0 0;color:#9cc4ca;font-size:12px}.chemistry-toggle{color:#6ee7b7;font-size:24px}.chemistry-card[open] .chemistry-toggle{transform:rotate(45deg)}.chemistry-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 20px 20px 74px}.chemistry-topic{border-left:2px solid #34d399;padding:10px 12px;background:rgba(13,148,136,.1)}.chemistry-topic strong{display:block;color:#d1fae5;font-size:13px}.chemistry-topic span{display:block;margin-top:4px;color:#9fc3c8;font-size:11px;line-height:1.45}@media(max-width:760px){.chemistry-grid{grid-template-columns:1fr}.chemistry-progress{grid-template-columns:repeat(2,1fr)}.chemistry-topics{grid-template-columns:1fr;padding-left:20px}}
     .top-menu-bar {
       position: sticky;
       top: 0;
@@ -8989,10 +8991,10 @@
           <span data-i18n="magicBookShelfPhysical">物理材料</span>
           <small data-i18n="magicBookShelfPhysicalHint">超导材料入口</small>
         </button>
-        <button class="magic-tome green" type="button" data-magic-library-shell="chemistry">
+        <button class="magic-tome green" type="button" data-magic-library="chemistry">
           <span data-i18n="magicBookChemistry">化学材料</span>
           <small data-i18n="magicBookShelfChemistryHint">分子、晶体与反应库</small>
-          <em data-i18n="magicBookComingSoon">建设中</em>
+          <em data-i18n="magicBookReady">可进入</em>
         </button>
         <button class="magic-tome orange" type="button" data-magic-library-shell="biology">
           <span data-i18n="magicBookBiology">生物材料</span>
@@ -9062,6 +9064,7 @@
       <div class="magic-hint" data-i18n="magicBookHint">先点第一本“物理材料”，打开目录后进入超导材料；其他书先保留为空壳。</div>
     </div>
   </div>
+  <main class="chemistry-screen" id="chemistryScreen" hidden aria-hidden="true"><div class="chemistry-shell"><button class="chemistry-back" id="chemistryBackBtn" type="button">← 返回材料数据库</button><section class="chemistry-hero"><span class="chemistry-kicker">Chemical Materials · Knowledge Path</span><h1>化学材料知识库</h1><p>从元素、化学键与结构出发，逐级进入材料制备、表征、性能和前沿功能体系。沿“组成—结构—工艺—性能—应用”的主线学习。</p></section><nav class="chemistry-progress"><span>01 基础概念</span><span>02 结构组成</span><span>03 方法性能</span><span>04 专业前沿</span></nav><section class="chemistry-grid" id="chemistryGrid"></section></div></main>
   <!-- 粒子背景 -->
   <div class="particles-container" id="particles" aria-hidden="true"></div>
 
@@ -29781,6 +29784,18 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
         if (typeof showAppPage === "function") showAppPage("data");
       });
     })();
+  </script>
+  <script>
+  (()=>{const screen=document.getElementById('chemistryScreen'),grid=document.getElementById('chemistryGrid'),back=document.getElementById('chemistryBackBtn');if(!screen||!grid)return;const chapters=[
+  ['材料基础分类与概念','建立化学材料的知识坐标',[['物质与材料','纯物质、混合物、相与材料体系'],['分类方法','按组成、结构、来源和用途分类'],['结构—性能关系','从微观结构理解宏观行为']]],
+  ['元素、化合物与结构','从原子尺度认识材料',[['元素与周期律','电子排布、周期趋势和活性'],['化合物与化学式','化学计量、缺陷与非化学计量'],['晶体与分子结构','晶胞、对称性、构型与构象']]],
+  ['化学键与材料组成','连接组成和稳定性的核心',[['离子键与共价键','局域成键、配位与键极性'],['金属键与弱相互作用','电子海、氢键和范德华力'],['组成设计','掺杂、固溶、复合与缺陷工程']]],
+  ['常见材料体系','由经典门类进入真实材料',[['无机材料','陶瓷、玻璃、金属、盐与氧化物'],['有机材料','小分子、液晶、染料与有机半导体'],['高分子材料','热塑性、热固性、弹性体和复合物']]],
+  ['材料性质','理解材料为何表现不同',[['热力学','相平衡、自由能、相图与稳定性'],['动力学','反应速率、扩散、成核与生长'],['电化学','氧化还原、电极、电解质与界面'],['表面与界面','吸附、润湿、界面能和腐蚀']]],
+  ['合成与制备方法','把设计转化为可控样品',[['固相与液相','烧结、溶胶凝胶、水热和沉淀'],['气相与薄膜','CVD、PVD、ALD 和外延生长'],['聚合与加工','聚合、成型与复合'],['绿色与规模化','低能耗、连续化和可持续制备']]],
+  ['结构与成分表征','用证据连接结构与结论',[['物相与结构','XRD、电子衍射与散射'],['形貌与微区','SEM、TEM 与 AFM'],['组成与化学态','光谱、质谱、XPS 与元素分析'],['热与原位表征','DSC/TGA、原位和操作态测试']]],
+  ['性能与应用','从指标走向工程场景',[['力学与热学','强度、韧性、热容与热传导'],['电磁与光学','输运、介电、磁性和光响应'],['耐久与安全','老化、疲劳、腐蚀和失效分析'],['应用匹配','能源、电子、环境、生医与结构件']]],
+  ['进阶专题','面向研究与产业前沿',[['催化材料','活性位、选择性、载体与催化循环'],['电池材料','正负极、电解质、界面膜与衰减'],['半导体材料','能带、载流子、缺陷与器件工艺'],['功能材料','光电、铁电、磁性、智能与响应材料']]]];grid.innerHTML=chapters.map((c,i)=>`<details class="chemistry-card" ${i?'':'open'}><summary><span class="chemistry-level">${String(i+1).padStart(2,'0')}</span><span><h2>${c[0]}</h2><p>${c[1]}</p></span><span class="chemistry-toggle">+</span></summary><div class="chemistry-topics">${c[2].map(t=>`<div class="chemistry-topic"><strong>${t[0]}</strong><span>${t[1]}</span></div>`).join('')}</div></details>`).join('');const open=({hash=true}={})=>{document.body.classList.add('locked');screen.hidden=false;screen.removeAttribute('aria-hidden');const catalog=document.getElementById('magicBookScreen');if(catalog){catalog.hidden=true;catalog.setAttribute('aria-hidden','true')}if(hash&&location.hash!=='#chemistry-materials')history.pushState({},'','#chemistry-materials');screen.scrollTop=0},close=({hash=true}={})=>{screen.hidden=true;screen.setAttribute('aria-hidden','true');const catalog=document.getElementById('magicBookScreen');if(catalog){catalog.hidden=false;catalog.removeAttribute('aria-hidden');catalog.inert=false}document.body.classList.add('magic-active','locked');if(hash&&location.hash==='#chemistry-materials')history.pushState({},'',location.pathname+location.search)};document.querySelector('[data-magic-library="chemistry"]')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();open()},true);back?.addEventListener('click',()=>close());window.addEventListener('hashchange',()=>location.hash==='#chemistry-materials'?open({hash:false}):(!screen.hidden&&close({hash:false})));if(location.hash==='#chemistry-materials')open({hash:false})})();
   </script>
 </body>
 </html>
