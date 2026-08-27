@@ -50,9 +50,9 @@ test("Netlify and the explicit GitHub escape hatch do not redirect", () => {
 test("chemical materials links support repeated GitHub Pages round trips", () => {
   const indexHtml = fs.readFileSync(path.join(__dirname, "..", "github-pages", "index.html"), "utf8");
   const chemistryHtml = fs.readFileSync(path.join(__dirname, "..", "github-pages", "chemistry.html"), "utf8");
-  assert.match(indexHtml, /href="\.\/chemistry\.html\?v=20260827-4"/);
-  assert.match(indexHtml, /同步辐射材料化学入口/);
-  assert.match(indexHtml, /点击进入 · 同步辐射/);
+  assert.match(indexHtml, /href="\.\/chemistry\.html\?v=20260827-5"/);
+  assert.match(indexHtml, /同步辐射 · DFT · AI 分析/);
+  assert.match(indexHtml, /进入 SynchroChemAI/);
   assert.match(indexHtml, /onclick="window\.location\.assign\(this\.href\); return false;"/);
   assert.match(chemistryHtml, /href="\.\/\?stay_on_github=1&amp;v=20260827-2"/);
   assert.equal(runAt("https://cocoyou123456789-sketch.github.io/data/?stay_on_github=1&v=20260827-2"), "");
