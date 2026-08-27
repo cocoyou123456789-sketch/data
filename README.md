@@ -5,7 +5,13 @@
 公开网站：
 
 ```text
-https://cocoyou123456789-sketch.github.io/data/
+https://cocoyou123456789-sketch.github.io/data/?v=20260827-4
+```
+
+同步辐射材料化学知识库：
+
+```text
+https://cocoyou123456789-sketch.github.io/data/chemistry.html?v=20260827-4
 ```
 
 ## 当前内容
@@ -57,9 +63,8 @@ file:///Users/cocoyou/data/github-pages/index.html
 ## 发布 GitHub Pages
 
 本仓库的主分支保存完整项目，`gh-pages` 分支保存 `github-pages/` 目录的静态发布内容。
-公开 GitHub Pages 镜像默认会跳转到
-`https://arpes-materials-explorer-cocoyou.netlify.app/`，让网页与 `/api/chat` 保持同源，
-避免长模型请求在跨域链路中断。仅排查静态镜像时可追加 `?stay_on_github=1` 留在 GitHub。
+材料目录主页保留在 GitHub Pages，以保证“材料目录 ↔ 独立材料模块”往返导航始终同源。
+需要服务器端 AI 接口的独立页面仍可按页面配置使用 Netlify API；静态材料目录不会自动跳转到旧的 Netlify 副本。
 
 发布命令：
 
