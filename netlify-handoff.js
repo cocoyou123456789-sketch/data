@@ -10,6 +10,11 @@
   const currentUrl = new URL(window.location.href);
   if (currentUrl.searchParams.get("stay_on_github") === "1") return;
 
+  // Keep the public repository homepage on GitHub Pages. Navigating between
+  // the material catalog and its standalone modules must remain same-origin;
+  // otherwise a return trip can restore a stale Netlify copy of the catalog.
+  if (currentUrl.pathname === GITHUB_BASE_PATH || currentUrl.pathname === `${GITHUB_BASE_PATH}/`) return;
+
   let targetPath = currentUrl.pathname;
   if (targetPath === GITHUB_BASE_PATH || targetPath === `${GITHUB_BASE_PATH}/`) {
     targetPath = "/";
