@@ -18060,9 +18060,12 @@
           openMagicBookCatalog();
         }
       });
-      magicLibraryBooks.forEach(item => {
-        item.addEventListener("click", event => {
-          event.preventDefault();
+       magicLibraryBooks.forEach(item => {
+         item.addEventListener("click", event => {
+           if (item.matches('a[href*="chemistry.html"]')) {
+             return;
+           }
+           event.preventDefault();
           event.stopPropagation();
            if (item.dataset.magicLibrary === "physical") {
              openMagicBookCatalog();
