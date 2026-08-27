@@ -21,10 +21,10 @@ function runAt(url) {
   return replacement;
 }
 
-test("GitHub root hands off to the same-origin Netlify site", () => {
+test("GitHub material catalog stays on GitHub Pages for reliable round trips", () => {
   assert.equal(
     runAt("https://cocoyou123456789-sketch.github.io/data/?arkfix=1#materials"),
-    "https://arpes-materials-explorer-cocoyou.netlify.app/?arkfix=1#materials"
+    ""
   );
 });
 
@@ -45,6 +45,15 @@ test("Netlify and the explicit GitHub escape hatch do not redirect", () => {
     runAt("https://cocoyou123456789-sketch.github.io/data/?stay_on_github=1"),
     ""
   );
+});
+
+test("chemical materials links support repeated GitHub Pages round trips", () => {
+  const indexHtml = fs.readFileSync(path.join(__dirname, "..", "github-pages", "index.html"), "utf8");
+  const chemistryHtml = fs.readFileSync(path.join(__dirname, "..", "github-pages", "chemistry.html"), "utf8");
+  assert.match(indexHtml, /href="\.\/chemistry\.html\?v=20260827-2"/);
+  assert.match(indexHtml, /onclick="window\.location\.assign\(this\.href\); return false;"/);
+  assert.match(chemistryHtml, /href="\.\/\?stay_on_github=1&amp;v=20260827-2"/);
+  assert.equal(runAt("https://cocoyou123456789-sketch.github.io/data/?stay_on_github=1&v=20260827-2"), "");
 });
 
 test("all browser entry pages load the handoff before application code", () => {
