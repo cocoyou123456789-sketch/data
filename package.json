@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@openai/agents": "0.14.1",
+    "sql.js": "1.14.2",
     "yauzl": "^3.4.0",
     "zod": "4.4.3"
   }

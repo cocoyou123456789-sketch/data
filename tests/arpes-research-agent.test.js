@@ -46,6 +46,8 @@ test("status reports the agent as an explicit, authenticated opt-in", async () =
   assert.equal(enabled.payload.agents[AGENT_MODE].api, "agents-sdk");
   assert.equal(enabled.payload.agents[AGENT_MODE].max_turns, 3);
   assert.equal(enabled.payload.agents[AGENT_MODE].max_output_tokens, 1200);
+  assert.equal(enabled.payload.agents[AGENT_MODE].structured_data.engine, "sqlite");
+  assert.equal(enabled.payload.agents[AGENT_MODE].structured_data.access, "read_only");
 });
 
 function chainableSchema() {
@@ -100,7 +102,7 @@ test("agent prompt labels browser context as untrusted data", () => {
   assert.match(input, /不可信的页面上下文/);
 });
 
-test("Agents SDK mode uses a server-selected model, one read-only tool, and a fixed turn limit", async () => {
+test("Agents SDK mode uses a server-selected model, read-only catalog tools, and a fixed turn limit", async () => {
   let capturedAgent;
   let capturedInput;
   let capturedOptions;
@@ -108,7 +110,7 @@ test("Agents SDK mode uses a server-selected model, one read-only tool, and a fi
     capturedAgent = agent;
     capturedInput = input;
     capturedOptions = options;
-    assert.equal(agent.tools.length, 1);
+    assert.equal(agent.tools.length, 2);
     const toolOutput = JSON.parse(await agent.tools[0].execute({ queries: ["Bi2212"], limit: 3 }));
     assert.ok(toolOutput.matches.some(row => [row.material, row.display_name].some(value => String(value).toLowerCase().includes("bi2212"))));
     return { finalOutput: "基于本地目录，Bi2212 的 ARPES 重点包括赝能隙与节点/反节点差异。" };
@@ -148,9 +150,10 @@ test("Agent adds Dropbox knowledge search only when the server integration is en
   const sdk = fakeSdk(async agent => {
     assert.deepEqual(agent.tools.map(tool => tool.name), [
       "lookup_material_catalog",
+      "query_material_database",
       "search_dropbox_knowledge"
     ]);
-    const output = JSON.parse(await agent.tools[1].execute({ query: "uploaded FeSe notes", limit: 4 }));
+    const output = JSON.parse(await agent.tools.find(tool => tool.name === "search_dropbox_knowledge").execute({ query: "uploaded FeSe notes", limit: 4 }));
     assert.equal(output.source, "dropbox_vector_store");
     assert.equal(output.matches[0].filename, "FeSe-upload.pdf");
     return { finalOutput: "Dropbox 文件 FeSe-upload.pdf 中的相关证据已检索。" };
@@ -185,6 +188,33 @@ test("Agent adds Dropbox knowledge search only when the server integration is en
     loadSdk: async () => sdk
   });
   assert.equal(result.answer, "Dropbox 文件 FeSe-upload.pdf 中的相关证据已检索。");
+});
+
+test("Agent SQL tool executes typed filters and safely reports invalid queries", async () => {
+  const sdk = fakeSdk(async agent => {
+    const sql = agent.tools.find(tool => tool.name === "query_material_database");
+    assert.ok(sql);
+    const args = sql.parameters.parse({
+      query: null, topic: "all", family: null, element: "Cu",
+      tc: { operator: "gt", value: 30 }, sort: "tc_desc", limit: 4
+    });
+    const output = JSON.parse(await sql.execute(args));
+    assert.equal(output.source, "local_arpes_sqlite_catalog");
+    assert.ok(output.matches.length > 0);
+    assert.ok(output.matches.every(row => row.elements.includes("Cu") && row.transition_temperature_K > 30));
+    const invalid = JSON.parse(await sql.execute({ sql: "DELETE FROM materials" }));
+    assert.equal(invalid.available, false);
+    assert.equal(invalid.code, "MATERIAL_SQL_INVALID_FILTERS");
+    assert.match(agent.instructions, /query_material_database/);
+    return { finalOutput: "已查询种子目录中的铜基材料，数据仍需文献核验。" };
+  });
+  const result = await runArpesResearchAgent({
+    messages: [{ role: "user", content: "找出 Tc 大于 30 K 的含铜材料" }], ip: "agent-sql-integration-test"
+  }, {
+    env: { OPENAI_API_KEY: "fake-key-no-network", OPENAI_AGENT_ENABLED: "true" },
+    loadSdk: async () => sdk
+  });
+  assert.match(result.answer, /铜基材料/);
 });
 
 test("agent mode reuses the existing login gate before loading the SDK", async () => {

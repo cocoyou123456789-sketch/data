@@ -625,7 +625,7 @@ test("browser network diagnostics use a simple GET health probe without retrying
   for (const file of ["github-pages/index.html", "github-pages/model-test.html"]) {
     const html = fs.readFileSync(file, "utf8");
     const healthBlock = html.match(
-      /async function checkApiHealth\(\) \{([\s\S]*?)\n\s*\}\n\n\s*async function diagnoseNetworkFailure/
+      /async function checkApiHealth\(\) \{([\s\S]*?)\r?\n\s*\}\r?\n\r?\n\s*async function diagnoseNetworkFailure/
     );
     assert.ok(healthBlock, `${file} declares checkApiHealth`);
     assert.match(healthBlock[1], /method: "GET"/);
@@ -633,7 +633,7 @@ test("browser network diagnostics use a simple GET health probe without retrying
     assert.doesNotMatch(healthBlock[1], /Authorization/i);
 
     const diagnosticBlock = html.match(
-      /async function diagnoseNetworkFailure\(error\) \{([\s\S]*?)\n\s*\}\n\n\s*function addResult/
+      /async function diagnoseNetworkFailure\(error\) \{([\s\S]*?)\r?\n\s*\}\r?\n\r?\n\s*function addResult/
     );
     assert.ok(diagnosticBlock, `${file} declares diagnoseNetworkFailure`);
     assert.match(diagnosticBlock[1], /REQUEST_INTERRUPTED/);
@@ -650,7 +650,7 @@ test("browser model POSTs avoid CORS preflight and use unique non-secret request
   for (const [file, functionName, nextFunctionName] of cases) {
     const html = fs.readFileSync(file, "utf8");
     const block = html.match(new RegExp(
-      `async function ${functionName}\\([^)]*\\) \\{([\\s\\S]*?)\\n\\s*\\}\\n\\n\\s*function ${nextFunctionName}\\(`
+      `async function ${functionName}\\([^)]*\\) \\{([\\s\\S]*?)\\r?\\n\\s*\\}\\r?\\n\\r?\\n\\s*function ${nextFunctionName}\\(`
     ));
     assert.ok(block, `${file} declares ${functionName}`);
     assert.match(block[1], /fetch\(uniqueChatPostEndpoint\(API\)/);
@@ -663,7 +663,7 @@ test("browser model POSTs avoid CORS preflight and use unique non-secret request
 
   const mainHtml = fs.readFileSync("github-pages/index.html", "utf8");
   const mainChatBlock = mainHtml.match(
-    /async function callConfiguredAiEndpoint\([^)]*\) \{([\s\S]*?)\n\s*\}\n\n\s*function renderModelRegistry\(/
+    /async function callConfiguredAiEndpoint\([^)]*\) \{([\s\S]*?)\r?\n\s*\}\r?\n\r?\n\s*function renderModelRegistry\(/
   );
   assert.ok(mainChatBlock, "main page declares callConfiguredAiEndpoint");
   assert.match(mainChatBlock[1], /fetch\(uniqueChatPostEndpoint\(endpoint\)/);
@@ -676,7 +676,7 @@ test("browser model POSTs avoid CORS preflight and use unique non-secret request
   assert.equal((modelTestHtml.match(/fetch\(uniqueChatPostEndpoint\(/g) || []).length, 2);
 
   const helperSource = mainHtml.match(
-    /function uniqueChatPostEndpoint\(endpoint\) \{[\s\S]*?\n\s*\}\n\n\s*function chatTruncationNotice/
+    /function uniqueChatPostEndpoint\(endpoint\) \{[\s\S]*?\r?\n\s*\}\r?\n\r?\n\s*function chatTruncationNotice/
   );
   assert.ok(helperSource, "main page declares uniqueChatPostEndpoint");
   const fakeWindow = {
@@ -688,7 +688,7 @@ test("browser model POSTs avoid CORS preflight and use unique non-secret request
   };
   const makeUniqueEndpoint = new Function(
     "window",
-    `${helperSource[0].replace(/\n\n\s*function chatTruncationNotice[\s\S]*$/, "")}\nreturn uniqueChatPostEndpoint;`
+    `${helperSource[0].replace(/\r?\n\r?\n\s*function chatTruncationNotice[\s\S]*$/, "")}\nreturn uniqueChatPostEndpoint;`
   )(fakeWindow);
   const firstUrl = new URL(makeUniqueEndpoint("https://api.example.test/chat"));
   const secondUrl = new URL(makeUniqueEndpoint("https://api.example.test/chat"));

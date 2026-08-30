@@ -189,6 +189,25 @@ Agent 仍通过 `/api/chat`，并复用现有来源白名单、登录会话、�
 OpenAI 官方建议从一个聚焦 Agent 开始，再逐步增加工具与专业 Agent：
 https://developers.openai.com/api/docs/guides/agents/quickstart
 
+### SQL 材料查询
+
+正式 Agent 新增只读工具 `query_material_database`。例如可提问：
+“从网站目录找出 Tc 大于 30 K 的含铜材料，按 Tc 从高到低排序，并注明数据来源”。
+模型仅传递关键词、材料族、元素、主题、Tc 比较条件和排序；服务端用参数化 SQLite 查询执行。
+支持 `gt/gte/lt/lte/eq`，因此大于与大于等于不会混淆。单次最多返回 12 条，并返回总匹配数和截断标记。
+
+当前 SQLite 是从两份版本化 JSON 材料目录创建的服务端内存快照，由 `sql.js` 的单文件兼容构建运行，
+不需要新数据库账号，也不改变现有 Node 20+ 运行环境。初始化后开启 `PRAGMA query_only`；不向模型
+或网页开放任意 SQL、写入、文件路径、数据库连接或管理凭证。仍通过现有 `/api/chat` 登录、来源限制和限流。
+
+这不是新的实测数据库：未知 Tc 保留为 NULL，种子数据的 `verification_status`、Tc 说明与来源文件
+会随结果返回；ARPES 特征描述不能证明已完成测量。当前不解析 Dropbox 文档进入 SQL，不存储新的
+实验记录，也不向无登录 Demo 开放付费 Agent。Dropbox 仍走独立的文档检索路径。需要多人持续写入
+实验数据时，再接入持久化数据库，而不是在临时函数磁盘中保存数据。
+
+工具接入方式参考 [OpenAI 工具文档](https://developers.openai.com/api/docs/guides/tools)，
+SQLite 实现参考 [sql.js 官方文档](https://github.com/sql-js/sql.js)。
+
 ### Dropbox 自动知识库
 
 生产 Agent 可以把 Dropbox 中的文件同步为 OpenAI 向量知识库。这个过程属于 RAG（检索增强生成）：
