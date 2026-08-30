@@ -14,6 +14,7 @@ test("the first visit starts in English before the application script runs", () 
 });
 
 test("stored Chinese or English is preserved, with English as the only fallback", () => {
+  assert.match(html, /const LANG_STORAGE_KEY = "arpes-explorer-lang-v2";/);
   assert.match(html, /function getInitialLanguage\(\)\s*{[\s\S]*?storedLanguage === "zh" \|\| storedLanguage === "en" \? storedLanguage : "en";[\s\S]*?}/);
   assert.match(html, /let currentLang = getInitialLanguage\(\);/);
   assert.match(html, /async function init\(\)\s*{\s*applyStaticLanguage\(\);\s*initLogin\(\);/);
