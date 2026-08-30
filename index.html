@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <script src="./netlify-handoff.js?v=202608272"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <title>ARPES Superconductivity Explorer | 超导材料探索器</title>
+  <title>ARPES Superconductivity Explorer</title>
   <link rel="stylesheet" href="arpes-dft.css">
   <link rel="stylesheet" href="bohrium-openlam.css">
   <link rel="stylesheet" href="material-consensus.css">
@@ -8878,9 +8878,9 @@
 <body class="locked">
   <div class="mobile-load-help" id="mobileLoadHelp">
     <div class="mobile-load-help-card">
-      <strong>手机微信加载较慢</strong>
-      <p>如果这里一直是空白，请点右上角 “...” 选择“在浏览器打开”。GitHub Pages 在微信内置浏览器里经常会被拦截或卡住。</p>
-      <a href="https://cocoyou123456789-sketch.github.io/data/" target="_self" rel="noopener">重新打开页面</a>
+      <strong>Loading slowly in WeChat?</strong>
+      <p>If this page stays blank, tap “...” in the top-right corner and choose “Open in Browser.” GitHub Pages may be blocked or delayed inside WeChat.</p>
+      <a href="https://cocoyou123456789-sketch.github.io/data/" target="_self" rel="noopener">Reload page</a>
     </div>
   </div>
   <div class="login-screen" id="loginScreen" role="dialog" aria-modal="true" aria-label="ARPES access">
@@ -8889,7 +8889,7 @@
         <div class="login-column">
           <div class="login-badge-row">
             <span class="login-badge" data-i18n="loginUstcBadge">NSRL Lab Access</span>
-            <span class="login-badge" data-i18n="loginOfficialBadge">NSRL 真实入口</span>
+            <span class="login-badge" data-i18n="loginOfficialBadge">NSRL Real Access</span>
           </div>
           <div class="login-eye-stage" aria-hidden="true">
             <div class="ustc-orbit">
@@ -8905,8 +8905,8 @@
             </div>
           </div>
           <div class="login-visual-copy">
-            <h2 data-i18n="loginTitle">NSRL 光源入口</h2>
-            <p class="muted" data-i18n="loginHint">左侧代表 NSRL 的真实实验入口，连接材料、文献和本地实验数据。</p>
+            <h2 data-i18n="loginTitle">NSRL Light Source Access</h2>
+            <p class="muted" data-i18n="loginHint">The left side represents the real NSRL experimental entrance connected to materials, papers, and local data.</p>
           </div>
         </div>
         <div class="login-feature">
@@ -8916,53 +8916,53 @@
             </video>
           </div>
           <div class="login-virtual-copy">
-            <h2 data-i18n="loginGuestTitle">其他访问者 · 虚拟入口</h2>
-            <p class="muted" data-i18n="loginGuestHint">右侧给非 NSRL 或外部访问者使用：登录、创建本地账号，或以访客身份进入演示工作台。</p>
+            <h2 data-i18n="loginGuestTitle">Other Visitors · Virtual Access</h2>
+            <p class="muted" data-i18n="loginGuestHint">The right side is for non-NSRL or external visitors: sign in, create a local account, or continue as a guest.</p>
           </div>
           <div class="login-ustc-panel">
-            <h3 data-i18n="loginUstcPanelTitle">AI 授权账号登录</h3>
+            <h3 data-i18n="loginUstcPanelTitle">Authorized AI account</h3>
             <div class="login-mini-grid">
               <label data-label-i18n="loginEmailLabel">Email
                 <input id="ustcLoginEmail" type="email" autocomplete="email" placeholder="name@nsrl.ac.cn">
               </label>
-              <label data-label-i18n="loginPasswordLabel">密码
+              <label data-label-i18n="loginPasswordLabel">Password
                 <input id="ustcLoginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
               </label>
             </div>
             <span class="status" id="ustcLoginStatus"></span>
             <div class="login-ustc-actions">
-              <button class="primary" id="ustcLoginBtn" type="button" data-i18n="loginUstcBtn">登录并连接 AI</button>
-              <button id="ustcGuestBtn" type="button" data-i18n="loginUstcGuestBtn">NSRL 预览</button>
+              <button class="primary" id="ustcLoginBtn" type="button" data-i18n="loginUstcBtn">Sign in and connect AI</button>
+              <button id="ustcGuestBtn" type="button" data-i18n="loginUstcGuestBtn">NSRL Preview</button>
             </div>
           </div>
           <div class="login-form-panel">
             <div class="auth-tabs" role="group" aria-label="Authentication mode">
-              <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab" aria-pressed="true">登录</button>
-              <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab" aria-pressed="false">创建账号</button>
+              <button class="auth-tab active" id="signInTab" type="button" data-auth-mode="signin" data-i18n="signInTab" aria-pressed="true">Sign In</button>
+              <button class="auth-tab" id="createAccountTab" type="button" data-auth-mode="signup" data-i18n="createAccountTab" aria-pressed="false">Create Account</button>
             </div>
             <div class="form-grid">
               <label data-label-i18n="loginEmailLabel">Email
                 <input id="loginEmail" type="email" autocomplete="email" placeholder="name@nsrl.ac.cn">
               </label>
-              <label data-label-i18n="loginPasswordLabel">密码
+              <label data-label-i18n="loginPasswordLabel">Password
                 <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
               </label>
-              <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" hidden>确认密码
+              <label id="confirmPasswordWrap" data-label-i18n="confirmPasswordLabel" hidden>Confirm Password
                 <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="••••••••">
               </label>
-              <label id="loginNameWrap" data-label-i18n="loginNameLabel" hidden>姓名 / 用户
+              <label id="loginNameWrap" data-label-i18n="loginNameLabel" hidden>Name / User
                 <input id="loginName" autocomplete="name" placeholder="NSRL ARPES user">
               </label>
-              <label id="loginGroupWrap" data-label-i18n="loginGroupLabel" hidden>课题组 / 光源站
+              <label id="loginGroupWrap" data-label-i18n="loginGroupLabel" hidden>Group / Beamline
                 <input id="loginGroup" autocomplete="organization" placeholder="NSRL / ARPES">
               </label>
             </div>
             <span class="status" id="loginStatus" aria-live="polite"></span>
             <div class="login-entry-actions">
-              <button class="primary" id="quickGuestLoginBtn" type="button" data-i18n="guestLoginBtn" title="Open the workbench without an account">直接进入网站</button>
-              <button id="loginBtn" data-i18n="loginBtn" title="Use local browser account access">使用本机账号进入</button>
+              <button class="primary" id="quickGuestLoginBtn" type="button" data-i18n="guestLoginBtn" title="Open the workbench without an account">Open Website</button>
+              <button id="loginBtn" data-i18n="loginBtn" title="Use local browser account access">Use Local Account</button>
             </div>
-            <span class="status" data-i18n="loginPrivacy">本机账号不会跨设备同步；换手机或电脑时可直接进入网站。</span>
+            <span class="status" data-i18n="loginPrivacy">Local accounts do not sync across devices. On another phone or computer, use Open Website.</span>
           </div>
         </div>
       </div>
@@ -9087,8 +9087,8 @@
         <div class="sound-bar" style="animation-delay:0.16s"></div>
       </div>
       <div class="lang-toggle" id="langToggle" role="group" aria-label="切换语言 Switch Language" title="切换语言 Switch Language">
-        <button class="lang-option active" type="button" data-lang="zh" aria-pressed="true">中文</button>
-        <button class="lang-option" type="button" data-lang="en" aria-pressed="false">EN</button>
+        <button class="lang-option" type="button" data-lang="zh" aria-pressed="false">中文</button>
+        <button class="lang-option active" type="button" data-lang="en" aria-pressed="true">EN</button>
       </div>
       <div class="voice-command-wrap">
         <button class="voice-command-btn" id="voiceCommandBtn" type="button" aria-label="语音控制" aria-pressed="false" title="语音控制">
@@ -12438,7 +12438,12 @@
       } catch {}
     }
 
-    let currentLang = safeStorageGet(LANG_STORAGE_KEY) || "zh";
+    function getInitialLanguage() {
+      const storedLanguage = safeStorageGet(LANG_STORAGE_KEY);
+      return storedLanguage === "zh" || storedLanguage === "en" ? storedLanguage : "en";
+    }
+
+    let currentLang = getInitialLanguage();
     function t(key) {
       return (I18N[currentLang] && I18N[currentLang][key]) || (I18N["en"][key]) || key;
     }
@@ -12447,26 +12452,15 @@
       return t(key).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
     }
 
-    function switchLang(lang) {
-      currentLang = lang;
-      safeStorageSet(LANG_STORAGE_KEY, lang);
-      document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+    function applyStaticLanguage() {
+      document.documentElement.lang = currentLang === "zh" ? "zh-CN" : "en";
+      document.title = currentLang === "zh" ? "ARPES 超导材料探索器" : "ARPES Superconductivity Explorer";
       // Update toggle buttons
       document.querySelectorAll(".lang-option").forEach(opt => {
-        const isActive = opt.dataset.lang === lang;
+        const isActive = opt.dataset.lang === currentLang;
         opt.classList.toggle("active", isActive);
         opt.setAttribute("aria-pressed", String(isActive));
       });
-      // Re-render everything
-      applyFilters();
-      renderOurData();
-      renderArticles();
-      renderKeywordChips();
-      renderChatThread();
-      if (state.chatTableRows.length) makeChatTable();
-      renderChatTable();
-      if (articlesLoaded) updateImportMetrics();
-      if (activeAppPage === "data") renderLibrary().catch(() => {});
       // Update static i18n elements
       document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.dataset.i18n;
@@ -12480,6 +12474,22 @@
         const key = el.dataset.labelI18n;
         if (key) setLeadingText(el, t(key));
       });
+    }
+
+    function switchLang(lang) {
+      currentLang = lang === "zh" ? "zh" : "en";
+      safeStorageSet(LANG_STORAGE_KEY, currentLang);
+      applyStaticLanguage();
+      // Re-render everything
+      applyFilters();
+      renderOurData();
+      renderArticles();
+      renderKeywordChips();
+      renderChatThread();
+      if (state.chatTableRows.length) makeChatTable();
+      renderChatTable();
+      if (articlesLoaded) updateImportMetrics();
+      if (activeAppPage === "data") renderLibrary().catch(() => {});
       // Update template notes
       const notesEl = document.querySelector("#templateNotesText");
       if (notesEl) notesEl.innerHTML = t("seedDataNote");
@@ -16010,6 +16020,7 @@
 
     // ===== 初始化 =====
     async function init() {
+      applyStaticLanguage();
       initLogin();
       document.body.classList.add("app-initialized");
       setupChatPanelSizing();
