@@ -8993,7 +8993,7 @@
           <span data-i18n="magicBookShelfPhysical">物理材料</span>
           <small data-i18n="magicBookShelfPhysicalHint">超导材料入口</small>
         </button>
-        <a class="magic-tome green" href="./chemistry.html?v=282df75" aria-label="点击进入同步辐射化学材料智能分析中心" onclick="window.location.assign(this.href); return false;">
+        <a class="magic-tome green" href="./chemistry.html?v=20260831-wide" aria-label="点击进入同步辐射化学材料智能分析中心" onclick="window.location.assign(this.href); return false;">
           <span data-i18n="magicBookChemistry">化学材料</span>
           <small data-i18n="magicBookShelfChemistryHint">同步辐射 · DFT · AI 分析</small>
           <em>进入 SynchroChemAI</em>
@@ -29819,7 +29819,7 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
   ['合成与制备方法','把设计转化为可控样品',[['固相与液相','烧结、溶胶凝胶、水热和沉淀'],['气相与薄膜','CVD、PVD、ALD 和外延生长'],['聚合与加工','聚合、成型与复合'],['绿色与规模化','低能耗、连续化和可持续制备']]],
   ['结构与成分表征','用证据连接结构与结论',[['物相与结构','XRD、电子衍射与散射'],['形貌与微区','SEM、TEM 与 AFM'],['组成与化学态','光谱、质谱、XPS 与元素分析'],['热与原位表征','DSC/TGA、原位和操作态测试']]],
   ['性能与应用','从指标走向工程场景',[['力学与热学','强度、韧性、热容与热传导'],['电磁与光学','输运、介电、磁性和光响应'],['耐久与安全','老化、疲劳、腐蚀和失效分析'],['应用匹配','能源、电子、环境、生医与结构件']]],
-  ['进阶专题','面向研究与产业前沿',[['催化材料','活性位、选择性、载体与催化循环'],['电池材料','正负极、电解质、界面膜与衰减'],['半导体材料','能带、载流子、缺陷与器件工艺'],['功能材料','光电、铁电、磁性、智能与响应材料']]]];grid.innerHTML=chapters.map((c,i)=>`<details class="chemistry-card" ${i?'':'open'}><summary><span class="chemistry-level">${String(i+1).padStart(2,'0')}</span><span><h2>${c[0]}</h2><p>${c[1]}</p></span><span class="chemistry-toggle">+</span></summary><div class="chemistry-topics">${c[2].map(t=>`<div class="chemistry-topic"><strong>${t[0]}</strong><span>${t[1]}</span></div>`).join('')}</div></details>`).join('');const open=()=>window.location.assign('./chemistry.html?v=282df75'),close=()=>history.back();window.openChemistryMaterials=open;window.closeChemistryMaterials=close;document.querySelector('[data-magic-library="chemistry"]')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();open()},true);back?.addEventListener('click',close);if(location.hash==='#chemistry-materials')open()})();
+  ['进阶专题','面向研究与产业前沿',[['催化材料','活性位、选择性、载体与催化循环'],['电池材料','正负极、电解质、界面膜与衰减'],['半导体材料','能带、载流子、缺陷与器件工艺'],['功能材料','光电、铁电、磁性、智能与响应材料']]]];grid.innerHTML=chapters.map((c,i)=>`<details class="chemistry-card" ${i?'':'open'}><summary><span class="chemistry-level">${String(i+1).padStart(2,'0')}</span><span><h2>${c[0]}</h2><p>${c[1]}</p></span><span class="chemistry-toggle">+</span></summary><div class="chemistry-topics">${c[2].map(t=>`<div class="chemistry-topic"><strong>${t[0]}</strong><span>${t[1]}</span></div>`).join('')}</div></details>`).join('');const open=()=>window.location.assign('./chemistry.html?v=20260831-wide'),close=()=>history.back();window.openChemistryMaterials=open;window.closeChemistryMaterials=close;document.querySelector('[data-magic-library="chemistry"]')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();open()},true);back?.addEventListener('click',close);if(location.hash==='#chemistry-materials')open()})();
   </script>
 </body>
 </html>
