@@ -10,3 +10,10 @@ skills-lock.json
 
 # macOS metadata
 .DS_Store
+
+# Server-side secrets and generated material data
+.env
+.env.*
+!.env.example
+inputs/wos/
+outputs/materials_project_summary_cache.json

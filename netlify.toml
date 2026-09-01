@@ -18,6 +18,18 @@
   force = true
 
 [[redirects]]
+  from = "/api/materials-search"
+  to = "/.netlify/functions/materials-search"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/materials-structure"
+  to = "/.netlify/functions/materials-structure"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/scienceone"
   to = "/.netlify/functions/scienceone"
   status = 200

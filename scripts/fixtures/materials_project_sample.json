@@ -1,0 +1,27 @@
+{
+  "MoS2": [
+    {
+      "material_id": "mp-2815",
+      "formula_pretty": "MoS2",
+      "elements": ["Mo", "S"],
+      "nelements": 2,
+      "structure": {"@module": "pymatgen.core.structure", "@class": "Structure", "sites": []},
+      "symmetry": {"symbol": "P6_3/mmc", "number": 194, "crystal_system": "Hexagonal"},
+      "band_gap": 1.2,
+      "is_gap_direct": false,
+      "is_metal": false,
+      "is_stable": true,
+      "energy_above_hull": 0,
+      "formation_energy_per_atom": -1.1,
+      "density": 5.0,
+      "volume": 106.0,
+      "total_magnetization": 0,
+      "ordering": "NM",
+      "theoretical": false,
+      "deprecated": false,
+      "has_props": ["dos", "bandstructure"],
+      "database_IDs": {"icsd": [49801]}
+    }
+  ],
+  "TiS3": []
+}

@@ -286,6 +286,45 @@ python3 scripts/import_free_arpes.py --skip-crossref
 github-pages/data/free_arpes_articles.json
 ```
 
+## WoS + Materials Project 材料数据库
+
+项目支持先把 Web of Science 手动导出的 `savedrecs.txt` 转换为文章数据库，再通过 Materials Project 官方 API 补充晶体结构、带隙、稳定性、密度、磁性以及 DOS/能带可用状态。
+
+```powershell
+node scripts/build_shared_articles_from_wos.mjs inputs/wos/savedrecs.txt
+node scripts/enrich_materials_project.mjs --dry-run --limit 30
+$env:MP_API_KEY="你的 Materials Project API Key"
+node scripts/enrich_materials_project.mjs --limit 50
+```
+
+生成的材料性质数据库位于 `github-pages/data/materials_properties.json`。原始 WoS 导出目录、API Key 文件和 API 缓存不会提交到公开仓库。完整说明见 `docs/wos-materials-project-workflow.md`。
+
+`github-pages/chemistry.html` 的 01 模块还提供在线关键词检索窗口。部署端同时配置 `WOS_API_KEY` 和 `MP_API_KEY` 后，用户可以输入 WoS 关键词并直接获得关联论文和 Materials Project 计算性质。GitHub Pages 前端只调用后端，不接触或保存密钥。
+
+### Materials Project 晶体结构搜索
+
+模块 01 还提供不依赖 Web of Science 的独立结构检索器。可以按化学式（`MoS2`）、Materials Project ID（`mp-2815`）、元素体系（`Li-Fe-O`）、包含元素、带隙、稳定性、金属/非金属、晶系及 DOS/能带可用状态进行筛选。每条结果包含晶格参数、原子分数坐标、Materials Project 来源链接和结构投影，并支持下载 CIF；有序结构还可下载 POSCAR。
+
+在 VS Code 终端中启动带 API 后端的本地预览：
+
+```powershell
+node scripts/dev_materials_structure_server.js
+```
+
+然后打开：
+
+```text
+http://127.0.0.1:8771/chemistry.html
+```
+
+本地密钥写在项目根目录 `.env`：
+
+```dotenv
+MP_API_KEY=你的Materials Project API Key
+```
+
+结构检索使用 `POST /api/materials-structure`。Vercel 部署使用 `api/materials-structure.js`，Netlify 部署使用 `netlify/functions/materials-structure.js`；两种部署都必须在平台环境变量中配置 `MP_API_KEY`。`.env` 已被 Git 忽略，密钥不会进入前端或 GitHub。
+
 网站打开时会自动读取 `articles.json` 和 `free_arpes_articles.json`，按 DOI 或标题/年份去重后显示在 Article Data 中。
 
 ## 本地抽取工具
