@@ -144,9 +144,9 @@
     status.textContent = `已从 Materials Project 获取 ${data.statistics?.total_returned ?? 0} 条真实结构记录。点击“查看结构”可检查晶格与原子坐标。`;
   }
 
-  function downloadText(filename, content) {
+  function downloadText(filename, content, mimeType = "text/plain;charset=utf-8") {
     if (!content) return;
-    const url = URL.createObjectURL(new Blob([content], { type: "text/plain;charset=utf-8" }));
+    const url = URL.createObjectURL(new Blob([content], { type: mimeType }));
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = filename;
@@ -169,7 +169,7 @@
     } else if (button.dataset.action === "cif") {
       downloadText(`${material.material_id}_${material.formula_pretty}.cif`, material.files.cif);
     } else if (button.dataset.action === "poscar") {
-      downloadText(`POSCAR_${material.material_id}_${material.formula_pretty}`, material.files.poscar);
+      downloadText(`${material.material_id}_${material.formula_pretty}.vasp`, material.files.poscar, "application/octet-stream");
     }
   });
 
