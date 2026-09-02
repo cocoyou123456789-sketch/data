@@ -13,7 +13,7 @@
   const hostedBackend = host.endsWith("vercel.app") || host.endsWith("netlify.app") || host === "localhost" || host === "127.0.0.1";
   const defaultEndpoint = hostedBackend
     ? "/api/materials-structure"
-    : "https://arpes-materials-explorer-cocoyou.netlify.app/.netlify/functions/materials-structure";
+    : "https://arpes-materials-explorer-cocoyou-361.netlify.app/.netlify/functions/materials-structure";
   const savedEndpoint = localStorage.getItem("materialsStructureApiEndpoint") || defaultEndpoint;
 
   const panel = document.createElement("section");
