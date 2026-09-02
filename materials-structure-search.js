@@ -14,7 +14,12 @@
   const defaultEndpoint = hostedBackend
     ? "/api/materials-structure"
     : "https://arpes-materials-explorer-cocoyou-361.netlify.app/.netlify/functions/materials-structure";
-  const savedEndpoint = localStorage.getItem("materialsStructureApiEndpoint") || defaultEndpoint;
+  const legacyEndpoints = new Set([
+    "https://arpes-materials-explorer-cocoyou.netlify.app/.netlify/functions/materials-structure"
+  ]);
+  const storedEndpoint = localStorage.getItem("materialsStructureApiEndpoint");
+  const savedEndpoint = storedEndpoint && !legacyEndpoints.has(storedEndpoint) ? storedEndpoint : defaultEndpoint;
+  if (storedEndpoint !== savedEndpoint) localStorage.setItem("materialsStructureApiEndpoint", savedEndpoint);
 
   const panel = document.createElement("section");
   panel.id = "mpStructurePanel";
