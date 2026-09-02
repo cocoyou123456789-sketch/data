@@ -1,5 +1,5 @@
 (() => {
-  const module = document.querySelector("#m2");
+  const module = document.querySelector("#m1");
   if (!module || document.querySelector("#wosMpPanel")) return;
 
   const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -13,8 +13,13 @@
   const hostedBackend = host.endsWith("vercel.app") || host.endsWith("netlify.app") || host === "localhost" || host === "127.0.0.1";
   const defaultEndpoint = hostedBackend
     ? "/api/materials-search"
-    : "https://arpes-materials-explorer-cocoyou.netlify.app/.netlify/functions/materials-search";
-  const savedEndpoint = localStorage.getItem("materialsSearchApiEndpoint") || defaultEndpoint;
+    : "https://arpes-materials-explorer-cocoyou-361.netlify.app/.netlify/functions/materials-search";
+  const legacyEndpoints = new Set([
+    "https://arpes-materials-explorer-cocoyou.netlify.app/.netlify/functions/materials-search"
+  ]);
+  const storedEndpoint = localStorage.getItem("materialsSearchApiEndpoint");
+  const savedEndpoint = storedEndpoint && !legacyEndpoints.has(storedEndpoint) ? storedEndpoint : defaultEndpoint;
+  if (storedEndpoint !== savedEndpoint) localStorage.setItem("materialsSearchApiEndpoint", savedEndpoint);
 
   const panel = document.createElement("section");
   panel.id = "wosMpPanel";
