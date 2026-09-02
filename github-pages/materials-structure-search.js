@@ -26,8 +26,8 @@
   panel.className = "mp-structure-explorer";
   panel.innerHTML = `
     <header class="mpx-head">
-      <div><strong>Materials Project Structure Explorer</strong><span>LIVE CRYSTAL STRUCTURE SEARCH</span></div>
-      <div class="mpx-head-actions"><span>MP API</span><button type="button" id="mpxReset">Reset all</button></div>
+      <div><strong>Materials Project Materials & Spectroscopy Explorer</strong><span>STRUCTURE · PROPERTIES · DOS · BAND · XAS · OPTICS</span></div>
+      <div class="mpx-head-actions"><span>NEW · MP SPECTRA</span><button type="button" id="mpxReset">Reset all</button></div>
     </header>
     <div class="mpx-layout">
       <form class="mpx-filters" id="mpxForm">
@@ -47,7 +47,7 @@
       </form>
       <main class="mpx-main">
         <div class="mpx-resultbar"><div><b>Search Results</b><span id="mpxMeta">输入条件后检索 Materials Project 晶体结构</span></div><div class="mpx-tabs"><button type="button" class="active" data-view="table">Table</button><button type="button" data-view="structure">Structure</button></div></div>
-        <div class="mpx-status" id="mpxStatus" role="status">支持化学式、Materials Project ID 和元素体系检索，可下载 CIF 与 POSCAR。</div>
+        <div class="mpx-status" id="mpxStatus" role="status">支持结构检索、性质汇总、DOS/能带任务、XAS与光学曲线，可下载 CIF 与 VASP。</div>
         <div class="mpx-results" id="mpxResults"><div class="mpx-empty"><strong>Start a structure search</strong><span>例如输入 MoS2，或设置带隙 ≤ 1.5 eV 后检索。</span></div></div>
         <footer>Data source: Materials Project · Computed structures and properties · 同一化学式可能包含多个晶型</footer>
       </main>
@@ -201,15 +201,15 @@
         <div><span>Crystal system</span><b>${escapeHtml(symmetry.crystal_system || "—")}</b></div>
         <div><span>Sites</span><b>${number(material.nsites, 0)}</b></div>
         <div><span>Stable</span><b>${booleanLabel(material.is_stable)}</b></div>
-        <div class="mpx-row-actions"><button type="button" data-action="view" aria-controls="${detailId}">材料详情</button><button type="button" data-action="cif" ${material.files?.cif ? "" : "disabled"}>CIF</button><button type="button" data-action="poscar" ${poscarDisabled}>POSCAR</button></div>
+        <div class="mpx-row-actions"><button type="button" data-action="view" aria-controls="${detailId}">性质与谱学</button><button type="button" data-action="cif" ${material.files?.cif ? "" : "disabled"}>CIF</button><button type="button" data-action="poscar" ${poscarDisabled}>VASP</button></div>
       </div>
       <div class="mpx-detail" id="${detailId}" hidden>
-        <nav class="mpx-detail-tabs"><button type="button" class="active" data-detail-tab="structure">结构</button><button type="button" data-detail-tab="properties">性质</button><button type="button" data-detail-tab="dos">DOS${material.has_dos ? " ✓" : ""}</button><button type="button" data-detail-tab="band">能带${material.has_band_structure ? " ✓" : ""}</button><button type="button" data-detail-tab="spectra">XAS / 光学</button></nav>
-        <section data-detail-panel="structure"><div class="mpx-detail-grid">
+        <div class="mpx-detail-kicker"><b>Materials Project 数据详情</b><span>点击标签切换结构、性质和谱学数据；缺失数据不会生成模拟曲线。</span></div><nav class="mpx-detail-tabs"><button type="button" data-detail-tab="structure">01 结构</button><button type="button" class="active" data-detail-tab="properties">02 性质</button><button type="button" data-detail-tab="dos">03 DOS${material.has_dos ? " ✓" : ""}</button><button type="button" data-detail-tab="band">04 能带${material.has_band_structure ? " ✓" : ""}</button><button type="button" data-detail-tab="spectra">05 XAS / 光学</button></nav>
+        <section data-detail-panel="structure" hidden><div class="mpx-detail-grid">
           ${projectedStructure(material)}
           <div class="mpx-lattice"><h5>Structure & lattice</h5><dl><div><dt>a / b / c</dt><dd>${number(structure?.lattice?.a)} / ${number(structure?.lattice?.b)} / ${number(structure?.lattice?.c)} Å</dd></div><div><dt>α / β / γ</dt><dd>${number(structure?.lattice?.alpha)}° / ${number(structure?.lattice?.beta)}° / ${number(structure?.lattice?.gamma)}°</dd></div><div><dt>Volume</dt><dd>${number(material.volume_A3)} Å³</dd></div><div><dt>Density</dt><dd>${number(material.density_g_cm3)} g/cm³</dd></div><div><dt>E above hull</dt><dd>${number(material.energy_above_hull_eV_atom)} eV/atom</dd></div><div><dt>Electronic data</dt><dd>${material.has_dos ? "DOS" : "—"} ${material.has_band_structure ? "/ Band structure" : ""}</dd></div></dl>${material.files?.poscar_note ? `<p class="mpx-warning">${escapeHtml(material.files.poscar_note)}</p>` : ""}</div>
         </div>
-        ${atomTable(material)}</section><section data-detail-panel="properties" hidden></section><section data-detail-panel="dos" hidden></section><section data-detail-panel="band" hidden></section><section data-detail-panel="spectra" hidden></section>
+        ${atomTable(material)}</section><section data-detail-panel="properties"></section><section data-detail-panel="dos" hidden></section><section data-detail-panel="band" hidden></section><section data-detail-panel="spectra" hidden></section>
       </div>
     </article>`;
   }
@@ -255,7 +255,11 @@
     if (button.dataset.action === "view") {
       const detail = card.querySelector(".mpx-detail");
       detail.hidden = !detail.hidden;
-      button.textContent = detail.hidden ? "材料详情" : "收起详情";
+      button.textContent = detail.hidden ? "性质与谱学" : "收起详情";
+      if (!detail.hidden) {
+        selectDetailTab(card, "properties");
+        loadDetails(card, material).catch(error => { card.querySelector('[data-detail-panel="properties"]').innerHTML = emptyData("数据载入失败", error.message); });
+      }
     } else if (button.dataset.action === "cif") {
       downloadText(`${material.material_id}_${material.formula_pretty}.cif`, material.files.cif);
     } else if (button.dataset.action === "poscar") {
@@ -271,9 +275,9 @@
     activeView = button.dataset.view;
     panel.querySelectorAll(".mpx-tabs button").forEach(item => item.classList.toggle("active", item === button));
     results.dataset.view = activeView;
-    if (activeView === "structure") panel.querySelectorAll(".mpx-detail").forEach(detail => { detail.hidden = false; });
+    if (activeView === "structure") panel.querySelectorAll(".mpx-material").forEach(card => { card.querySelector(".mpx-detail").hidden = false; selectDetailTab(card, "structure"); });
     if (activeView === "table") panel.querySelectorAll(".mpx-detail").forEach(detail => { detail.hidden = true; });
-    panel.querySelectorAll('[data-action="view"]').forEach(item => { item.textContent = activeView === "structure" ? "收起详情" : "材料详情"; });
+    panel.querySelectorAll('[data-action="view"]').forEach(item => { item.textContent = activeView === "structure" ? "收起详情" : "性质与谱学"; });
   }));
   endpointInput.addEventListener("change", () => {
     if (endpointInput.value.trim()) localStorage.setItem("materialsStructureApiEndpoint", endpointInput.value.trim());

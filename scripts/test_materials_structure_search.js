@@ -100,6 +100,9 @@ async function main() {
   assert.match(browserSource, /data-detail-tab="band"/);
   assert.match(browserSource, /data-detail-tab="spectra"/);
   assert.match(browserSource, /action: "details"/);
+  assert.match(browserSource, /Materials Project Materials & Spectroscopy Explorer/);
+  assert.match(browserSource, /data-detail-tab="properties">02 性质/);
+  assert.match(browserSource, /selectDetailTab\(card, "properties"\)/);
   const disordered = structuredClone(structure);
   disordered.sites[0].species = [{ element: "Ti", occu: 0.5 }, { element: "Zr", occu: 0.5 }];
   assert.equal(structureToPoscar(disordered, { formula: "Ti0.5Zr0.5O" }), null);
