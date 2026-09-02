@@ -1,5 +1,5 @@
 (() => {
-  const module = document.querySelector("#m1");
+  const module = document.querySelector("#m2");
   if (!module || document.querySelector("#mpStructurePanel")) return;
 
   const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
