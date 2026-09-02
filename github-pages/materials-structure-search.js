@@ -62,6 +62,7 @@
   const meta = panel.querySelector("#mpxMeta");
   const results = panel.querySelector("#mpxResults");
   let resultMap = new Map();
+  const detailCache = new Map();
   let activeView = "table";
 
   function elementColor(element) {
@@ -108,6 +109,85 @@
     return `<div class="mpx-atom-table"><table><thead><tr><th>#</th><th>Species / occupancy</th><th>a</th><th>b</th><th>c</th></tr></thead><tbody>${rows}</tbody></table>${sites.length > 80 ? `<p>仅预览前 80 / ${sites.length} 个位点，下载 CIF 查看完整结构。</p>` : ""}</div>`;
   }
 
+  function metric(label, value, unit = "") {
+    const display = value === null || value === undefined || value === "" ? "—" : `${escapeHtml(number(value))}${unit ? ` ${escapeHtml(unit)}` : ""}`;
+    return `<div class="mpx-metric"><span>${escapeHtml(label)}</span><b>${display}</b></div>`;
+  }
+
+  function emptyData(title, message) {
+    return `<div class="mpx-data-empty"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(message)}</span></div>`;
+  }
+
+  function lineChart(xValues, yValues, options = {}) {
+    const points = (xValues || []).map((x, index) => [Number(x), Number((yValues || [])[index])]).filter(pair => pair.every(Number.isFinite));
+    if (points.length < 2) return emptyData("暂无曲线", "Materials Project 当前记录没有可绘制的数据数组。");
+    const width = 680, height = 250, left = 52, right = 18, top = 22, bottom = 42;
+    const xs = points.map(pair => pair[0]), ys = points.map(pair => pair[1]);
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    const scaleX = value => left + (value - minX) / Math.max(maxX - minX, 1e-12) * (width - left - right);
+    const scaleY = value => height - bottom - (value - minY) / Math.max(maxY - minY, 1e-12) * (height - top - bottom);
+    const path = points.map((pair, index) => `${index ? "L" : "M"}${scaleX(pair[0]).toFixed(2)},${scaleY(pair[1]).toFixed(2)}`).join(" ");
+    return `<figure class="mpx-chart"><figcaption><b>${escapeHtml(options.title || "Materials Project spectrum")}</b><span>${escapeHtml(options.subtitle || `${points.length} points`)}</span></figcaption><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(options.title || "spectrum")}"><line class="axis" x1="${left}" y1="${height-bottom}" x2="${width-right}" y2="${height-bottom}"/><line class="axis" x1="${left}" y1="${top}" x2="${left}" y2="${height-bottom}"/><line class="zero" x1="${left}" y1="${scaleY(0)}" x2="${width-right}" y2="${scaleY(0)}"/><path d="${path}"/><text x="${left}" y="${height-15}">${number(minX)}</text><text x="${width-right}" y="${height-15}" text-anchor="end">${number(maxX)}</text><text x="${left-8}" y="${top+5}" text-anchor="end">${number(maxY)}</text><text x="${left-8}" y="${height-bottom}" text-anchor="end">${number(minY)}</text><text class="label" x="${(left+width-right)/2}" y="${height-7}" text-anchor="middle">${escapeHtml(options.xLabel || "Energy (eV)")}</text></svg></figure>`;
+  }
+
+  function propertiesPanel(material, data) {
+    const electronic = data.properties?.electronic || {};
+    const dielectric = data.properties?.dielectric || {};
+    const elasticity = data.properties?.elasticity || {};
+    const magnetism = data.properties?.magnetism || {};
+    return `<div class="mpx-property-groups"><section><h6>热力学与结构</h6><div class="mpx-metrics">${metric("形成能", material.formation_energy_eV_atom, "eV/atom")}${metric("凸包能", material.energy_above_hull_eV_atom, "eV/atom")}${metric("密度", material.density_g_cm3, "g/cm³")}${metric("体积", material.volume_A3, "Å³")}</div></section><section><h6>电子与介电</h6><div class="mpx-metrics">${metric("带隙", electronic.band_gap_eV ?? material.band_gap_eV, "eV")}${metric("费米能级", electronic.efermi_eV, "eV")}${metric("介电常数", dielectric.total)}${metric("折射率", dielectric.refractive_index)}</div></section><section><h6>力学与磁性</h6><div class="mpx-metrics">${metric("体积模量", elasticity.bulk_modulus_GPa, "GPa")}${metric("剪切模量", elasticity.shear_modulus_GPa, "GPa")}${metric("德拜温度", elasticity.debye_temperature_K, "K")}${metric("总磁矩", magnetism.total_magnetization_uB_cell, "μB/cell")}</div><p class="mpx-source-note">磁序：${escapeHtml(magnetism.ordering || material.magnetic_ordering || "—")} · 磁性位点：${number(magnetism.magnetic_sites, 0)} · 泊松比：${number(elasticity.poisson_ratio)}</p></section></div>`;
+  }
+
+  function dosPanel(data) {
+    const dos = data.dos;
+    if (!dos) return emptyData("暂无 DOS", "该材料没有 Materials Project DOS 任务记录。");
+    return `<div class="mpx-summary-panel"><div class="mpx-data-state">真实 Materials Project DOS 任务摘要</div><div class="mpx-metrics">${metric("DOS 带隙", dos.band_gap_eV, "eV")}${metric("VBM", dos.vbm_eV, "eV")}${metric("CBM", dos.cbm_eV, "eV")}${metric("费米能级", dos.efermi_eV, "eV")}</div><dl><div><dt>Task ID</dt><dd>${escapeHtml(dos.task_id || "—")}</dd></div><div><dt>元素投影</dt><dd>${escapeHtml((dos.elements || []).join(" · ") || "—")}</dd></div><div><dt>轨道投影</dt><dd>${escapeHtml((dos.orbitals || []).join(" · ") || "—")}</dd></div></dl><p>当前 Materials Project REST 文档提供 DOS 任务及带边摘要；完整 DOS 数组位于官方数据湖。本页面不会用估算数据生成曲线。</p></div>`;
+  }
+
+  function bandPanel(data) {
+    const labels = { setyawan_curtarolo: "Setyawan–Curtarolo", hinuma: "Hinuma", latimer_munro: "Latimer–Munro" };
+    const rows = Object.entries(data.band_structure || {}).filter(([, value]) => value).map(([key, band]) => `<article class="mpx-band-card"><h6>${labels[key] || key}</h6><div class="mpx-metrics">${metric("带隙", band.band_gap_eV, "eV")}${metric("直接带隙", band.direct_gap_eV, "eV")}${metric("VBM", band.vbm_eV, "eV")}${metric("CBM", band.cbm_eV, "eV")}</div><p>Task ${escapeHtml(band.task_id || "—")} · ${number(band.nbands, 0)} bands · VBM ${escapeHtml(band.vbm_label || "—")} / CBM ${escapeHtml(band.cbm_label || "—")}</p></article>`).join("");
+    return rows ? `<div class="mpx-data-state">真实 Materials Project 能带任务摘要</div><div class="mpx-band-grid">${rows}</div><p class="mpx-source-note">完整能带数组由 Materials Project 数据湖提供；当前页面不绘制来源不明的能带曲线。</p>` : emptyData("暂无能带", "该材料没有 Materials Project 高对称路径能带任务。");
+  }
+
+  function spectraPanel(data) {
+    const xas = data.spectra?.xas || [];
+    const optical = data.spectra?.optical_absorption;
+    const xasCharts = xas.slice(0, 4).map(item => lineChart(item.energy_eV, item.intensity, { title: `${item.absorbing_element || "?"} ${item.edge || ""} · ${item.spectrum_type || "XAS"}`, subtitle: `Task ${item.task_id || item.id}`, xLabel: "Photon energy (eV)" })).join("");
+    const opticalChart = optical ? lineChart(optical.energy_eV, optical.coefficient_cm_inverse, { title: "Optical absorption coefficient", subtitle: `Band gap ${number(optical.band_gap_eV)} eV · ${number(optical.nkpoints, 0)} k-points`, xLabel: "Photon energy (eV)" }) : "";
+    if (!xasCharts && !opticalChart) return emptyData("暂无谱学曲线", "该化学式当前没有可用 XAS 或光学吸收数组。");
+    return `<div class="mpx-spectra-intro">曲线直接来自 Materials Project API；XAS 按化学式、吸收元素和吸收边组织。</div>${xasCharts ? `<h6 class="mpx-section-title">XAS / XANES / EXAFS</h6><div class="mpx-chart-grid">${xasCharts}</div>` : ""}${opticalChart ? `<h6 class="mpx-section-title">光学吸收</h6>${opticalChart}` : ""}`;
+  }
+
+  function renderDetailData(card, material, data) {
+    card.querySelector('[data-detail-panel="properties"]').innerHTML = propertiesPanel(material, data);
+    card.querySelector('[data-detail-panel="dos"]').innerHTML = dosPanel(data);
+    card.querySelector('[data-detail-panel="band"]').innerHTML = bandPanel(data);
+    card.querySelector('[data-detail-panel="spectra"]').innerHTML = spectraPanel(data);
+    card.querySelectorAll("[data-detail-tab]").forEach(button => {
+      const key = button.dataset.detailTab;
+      if (key === "dos" && !data.availability?.dos || key === "band" && !data.availability?.band_structure || key === "spectra" && !data.availability?.xas && !data.availability?.optical_absorption) button.classList.add("unavailable");
+    });
+  }
+
+  async function loadDetails(card, material) {
+    if (detailCache.has(material.material_id)) {
+      renderDetailData(card, material, detailCache.get(material.material_id));
+      return;
+    }
+    card.querySelectorAll('[data-detail-panel]:not([data-detail-panel="structure"])').forEach(panel => { panel.innerHTML = '<div class="mpx-data-loading">正在读取 Materials Project 性质与谱学数据……</div>'; });
+    const response = await fetch(endpointInput.value.trim(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "details", material_id: material.material_id, formula: material.formula_pretty }) });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) throw new Error(data.error || `详情服务返回 HTTP ${response.status}`);
+    detailCache.set(material.material_id, data);
+    renderDetailData(card, material, data);
+  }
+
+  function selectDetailTab(card, tab) {
+    card.querySelectorAll("[data-detail-tab]").forEach(button => button.classList.toggle("active", button.dataset.detailTab === tab));
+    card.querySelectorAll("[data-detail-panel]").forEach(panel => { panel.hidden = panel.dataset.detailPanel !== tab; });
+  }
+
   function materialRow(material) {
     const symmetry = material.symmetry || {};
     const structure = material.structure;
@@ -121,20 +201,22 @@
         <div><span>Crystal system</span><b>${escapeHtml(symmetry.crystal_system || "—")}</b></div>
         <div><span>Sites</span><b>${number(material.nsites, 0)}</b></div>
         <div><span>Stable</span><b>${booleanLabel(material.is_stable)}</b></div>
-        <div class="mpx-row-actions"><button type="button" data-action="view" aria-controls="${detailId}">查看结构</button><button type="button" data-action="cif" ${material.files?.cif ? "" : "disabled"}>CIF</button><button type="button" data-action="poscar" ${poscarDisabled}>POSCAR</button></div>
+        <div class="mpx-row-actions"><button type="button" data-action="view" aria-controls="${detailId}">材料详情</button><button type="button" data-action="cif" ${material.files?.cif ? "" : "disabled"}>CIF</button><button type="button" data-action="poscar" ${poscarDisabled}>POSCAR</button></div>
       </div>
       <div class="mpx-detail" id="${detailId}" hidden>
-        <div class="mpx-detail-grid">
+        <nav class="mpx-detail-tabs"><button type="button" class="active" data-detail-tab="structure">结构</button><button type="button" data-detail-tab="properties">性质</button><button type="button" data-detail-tab="dos">DOS${material.has_dos ? " ✓" : ""}</button><button type="button" data-detail-tab="band">能带${material.has_band_structure ? " ✓" : ""}</button><button type="button" data-detail-tab="spectra">XAS / 光学</button></nav>
+        <section data-detail-panel="structure"><div class="mpx-detail-grid">
           ${projectedStructure(material)}
           <div class="mpx-lattice"><h5>Structure & lattice</h5><dl><div><dt>a / b / c</dt><dd>${number(structure?.lattice?.a)} / ${number(structure?.lattice?.b)} / ${number(structure?.lattice?.c)} Å</dd></div><div><dt>α / β / γ</dt><dd>${number(structure?.lattice?.alpha)}° / ${number(structure?.lattice?.beta)}° / ${number(structure?.lattice?.gamma)}°</dd></div><div><dt>Volume</dt><dd>${number(material.volume_A3)} Å³</dd></div><div><dt>Density</dt><dd>${number(material.density_g_cm3)} g/cm³</dd></div><div><dt>E above hull</dt><dd>${number(material.energy_above_hull_eV_atom)} eV/atom</dd></div><div><dt>Electronic data</dt><dd>${material.has_dos ? "DOS" : "—"} ${material.has_band_structure ? "/ Band structure" : ""}</dd></div></dl>${material.files?.poscar_note ? `<p class="mpx-warning">${escapeHtml(material.files.poscar_note)}</p>` : ""}</div>
         </div>
-        ${atomTable(material)}
+        ${atomTable(material)}</section><section data-detail-panel="properties" hidden></section><section data-detail-panel="dos" hidden></section><section data-detail-panel="band" hidden></section><section data-detail-panel="spectra" hidden></section>
       </div>
     </article>`;
   }
 
   function render(data) {
     resultMap = new Map((data.materials || []).map(material => [material.material_id, material]));
+    detailCache.clear();
     meta.textContent = `${data.statistics?.total_returned ?? 0} materials · ${data.statistics?.structures_available ?? 0} structures · ${data.statistics?.cif_available ?? 0} CIF · ${data.statistics?.poscar_available ?? 0} POSCAR`;
     results.innerHTML = data.materials?.length
       ? data.materials.map(materialRow).join("")
@@ -157,6 +239,14 @@
   }
 
   results.addEventListener("click", event => {
+    const tabButton = event.target.closest("button[data-detail-tab]");
+    if (tabButton) {
+      const card = tabButton.closest(".mpx-material");
+      const material = resultMap.get(card.dataset.materialId);
+      selectDetailTab(card, tabButton.dataset.detailTab);
+      if (tabButton.dataset.detailTab !== "structure") loadDetails(card, material).catch(error => { card.querySelector(`[data-detail-panel="${tabButton.dataset.detailTab}"]`).innerHTML = emptyData("数据载入失败", error.message); });
+      return;
+    }
     const button = event.target.closest("button[data-action]");
     if (!button || button.disabled) return;
     const card = button.closest(".mpx-material");
@@ -165,7 +255,7 @@
     if (button.dataset.action === "view") {
       const detail = card.querySelector(".mpx-detail");
       detail.hidden = !detail.hidden;
-      button.textContent = detail.hidden ? "查看结构" : "收起结构";
+      button.textContent = detail.hidden ? "材料详情" : "收起详情";
     } else if (button.dataset.action === "cif") {
       downloadText(`${material.material_id}_${material.formula_pretty}.cif`, material.files.cif);
     } else if (button.dataset.action === "poscar") {
@@ -183,7 +273,7 @@
     results.dataset.view = activeView;
     if (activeView === "structure") panel.querySelectorAll(".mpx-detail").forEach(detail => { detail.hidden = false; });
     if (activeView === "table") panel.querySelectorAll(".mpx-detail").forEach(detail => { detail.hidden = true; });
-    panel.querySelectorAll('[data-action="view"]').forEach(item => { item.textContent = activeView === "structure" ? "收起结构" : "查看结构"; });
+    panel.querySelectorAll('[data-action="view"]').forEach(item => { item.textContent = activeView === "structure" ? "收起详情" : "材料详情"; });
   }));
   endpointInput.addEventListener("change", () => {
     if (endpointInput.value.trim()) localStorage.setItem("materialsStructureApiEndpoint", endpointInput.value.trim());
@@ -196,6 +286,7 @@
     status.className = "mpx-status";
     status.textContent = "筛选条件与结果已清空。";
     resultMap.clear();
+    detailCache.clear();
   });
 
   form.addEventListener("submit", async event => {

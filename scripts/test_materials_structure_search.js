@@ -6,6 +6,7 @@ const {
   buildSearchParams,
   handleMaterialsStructureRequest,
   normalizeRequest,
+  runMaterialsSpectroscopy,
   runMaterialsStructureSearch,
   structureToCif,
   structureToPoscar
@@ -94,6 +95,11 @@ async function main() {
   const browserSource = fs.readFileSync(path.join(__dirname, "..", "github-pages", "materials-structure-search.js"), "utf8");
   assert.match(browserSource, /\.vasp`/);
   assert.match(browserSource, /application\/octet-stream/);
+  assert.match(browserSource, /data-detail-tab="properties"/);
+  assert.match(browserSource, /data-detail-tab="dos"/);
+  assert.match(browserSource, /data-detail-tab="band"/);
+  assert.match(browserSource, /data-detail-tab="spectra"/);
+  assert.match(browserSource, /action: "details"/);
   const disordered = structuredClone(structure);
   disordered.sites[0].species = [{ element: "Ti", occu: 0.5 }, { element: "Zr", occu: 0.5 }];
   assert.equal(structureToPoscar(disordered, { formula: "Ti0.5Zr0.5O" }), null);
@@ -124,6 +130,33 @@ async function main() {
   assert.ok(result.materials[0].files.poscar);
   assert.equal(result.materials[0].has_dos, true);
 
+  const propertyEndpoints = Object.fromEntries(["electronic", "absorption", "dielectric", "elasticity", "magnetism", "xas"]
+    .map(name => [name, `https://mock.test/${name}`]));
+  const detailFetch = async url => {
+    const route = new URL(String(url)).pathname.slice(1);
+    const docs = {
+      electronic: [{ material_id: "mp-test", band_gap: 1.25, cbm: 2.1, vbm: 0.85, efermi: 1.0, is_gap_direct: false, is_metal: false, magnetic_ordering: "NM", dos: { task_id: "task-dos", total: { "1": { band_gap: 1.2, cbm: 2.1, vbm: 0.9, efermi: 1.0 } }, elemental: { Ti: {} }, orbital: { d: {} } }, bandstructure: { setyawan_curtarolo: { task_id: "task-band", band_gap: 1.25, direct_gap: 1.8, efermi: 1.0, cbm: { energy: 2.1, kpoint: { label: "X" } }, vbm: { energy: 0.85, kpoint: { label: "GAMMA" } }, nbands: 24, is_gap_direct: false, is_metal: false } } }],
+      absorption: [{ material_id: "mp-test", energies: [0, 1, 2], absorption_coefficient: [0, 10, 30], bandgap: 1.25, nkpoints: 64 }],
+      dielectric: [{ material_id: "mp-test", e_total: 12, e_ionic: 2, e_electronic: 10, n: 3.46, total: [[12, 0, 0], [0, 12, 0], [0, 0, 12]] }],
+      elasticity: [{ material_id: "mp-test", bulk_modulus: { vrh: 100 }, shear_modulus: { vrh: 60 }, universal_anisotropy: 0.2, homogeneous_poisson: 0.25, debye_temperature: 500 }],
+      magnetism: [{ material_id: "mp-test", ordering: "NM", is_magnetic: false, num_magnetic_sites: 0, types_of_magnetic_species: [], total_magnetization: 0 }],
+      xas: [{ formula_pretty: "TiO", task_id: "task-xas", absorbing_element: "Ti", edge: "K", spectrum_type: "XANES", spectrum: { x: [4960, 4970, 4980], y: [0, 0.4, 1] } }]
+    };
+    return new Response(JSON.stringify({ data: docs[route] || [] }), { status: 200, headers: { "Content-Type": "application/json" } });
+  };
+  const details = await runMaterialsSpectroscopy({ action: "details", material_id: "mp-test", formula: "TiO" }, {
+    mpApiKey: "mp-test-key", fetchImpl: detailFetch, propertyEndpoints, disableCache: true
+  });
+  assert.equal(details.availability.dos, true);
+  assert.equal(details.availability.band_structure, true);
+  assert.equal(details.availability.xas, true);
+  assert.equal(details.availability.optical_absorption, true);
+  assert.equal(details.dos.task_id, "task-dos");
+  assert.equal(details.band_structure.setyawan_curtarolo.task_id, "task-band");
+  assert.deepEqual(details.spectra.xas[0].energy_eV, [4960, 4970, 4980]);
+  assert.deepEqual(details.spectra.optical_absorption.coefficient_cm_inverse, [0, 10, 30]);
+  assert.equal(details.properties.elasticity.bulk_modulus_GPa, 100);
+
   const invalid = await handleMaterialsStructureRequest({
     method: "POST",
     body: { query: "not a material query" },
@@ -139,6 +172,14 @@ async function main() {
   }, { mpApiKey: "mp-test-key", fetchImpl, disableCache: true });
   assert.equal(success.statusCode, 200);
   assert.equal(success.payload.statistics.cif_available, 1);
+
+  const detailResponse = await handleMaterialsStructureRequest({
+    method: "POST",
+    body: { action: "details", material_id: "mp-test", formula: "TiO" },
+    ip: "test-details"
+  }, { mpApiKey: "mp-test-key", fetchImpl: detailFetch, propertyEndpoints, disableCache: true });
+  assert.equal(detailResponse.statusCode, 200);
+  assert.equal(detailResponse.payload.action, "details");
 
   process.stdout.write(JSON.stringify({
     ok: true,
