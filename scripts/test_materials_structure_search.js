@@ -1,4 +1,6 @@
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const {
   buildSearchParams,
@@ -74,11 +76,24 @@ async function main() {
 
   const cif = structureToCif(structure, { materialId: "mp-test", formula: "TiO", symmetrySymbol: "P4/mmm" });
   assert.match(cif, /_cell_length_a 3\.1/);
+  assert.match(cif, /# Original Materials Project space group: P4\/mmm/);
+  assert.match(cif, /_symmetry_space_group_name_H-M 'P 1'/);
+  assert.match(cif, /_symmetry_Int_Tables_number 1/);
+  assert.match(cif, /_space_group_symop_operation_xyz\n'x, y, z'/);
   assert.match(cif, /Ti1 Ti 1\.0 0\.0 0\.0 0\.0/);
   const poscar = structureToPoscar(structure, { materialId: "mp-test", formula: "TiO" });
   assert.match(poscar, /Ti O/);
   assert.match(poscar, /1 1/);
   assert.match(poscar, /Direct/);
+  const wrappedStructure = structuredClone(structure);
+  wrappedStructure.sites[1].abc = [1, -0.5, 1.5];
+  const wrappedCif = structureToCif(wrappedStructure, { formula: "TiO", symmetrySymbol: "P4/mmm" });
+  const wrappedPoscar = structureToPoscar(wrappedStructure, { formula: "TiO" });
+  assert.match(wrappedCif, /O1 O 1\.0 0\.0 0\.5 0\.5/);
+  assert.match(wrappedPoscar, /0\.0\s+0\.5\s+0\.5/);
+  const browserSource = fs.readFileSync(path.join(__dirname, "..", "github-pages", "materials-structure-search.js"), "utf8");
+  assert.match(browserSource, /\.vasp`/);
+  assert.match(browserSource, /application\/octet-stream/);
   const disordered = structuredClone(structure);
   disordered.sites[0].species = [{ element: "Ti", occu: 0.5 }, { element: "Zr", occu: 0.5 }];
   assert.equal(structureToPoscar(disordered, { formula: "Ti0.5Zr0.5O" }), null);
