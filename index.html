@@ -17840,8 +17840,16 @@
     function setRegionInteractive(element, interactive) {
       if (!element) return;
       element.inert = !interactive;
-      if (interactive) element.removeAttribute("aria-hidden");
-      else element.setAttribute("aria-hidden", "true");
+      if (interactive) {
+        // Some Safari/WKWebView versions do not reflect the inert property back
+        // to the HTML attribute. Remove it explicitly so the whole workbench
+        // cannot remain click-blocked after login.
+        element.removeAttribute("inert");
+        element.removeAttribute("aria-hidden");
+      } else {
+        element.setAttribute("inert", "");
+        element.setAttribute("aria-hidden", "true");
+      }
     }
 
     function setInterfaceStage(stage) {
