@@ -9194,7 +9194,7 @@
     <button class="top-menu-btn" type="button" data-page-tab="report" data-i18n="topMenuReport">分析报告</button>
   </nav>
 
-  <main aria-hidden="true" inert>
+  <main id="appMain" aria-hidden="true" inert>
     <aside class="toc-panel" aria-label="Module directory">
       <h2 data-i18n="tocTitle">模块</h2>
       <nav class="toc-list" id="tocList"></nav>
@@ -12774,7 +12774,7 @@
       document.querySelector("header"),
       document.querySelector(".topic-switch-bar"),
       document.querySelector(".top-menu-bar"),
-      document.querySelector("main")
+      document.querySelector("#appMain")
     ].filter(Boolean);
     const chatThread = $("#chatThread");
     const chatInput = $("#chatInput");
