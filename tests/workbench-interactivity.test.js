@@ -15,6 +15,31 @@ function loadSetRegionInteractive() {
   return context.setRegionInteractive;
 }
 
+function loadInterfaceStage(elements) {
+  const surfaceMatch = html.match(/const appSurfaceElements = \[[\s\S]*?\]\.filter\(Boolean\);/);
+  const interactiveMatch = html.match(/function setRegionInteractive\(element, interactive\) \{[\s\S]*?\n    \}/);
+  const stageMatch = html.match(/function setInterfaceStage\(stage\) \{[\s\S]*?\n    \}/);
+  assert.ok(surfaceMatch, "app surface selection must remain testable in the page source");
+  assert.ok(interactiveMatch, "setRegionInteractive must remain testable in the page source");
+  assert.ok(stageMatch, "setInterfaceStage must remain testable in the page source");
+
+  const context = {
+    document: {
+      querySelector(selector) {
+        return elements[selector] || null;
+      }
+    },
+    loginScreen: elements["#loginScreen"],
+    magicBookScreen: elements["#magicBookScreen"]
+  };
+  vm.runInNewContext(
+    `${surfaceMatch[0]}\n${interactiveMatch[0]}\n${stageMatch[0]}\n` +
+      "globalThis.setInterfaceStage = setInterfaceStage;",
+    context
+  );
+  return context.setInterfaceStage;
+}
+
 class NonReflectingInertElement {
   constructor() {
     this.inert = true;
@@ -49,4 +74,28 @@ test("locking explicitly restores inert and aria-hidden", () => {
   assert.equal(element.inert, true);
   assert.equal(element.hasAttribute("inert"), true);
   assert.equal(element.hasAttribute("aria-hidden"), true);
+});
+
+test("entering the workbench unlocks the visible application main instead of the hidden chemistry main", () => {
+  const header = new NonReflectingInertElement();
+  const topicBar = new NonReflectingInertElement();
+  const topMenu = new NonReflectingInertElement();
+  const chemistryMain = new NonReflectingInertElement();
+  const appMain = new NonReflectingInertElement();
+  const loginScreen = new NonReflectingInertElement();
+  const magicBookScreen = new NonReflectingInertElement();
+  const setInterfaceStage = loadInterfaceStage({
+    header,
+    ".topic-switch-bar": topicBar,
+    ".top-menu-bar": topMenu,
+    main: chemistryMain,
+    "#appMain": appMain,
+    "#loginScreen": loginScreen,
+    "#magicBookScreen": magicBookScreen
+  });
+
+  setInterfaceStage("workbench");
+
+  assert.equal(appMain.hasAttribute("inert"), false, "the visible workbench must accept clicks and text input");
+  assert.equal(chemistryMain.hasAttribute("inert"), true, "the hidden chemistry surface stays inactive");
 });
