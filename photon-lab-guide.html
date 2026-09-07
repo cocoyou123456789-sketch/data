@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PHOTON / Field guide</title>
+    <link rel="stylesheet" href="photon-lab.css" />
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="brand" href="./photon-lab.html"
+        ><span class="brand-mark">◈</span> PHOTON</a
+      ><a href="./photon-lab.html">Return to lab ↗</a>
+    </header>
+    <main style="max-width: 880px; padding-top: 40px">
+      <p class="eyebrow">FIELD GUIDE / 使用说明</p>
+      <h1>Bring your material idea into space.</h1>
+      <section class="panel" style="padding: 26px; margin: 24px 0">
+        <h2>1. Explore / 探索展厅</h2>
+        <p class="muted" style="margin-top: 12px">
+          Switch between Light source, Beamline, Crucible and Atom model. Drag
+          to orbit, scroll to zoom, or use the camera buttons. Explode separates
+          schematic components. The music-note button reads the current station
+          text using browser speech support.
+        </p>
+        <p class="muted">
+          选择光源、光束线、坩埚或原子模型；拖动旋转，滚轮缩放，也可使用按钮。拆解模式帮助观察组成部件。音符按钮可朗读当前展项。
+        </p>
+      </section>
+      <section class="panel" style="padding: 26px; margin: 24px 0">
+        <h2>2. Design / 设计材料</h2>
+        <p class="muted" style="margin-top: 12px">
+          Drag an element into the scene, or click/tap it. Set relative ratios
+          with the numeric controls. MgB₂, FeSe and YBCO are starting recipes.
+          Undo restores the previous composition. Save recipe stores up to
+          twelve recipes on the current browser and device. Download a research
+          brief for a portable record.
+        </p>
+        <p class="muted">
+          拖入或点击元素，调整相对配比。支持撤销、保存最近十二份配方，以及导出包含参数的研究简报。本地保存不会跨浏览器自动同步。
+        </p>
+      </section>
+      <section class="panel" style="padding: 26px; margin: 24px 0">
+        <h2>3. Analyze & ask / 分析与研究</h2>
+        <p class="muted" style="margin-top: 12px">
+          Analyze runs the existing local composition baseline. Formation energy
+          and metallicity are estimates, not experimental results. The error
+          shown is a held-out dataset statistic. Composition does not resolve a
+          crystal structure. Atom positions and connections in the 3D grid are
+          decorative: never use this scene as DFT input.
+        </p>
+        <p class="muted">
+          分析使用网站已有的本地成分基线，展示模型估算及适用域。三维原子网格没有经过晶体结构求解，不能直接用作
+          DFT 输入。光子能量与温度仅为计划值，并不控制设备。
+        </p>
+        <p class="muted" style="margin-top: 12px">
+          Copilot recognizes <code>add Cu 2</code>, <code>MgB2</code>,
+          <code>analyze</code>, <code>tour</code>, <code>ring</code>,
+          <code>beamline</code>, <code>crucible</code>, <code>crystal</code>,
+          <code>reset</code> and <code>export</code>. It also recognizes
+          添加、分析、导览、清空、导出. For free-form questions, Continue with
+          Research Agent transfers the brief into the existing agent’s context
+          field. Cloud calls require the existing authorized account. No model
+          request is sent just by visiting this lab.
+        </p>
+      </section>
+      <section class="panel" style="padding: 26px; margin: 24px 0">
+        <h2>4. Blender / 把场景带入 Blender</h2>
+        <p class="muted" style="margin-top: 12px">
+          Click Export to Blender to download a self-contained
+          <code>.gltf</code> file. In Blender, choose
+          <strong>File → Import → glTF 2.0 (.glb/.gltf)</strong>, then choose
+          the downloaded file. Meshes and materials are embedded, with named
+          parts you can select and edit. The selected view (including exploded
+          geometry) is exported; camera, browser lights, and UI are not.
+        </p>
+        <p class="muted">
+          点击导出得到包含几何与材质的 .gltf 文件。Blender 中选择“文件 → 导入 →
+          glTF
+          2.0”，即可继续建模。导出的是当前场景几何，包括拆解效果；浏览器相机与
+          UI 不在导出范围内。这是文件交接，目前没有实时双向连接。
+        </p>
+        <p style="margin-top: 12px">
+          <a
+            href="https://docs.blender.org/manual/en/latest/addons/import_export/scene_gltf2.html"
+            target="_blank"
+            rel="noreferrer"
+            >Blender glTF documentation ↗</a
+          >
+        </p>
+      </section>
+      <section class="panel" style="padding: 26px; margin: 24px 0">
+        <h2>Facility reference / 展厅参考</h2>
+        <p class="muted" style="margin-top: 12px">
+          The Hefei Light Source at NSRL provides synchrotron light for
+          research. This independent teaching exhibit borrows the storage ring →
+          beamline → sample narrative. It is not an official facility model,
+          architectural reconstruction, digital twin, or live control system.
+        </p>
+        <p style="margin-top: 12px">
+          <a
+            href="https://www.nsrl.ustc.edu.cn/dkxzz/list.htm"
+            target="_blank"
+            rel="noreferrer"
+            >NSRL: Hefei Light Source ↗</a
+          >
+          ·
+          <a
+            href="https://www.nsrl.ustc.edu.cn/10967/list.htm"
+            target="_blank"
+            rel="noreferrer"
+            >Storage ring ↗</a
+          >
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
