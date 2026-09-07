@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090f17" />
+    <title>PHOTON / NSRL Materials Lab</title>
+    <link rel="stylesheet" href="photon-lab.css" />
+    <script defer src="data/material_baseline_v1.js"></script>
+    <script defer src="material-baseline.js"></script>
+    <script defer src="photon-lab-core.js"></script>
+    <script defer src="photon-lab.js?v=20260907-3"></script>
+  </head>
+  <body>
+    <header class="masthead">
+      <a
+        class="brand"
+        href="./index.html?stay_on_github=1"
+        aria-label="Return to Materials Database"
+        ><span class="brand-mark">◈</span> PHOTON
+        <span class="brand-sub">MATERIALS INTELLIGENCE</span></a
+      >
+      <nav>
+        <a
+          href="./index.html?stay_on_github=1"
+          data-en="Materials database"
+          data-zh="材料数据库"
+          >Materials database</a
+        ><button id="language" class="subtle">中文</button
+        ><span class="online"
+          ><i></i>
+          <span data-en="LOCAL LAB ONLINE" data-zh="本地实验室就绪"
+            >LOCAL LAB ONLINE</span
+          ></span
+        >
+      </nav>
+    </header>
+    <main>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">HEFEI · NSRL INSPIRED · VIRTUAL EXHIBITION</p>
+          <h1
+            data-en="From light to discovery."
+            data-zh="从一束光，到新的发现。"
+          >
+            From light to discovery.
+          </h1>
+          <p
+            class="subtitle"
+            data-en="Explore the beam. Build a material. Plan the experiment."
+            data-zh="探索光束，设计材料，规划下一次实验。"
+          >
+            Explore the beam. Build a material. Plan the experiment.
+          </p>
+        </div>
+        <button id="tour" class="outline">
+          <span>▷</span>
+          <span data-en="Start guided tour" data-zh="开始展厅导览"
+            >Start guided tour</span
+          >
+        </button>
+      </div>
+      <div class="lab-layout">
+        <aside class="panel library">
+          <div class="panel-title">
+            <span
+              class="eyebrow"
+              data-en="01 / ELEMENT LIBRARY"
+              data-zh="01 / 元素库"
+              >01 / ELEMENT LIBRARY</span
+            ><span class="tiny">118</span>
+          </div>
+          <h2 data-en="Everything starts here." data-zh="一切从元素开始。">
+            Everything starts here.
+          </h2>
+          <p
+            class="muted"
+            data-en="Drag an element into the scene, or tap to add it."
+            data-zh="把元素拖入场景，也可以点击添加。"
+          >
+            Drag an element into the scene, or tap to add it.
+          </p>
+          <label class="search"
+            ><span>⌕</span
+            ><input
+              id="elementSearch"
+              aria-label="Search element symbol or atomic number"
+              placeholder="Search symbol / atomic number"
+          /></label>
+          <div class="filter-row">
+            <button
+              data-filter="curated"
+              class="selected"
+              data-en="Materials"
+              data-zh="常用材料"
+            >
+              Materials</button
+            ><button
+              data-filter="all"
+              data-en="All elements"
+              data-zh="全部元素"
+            >
+              All elements
+            </button>
+          </div>
+          <div id="elements" class="element-grid" aria-label="Elements"></div>
+          <div class="library-bottom">
+            <p class="eyebrow" data-en="QUICK RECIPES" data-zh="示例配方">
+              QUICK RECIPES
+            </p>
+            <div class="recipes">
+              <button data-recipe="MgB2">MgB₂ <small>BORIDE</small></button
+              ><button data-recipe="FeSe">FeSe <small>IRON BASED</small></button
+              ><button data-recipe="YBa2Cu3O7">
+                YBCO <small>CUPRATE</small>
+              </button>
+            </div>
+            <p
+              class="micro"
+              data-en="Recipes specify composition, not a synthesis procedure."
+              data-zh="配方仅表示元素配比，不是合成工艺。"
+            >
+              Recipes specify composition, not a synthesis procedure.
+            </p>
+          </div>
+        </aside>
+        <section
+          class="viewport-panel panel"
+          aria-label="Interactive modeling viewport"
+        >
+          <div class="scene-tabs" role="group" aria-label="Scene selection">
+            <button
+              data-scene="ring"
+              class="selected"
+              data-en="Light source"
+              data-zh="光源展厅"
+            >
+              Light source</button
+            ><button data-scene="beamline" data-en="Beamline" data-zh="光束线">
+              Beamline</button
+            ><button
+              data-scene="crucible"
+              data-en="Crucible"
+              data-zh="元素坩埚"
+            >
+              Crucible</button
+            ><button
+              data-scene="crystal"
+              data-en="Atom model"
+              data-zh="原子模型"
+            >
+              Atom model
+            </button>
+          </div>
+          <div id="viewport" class="viewport">
+            <canvas
+              id="sceneCanvas"
+              aria-label="Rotatable three-dimensional educational scene. Use the scene and view buttons for keyboard control."
+            ></canvas>
+            <div class="scene-label">
+              <span class="live-dot"></span
+              ><span id="sceneLabel">HLS / STORAGE RING</span
+              ><small
+                data-en="CONCEPT MODEL · NOT TO SCALE"
+                data-zh="概念模型 · 非实际比例"
+                >CONCEPT MODEL · NOT TO SCALE</small
+              >
+            </div>
+            <div class="scene-coordinate">
+              Y ↑<br />└ X<br /><span>↙ Z</span>
+            </div>
+            <div class="scene-tools">
+              <button
+                id="rotate"
+                aria-label="Toggle automatic rotation"
+                title="Auto rotate"
+              >
+                ↻</button
+              ><button
+                id="resetView"
+                aria-label="Reset camera"
+                title="Reset view"
+              >
+                ⌖</button
+              ><button id="zoomIn" aria-label="Zoom in">+</button
+              ><button id="zoomOut" aria-label="Zoom out">−</button
+              ><button
+                id="explode"
+                title="Separate scene components"
+                data-en="Explode"
+                data-zh="拆解"
+              >
+                Explode
+              </button>
+            </div>
+            <div
+              id="dropHint"
+              class="drop-hint"
+              data-en="Release to add to your material"
+              data-zh="松开，将元素加入配方"
+            >
+              Release to add to your material
+            </div>
+            <div class="scene-caption">
+              <span
+                data-en="DRAG TO ORBIT · SCROLL TO ZOOM"
+                data-zh="拖动旋转 · 滚轮缩放"
+                >DRAG TO ORBIT · SCROLL TO ZOOM</span
+              ><span id="objectCount"></span>
+            </div>
+          </div>
+          <div class="exhibit-note">
+            <div>
+              <p class="eyebrow" id="stationNumber">
+                STATION 01 / THE LIGHT SOURCE
+              </p>
+              <h2 id="stationTitle"></h2>
+              <p id="stationDescription"></p>
+            </div>
+            <button
+              id="narrate"
+              class="round-button"
+              aria-label="Read or stop exhibit narration"
+              title="Read exhibit aloud"
+            >
+              ♫
+            </button>
+          </div>
+          <div class="parameters">
+            <label
+              ><span data-en="Planned photon energy" data-zh="计划光子能量"
+                >Planned photon energy</span
+              ><output id="energyValue">60 eV</output
+              ><input
+                id="energy"
+                type="range"
+                min="20"
+                max="150"
+                step="1"
+                value="60" /></label
+            ><label
+              ><span data-en="Planned sample temperature" data-zh="计划样品温度"
+                >Planned sample temperature</span
+              ><output id="temperatureValue">20 K</output
+              ><input
+                id="temperature"
+                type="range"
+                min="10"
+                max="300"
+                step="1"
+                value="20"
+            /></label>
+          </div>
+          <p
+            class="parameter-note"
+            data-en="Planning controls only. No live instrument or physical simulation is connected."
+            data-zh="以上仅为实验规划参数，未连接真实设备或物理仿真。"
+          >
+            Planning controls only. No live instrument or physical simulation is
+            connected.
+          </p>
+        </section>
+        <aside class="right-column">
+          <section class="panel composition">
+            <div class="panel-title">
+              <span
+                class="eyebrow"
+                data-en="02 / MATERIAL BUILDER"
+                data-zh="02 / 材料设计"
+                >02 / MATERIAL BUILDER</span
+              ><button id="undo" class="subtle" data-en="Undo" data-zh="撤销">
+                Undo
+              </button>
+            </div>
+            <div class="formula" id="formula">∅</div>
+            <p class="micro" id="compositionMeta"></p>
+            <div id="composition" class="composition-list"></div>
+            <div class="action-pair">
+              <button
+                id="analyze"
+                class="primary"
+                data-en="Analyze material ↗"
+                data-zh="分析材料 ↗"
+              >
+                Analyze material ↗</button
+              ><button id="clear" class="subtle" data-en="Reset" data-zh="清空">
+                Reset
+              </button>
+            </div>
+            <div id="analysis" class="analysis" aria-live="polite"></div>
+          </section>
+          <section class="panel copilot">
+            <div class="panel-title">
+              <span class="eyebrow">03 / PHOTON COPILOT</span
+              ><span
+                class="local-badge"
+                data-en="LOCAL COMMANDS"
+                data-zh="本地指令"
+                >LOCAL COMMANDS</span
+              >
+            </div>
+            <div
+              id="messages"
+              class="messages"
+              role="log"
+              aria-label="Copilot activity"
+            ></div>
+            <div class="command-chips">
+              <button data-command="tour" data-en="Guide me" data-zh="展厅导览">
+                Guide me</button
+              ><button
+                data-command="analyze"
+                data-en="Research plan"
+                data-zh="研究计划"
+              >
+                Research plan</button
+              ><button data-command="MgB2">MgB₂</button>
+            </div>
+            <form id="commandForm">
+              <label class="sr-only" for="command">Copilot command</label
+              ><input
+                id="command"
+                placeholder="Try: add Cu 2 / MgB2 / analyze"
+                autocomplete="off"
+                maxlength="200"
+              /><button aria-label="Run command" type="submit">↑</button>
+            </form>
+            <button
+              id="agent"
+              class="agent-link"
+              data-en="Continue with Research Agent ↗"
+              data-zh="交给 Research Agent 继续研究 ↗"
+            >
+              Continue with Research Agent ↗
+            </button>
+            <p
+              class="micro"
+              data-en="Commands work offline. Cloud AI uses your existing authorized account."
+              data-zh="指令可离线执行，云端 AI 使用现有授权账号。"
+            >
+              Commands work offline. Cloud AI uses your existing authorized
+              account.
+            </p>
+          </section>
+        </aside>
+      </div>
+      <section class="workspace-footer panel">
+        <div>
+          <span
+            class="eyebrow"
+            data-en="YOUR RESEARCH, CONTINUED"
+            data-zh="继续你的研究"
+            >YOUR RESEARCH, CONTINUED</span
+          >
+          <p
+            data-en="Keep a recipe. Take the scene further."
+            data-zh="留下一份配方，让场景走得更远。"
+          >
+            Keep a recipe. Take the scene further.
+          </p>
+        </div>
+        <div class="footer-actions">
+          <button
+            id="save"
+            class="outline"
+            data-en="Save recipe"
+            data-zh="保存配方"
+          >
+            Save recipe</button
+          ><select id="saved" aria-label="Saved recipes">
+            <option value="">Saved recipes</option></select
+          ><button
+            id="exportPlan"
+            class="outline"
+            data-en="Export research brief"
+            data-zh="导出研究简报"
+          >
+            Export research brief</button
+          ><button
+            id="exportScene"
+            class="primary"
+            data-en="Export to Blender ↗"
+            data-zh="导出到 Blender ↗"
+          >
+            Export to Blender ↗
+          </button>
+        </div>
+      </section>
+      <footer class="footnote">
+        <span
+          data-en="An independent educational experience inspired by NSRL. Geometry is illustrative."
+          data-zh="以 NSRL 为灵感的独立教学体验，几何模型仅为示意。"
+          >An independent educational experience inspired by NSRL. Geometry is
+          illustrative.</span
+        ><a
+          href="https://www.nsrl.ustc.edu.cn/dkxzz/list.htm"
+          target="_blank"
+          rel="noreferrer"
+          >NSRL / HLS source ↗</a
+        ><a
+          href="./photon-lab-guide.html"
+          data-en="Guide & Blender import ↗"
+          data-zh="使用说明与 Blender 导入 ↗"
+          >Guide & Blender import ↗</a
+        >
+      </footer>
+    </main>
+    <div id="toast" role="status" class="toast" hidden></div>
+  </body>
+</html>
