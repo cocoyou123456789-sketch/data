@@ -36,3 +36,51 @@ $('#download-k-csv').onclick=()=>{if(!lastResult)return;const d=lastResult.k_spa
 $('#download-r-csv').onclick=()=>{if(!lastResult)return;const d=lastResult.r_space,headers=['R_A','data_re','data_im','data_mag','fit_re','fit_im','fit_mag','residual_re','residual_im','residual_mag'],rows=d.r.map((v,i)=>[v,d.data.re[i],d.data.im[i],d.data.mag[i],d.fit.re[i],d.fit.im[i],d.fit.mag[i],d.residual.re[i],d.residual.im[i],d.residual.mag[i]]);download('browser-exafs-fit-r.csv',headers.join(',')+'\n'+rows.map(r=>r.join(',')).join('\n'),'text/csv;charset=utf-8')};
 $('#download-parameters-csv').onclick=()=>{if(!lastResult)return;const g=lastResult.global_parameters,rows=[['global','','','S02',g.s02.value,'',...g.s02.bounds,g.s02.vary,'',g.s02.stderr],['global','','','delta_E0',g.delta_e0.value,'eV',...g.delta_e0.bounds,g.delta_e0.vary,'',g.delta_e0.stderr]];lastResult.paths.forEach(p=>[['amplitude',p.amplitude,p.amplitude_convention,p.bounds.amplitude,p.vary.amplitude],['delta_R',p.delta_r,'A',p.bounds.delta_r,p.vary.delta_r],['sigma2',p.sigma2,'A2',p.bounds.sigma2,p.vary.sigma2],['C3',p.c3,'A3',p.bounds.c3,p.vary.c3],['C4',p.c4,'A4',p.bounds.c4,p.vary.c4]].forEach(x=>rows.push(['path',p.shell,p.name,x[0],x[1],x[2],...x[3],x[4],p.structure,''])));const head=['scope','shell','path','parameter','value','unit_or_convention','min','max','vary','coordination_structure','stderr'];download('browser-exafs-fit-parameters.csv',head.map(csvCell).join(',')+'\n'+rows.map(r=>r.map(csvCell).join(',')).join('\n'),'text/csv;charset=utf-8')};
 $('#download-json').onclick=()=>lastResult&&download('browser-exafs-fit-complete.json',JSON.stringify(lastResult,null,2),'application/json');
+
+function installCoreParameterPanel(){
+  const form=$('#fit-form'),pathList=$('#path-list');
+  if(!form||!pathList||$('#core-five-panel'))return;
+  const panel=document.createElement('section');
+  panel.id='core-five-panel';panel.className='path';
+  panel.innerHTML='<h3 style="margin:0 0 8px">五个核心拟合参数</h3><div class="grid" style="margin-bottom:8px"><div><strong>N</strong><small>各单散射路径的配位数</small></div><div><strong>S₀²</strong><small>全局振幅缩减因子</small></div><div><strong>σ²</strong><small>各路径 Debye–Waller 因子</small></div><div><strong>ΔE₀</strong><small>全局能量修正</small></div><div><strong>ΔR</strong><small>各路径距离修正</small></div></div><p class="hint"><strong>N、σ²、ΔR</strong> 在上传 FEFF 路径后逐路径调节；<strong>S₀²、ΔE₀</strong> 在下方统一调节。每项均可设置初值、上下限和是否参与拟合。</p><p class="hint" style="color:#9b4b00"><strong>注意：</strong>N 与 S₀² 同时自由拟合时振幅不可唯一分辨，通常固定其中一个。</p>';
+  pathList.parentNode.insertBefore(panel,pathList);
+  const s02=form.querySelector('[name="s02"]')?.closest('.path'),de0=form.querySelector('[name="de0"]')?.closest('.path');
+  if(s02)panel.appendChild(s02);if(de0)panel.appendChild(de0);
+  const pathTitle=document.createElement('h3');pathTitle.textContent='逐路径参数：N、σ²、ΔR（第一/第二配位层）';pathList.parentNode.insertBefore(pathTitle,pathList);
+}
+installCoreParameterPanel();
+
+const renderPathsWithAdvanced=renderPaths;
+renderPaths=function(){
+  renderPathsWithAdvanced();
+  document.querySelectorAll('#path-list .path').forEach(card=>{
+    const advanced=[...card.querySelectorAll('label')].filter(label=>/^C[34]/.test(label.textContent.trim()));
+    if(!advanced.length)return;
+    const details=document.createElement('details');details.innerHTML='<summary><strong>高级参数 C₃ / C₄（可选）</strong></summary>';
+    const grid=document.createElement('div');grid.className='grid';advanced.forEach(label=>grid.appendChild(label));details.appendChild(grid);card.appendChild(details);
+  });
+};
+
+function artemisLikeRFactor(result){
+  const settings=result.fit_settings;
+  if(settings.fitspace==='r'){
+    const d=result.r_space;let numerator=0,denominator=0,points=0;
+    for(let i=0;i<d.r.length;i++)if(d.r[i]>=settings.rmin&&d.r[i]<=settings.rmax){numerator+=(d.data.re[i]-d.fit.re[i])**2+(d.data.im[i]-d.fit.im[i])**2;denominator+=d.data.re[i]**2+d.data.im[i]**2;points+=2}
+    return{value:numerator/(denominator||1),numerator,denominator,points,space:'complex R',definition:'sum(|chi_data(R)-chi_fit(R)|^2) / sum(|chi_data(R)|^2)',range:[settings.rmin,settings.rmax]};
+  }
+  const d=result.k_space,numerator=d.weighted_data.reduce((s,v,i)=>s+(v-d.weighted_fit[i])**2,0),denominator=d.weighted_data.reduce((s,v)=>s+v*v,0);
+  return{value:numerator/(denominator||1),numerator,denominator,points:d.k.length,space:'weighted k',definition:'sum((k^w chi_data-k^w chi_fit)^2) / sum((k^w chi_data)^2)',range:[settings.kmin,settings.kmax]};
+}
+const shellFitHandler=$('#fit-form').onsubmit;
+$('#fit-form').onsubmit=async event=>{
+  await shellFitHandler(event);
+  if(!lastResult)return;
+  const rfactor=artemisLikeRFactor(lastResult);
+  lastResult.statistics.r_factor=rfactor.value;
+  lastResult.statistics.r_factor_percent=100*rfactor.value;
+  lastResult.statistics.r_factor_details=rfactor;
+  const metric=$('#metrics')?.querySelector('.metric b');
+  if(metric)metric.textContent=`${rfactor.value.toPrecision(6)} (${(100*rfactor.value).toFixed(3)}%)`;
+  const table=$('#parameters');
+  if(table)table.insertAdjacentHTML('afterbegin',`<p><strong>Artemis 风格 R-factor：</strong>${rfactor.value.toPrecision(6)}（${(100*rfactor.value).toFixed(3)}%），按 ${escapeHtml(rfactor.space)} 拟合范围计算。</p>`);
+};
