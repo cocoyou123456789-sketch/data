@@ -1,0 +1,152 @@
+/* Equal entrance panels and media frames; intentionally scoped to the login dialog. */
+#loginScreen {
+  overflow-y: auto;
+  place-items: start center;
+  padding: clamp(12px, 2vw, 28px);
+  background: radial-gradient(ellipse at 50% 0, #193344, #050a13 75%);
+}
+#loginScreen .login-card {
+  width: min(1240px, 100%);
+  margin-block: auto;
+  flex-shrink: 0;
+  border-radius: 18px;
+}
+#loginScreen .login-layout {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  min-height: 0;
+  background: linear-gradient(#24536b, #82f6ef, #30355e);
+}
+#loginScreen .login-column,
+#loginScreen .login-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(18px, 2.2vw, 28px);
+  border: 0;
+}
+#loginScreen .login-column {
+  background: radial-gradient(ellipse at 0 0, #47616b 0, transparent 65%),
+    linear-gradient(150deg, #1b303b, #081719 80%);
+}
+#loginScreen .login-column::before { display: none; }
+#loginScreen .login-feature {
+  background: radial-gradient(ellipse at 95% 40%, #6942b8 0, transparent 70%),
+    radial-gradient(ellipse at 0 100%, #295da3, transparent 75%), #111836;
+}
+#loginScreen .login-badge-row {
+  display: flex;
+  min-height: 32px;
+}
+#loginScreen .login-eye-stage {
+  display: block;
+  min-height: 0;
+  width: 100%;
+}
+#loginScreen .ustc-orbit,
+#loginScreen .virtual-access-orbit {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  aspect-ratio: 16 / 9;
+  margin: 0;
+  border: 1px solid rgba(188, 235, 255, .38);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px #0004;
+  flex-shrink: 0;
+}
+#loginScreen .ustc-orbit-video,
+#loginScreen .virtual-access-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+#loginScreen .ustc-orbit {
+  background: #050812 url("assets/nsrl-login-loop-poster-v2.jpg") center / cover no-repeat;
+}
+#loginScreen .ustc-orbit::before { opacity: .25; }
+#loginScreen .ustc-orbit::after { display: none; }
+#loginScreen .ustc-orbit-video { filter: brightness(1.3); }
+#loginScreen .login-visual-copy,
+#loginScreen .login-virtual-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 68px;
+  max-width: none;
+}
+#loginScreen h2 {
+  margin: 0;
+  font-size: clamp(22px, 2.1vw, 28px);
+  line-height: 1.2;
+  color: #f0fcff;
+}
+#loginScreen .muted {
+  margin: 0;
+  color: #c7d5e6;
+  font-size: 14px;
+  line-height: 1.5;
+}
+#loginScreen .login-ustc-panel,
+#loginScreen .login-form-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #a4d9ee40;
+  border-radius: 14px;
+  background: #051323a8;
+  box-shadow: inset 0 1px 0 #ffffff0d;
+}
+#loginScreen .login-feature .login-form-panel { background: #111c55a6; }
+#loginScreen .login-mini-grid,
+#loginScreen .form-grid,
+#loginScreen .login-ustc-actions,
+#loginScreen .login-entry-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+#loginScreen label { min-width: 0; }
+#loginScreen input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  background: #dceaff15;
+  border-color: #bedfff40;
+}
+#loginScreen button {
+  min-height: 48px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+#loginScreen .login-ustc-panel h3 { min-height: 48px; display: flex; align-items: center; }
+#loginScreen .login-feature .primary,
+#loginScreen .login-feature .auth-tab.active {
+  background: linear-gradient(110deg, #9879ec, #71b8ed);
+  color: #091632;
+}
+#loginScreen .status { line-height: 1.5; overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  #loginScreen .login-layout { grid-template-columns: minmax(0, 1fr); }
+  #loginScreen .login-feature { order: 0; }
+  #loginScreen .login-visual-copy,
+  #loginScreen .login-virtual-copy { min-height: 0; }
+  #loginScreen .login-eye-stage,
+  #loginScreen .login-feature .virtual-access-orbit { display: block; }
+  #loginScreen .login-column .login-badge-row { display: flex; }
+  #loginScreen .login-ustc-panel,
+  #loginScreen .login-form-panel { padding: 16px; }
+}
+@media (max-width: 420px) {
+  #loginScreen .login-mini-grid,
+  #loginScreen .form-grid,
+  #loginScreen .login-entry-actions,
+  #loginScreen .login-ustc-actions { grid-template-columns: minmax(0, 1fr); }
+}

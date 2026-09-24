@@ -8860,6 +8860,9 @@
       }
     }
   </style>
+<link rel="stylesheet" href="login-balanced.css?v=20260920">
+<link rel="stylesheet" href="nsrl-catalog.css?v=20260920">
+<script defer src="nsrl-catalog.js?v=20260920"></script>
 <script defer src="vendor/jsfive.js" onload="window.jsfive=window.jsfive||window.hdf5;if(window.updateHDF5ParserStatus)window.updateHDF5ParserStatus();"></script>
 <script defer src="vendor/igor-pxt.js" onload="if(window.updateHDF5ParserStatus)window.updateHDF5ParserStatus();"></script>
 <script defer src="band-ai.js"></script>
@@ -8897,7 +8900,7 @@
           </div>
           <div class="login-eye-stage" aria-hidden="true">
             <div class="ustc-orbit">
-              <video class="ustc-orbit-video" autoplay muted playsinline preload="auto" poster="assets/nsrl-login-loop-poster-v3.jpg" disablepictureinpicture tabindex="-1">
+              <video class="ustc-orbit-video" autoplay muted playsinline preload="auto" poster="assets/nsrl-login-loop-poster-v2.jpg" disablepictureinpicture tabindex="-1">
                 <source src="assets/nsrl-login-loop-v3.mp4" type="video/mp4" media="(min-width: 761px) and (prefers-reduced-motion: no-preference)">
               </video>
               <span class="ustc-beam one"></span>
@@ -8910,18 +8913,6 @@
           </div>
           <div class="login-visual-copy">
             <h2 data-i18n="loginTitle">NSRL Light Source Access</h2>
-            <p class="muted" data-i18n="loginHint">The left side represents the real NSRL experimental entrance connected to materials, papers, and local data.</p>
-          </div>
-        </div>
-        <div class="login-feature">
-          <div class="virtual-access-orbit" aria-hidden="true">
-            <video class="virtual-access-video" autoplay muted loop playsinline preload="metadata" poster="assets/virtual-analysis-loop-v2-poster.jpg" disablepictureinpicture tabindex="-1">
-              <source src="assets/virtual-analysis-loop-v2.mp4" type="video/mp4" media="(min-width: 761px) and (prefers-reduced-motion: no-preference)">
-            </video>
-          </div>
-          <div class="login-virtual-copy">
-            <h2 data-i18n="loginGuestTitle">Other Visitors · Virtual Access</h2>
-            <p class="muted" data-i18n="loginGuestHint">The right side is for non-NSRL or external visitors: sign in, create a local account, or continue as a guest.</p>
           </div>
           <div class="login-ustc-panel">
             <h3 data-i18n="loginUstcPanelTitle">Authorized AI account</h3>
@@ -8938,6 +8929,20 @@
               <button class="primary" id="ustcLoginBtn" type="button" data-i18n="loginUstcBtn">Sign in and connect AI</button>
               <button id="ustcGuestBtn" type="button" data-i18n="loginUstcGuestBtn">NSRL Preview</button>
             </div>
+          </div>
+        </div>
+        <div class="login-feature">
+          <div class="login-badge-row">
+            <span class="login-badge">DATA / AI</span>
+            <span class="login-badge">VIRTUAL ACCESS</span>
+          </div>
+          <div class="virtual-access-orbit" aria-hidden="true">
+            <video class="virtual-access-video" autoplay muted loop playsinline preload="metadata" poster="assets/virtual-analysis-loop-v2-poster.jpg" disablepictureinpicture tabindex="-1">
+              <source src="assets/virtual-analysis-loop-v2.mp4" type="video/mp4" media="(min-width: 761px) and (prefers-reduced-motion: no-preference)">
+            </video>
+          </div>
+          <div class="login-virtual-copy">
+            <h2 data-i18n="loginGuestTitle">Other Visitors · Virtual Access</h2>
           </div>
           <div class="login-form-panel">
             <div class="auth-tabs" role="group" aria-label="Authentication mode">
@@ -8966,7 +8971,6 @@
               <button class="primary" id="quickGuestLoginBtn" type="button" data-i18n="guestLoginBtn" title="Open the workbench without an account">Open Website</button>
               <button id="loginBtn" data-i18n="loginBtn" title="Use local browser account access">Use Local Account</button>
             </div>
-            <span class="status" data-i18n="loginPrivacy">Local accounts do not sync across devices. On another phone or computer, use Open Website.</span>
           </div>
         </div>
       </div>
@@ -17858,6 +17862,9 @@
     }
 
     function setInterfaceStage(stage) {
+      const nsrlScreen = document.querySelector("#nsrlCatalogScreen");
+      if (nsrlScreen) nsrlScreen.hidden = stage !== "nsrl";
+      setRegionInteractive(nsrlScreen, stage === "nsrl");
       setRegionInteractive(loginScreen, stage === "login");
       setRegionInteractive(magicBookScreen, stage === "catalog");
       appSurfaceElements.forEach(element => setRegionInteractive(element, stage === "workbench"));
@@ -18031,7 +18038,7 @@
           safeStorageSet(USER_STORAGE_KEY, JSON.stringify(user));
           if (ustcLoginPassword) ustcLoginPassword.value = "";
           if (ustcLoginStatus) ustcLoginStatus.textContent = t("chatOwnerLoginSuccess");
-          unlockWorkbench(user);
+          unlockWorkbench(user, { entrance: "nsrl" });
           probeChatEndpoint().catch(() => {});
           window.refreshMaterialAiConsole?.();
           showToast(t("chatOwnerLoginSuccess"));
@@ -18072,7 +18079,7 @@
           login_at: new Date().toISOString()
         };
         safeStorageSet(USER_STORAGE_KEY, JSON.stringify(guest));
-        unlockWorkbench(guest);
+        unlockWorkbench(guest, { entrance: "nsrl" });
       });
       magicBookEnterBtn?.addEventListener("click", openMagicBookCatalog);
       magicBookBackBtn?.addEventListener("click", returnToLoginFromMagicBook);
@@ -18214,8 +18221,22 @@
       updateTocActiveSection();
     }
 
-    function unlockWorkbench(user) {
+    function unlockWorkbench(user, { entrance = "materials" } = {}) {
       pendingWorkbenchUser = user || loadUser();
+      if (entrance === "nsrl" && window.NSRLCatalog) {
+        document.body.classList.add("locked");
+        document.body.classList.remove("magic-active");
+        if (loginScreen) loginScreen.style.display = "none";
+        if (magicBookScreen) magicBookScreen.hidden = true;
+        setInterfaceStage("nsrl");
+        window.NSRLCatalog.open({
+          lang: currentLang,
+          onBack: returnToLoginFromMagicBook,
+          onMaterials: () => unlockWorkbench(user),
+          onLanguage: switchLang
+        });
+        return;
+      }
       document.body.classList.add("locked", "magic-active");
       if (loginScreen) loginScreen.style.display = "none";
       if (magicBookScreen) {
