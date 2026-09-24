@@ -1,0 +1,55 @@
+#nsrlCatalogScreen[hidden] { display: none; }
+#nsrlCatalogScreen {
+  position: fixed; inset: 0; z-index: 2100; overflow-y: auto;
+  color: #e7f5ff; background: radial-gradient(ellipse at 15% 5%, #173e4f 0, transparent 55%),
+    radial-gradient(ellipse at 90% 80%, #222d54 0, transparent 55%), #070f1b;
+  overscroll-behavior: contain;
+}
+#nsrlCatalogScreen * { box-sizing: border-box; }
+.nsrl-catalog-shell { max-width: 1300px; margin: auto; padding: 28px 40px; }
+.nsrl-catalog-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.nsrl-catalog-nav button, .nsrl-catalog-footer button { min-height: 44px; background: #ffffff08; border: 1px solid #86b7cc38; border-radius: 9px; padding: 10px 16px; color: #d9efff; cursor: pointer; }
+.nsrl-catalog-brand { letter-spacing: .12em; font-weight: 750; font-size: 13px; }
+.nsrl-catalog-brand span { color: #4ee2d0; margin: 0 8px; }
+.nsrl-catalog-heading { padding: 54px 0 36px; text-align: center; }
+.nsrl-catalog-eyebrow { color: #79c8d5; letter-spacing: .2em; font-size: 11px; font-weight: 700; }
+#nsrlCatalogScreen h1 { font-size: clamp(32px, 4vw, 50px); letter-spacing: -.025em; line-height: 1.15; margin: 14px 0 0; color: #f0faff; }
+.nsrl-category-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+#nsrlCatalogScreen .nsrl-category-card { padding: 0; text-align: left; white-space: normal; overflow: hidden; border-radius: 20px; border: 1px solid #65b9cf50; color: inherit; background: linear-gradient(135deg, #163044, #0b1928); box-shadow: 0 18px 50px #0004; cursor: pointer; transition: transform .2s, border-color .2s; }
+#nsrlCatalogScreen .nsrl-category-card.beamline { background: linear-gradient(135deg, #203354, #111b33); }
+.nsrl-category-card:hover { transform: translateY(-5px); border-color: #8beced !important; }
+#nsrlCatalogScreen button:focus-visible { outline: 3px solid #a2f4e5; outline-offset: 4px; }
+.nsrl-card-art { aspect-ratio: 600 / 350; border-bottom: 1px solid #5ca8c032; }
+.nsrl-card-art svg,.nsrl-detail-art svg { width: 100%; height: 100%; display: block; }
+.nsrl-card-body { padding: 26px 30px 22px; }
+.nsrl-card-number { color: #83cdde; font-size: 12px; letter-spacing: .15em; }
+#nsrlCatalogScreen h2 { font-size: clamp(24px, 2.4vw, 32px); line-height: 1.2; color: #edfbff; margin: 9px 0 18px; }
+.nsrl-card-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 68px; align-content: start; }
+.nsrl-card-tags span { padding: 6px 10px; border: 1px solid #8cbbc133; border-radius: 6px; font-size: 12px; color: #c1d8e5; }
+.nsrl-card-enter { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #a1d6e321; padding-top: 18px; margin-top: 20px; color: #84eadc; font-size: 14px; }
+.nsrl-card-enter b { font-size: 24px; }
+.nsrl-catalog-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 28px; font-size: 11px; color: #85a8be; letter-spacing: .08em; }
+.nsrl-category-detail { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; }
+.nsrl-detail-art { overflow: hidden; border-radius: 18px; border: 1px solid #6bbed94d; }
+.nsrl-module-list { display: grid; gap: 14px; }
+.nsrl-module { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 14px; padding: 23px; border: 1px solid #91c0d62e; border-radius: 14px; background: #102536; }
+.nsrl-module > span { color: #74cdd0; font-size: 12px; }
+#nsrlCatalogScreen .nsrl-module h2 { font-size: 20px; margin: 0; }
+.nsrl-module small { color: #b7c8dd; font-size: 11px; border: 1px solid #829aac55; padding: 5px 7px; border-radius: 5px; }
+.nsrl-orbit-pulse { transform-origin: 300px 175px; animation: nsrl-orbit 8s linear infinite; }
+.nsrl-beam-pulse { animation: nsrl-beam 3s ease-in-out infinite alternate; }
+@keyframes nsrl-orbit { to { transform: rotate(360deg); } }
+@keyframes nsrl-beam { from { opacity: .3; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .nsrl-orbit-pulse,.nsrl-beam-pulse { animation: none; } .nsrl-category-card:hover { transform: none; } }
+@media (max-width: 760px) {
+  .nsrl-catalog-shell { padding: 18px; }
+  .nsrl-catalog-nav { flex-wrap: wrap; }
+  .nsrl-catalog-brand { font-size: 10px; letter-spacing: .05em; }
+  #nsrlCatalogScreen .nsrl-catalog-nav button { width: auto; padding: 8px 10px; }
+  .nsrl-catalog-heading { padding: 36px 0 26px; }
+  .nsrl-category-grid,.nsrl-category-detail { grid-template-columns: minmax(0,1fr); }
+  .nsrl-card-body { padding: 22px; }
+  .nsrl-card-tags { min-height: 0; }
+  .nsrl-module { padding: 18px 12px; gap: 8px; }
+  .nsrl-catalog-footer { flex-wrap: wrap; }
+}
