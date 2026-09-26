@@ -53,3 +53,5 @@
   .nsrl-module { padding: 18px 12px; gap: 8px; }
   .nsrl-catalog-footer { flex-wrap: wrap; }
 }
+.nsrl-photon-entry {display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px 26px;margin:0 0 24px;border:1px solid #489997;border-radius:16px;background:linear-gradient(110deg,#123947,#102033);color:#d5fff3;text-decoration:none;}
+.nsrl-photon-entry:hover,.nsrl-photon-entry:focus-visible {outline:2px solid #83e5d5;outline-offset:3px;}
