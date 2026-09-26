@@ -4,12 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#090f17" />
-    <title>PHOTON / NSRL Materials Lab</title>
+    <title>HALF / PHOTON Beamline Exhibition</title>
     <link rel="stylesheet" href="photon-lab.css" />
     <script defer src="data/material_baseline_v1.js"></script>
     <script defer src="material-baseline.js"></script>
-    <script defer src="photon-lab-core.js"></script>
-    <script defer src="photon-lab.js?v=20260907-3"></script>
+    <link rel="stylesheet" href="half-beamlines.css?v=20260925" />
+    <script defer src="half-beamlines.js?v=20260925"></script>
+    <script defer src="photon-lab-core.js?v=20260925"></script>
+    <script defer src="photon-lab.js?v=20260925"></script>
   </head>
   <body>
     <header class="masthead">
@@ -38,7 +40,7 @@
     <main>
       <div class="page-heading">
         <div>
-          <p class="eyebrow">HEFEI · NSRL INSPIRED · VIRTUAL EXHIBITION</p>
+          <p class="eyebrow">HALF · PHASE I · 10 BEAMLINES</p>
           <h1
             data-en="From light to discovery."
             data-zh="从一束光，到新的发现。"
@@ -159,7 +161,7 @@
             ></canvas>
             <div class="scene-label">
               <span class="live-dot"></span
-              ><span id="sceneLabel">HLS / STORAGE RING</span
+              ><span id="sceneLabel">HALF / STORAGE RING</span
               ><small
                 data-en="CONCEPT MODEL · NOT TO SCALE"
                 data-zh="概念模型 · 非实际比例"
@@ -261,6 +263,7 @@
           </p>
         </section>
         <aside class="right-column">
+          <section id="halfDetails" class="panel half-details" aria-live="polite"></section>
           <section class="panel composition">
             <div class="panel-title">
               <span
@@ -396,7 +399,7 @@
           href="https://www.nsrl.ustc.edu.cn/dkxzz/list.htm"
           target="_blank"
           rel="noreferrer"
-          >NSRL / HLS source ↗</a
+          >NSRL ↗</a
         ><a
           href="./photon-lab-guide.html"
           data-en="Guide & Blender import ↗"

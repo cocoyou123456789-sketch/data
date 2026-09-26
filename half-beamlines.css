@@ -1,0 +1,22 @@
+.half-directory {padding:20px;grid-column:1;grid-row:1;}
+.half-directory h2 {font-size:21px;margin:10px 0;}
+.half-directory p,.half-details p {color:var(--muted);font-size:12px;line-height:1.7;}
+.half-list {display:grid;gap:7px;margin-top:18px;}
+@media(min-width:1101px) {.half-list {max-height:540px;overflow:auto;padding-right:4px;} body[data-scene=ring] .viewport {height:500px;}}
+.half-list button {text-align:left;padding:11px;display:grid;grid-template-columns:42px 1fr;gap:8px;font-size:12px;line-height:1.4;}
+.half-list strong {color:var(--mint);font:11px monospace;}
+.half-list button[aria-pressed=true],.half-pin[aria-pressed=true] {border-color:#b4ffe3;background:#244d50;color:white;}
+.half-details {padding:22px;border-top:3px solid var(--mint);}
+.half-details h2 {font-size:21px;line-height:1.4;margin:12px 0;}
+.half-details h3 {font-size:12px;margin-top:22px;color:var(--mint);}
+.half-details ul {padding-left:18px;font-size:13px;line-height:1.9;}
+.half-energy {font:25px monospace;color:#d8b58b;margin:18px 0;}
+.half-pins {position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.half-pin {position:absolute;transform:translate(-50%,-100%);pointer-events:auto;font:11px monospace;padding:7px;background:#0a1b2eee;border:1px solid #6c9ba9;min-height:30px;z-index:3;}
+.half-pin:focus-visible {outline:3px solid #fff;outline-offset:3px;z-index:5;}
+.half-details small {display:block;color:var(--muted);line-height:1.6;margin-top:20px;}
+body[data-scene=ring] .library,body[data-scene=ring] .composition {display:none;}
+body[data-scene=ring] .parameters,body[data-scene=ring] .parameter-note {display:none;}
+body:not([data-scene=ring]) .half-directory,body:not([data-scene=ring]) .half-details,body:not([data-scene=ring]) .half-pins {display:none;}
+@media(max-width:1100px) {.half-directory {grid-column:1/-1;grid-row:auto}.half-list {grid-template-columns:repeat(5,1fr)} body[data-scene=ring] .viewport-panel {grid-column:1/-1} }
+@media(max-width:700px) {.half-list {grid-template-columns:repeat(2,1fr)}.half-directory {padding:14px}.half-pin {font-size:10px;padding:5px}}

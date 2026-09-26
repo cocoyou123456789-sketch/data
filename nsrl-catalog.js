@@ -80,6 +80,7 @@
       <div class="nsrl-catalog-heading"><span class="nsrl-catalog-eyebrow">${category ? 'NSRL / '+(selected === 'accelerator' ? '01' : '02') : 'NSRL / INTELLIGENT FACILITY'}</span>
         <h1 id="nsrlCatalogTitle" tabindex="-1">${category ? label(category) : word('Intelligent Light Source', '智能化光源')}</h1>
       </div>
+      ${!category || selected === 'beamline' ? `<a class="nsrl-photon-entry" href="./photon-lab.html?lang=${lang}"><strong>◈ HALF / PHOTON</strong><span>${word('Phase I · Explore 10 beamlines in 3D', '一期十条线站 · 进入三维展厅')} ↗</span></a>` : ''}
       ${category ? `<div class="nsrl-category-detail">
         <div class="nsrl-detail-art">${illustration(category.id)}</div>
         <div class="nsrl-module-list">${category.modules.map((m,i)=>`<article class="nsrl-module"><span>0${i+1}</span><h2>${label(m)}</h2><small>${word('Planned', '待建设')}</small></article>`).join('')}</div>
@@ -115,7 +116,7 @@
       if (selected) {selected = null; render();} else callbacks.onBack?.();
     }
     if (event.key === 'Tab') {
-      const focusable = [...host.querySelectorAll('button')];
+      const focusable = [...host.querySelectorAll('button, a[href]')];
       const first=focusable[0], last=focusable.at(-1);
       if (event.shiftKey && (document.activeElement === first || document.activeElement.tagName === 'H1')) {event.preventDefault(); last.focus();}
       else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first.focus();}

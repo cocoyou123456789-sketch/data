@@ -14,7 +14,8 @@
     zoom: 1,
     energy: 60,
     temperature: 20,
-    lang: "en",
+    lang: new URLSearchParams(location.search).get('lang') === 'zh' ? 'zh' : 'en',
+    beamline: 'BL01',
     analysis: null,
   };
   const curated =
@@ -24,14 +25,14 @@
   const copy = (en, zh) => (state.lang === "zh" ? zh : en);
   const stations = {
     ring: {
-      label: "HLS / STORAGE RING",
+      label: "HALF / PHASE I / 10 BEAMLINES",
       title: [
         "A ring that turns electrons into light.",
         "让电子带来一束光的储存环。",
       ],
       description: [
-        "Electrons circulate in the storage ring. Magnets bend their path, producing synchrotron light for the experimental stations. This schematic is inspired by the Hefei Light Source at NSRL.",
-        "电子在储存环中循环运行，磁铁使电子轨道弯转，产生供实验站使用的同步辐射光。这里是以国家同步辐射实验室合肥光源为灵感的示意模型。",
+        "Select a beamline on the model or in the directory. HALF is the new facility under construction, not HLS II. Layout and specifications follow slides 3–4 of the supplied presentation; this 3D exhibit is schematic, not to scale.",
+        "点击模型上的线站编号或左侧目录。这里展示在建的合肥先进光源 HALF，不是现有 HLS II。布局与线站资料依据所提供 PPT 第 3–4 页；三维展厅为非等比例示意。",
       ],
     },
     beamline: {
@@ -73,6 +74,52 @@
   const canvas = $("sceneCanvas"),
     ctx = canvas.getContext("2d"),
     viewport = $("viewport");
+  const beamlines = window.HalfBeamlines;
+  const directory = document.createElement('section');
+  directory.className = 'panel half-directory';
+  document.querySelector('.lab-layout').prepend(directory);
+  const pins = document.createElement('div');
+  pins.className = 'half-pins';
+  viewport.append(pins);
+  for (const b of beamlines) {
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'half-pin';
+    button.textContent = b.id; button.dataset.beamline = b.id;
+    button.addEventListener('click',()=>selectBeamline(b.id));
+    pins.append(button);
+  }
+  function selectBeamline(id) {
+    if (!beamlines.some(b=>b.id===id)) return;
+    state.beamline=id;
+    renderBeamlines(); dirty=true;
+    if (innerWidth <= 1100) $('halfDetails').scrollIntoView({block:'nearest',behavior:'smooth'});
+  }
+  function renderBeamlines() {
+    document.body.dataset.scene = state.mode;
+    const selected = beamlines.find(b=>b.id===state.beamline);
+    // Static source data only; no user HTML is interpolated.
+    if (!directory.children.length) {
+      directory.innerHTML = '<span class="tiny">HALF / PHASE I</span><h2></h2><p></p><div class="half-list"></div>';
+      for (const b of beamlines) {
+        const button=el('button'); button.type='button';button.dataset.beamline=b.id;
+        button.append(el('strong',b.id),el('span'));
+        button.addEventListener('click',()=>selectBeamline(b.id));
+        directory.querySelector('.half-list').append(button);
+      }
+    }
+    directory.querySelector('h2').textContent=copy('Explore 10 beamlines','探索十条线站');
+    directory.querySelector('p').textContent=copy('Choose a station to see its methods and photon energy range.','选择线站，查看表征方法与光子能量范围。');
+    for (const button of [...directory.querySelectorAll('button'),...pins.children]) {
+      const b=beamlines.find(b=>b.id===button.dataset.beamline);
+      button.setAttribute('aria-pressed',String(b.id===state.beamline));
+      button.setAttribute('aria-label',`${b.id} ${b[state.lang]}`);
+      if (button.querySelector('span')) button.querySelector('span').textContent=b[state.lang];
+    }
+    const details=$('halfDetails');details.replaceChildren();
+    details.append(el('span',`${selected.id} / HALF`,'tiny'),el('h2',selected[state.lang]),el('div',`${selected.min}–${selected.max} eV`,'half-energy'),el('h3',copy('Specialty','特色优势')),el('p',selected.advantage[state.lang]),el('h3',copy('Characterization methods','主要实验方法')));
+    const methods=el('ul');selected.methods[state.lang].forEach(m=>methods.append(el('li',m)));details.append(methods);
+    details.append(el('small',copy('Source: HLS II和HALF表征方法, slides 3–4. English labels are translations. Exhibition only; no equipment control.','资料来源：《HLS II和HALF表征方法》第 3–4 页。仅供展厅导览，不控制真实设备。')));
+  }
   function el(tag, text, className) {
     const e = document.createElement(tag);
     if (text !== undefined) e.textContent = text;
@@ -93,6 +140,7 @@
     $("messages").scrollTop = $("messages").scrollHeight;
   }
   function station() {
+    renderBeamlines();
     const s = stations[state.mode],
       i = state.lang === "zh" ? 1 : 0;
     $("sceneLabel").textContent = s.label;
@@ -305,6 +353,10 @@
     message(nextSteps());
   }
   function brief() {
+    if (state.mode === 'ring') {
+      const b=beamlines.find(b=>b.id===state.beamline);
+      return `# HALF Phase I / ${b.id}\n\n${b.zh}\n${b.en}\n\nPhoton energy range: ${b.min}–${b.max} eV\n\n## Methods\n${b.methods[state.lang].map(m=>'- '+m).join('\n')}\n\nSource: HLS II和HALF表征方法.pptx, slides 3–4. English names are translations. HALF is under construction; this exhibit is not HLS II. Geometry is schematic and not to scale. No real equipment is connected.\n`;
+    }
     const f = C.formula(state.counts) || "Not selected";
     return `# PHOTON materials research brief\n\nComposition: ${f}\nRatios: ${JSON.stringify(state.counts)}\nPlanned photon energy: ${state.energy} eV\nPlanned sample temperature: ${state.temperature} K\nScene: ${state.mode}\n\nThese are planning settings, not live instrument readings. Scene geometry and atom positions are illustrative, not a crystal structure or a physical simulation.\n\n${state.counts.length ? nextSteps() : "Select a composition to prepare a material research plan."}\n\n## Local composition model\n${state.analysis ? JSON.stringify(state.analysis, null, 2) : "Not run. No computed material properties are claimed."}\n\n## Facility reference\nhttps://www.nsrl.ustc.edu.cn/dkxzz/list.htm\n\nResolve a verified CIF and review structural and experimental evidence before making scientific claims.\n`;
   }
@@ -322,7 +374,8 @@
     const document = C.gltf(objects);
     document.extras = {
       composition: state.counts,
-      photonEnergy_eV: state.energy,
+      photonEnergy_eV: state.mode === 'ring' ? null : state.energy,
+      halfBeamline: state.mode === 'ring' ? beamlines.find(b=>b.id===state.beamline) : null,
       sampleTemperature_K: state.temperature,
       scene: state.mode,
       note: "Educational concept model. No measured crystal structure or apparatus geometry.",
@@ -521,7 +574,7 @@
     const triangles = [];
     objects.forEach((obj) => {
       const points = obj.vertices.map((v) => projection(v, w, h));
-      const rgb = obj.color.match(/\w\w/g).map((v) => parseInt(v, 16));
+      const rgb = (obj.beamlineId === state.beamline ? '#c4ffe4' : obj.color).match(/\w\w/g).map((v) => parseInt(v, 16));
       obj.faces.forEach((face) => {
         const [a, b, c] = face.map((i) => points[i]),
           [A, B, D] = face.map((i) => obj.vertices[i]);
@@ -556,6 +609,11 @@
       ctx.strokeStyle = t.color;
       ctx.lineWidth = 0.4;
       ctx.stroke();
+    }
+    for (const button of pins.children) {
+      const b=beamlines.find(b=>b.id===button.dataset.beamline);
+      const p=projection([b.end[0],.55,b.end[2]],w,h);
+      button.style.left=`${p[0]}px`;button.style.top=`${p[1]}px`;
     }
   }
   let pointer = null;

@@ -1,5 +1,7 @@
 (function (root) {
   "use strict";
+  const beamlines = typeof module !== 'undefined' && module.exports
+    ? require('./half-beamlines.js') : root.HalfBeamlines;
   const ELEMENTS =
     "H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og".split(
       " ",
@@ -193,34 +195,15 @@
             ),
           );
       }
-      for (let i = 0; i < 4; i++) {
-        const a = (i * Math.PI) / 2 + 0.35;
-        out.push(
-          box(
-            `Illustrative beamline ${i + 1}`,
-            [
-              3.4 * Math.cos(a) - 0.8 * Math.sin(a),
-              0.1,
-              3.4 * Math.sin(a) + 0.8 * Math.cos(a),
-            ],
-            [0.1, 0.12, 2.6],
-            gold,
-            a,
-          ),
-        );
-        out.push(
-          cylinder(
-            `Endstation ${i + 1}`,
-            [
-              3.4 * Math.cos(a) - 2 * Math.sin(a),
-              -0.1,
-              3.4 * Math.sin(a) + 2 * Math.cos(a),
-            ],
-            0.36,
-            0.8,
-            metal,
-          ),
-        );
+      for (const b of beamlines) {
+        const dx=b.end[0]-b.start[0], dz=b.end[2]-b.start[2];
+        const center=[(b.end[0]+b.start[0])/2,0.1,(b.end[2]+b.start[2])/2];
+        const parts = [
+          box(`${b.id} photon path`,center,[Math.hypot(dx,dz),.09,.09],gold,Math.atan2(dz,dx)),
+          cylinder(`${b.id} endstation`,[b.end[0],-.1,b.end[2]],.22,.65,metal),
+          box(`${b.id} instrument platform`,[b.end[0],-.62,b.end[2]],[.65,.14,.65],metal),
+        ];
+        parts.forEach(p=>{p.beamlineId=b.id;out.push(p);});
       }
       out.push(
         box(
