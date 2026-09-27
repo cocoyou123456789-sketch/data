@@ -1,0 +1,5 @@
+# GSAS-II is intentionally not declared as an ordinary PyPI dependency.
+# Install GSAS-II from its official distribution, then make
+# GSASIIscriptable importable in the same Python environment.
+# Documentation: https://gsas-ii.readthedocs.io/
+
