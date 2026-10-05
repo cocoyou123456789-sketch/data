@@ -5,11 +5,12 @@
   const video=$('gestureVideo'),cursor=$('gestureCursor'),preview=$('gesturePreview');
   const copy=(en,zh)=>document.documentElement.lang.startsWith('zh')?zh:en;
   const allowed='.half-pin,.half-list button,button[data-half-nav],button[data-scene],button[data-filter],button[data-recipe],.element,#zoomIn,#zoomOut,#resetView,#explode,#rotate,#language,#gestureStop,#gesturePreviewToggle';
-  let worker=null,stream=null,active=false,generation=0,raf=0,busy=false,lastTime=0,lastVideo=-1,press=null,hover=null,watchdog=0;
+  let worker=null,stream=null,active=false,generation=0,raf=0,busy=false,lastTime=0,lastVideo=-1,press=null,hover=null,watchdog=0,scrollAnchor=null,scrollTarget=null;
   const status=(en,zh)=>{const text=copy(en,zh);if($('gestureStatus').textContent!==text)$('gestureStatus').textContent=text;};
   function clearInteraction(){
     window.PhotonSelection?.clear();
     tracker.reset();press=null;cursor.hidden=true;
+    scrollAnchor=null;scrollTarget=null;
     hover?.classList.remove('gesture-hover');hover=null;
   }
   function stop(){
@@ -49,6 +50,21 @@
       press=null;cursor.hidden=true;hover?.classList.remove('gesture-hover');hover=null;
       window.PhotonControls.zoom(action.scale);status('Two hands · zoom','双手 · 缩放');return;
     }
+    if(action.kind==='scroll'){
+      window.PhotonSelection?.clear();press=null;hover?.classList.remove('gesture-hover');hover=null;
+      if(action.start || !scrollAnchor){
+        scrollAnchor={x:action.point.x*innerWidth,y:action.point.y*innerHeight};
+        const under=document.elementFromPoint(scrollAnchor.x,scrollAnchor.y);
+        scrollTarget=under?.closest('.half-list')||under?.closest('.element-grid')||under?.closest('#messages');
+      }
+      cursor.hidden=false;cursor.dataset.down='false';cursor.dataset.mode='scroll';
+      cursor.style.left=`${scrollAnchor.x}px`;cursor.style.top=`${scrollAnchor.y}px`;
+      const speed=Number($('gestureScrollSpeed')?.value||1.4);
+      const pixels=Math.abs(action.delta)<.0008?0:Math.max(-120,Math.min(120,action.delta*innerHeight*speed*2));
+      if(pixels){if(scrollTarget)scrollTarget.scrollBy(0,pixels);else window.scrollBy(0,pixels);}
+      status('Two fingers · scroll up / down','双指上下移动 · 滚动中');return;
+    }
+    scrollAnchor=null;scrollTarget=null;cursor.dataset.mode='pointer';
     const x=action.point.x*innerWidth,y=action.point.y*innerHeight;
     cursor.hidden=false;cursor.style.left=`${x}px`;cursor.style.top=`${y}px`;cursor.dataset.down=String(action.down);
     const under=document.elementFromPoint(x,y),target=under?.closest(allowed);

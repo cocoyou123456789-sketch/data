@@ -5,7 +5,7 @@
   const clamp=x=>Math.max(0,Math.min(1,x));
   class GestureTracker {
     constructor(){this.reset();}
-    reset(){this.point=null;this.palm=null;this.down=false;this.candidate=null;this.since=0;this.armed=false;this.span=null;this.time=null;}
+    reset(){this.point=null;this.palm=null;this.down=false;this.candidate=null;this.since=0;this.armed=false;this.span=null;this.time=null;this.scrollPoint=null;}
     update(hands,time) {
       const valid=(hands||[]).filter(h=>h.length===21 && h.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)) && distance(h[0],h[9])>.05);
       if (!valid.length || (this.time!==null && time-this.time>300)) {
@@ -17,7 +17,7 @@
         const span=distance(valid[0][9],valid[1][9]);
         const scale=this.span?Math.max(.9,Math.min(1.1,span/this.span)):1;
         const cancelled=this.down;
-        this.down=false;this.armed=false;this.candidate=null;this.point=null;this.palm=null;this.span=span;
+        this.down=false;this.armed=false;this.candidate=null;this.point=null;this.palm=null;this.span=span;this.scrollPoint=null;
         return {kind:'zoom',scale,cancelled};
       }
       this.span=null;
@@ -29,6 +29,13 @@
       const previous=this.point;
       this.point=previous?{x:previous.x+alpha*(point.x-previous.x),y:previous.y+alpha*(point.y-previous.y)}:point;
       const ratio=distance(hand[4],hand[8])/distance(hand[0],hand[9]);
+      const extended=(tip,pip)=>distance(hand[tip],hand[0])>distance(hand[pip],hand[0])*1.18;
+      if(extended(8,6) && extended(12,10) && !extended(16,14) && !extended(20,18) && ratio>.55){
+        const start=!this.scrollPoint,delta=this.scrollPoint?this.point.y-this.scrollPoint.y:0,cancelled=this.down;
+        this.scrollPoint={...this.point};this.down=false;this.armed=false;this.candidate=null;
+        return {kind:'scroll',point:this.point,delta,start,cancelled};
+      }
+      this.scrollPoint=null;
       // Separate close/open thresholds avoid flicker. Re-arm only with an open hand.
       const desired=this.down?ratio<.55:ratio<.32;
       if(desired!==this.candidate){this.candidate=desired;this.since=time;}

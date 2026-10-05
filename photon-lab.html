@@ -11,11 +11,11 @@
     <link rel="stylesheet" href="half-beamlines.css?v=20261005-selection" />
     <script defer src="half-beamlines.js?v=20260925"></script>
     <script defer src="photon-lab-core.js?v=20261005"></script>
-    <link rel="stylesheet" href="photon-gesture.css?v=20261004" />
-    <script defer src="photon-lab.js?v=20261005"></script>
-    <script defer src="photon-selection.js?v=20261005"></script>
-    <script defer src="photon-gesture-core.js?v=20261004"></script>
-    <script defer src="photon-gesture.js?v=20261005"></script>
+    <link rel="stylesheet" href="photon-gesture.css?v=20261005-scroll" />
+    <script defer src="photon-lab.js?v=20261005-scroll"></script>
+    <script defer src="photon-selection.js?v=20261005-scroll"></script>
+    <script defer src="photon-gesture-core.js?v=20261005-scroll"></script>
+    <script defer src="photon-gesture.js?v=20261005-scroll"></script>
   </head>
   <body>
     <header class="masthead">
@@ -71,7 +71,8 @@
         <button id="gestureStop" hidden data-en="Stop camera" data-zh="关闭摄像头">Stop camera</button>
         <button id="gesturePreviewToggle" hidden data-en="Show / hide preview" data-zh="显示 / 隐藏预览">Show / hide preview</button>
         <label class="beamline-dwell-setting"><input id="beamlineDwell" type="checkbox" checked /><span data-en="Hover 1s to select a beamline" data-zh="停留 1 秒选择线站">Hover 1s to select a beamline</span></label>
-        <p data-en="Point to aim · Pinch to select / drag · Two hands to zoom · Screen edges to scroll · Esc to stop. Video stays on this device." data-zh="食指指向 · 捏合选择或拖动 · 双手缩放 · 屏幕边缘滚动 · Esc 关闭。视频仅在本机处理。">Point to aim · Pinch to select / drag · Two hands to zoom · Screen edges to scroll · Esc to stop. Video stays on this device.</p>
+        <label class="gesture-scroll-speed"><span data-en="Scroll speed" data-zh="滚动速度">Scroll speed</span><input id="gestureScrollSpeed" aria-label="Scroll speed / 滚动速度" type="range" min="0.5" max="3" step="0.1" value="1.4" /></label>
+        <p data-en="Point to aim · Pinch to select / drag · Two fingers to scroll up / down · Two hands to zoom · Esc to stop. Video stays on this device." data-zh="食指指向 · 捏合选择或拖动 · 双指上下滚动 · 双手缩放 · Esc 关闭。视频仅在本机处理。">Point to aim · Pinch to select / drag · Two fingers to scroll up / down · Two hands to zoom · Esc to stop. Video stays on this device.</p>
         <span id="gestureStatus" class="gesture-status" role="status" data-en="Camera off" data-zh="摄像头已关闭">Camera off</span>
       </section>
       <div class="lab-layout">
@@ -217,9 +218,9 @@
             </div>
             <div class="scene-caption">
               <span
-                data-en="DRAG TO ORBIT · SCROLL TO ZOOM"
-                data-zh="拖动旋转 · 滚轮缩放"
-                >DRAG TO ORBIT · SCROLL TO ZOOM</span
+                data-en="DRAG TO ORBIT · SCROLL PAGE · ⌘/CTRL + SCROLL TO ZOOM"
+                data-zh="拖动旋转 · 滚轮滚动页面 · ⌘/Ctrl + 滚轮缩放"
+                >DRAG TO ORBIT · SCROLL PAGE · ⌘/CTRL + SCROLL TO ZOOM</span
               ><span id="objectCount"></span>
             </div>
           </div>
