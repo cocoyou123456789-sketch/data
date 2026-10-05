@@ -4,9 +4,9 @@
   const tracker=new window.PhotonGestureCore.GestureTracker();
   const video=$('gestureVideo'),cursor=$('gestureCursor'),preview=$('gesturePreview');
   const copy=(en,zh)=>document.documentElement.lang.startsWith('zh')?zh:en;
-  const allowed='.half-pin,.half-list button,[data-scene],[data-filter],[data-recipe],.element,#zoomIn,#zoomOut,#resetView,#explode,#rotate,#language,#gestureStop,#gesturePreviewToggle';
+  const allowed='.half-pin,.half-list button,button[data-scene],button[data-filter],button[data-recipe],.element,#zoomIn,#zoomOut,#resetView,#explode,#rotate,#language,#gestureStop,#gesturePreviewToggle';
   let worker=null,stream=null,active=false,generation=0,raf=0,busy=false,lastTime=0,lastVideo=-1,press=null,hover=null,watchdog=0;
-  const status=(en,zh)=>{$('gestureStatus').textContent=copy(en,zh);};
+  const status=(en,zh)=>{const text=copy(en,zh);if($('gestureStatus').textContent!==text)$('gestureStatus').textContent=text;};
   function clearInteraction(){
     tracker.reset();press=null;cursor.hidden=true;
     hover?.classList.remove('gesture-hover');hover=null;
