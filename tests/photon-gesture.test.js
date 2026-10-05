@@ -44,3 +44,15 @@ test('invalid points, tiny background hands and stale frames do not control the 
   const invalid=hand();invalid[8].x=NaN;assert.equal(t.update([invalid],50).kind,'lost');
   t.update([hand()],100);assert.equal(t.update([hand()],500).kind,'lost');
 });
+function scrollingHand(y=.4){
+  const h=hand({y});
+  h[6]={x:.5,y:y+.08,z:0};h[12]={x:.53,y,z:0};h[10]={x:.53,y:y+.08,z:0};
+  h[16]={x:.56,y:y+.14,z:0};h[14]={x:.56,y:y+.08,z:0};h[20]={x:.6,y:y+.14,z:0};h[18]={x:.6,y:y+.08,z:0};return h;
+}
+test('two fingers scroll in both directions, starting without a jump and rearming afterward',()=>{
+  const t=new GestureTracker();const first=t.update([scrollingHand()],0);
+  assert.equal(first.kind,'scroll');assert.equal(first.start,true);assert.equal(first.delta,0);
+  const down=t.update([scrollingHand(.44)],50);assert.equal(down.kind,'scroll');assert.ok(down.delta>0);
+  const up=t.update([scrollingHand(.35)],100);assert.ok(up.delta<0);
+  assert.equal(t.update([hand({pinch:true})],150).down,false);
+});

@@ -674,6 +674,7 @@
   canvas.addEventListener(
     "wheel",
     (e) => {
+      if(!e.ctrlKey && !e.metaKey)return;
       e.preventDefault();
       state.zoom = Math.max(
         0.5,

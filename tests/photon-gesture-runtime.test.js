@@ -60,3 +60,15 @@ test('pointing near the beamline list edge scrolls the list, not the whole page'
   h.setHit({disabled:false,classList:{add(){},remove(){}},closest:selector=>selector==='.half-list'?list:null});
   await h.start();h.send([h.hand()],0);assert.equal(scroll,14);
 });
+test('two-finger scrolling stays anchored to the list and moves it up and down',async()=>{
+  const h=harness();let top=200,pageScroll=0;
+  const list={scrollBy:(x,y)=>top+=y};
+  h.scope.window.scrollBy=()=>pageScroll++;
+  h.setHit({closest:selector=>selector==='.half-list'?list:null});
+  function pose(y){const p=h.hand();p.forEach(q=>q.y+=y-.4);p[6]={x:.5,y:y+.08,z:0};p[12]={x:.53,y,z:0};p[10]={x:.53,y:y+.08,z:0};p[16]={x:.56,y:y+.14,z:0};p[14]={x:.56,y:y+.08,z:0};p[20]={x:.6,y:y+.14,z:0};p[18]={x:.6,y:y+.08,z:0};return p;}
+  await h.start();h.send([pose(.4)],0);assert.equal(top,200);
+  const anchor=h.nodes.gestureCursor.style.top;
+  h.send([pose(.44)],50);assert.ok(top>200);const lower=top;
+  h.send([pose(.35)],100);assert.ok(top<lower);
+  assert.equal(pageScroll,0);assert.equal(h.nodes.gestureCursor.style.top,anchor);assert.equal(h.counts.click,0);
+});

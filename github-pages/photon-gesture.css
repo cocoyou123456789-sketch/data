@@ -8,5 +8,8 @@
 .gesture-preview p {font-size:11px;margin:8px 4px;color:#cbe7dd;}
 .gesture-cursor {position:fixed;width:24px;height:24px;border:2px solid #b1ffe4;border-radius:50%;transform:translate(-50%,-50%);z-index:1000;pointer-events:none;background:#56dcb233;box-shadow:0 0 18px #89ffda77;}
 .gesture-cursor[data-down=true] {background:#8affe5;width:17px;height:17px;}
+.gesture-cursor[data-mode=scroll]::after {content:'↕';position:absolute;inset:0;display:grid;place-items:center;font:18px sans-serif;color:#fff;}
+.gesture-scroll-speed {display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;}
+.gesture-scroll-speed input {width:75px;accent-color:#7be5c7;}
 .gesture-hover {outline:2px solid #adffe3!important;outline-offset:3px;}
 @media(max-width:650px){.gesture-preview{width:150px;right:10px;bottom:10px}.gesture-bar{padding:12px}.gesture-bar p {flex-basis:100%}}

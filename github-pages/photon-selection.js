@@ -39,6 +39,7 @@
   document.addEventListener('pointerdown',()=>{blocked=true;clearProgress();},{passive:true});
   document.addEventListener('pointerup',event=>update(event.clientX,event.clientY,false,'desktop'),{passive:true});
   document.addEventListener('pointercancel',clear);
+  document.addEventListener('wheel',clear,{passive:true});
   document.addEventListener('pointerleave',clear);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)clear();});
   setting.addEventListener('change',clear);
