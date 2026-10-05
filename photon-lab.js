@@ -67,6 +67,7 @@
     },
   };
   let objects = [],
+    drawnTriangles = [], hoveredBeamline = null,
     filter = "curated",
     toastTimer,
     lastFrame = 0,
@@ -90,8 +91,15 @@
   }
   function selectBeamline(id) {
     if (!beamlines.some(b=>b.id===id)) return;
+    if(state.beamline===id)return;
     state.beamline=id;
     renderBeamlines(); dirty=true;
+    const list=directory.querySelector('.half-list'),button=list.querySelector(`[data-beamline="${id}"]`);
+    const a=list.getBoundingClientRect(),b=button.getBoundingClientRect();
+    if(list.scrollHeight>list.clientHeight){
+      if(b.top<a.top)list.scrollTop-=a.top-b.top;
+      else if(b.bottom>a.bottom)list.scrollTop+=b.bottom-a.bottom;
+    }
     if (innerWidth <= 1100) $('halfDetails').scrollIntoView({block:'nearest',behavior:'smooth'});
   }
   function renderBeamlines() {
@@ -99,17 +107,36 @@
     const selected = beamlines.find(b=>b.id===state.beamline);
     // Static source data only; no user HTML is interpolated.
     if (!directory.children.length) {
-      directory.innerHTML = '<span class="tiny">HALF / PHASE I</span><h2></h2><p></p><div class="half-list"></div>';
+      directory.innerHTML = '<span class="tiny">HALF / PHASE I</span><h2></h2><p></p><div class="half-list" tabindex="0"></div><div class="half-nav"><button type="button" data-half-nav="previous"></button><span class="half-current"></span><button type="button" data-half-nav="next"></button></div>';
       for (const b of beamlines) {
         const button=el('button'); button.type='button';button.dataset.beamline=b.id;
         button.append(el('strong',b.id),el('span'));
         button.addEventListener('click',()=>selectBeamline(b.id));
         directory.querySelector('.half-list').append(button);
       }
+      directory.querySelectorAll('[data-half-nav]').forEach(button=>button.addEventListener('click',()=>{
+        const index=beamlines.findIndex(b=>b.id===state.beamline)+(button.dataset.halfNav==='next'?1:-1);
+        if(beamlines[index])selectBeamline(beamlines[index].id);
+      }));
+      directory.querySelector('.half-list').addEventListener('keydown',event=>{
+        if(!['ArrowUp','ArrowDown','Home','End'].includes(event.key))return;
+        event.preventDefault();
+        const focused=event.target.closest('[data-beamline]')?.dataset.beamline||state.beamline;
+        let index=beamlines.findIndex(b=>b.id===focused)+(event.key==='ArrowUp'?-1:1);
+        if(event.key==='Home')index=0;if(event.key==='End')index=beamlines.length-1;
+        index=Math.max(0,Math.min(beamlines.length-1,index));selectBeamline(beamlines[index].id);
+        directory.querySelector(`[data-beamline="${beamlines[index].id}"]`).focus({preventScroll:true});
+      });
     }
     directory.querySelector('h2').textContent=copy('Explore 10 beamlines','探索十条线站');
     directory.querySelector('p').textContent=copy('Choose a station to see its methods and photon energy range.','选择线站，查看表征方法与光子能量范围。');
-    for (const button of [...directory.querySelectorAll('button'),...pins.children]) {
+    directory.querySelector('.half-list').setAttribute('aria-label',copy('Beamline selection','线站选择'));
+    const index=beamlines.findIndex(b=>b.id===state.beamline);
+    directory.querySelector('.half-current').textContent=`${selected.id} · ${index+1} / ${beamlines.length}`;
+    const previous=directory.querySelector('[data-half-nav="previous"]'),next=directory.querySelector('[data-half-nav="next"]');
+    previous.textContent=copy('← Previous','← 上一条');next.textContent=copy('Next →','下一条 →');
+    previous.disabled=index===0;next.disabled=index===beamlines.length-1;
+    for (const button of [...directory.querySelectorAll('.half-list button'),...pins.children]) {
       const b=beamlines.find(b=>b.id===button.dataset.beamline);
       button.setAttribute('aria-pressed',String(b.id===state.beamline));
       button.setAttribute('aria-label',`${b.id} ${b[state.lang]}`);
@@ -574,7 +601,7 @@
     const triangles = [];
     objects.forEach((obj) => {
       const points = obj.vertices.map((v) => projection(v, w, h));
-      const rgb = (obj.beamlineId === state.beamline ? '#c4ffe4' : obj.color).match(/\w\w/g).map((v) => parseInt(v, 16));
+      const rgb = (obj.beamlineId === state.beamline ? '#c4ffe4' : obj.beamlineId && obj.beamlineId===hoveredBeamline ? '#f4c892' : obj.color).match(/\w\w/g).map((v) => parseInt(v, 16));
       obj.faces.forEach((face) => {
         const [a, b, c] = face.map((i) => points[i]),
           [A, B, D] = face.map((i) => obj.vertices[i]);
@@ -589,6 +616,7 @@
         const light =
           0.53 + 0.47 * Math.abs((n[0] * 0.3 + n[1] * 0.8 + n[2] * 0.5) / len);
         triangles.push({
+          beamlineId:obj.beamlineId,
           points: [a, b, c],
           // The exhibition floor is a backdrop. Its large cap triangles must
           // not obscure the apparatus when sorting triangle centroids.
@@ -598,6 +626,7 @@
       });
     });
     triangles.sort((a, b) => b.z - a.z);
+    drawnTriangles=triangles;
     for (const t of triangles) {
       ctx.beginPath();
       ctx.moveTo(t.points[0][0], t.points[0][1]);
@@ -618,13 +647,15 @@
   }
   let pointer = null;
   canvas.addEventListener("pointerdown", (e) => {
-    pointer = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    pointer = { id: e.pointerId, x: e.clientX, y: e.clientY, startX:e.clientX,startY:e.clientY,drag:false };
     canvas.setPointerCapture(e.pointerId);
     state.auto = false;
     $("rotate").classList.remove("selected");
   });
   canvas.addEventListener("pointermove", (e) => {
     if (!pointer || e.pointerId !== pointer.id) return;
+    if(Math.hypot(e.clientX-pointer.startX,e.clientY-pointer.startY)>12)pointer.drag=true;
+    if(!pointer.drag)return;
     state.yaw += (e.clientX - pointer.x) * 0.008;
     state.pitch = Math.max(
       0.1,
@@ -634,7 +665,11 @@
     pointer.y = e.clientY;
     dirty = true;
   });
-  for (const event of ["pointerup", "pointercancel", "lostpointercapture"])
+  canvas.addEventListener('pointerup',event=>{
+    if(pointer && !pointer.drag){const id=beamlineAt(event.clientX,event.clientY);if(id)selectBeamline(id);}
+    pointer=null;
+  });
+  for (const event of ["pointercancel", "lostpointercapture"])
     canvas.addEventListener(event, () => (pointer = null));
   canvas.addEventListener(
     "wheel",
@@ -817,7 +852,16 @@
     speechSynthesis.speak(speech);
   };
   window.addEventListener("pagehide", () => window.speechSynthesis?.cancel());
+  function beamlineAt(x,y) {
+    if(state.mode!=='ring')return null;
+    const r=canvas.getBoundingClientRect();
+    if(x<r.left||x>r.right||y<r.top||y>r.bottom)return null;
+    return C.pickBeamline(drawnTriangles,x-r.left,y-r.top);
+  }
   window.PhotonControls = {
+    beamlineAt,
+    selectBeamline,
+    hoverBeamline(id) {if(hoveredBeamline!==id){hoveredBeamline=id;dirty=true;}},
     orbit(dx,dy) {
       state.auto=false;$("rotate").classList.remove('selected');
       state.yaw+=dx*.008;state.pitch=Math.max(.1,Math.min(1.4,state.pitch+dy*.008));dirty=true;

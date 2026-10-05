@@ -2,6 +2,16 @@
 .half-directory h2 {font-size:21px;margin:10px 0;}
 .half-directory p,.half-details p {color:var(--muted);font-size:12px;line-height:1.7;}
 .half-list {display:grid;gap:7px;margin-top:18px;}
+.half-list {scrollbar-width:thin;scrollbar-color:#65baa9 #132331;overscroll-behavior:contain;}
+.half-nav {display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;}
+.half-nav button {font-size:11px;padding:8px;}
+.half-current {font:10px monospace;color:var(--mint);white-space:nowrap;}
+.beamline-dwell-setting {display:flex;align-items:center;gap:7px;font-size:12px;color:#c9ede1;}
+.beamline-dwell-setting input {accent-color:#7be5c7;}
+.half-list button.beamline-hover:not([aria-pressed=true]),.half-pin.beamline-hover:not([aria-pressed=true]) {border-color:#e6be88;}
+.half-list button,.half-pin {overflow:hidden;}
+.half-list button {position:relative;}
+.half-list button[data-dwell]::after,.half-pin[data-dwell]::after {content:'';position:absolute;bottom:0;left:0;height:3px;width:calc(var(--dwell-progress,0)*100%);background:#bbffe8;pointer-events:none;}
 @media(min-width:1101px) {.half-list {max-height:540px;overflow:auto;padding-right:4px;} body[data-scene=ring] .viewport {height:500px;}}
 .half-list button {text-align:left;padding:11px;display:grid;grid-template-columns:42px 1fr;gap:8px;font-size:12px;line-height:1.4;}
 .half-list strong {color:var(--mint);font:11px monospace;}
