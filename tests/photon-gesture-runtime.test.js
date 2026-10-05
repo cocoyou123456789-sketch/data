@@ -72,11 +72,11 @@ test('a pinch on visible model geometry selects its beamline without clicking un
   h.send([h.hand()],0);h.send([h.hand()],100);h.send([h.hand(true)],150);h.send([h.hand(true)],250);h.send([h.hand()],300);h.send([h.hand()],400);
   assert.deepEqual(selected,['BL03']);assert.equal(h.counts.click,0);
 });
-test('pointing near the beamline list edge scrolls the list, not the whole page',async()=>{
+test('pointing at a list edge does not scroll until an intentional scroll gesture',async()=>{
   const h=harness();let scroll=0;
   const list={scrollHeight:600,clientHeight:200,scrollTop:100,getBoundingClientRect:()=>({top:100,bottom:225,height:125}),scrollBy:(x,y)=>scroll+=y};
   h.setHit({disabled:false,classList:{add(){},remove(){}},closest:selector=>selector==='.half-list'?list:null});
-  await h.start();h.send([h.hand()],0);assert.equal(scroll,14);
+  await h.start();h.send([h.hand()],0);assert.equal(scroll,0);
 });
 test('two-finger scrolling stays anchored to the list and moves it up and down',async()=>{
   const h=harness();let top=200,pageScroll=0;

@@ -100,16 +100,6 @@
       if(beamline)window.PhotonControls.selectBeamline(beamline);
       if(!active)return;
     }
-    if(!action.down && !press){
-      const list=under?.closest('.half-list');
-      if(list && list.scrollHeight>list.clientHeight){
-        const r=list.getBoundingClientRect(),edge=Math.min(45,r.height*.15);
-        let delta=0;
-        if(y<r.top+edge && list.scrollTop>0)delta=-14;
-        if(y>r.bottom-edge && list.scrollTop+list.clientHeight<list.scrollHeight-1)delta=14;
-        if(delta){list.scrollBy(0,delta);window.PhotonSelection?.clear();}
-      }else if(action.point.y<.035 || action.point.y>.965){window.scrollBy(0,action.point.y<.035?-16:16);window.PhotonSelection?.clear();}
-    }
     status(action.down?'Pinch held · drag the model':'Point · pinch and release to select',action.down?'捏合中 · 拖动模型':'指向 · 捏合后松开以选择');
   }
   async function frame(time){
