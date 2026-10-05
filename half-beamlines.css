@@ -3,9 +3,9 @@
 .half-directory p,.half-details p {color:var(--muted);font-size:12px;line-height:1.7;}
 .half-list {display:grid;gap:7px;margin-top:18px;}
 .half-list {scrollbar-width:thin;scrollbar-color:#65baa9 #132331;overscroll-behavior:contain;}
-.half-nav {display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;}
-.half-nav button {font-size:11px;padding:8px;}
-.half-current {font:10px monospace;color:var(--mint);white-space:nowrap;}
+.half-nav {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;}
+.half-nav button {font-size:11px;padding:8px;white-space:nowrap;grid-row:2;}
+.half-current {font:10px monospace;color:var(--mint);white-space:nowrap;grid-column:1/-1;grid-row:1;text-align:center;}
 .beamline-dwell-setting {display:flex;align-items:center;gap:7px;font-size:12px;color:#c9ede1;}
 .beamline-dwell-setting input {accent-color:#7be5c7;}
 .half-list button.beamline-hover:not([aria-pressed=true]),.half-pin.beamline-hover:not([aria-pressed=true]) {border-color:#e6be88;}
