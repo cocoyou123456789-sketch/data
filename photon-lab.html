@@ -11,11 +11,11 @@
     <link rel="stylesheet" href="half-beamlines.css?v=20261005-selection" />
     <script defer src="half-beamlines.js?v=20260925"></script>
     <script defer src="photon-lab-core.js?v=20261005"></script>
-    <link rel="stylesheet" href="photon-gesture.css?v=20261005-scroll" />
+    <link rel="stylesheet" href="photon-gesture.css?v=20261005-manual" />
     <script defer src="photon-lab.js?v=20261005-scroll"></script>
     <script defer src="photon-selection.js?v=20261005-scroll"></script>
     <script defer src="photon-gesture-core.js?v=20261005-scroll"></script>
-    <script defer src="photon-gesture.js?v=20261005-scroll"></script>
+    <script defer src="photon-gesture.js?v=20261005-manual"></script>
   </head>
   <body>
     <header class="masthead">
@@ -67,12 +67,13 @@
         </button>
       </div>
       <section class="gesture-bar" aria-label="Camera gesture controls">
-        <button id="gestureStart" data-en="Enable camera gestures" data-zh="开启摄像头手势">Enable camera gestures</button>
+        <button id="gestureManual" aria-pressed="true" data-en="Manual control" data-zh="手动操作">Manual control</button>
+        <button id="gestureStart" aria-pressed="false" data-en="Enable camera gestures" data-zh="开启摄像头手势">Enable camera gestures</button>
         <button id="gestureStop" hidden data-en="Stop camera" data-zh="关闭摄像头">Stop camera</button>
         <button id="gesturePreviewToggle" hidden data-en="Show / hide preview" data-zh="显示 / 隐藏预览">Show / hide preview</button>
-        <label class="beamline-dwell-setting"><input id="beamlineDwell" type="checkbox" checked /><span data-en="Hover 1s to select a beamline" data-zh="停留 1 秒选择线站">Hover 1s to select a beamline</span></label>
+        <label class="beamline-dwell-setting"><input id="beamlineDwell" type="checkbox" /><span data-en="Optional: hover 1s to select" data-zh="可选：停留 1 秒自动选择">Optional: hover 1s to select</span></label>
         <label class="gesture-scroll-speed"><span data-en="Scroll speed" data-zh="滚动速度">Scroll speed</span><input id="gestureScrollSpeed" aria-label="Scroll speed / 滚动速度" type="range" min="0.5" max="3" step="0.1" value="1.4" /></label>
-        <p data-en="Point to aim · Pinch to select / drag · Two fingers to scroll up / down · Two hands to zoom · Esc to stop. Video stays on this device." data-zh="食指指向 · 捏合选择或拖动 · 双指上下滚动 · 双手缩放 · Esc 关闭。视频仅在本机处理。">Point to aim · Pinch to select / drag · Two fingers to scroll up / down · Two hands to zoom · Esc to stop. Video stays on this device.</p>
+        <p data-en="Manual: click to select, drag to rotate, scroll up / down. Camera: point to move, pinch to click / drag, two fingers to scroll. Video stays on this device." data-zh="手动：点击选择、拖动旋转、上下滚动。摄像头：食指移动、捏合点击或拖动、双指滚动。视频仅在本机处理。">Manual: click to select, drag to rotate, scroll up / down. Camera: point to move, pinch to click / drag, two fingers to scroll. Video stays on this device.</p>
         <span id="gestureStatus" class="gesture-status" role="status" data-en="Camera off" data-zh="摄像头已关闭">Camera off</span>
       </section>
       <div class="lab-layout">
