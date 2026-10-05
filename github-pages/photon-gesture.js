@@ -4,7 +4,7 @@
   const tracker=new window.PhotonGestureCore.GestureTracker();
   const video=$('gestureVideo'),cursor=$('gestureCursor'),preview=$('gesturePreview');
   const copy=(en,zh)=>document.documentElement.lang.startsWith('zh')?zh:en;
-  const allowed='.half-pin,.half-list button,button[data-half-nav],button[data-scene],button[data-filter],button[data-recipe],.element,#zoomIn,#zoomOut,#resetView,#explode,#rotate,#language,#gestureStop,#gesturePreviewToggle';
+  const allowed='button,a[href],input:not([type="hidden"]),select,textarea';
   let worker=null,stream=null,active=false,generation=0,raf=0,busy=false,lastTime=0,lastVideo=-1,press=null,hover=null,watchdog=0,scrollAnchor=null,scrollTarget=null;
   const status=(en,zh)=>{const text=copy(en,zh);if($('gestureStatus').textContent!==text)$('gestureStatus').textContent=text;};
   function clearInteraction(){
@@ -18,6 +18,7 @@
     worker?.terminate();worker=null;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;
     busy=false;lastTime=0;lastVideo=-1;clearInteraction();preview.hidden=true;
     $('gestureStart').disabled=false;$('gestureStop').hidden=true;$('gesturePreviewToggle').hidden=true;
+    $('gestureManual')?.setAttribute('aria-pressed','true');$('gestureStart').setAttribute('aria-pressed','false');
     status('Camera off','摄像头已关闭');
   }
   function fail(error){
@@ -67,22 +68,35 @@
     scrollAnchor=null;scrollTarget=null;cursor.dataset.mode='pointer';
     const x=action.point.x*innerWidth,y=action.point.y*innerHeight;
     cursor.hidden=false;cursor.style.left=`${x}px`;cursor.style.top=`${y}px`;cursor.dataset.down=String(action.down);
-    const under=document.elementFromPoint(x,y),target=under?.closest(allowed);
+    const under=document.elementFromPoint(x,y),target=under?.closest(allowed)||under?.closest('label')?.control;
     const enabled=target&&!target.disabled&&!target.closest('[inert]')?target:null;
     window.PhotonSelection?.point(x,y,action.down);
     if(hover!==enabled){hover?.classList.remove('gesture-hover');hover=enabled;hover?.classList.add('gesture-hover');}
     if(action.phase==='down'){
-      press={x,y,target:enabled,drag:false,scene:under===$('sceneCanvas'),beamline:under===$('sceneCanvas')?window.PhotonControls.beamlineAt?.(x,y):null};
+      press={x,y,target:enabled,drag:false,range:enabled?.tagName==='INPUT' && enabled.type==='range'?enabled:null,scene:under===$('sceneCanvas'),beamline:under===$('sceneCanvas')?window.PhotonControls.beamlineAt?.(x,y):null};
     }
     if(press && action.down){
+      if(press.range){
+        const input=press.range,r=input.getBoundingClientRect();
+        if(r.width>0){
+          const min=Number(input.min||0),max=Number(input.max||100),step=Number(input.step||1);
+          const fraction=Math.max(0,Math.min(1,(x-r.left)/r.width)),raw=min+fraction*(max-min);
+          const value=Number.isFinite(step)&&step>0?min+Math.round((raw-min)/step)*step:raw;
+          input.value=String(Math.max(min,Math.min(max,value)));
+          input.dispatchEvent(new Event('input',{bubbles:true}));
+        }
+        press.drag=true;
+      }
       if(Math.hypot(x-press.x,y-press.y)>18) press.drag=true;
       if(press.drag && press.scene) window.PhotonControls.orbit(action.delta.x*innerWidth,action.delta.y*innerHeight);
     }
     if(action.phase==='up'){
+      const range=press?.range;
       const clicked=press && !press.drag && press.target===enabled?enabled:null;
       const beamline=press && !press.drag && press.scene && press.beamline===window.PhotonControls.beamlineAt?.(x,y)?press.beamline:null;
       press=null;
-      clicked?.click();
+      clicked?.focus?.({preventScroll:true});clicked?.click();
+      if(range)range.dispatchEvent(new Event('change',{bubbles:true}));
       if(beamline)window.PhotonControls.selectBeamline(beamline);
       if(!active)return;
     }
@@ -128,7 +142,7 @@
       worker.onerror=event=>{if(token===generation)fail(new Error(event.message));};
       worker.onmessage=({data})=>{
         if(token!==generation)return;
-        if(data.type==='ready'){clearTimeout(watchdog);active=true;clearInteraction();raf=requestAnimationFrame(frame);status('Show one hand to point','举起一只手以移动光标');}
+        if(data.type==='ready'){clearTimeout(watchdog);active=true;clearInteraction();$('gestureManual')?.setAttribute('aria-pressed','false');$('gestureStart').setAttribute('aria-pressed','true');raf=requestAnimationFrame(frame);status('Show one hand to point','举起一只手以移动光标');}
         else if(data.type==='hands'){clearTimeout(watchdog);busy=false;handle(data.hands,data.time);}
         else if(data.type==='error')fail(new Error(data.message));
       };
@@ -137,6 +151,7 @@
     }catch(error){if(token===generation)fail(error);}
   }
   $('gestureStart').addEventListener('click',start);
+  $('gestureManual')?.addEventListener('click',stop);
   $('gestureStop').addEventListener('click',stop);
   $('gesturePreviewToggle').addEventListener('click',()=>{preview.hidden=!preview.hidden;});
   window.addEventListener('keydown',e=>{if(e.key==='Escape' && (active||stream||$('gestureStart').disabled))stop();});

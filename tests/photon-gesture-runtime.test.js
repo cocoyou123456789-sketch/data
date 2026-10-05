@@ -6,7 +6,7 @@ const {GestureTracker}=require('../github-pages/photon-gesture-core.js');
 function harness(camera){
   const handlers={},nodes={},workers=[],counts={stop:0,click:0,orbit:0,zoom:0};
   const classes=()=>({add(){},remove(){}});
-  for(const id of ['gestureVideo','gestureCursor','gesturePreview','gestureStart','gestureStop','gesturePreviewToggle','gestureStatus','gestureSkeleton','sceneCanvas']) nodes[id]={hidden:false,disabled:false,style:{},dataset:{},classList:classes(),addEventListener(name,fn){handlers[id+':'+name]=fn;}};
+  for(const id of ['gestureVideo','gestureCursor','gesturePreview','gestureStart','gestureManual','gestureStop','gesturePreviewToggle','gestureStatus','gestureSkeleton','sceneCanvas']) nodes[id]={hidden:false,disabled:false,style:{},dataset:{},attributes:{},classList:classes(),setAttribute(name,value){this.attributes[name]=value;},addEventListener(name,fn){handlers[id+':'+name]=fn;}};
   nodes.gestureSkeleton.getContext=()=>Object.fromEntries(['clearRect','beginPath','lineTo','moveTo','stroke','fill','arc'].map(n=>[n,()=>{}]));
   nodes.gestureVideo.play=async()=>{};
   const stream={getTracks:()=>[{stop(){counts.stop++;}}],getVideoTracks:()=>[{addEventListener(){}}]};
@@ -19,7 +19,7 @@ function harness(camera){
   }
   const scope={window:{isSecureContext:true,PhotonGestureCore:{GestureTracker},PhotonControls:{orbit(){counts.orbit++;},zoom(){counts.zoom++;}},addEventListener(name,fn){handlers['window:'+name]=fn;}},
     document:{documentElement:{lang:'en'},baseURI:'http://localhost/photon-lab.html',getElementById:id=>nodes[id],elementFromPoint:()=>hit,addEventListener(name,fn){handlers['document:'+name]=fn;}},
-    navigator:{mediaDevices:{getUserMedia:camera||(()=>Promise.resolve(stream))}},Worker,URL,console:{warn(){}},innerWidth:1000,innerHeight:600,requestAnimationFrame:()=>1,cancelAnimationFrame(){},setTimeout:()=>1,clearTimeout(){}};
+    navigator:{mediaDevices:{getUserMedia:camera||(()=>Promise.resolve(stream))}},Worker,URL,Event,console:{warn(){}},innerWidth:1000,innerHeight:600,requestAnimationFrame:()=>1,cancelAnimationFrame(){},setTimeout:()=>1,clearTimeout(){}};
   vm.runInNewContext(fs.readFileSync('github-pages/photon-gesture.js','utf8'),scope);
   function hand(pinch=false,x=.5){const h=Array.from({length:21},()=>({x,y:.4,z:0}));h[0].y=.6;h[9].y=.5;h[4].x=x+(pinch?.01:.08);return h;}
   return {handlers,nodes,workers,counts,stream,scope,hand,setHit(v){hit=v;},async start(){await handlers['gestureStart:click']();workers[0].onmessage({data:{type:'ready'}});},send(hands,time){workers[0].onmessage({data:{type:'hands',hands,time}});}};
@@ -31,6 +31,24 @@ test('a debounced pinch selects once; tracking loss cancels the next selection',
   h.send([h.hand(true)],450);h.send([h.hand(true)],550);h.send([],600);h.send([h.hand()],650);h.send([h.hand()],750);
   assert.equal(h.counts.click,1);
   h.handlers['gestureStop:click']();assert.equal(h.counts.stop,1);assert.ok(h.workers[0].terminated);assert.equal(h.nodes.gestureVideo.srcObject,null);
+});
+test('manual mode stops web gestures and restores deliberate mouse control',async()=>{
+  const h=harness();await h.start();assert.equal(h.nodes.gestureManual.attributes['aria-pressed'],'false');
+  h.handlers['gestureManual:click']();assert.equal(h.counts.stop,1);assert.equal(h.nodes.gestureManual.attributes['aria-pressed'],'true');assert.equal(h.nodes.gestureStart.attributes['aria-pressed'],'false');
+});
+test('camera pinching can activate a regular button or checkbox',async()=>{
+  for(const tagName of ['BUTTON','INPUT']){
+    const h=harness();let click=0;
+    const target={tagName,type:tagName==='INPUT'?'checkbox':undefined,disabled:false,classList:{add(){},remove(){}},closest:selector=>selector==='[inert]'||selector==='.half-list'?null:target,click(){click++;}};
+    h.setHit(target);await h.start();h.send([h.hand()],0);h.send([h.hand()],100);h.send([h.hand(true)],150);h.send([h.hand(true)],250);h.send([h.hand()],300);h.send([h.hand()],400);assert.equal(click,1);
+  }
+});
+test('pinch-dragging a slider updates its value without creating a click',async()=>{
+  const h=harness(),events=[];let clicks=0;
+  const range={tagName:'INPUT',type:'range',min:'0.5',max:'3',step:'0.1',value:'1.4',disabled:false,classList:{add(){},remove(){}},closest:selector=>selector==='[inert]'||selector==='.half-list'?null:range,getBoundingClientRect:()=>({left:0,width:1000}),dispatchEvent:event=>events.push(event.type),click(){clicks++;}};
+  h.setHit(range);await h.start();h.send([h.hand()],0);h.send([h.hand()],100);h.send([h.hand(true)],150);h.send([h.hand(true)],250);
+  const initial=Number(range.value);h.send([h.hand(true,.3)],300);assert.ok(Number(range.value)>initial);
+  h.send([h.hand(false,.3)],350);h.send([h.hand(false,.3)],450);assert.equal(clicks,0);assert.equal(events.at(-1),'change');
 });
 test('dragging over model rotates without clicking, and two hands zoom',async()=>{
   const h=harness();await h.start();h.nodes.sceneCanvas.closest=()=>null;h.setHit(h.nodes.sceneCanvas);

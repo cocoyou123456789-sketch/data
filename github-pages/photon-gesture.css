@@ -1,6 +1,7 @@
 .gesture-bar {display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 20px;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:#12212b;}
 .gesture-bar p {margin:0;font-size:12px;color:var(--muted);flex:1;}
 .gesture-bar button {white-space:nowrap;}
+.gesture-bar button[aria-pressed=true] {border-color:#a6efda;background:#244d50;color:#e2fff5;}
 .gesture-status {font:11px monospace;color:var(--mint);}
 .gesture-preview {position:fixed;right:18px;bottom:18px;width:220px;z-index:80;background:#09131e;border:1px solid #64baac;border-radius:12px;padding:8px;box-shadow:0 10px 40px #0008;}
 .gesture-preview video {width:100%;display:block;border-radius:8px;transform:scaleX(-1);}
