@@ -4,10 +4,11 @@
   const tracker=new window.PhotonGestureCore.GestureTracker();
   const video=$('gestureVideo'),cursor=$('gestureCursor'),preview=$('gesturePreview');
   const copy=(en,zh)=>document.documentElement.lang.startsWith('zh')?zh:en;
-  const allowed='.half-pin,.half-list button,button[data-scene],button[data-filter],button[data-recipe],.element,#zoomIn,#zoomOut,#resetView,#explode,#rotate,#language,#gestureStop,#gesturePreviewToggle';
+  const allowed='.half-pin,.half-list button,button[data-half-nav],button[data-scene],button[data-filter],button[data-recipe],.element,#zoomIn,#zoomOut,#resetView,#explode,#rotate,#language,#gestureStop,#gesturePreviewToggle';
   let worker=null,stream=null,active=false,generation=0,raf=0,busy=false,lastTime=0,lastVideo=-1,press=null,hover=null,watchdog=0;
   const status=(en,zh)=>{const text=copy(en,zh);if($('gestureStatus').textContent!==text)$('gestureStatus').textContent=text;};
   function clearInteraction(){
+    window.PhotonSelection?.clear();
     tracker.reset();press=null;cursor.hidden=true;
     hover?.classList.remove('gesture-hover');hover=null;
   }
@@ -44,6 +45,7 @@
     const action=tracker.update(hands,time);
     if(action.kind==='lost'){clearInteraction();status('Show one hand to point','举起一只手以移动光标');return;}
     if(action.kind==='zoom'){
+      window.PhotonSelection?.clear();
       press=null;cursor.hidden=true;hover?.classList.remove('gesture-hover');hover=null;
       window.PhotonControls.zoom(action.scale);status('Two hands · zoom','双手 · 缩放');return;
     }
@@ -51,9 +53,10 @@
     cursor.hidden=false;cursor.style.left=`${x}px`;cursor.style.top=`${y}px`;cursor.dataset.down=String(action.down);
     const under=document.elementFromPoint(x,y),target=under?.closest(allowed);
     const enabled=target&&!target.disabled&&!target.closest('[inert]')?target:null;
+    window.PhotonSelection?.point(x,y,action.down);
     if(hover!==enabled){hover?.classList.remove('gesture-hover');hover=enabled;hover?.classList.add('gesture-hover');}
     if(action.phase==='down'){
-      press={x,y,target:enabled,drag:false,scene:under===$('sceneCanvas')};
+      press={x,y,target:enabled,drag:false,scene:under===$('sceneCanvas'),beamline:under===$('sceneCanvas')?window.PhotonControls.beamlineAt?.(x,y):null};
     }
     if(press && action.down){
       if(Math.hypot(x-press.x,y-press.y)>18) press.drag=true;
@@ -61,11 +64,22 @@
     }
     if(action.phase==='up'){
       const clicked=press && !press.drag && press.target===enabled?enabled:null;
+      const beamline=press && !press.drag && press.scene && press.beamline===window.PhotonControls.beamlineAt?.(x,y)?press.beamline:null;
       press=null;
       clicked?.click();
+      if(beamline)window.PhotonControls.selectBeamline(beamline);
       if(!active)return;
     }
-    if(!action.down && !press && (action.point.y<.035 || action.point.y>.965)) window.scrollBy(0,action.point.y<.035?-16:16);
+    if(!action.down && !press){
+      const list=under?.closest('.half-list');
+      if(list && list.scrollHeight>list.clientHeight){
+        const r=list.getBoundingClientRect(),edge=Math.min(45,r.height*.15);
+        let delta=0;
+        if(y<r.top+edge && list.scrollTop>0)delta=-14;
+        if(y>r.bottom-edge && list.scrollTop+list.clientHeight<list.scrollHeight-1)delta=14;
+        if(delta){list.scrollBy(0,delta);window.PhotonSelection?.clear();}
+      }else if(action.point.y<.035 || action.point.y>.965){window.scrollBy(0,action.point.y<.035?-16:16);window.PhotonSelection?.clear();}
+    }
     status(action.down?'Pinch held · drag the model':'Point · pinch and release to select',action.down?'捏合中 · 拖动模型':'指向 · 捏合后松开以选择');
   }
   async function frame(time){

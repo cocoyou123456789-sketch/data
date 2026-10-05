@@ -460,6 +460,19 @@
       accessors,
     };
   }
+  function pickBeamline(triangles,x,y) {
+    // The painter draws far to near. The last visible triangle owns the point,
+    // including unselectable geometry that can occlude a beamline.
+    for (let i=triangles.length-1;i>=0;i--) {
+      const t=triangles[i],p=t.points;
+      const cross=(a,b)=>(x-b[0])*(a[1]-b[1])-(a[0]-b[0])*(y-b[1]);
+      const area=(p[1][0]-p[0][0])*(p[2][1]-p[0][1])-(p[2][0]-p[0][0])*(p[1][1]-p[0][1]);
+      if(Math.abs(area)<1e-8)continue;
+      const d=[cross(p[0],p[1]),cross(p[1],p[2]),cross(p[2],p[0])];
+      if(d.every(v=>v>=-1e-8)||d.every(v=>v<=1e-8))return t.beamlineId||null;
+    }
+    return null;
+  }
   const api = {
     ELEMENTS,
     color,
@@ -468,6 +481,7 @@
     formula,
     scene,
     gltf,
+    pickBeamline,
   };
   root.PhotonLab = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

@@ -48,3 +48,15 @@ test('permission denied restores retry button; hiding page closes active camera'
   assert.equal(denied.nodes.gestureStart.disabled,false);assert.match(denied.nodes.gestureStatus.textContent,/permission denied/);
   const h=harness();await h.start();h.scope.document.hidden=true;h.handlers['document:visibilitychange']();assert.equal(h.counts.stop,1);
 });
+test('a pinch on visible model geometry selects its beamline without clicking unrelated controls',async()=>{
+  const h=harness(),selected=[];h.scope.window.PhotonControls.beamlineAt=()=> 'BL03';h.scope.window.PhotonControls.selectBeamline=id=>selected.push(id);
+  await h.start();h.nodes.sceneCanvas.closest=()=>null;h.setHit(h.nodes.sceneCanvas);
+  h.send([h.hand()],0);h.send([h.hand()],100);h.send([h.hand(true)],150);h.send([h.hand(true)],250);h.send([h.hand()],300);h.send([h.hand()],400);
+  assert.deepEqual(selected,['BL03']);assert.equal(h.counts.click,0);
+});
+test('pointing near the beamline list edge scrolls the list, not the whole page',async()=>{
+  const h=harness();let scroll=0;
+  const list={scrollHeight:600,clientHeight:200,scrollTop:100,getBoundingClientRect:()=>({top:100,bottom:225,height:125}),scrollBy:(x,y)=>scroll+=y};
+  h.setHit({disabled:false,classList:{add(){},remove(){}},closest:selector=>selector==='.half-list'?list:null});
+  await h.start();h.send([h.hand()],0);assert.equal(scroll,14);
+});

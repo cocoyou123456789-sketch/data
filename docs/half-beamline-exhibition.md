@@ -17,3 +17,9 @@ The left NSRL entrance now links to `photon-lab.html` from the facility catalog 
 Run `node --test tests/half-beamlines.test.js tests/photon-lab.test.js tests/nsrl-catalog.test.js tests/login-balanced.test.js tests/workbench-interactivity.test.js`.
 
 Browser checks: select all ten directory items, select markers after camera rotation, switch language, exercise a recipe and return to the ring, inspect desktop/mobile overflow, follow the left NSRL preview route into the exhibition.
+
+## Selection controls
+
+Directory cards, projected labels, and the visible tagged 3D instrument meshes share a single beamline selection state. Picking uses the rendered triangle order, so occluded geometry does not activate. A drag rotates rather than selects.
+
+An optional one-second hover selector accepts normal desktop mouse movement (including the native Mac gesture app) and the in-page camera cursor. The progress bar cancels when the target changes, input is held or lost, or the page is hidden. Camera samples must remain fresh. Previous / Next and Up / Down / Home / End also navigate the catalog. The camera cursor scrolls the internal list when pointing near its top or bottom edge.
