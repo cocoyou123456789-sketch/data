@@ -12,6 +12,8 @@ enum GestureAction {
   case move(CGPoint)
   case down(CGPoint)
   case up(CGPoint)
+  case holdRight(CGPoint)
+  case rightClick(CGPoint)
   case scroll(CGPoint, Double)
 }
 
@@ -48,6 +50,8 @@ struct GestureTracker {
   private var candidate = false, pressed = false, armed = false
   private var since = 0.0, lastTime: Double?, fistSince: Double?, scrollPoint: CGPoint?,
     lastPalm: CGPoint?
+  private var rightHeld = false, rightSince: Double?, rightReleaseSince: Double?,
+    rightAnchor: CGPoint?
   var mirrored = true
   var gain = 1.0
   var scrollOnly = false
@@ -61,10 +65,14 @@ struct GestureTracker {
     fistSince = nil
     scrollPoint = nil
     lastPalm = nil
+    rightHeld = false
+    rightSince = nil
+    rightReleaseSince = nil
+    rightAnchor = nil
   }
   mutating func update(_ hand: HandFrame?, time: Double) -> GestureAction {
     guard let h = hand, h.palmLength > 0.045 else {
-      let held = pressed
+      let held = pressed || rightHeld
       reset()
       return held ? .cancel : .idle
     }
@@ -117,6 +125,13 @@ struct GestureTracker {
         armed = false
         return .cancel
       }
+      if rightHeld {
+        rightHeld = false
+        rightSince = nil
+        rightReleaseSince = nil
+        rightAnchor = nil
+        return .cancel
+      }
       return .idle
     }
     fistSince = nil
@@ -126,6 +141,51 @@ struct GestureTracker {
       CGPoint(
         x: clamp(0.5 + ((cameraX - 0.12) / 0.76 - 0.5) * gain),
         y: clamp(0.5 + ((h.index.y - 0.1) / 0.75 - 0.5) * gain)), at: time)
+    let rightRatio = dist(h.thumb, h.middle) / h.palmLength
+    if !scrollOnly && !pressed && ratio > 0.65 && rightRatio < (rightHeld ? 0.55 : 0.32) {
+      scrollPoint = nil
+      rightReleaseSince = nil
+      if rightSince == nil { rightSince = time }
+      if armed && time - (rightSince ?? time) >= 0.16 {
+        rightHeld = true
+        armed = false
+        rightAnchor = point
+      }
+      if rightHeld {
+        if let anchor = rightAnchor, hypot(point.x - anchor.x, point.y - anchor.y) > 0.035 {
+          reset()
+          return .cancel
+        }
+        return .holdRight(rightAnchor ?? point)
+      }
+      return .move(point)
+    }
+    if rightHeld {
+      if ratio < 0.55 || scrollOnly {
+        reset()
+        return .cancel
+      }
+      if let anchor = rightAnchor, hypot(point.x - anchor.x, point.y - anchor.y) > 0.035 {
+        reset()
+        return .cancel
+      }
+      if rightReleaseSince == nil { rightReleaseSince = time }
+      if time - (rightReleaseSince ?? time) >= 0.12 {
+        let anchor = rightAnchor ?? point
+        rightHeld = false
+        rightSince = nil
+        rightReleaseSince = nil
+        rightAnchor = nil
+        armed = false
+        since = time
+        return .rightClick(anchor)
+      }
+      return .holdRight(rightAnchor ?? point)
+    }
+    if rightSince != nil {
+      rightSince = nil
+      since = time
+    }
     if scrollOnly || indexUp && middleUp && !ringUp && !littleUp && ratio > 0.55 {
       if pressed {
         pressed = false

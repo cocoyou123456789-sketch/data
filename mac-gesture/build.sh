@@ -7,7 +7,7 @@ task_build="$(mktemp -d /tmp/photon-mac-build.XXXXXX)"
 trap 'rm -f "$task_build/x86_64" "$task_build/arm64"; rmdir "$task_build"' EXIT
 for task_arch in x86_64 arm64; do
   xcrun swiftc -swift-version 5 -O -target "$task_arch-apple-macosx13.0" \
-    "$task_root/GestureCore.swift" "$task_root/Camera.swift" "$task_root/App.swift" \
+    "$task_root/GestureCore.swift" "$task_root/DesktopMapping.swift" "$task_root/Camera.swift" "$task_root/App.swift" \
     -o "$task_build/$task_arch" \
     -framework SwiftUI -framework AppKit -framework Vision -framework AVFoundation -framework ApplicationServices -framework Carbon
 done

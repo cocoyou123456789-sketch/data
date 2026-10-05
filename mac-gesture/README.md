@@ -6,7 +6,9 @@ A native desktop controller using AVFoundation, Apple Vision hand pose detection
 
 Open **Photon Gesture.app**. Select **开启辅助功能设置**, then allow Photon Gesture under System Settings → Privacy & Security → Accessibility. Return to the app, select **启动手势控制**, and allow camera access. No microphone, screen recording or cloud service is required.
 
-An open hand arms control. Move the index fingertip to move the cursor. Pinch thumb and index finger, then release for a click; hold and move for a drag. Two quick pinches can double-click. Extend the index and middle fingers with the other fingers curled, then move vertically to scroll.
+The default scope is **the entire desktop, across all displays**, including the Dock, menu bar, Finder, browser windows and other apps. It posts native macOS mouse events and does not depend on the HALF webpage. You may choose one monitor instead under 控制范围.
+
+An open hand arms control. Move the index fingertip to move the cursor. Pinch thumb and index finger, then release for a click; hold and move for a drag. Two quick pinches can double-click. Pinch thumb and middle finger, hold briefly, and release for a right-click menu. Extend the index and middle fingers with the other fingers curled, then move vertically to scroll. The normal **移动 / 点击 / 滚动** mode supports these together; continuous scrolling is an optional separate mode.
 
 Stop with **Control + Option + G**, the menu-bar **停止控制** command, the app's stop button, or a held fist. Stopping releases any held mouse button and closes the camera session. Permission revocation, a stalled camera, or computer sleep also stops control.
 
@@ -18,13 +20,13 @@ For long documents, aim the cursor at the desired area and press **Control + Opt
 
 The HALF exhibit now treats ordinary wheel input as page scrolling. Use Command / Control + wheel, the zoom buttons, or the web two-hand gesture for model zoom.
 
-The default mapping uses a mirror view and the selected monitor. The movement-range slider adjusts how much hand movement covers the screen. Video is processed in memory, never saved or uploaded.
+The default mapping uses a mirror view and all active monitors. Gaps between different-sized monitors snap to the nearest real display. The movement-range slider adjusts how much hand movement covers the desktop. Video is processed in memory, never saved or uploaded.
 
 ## Build and verify
 
 ```sh
 bash mac-gesture/build.sh
-xcrun swiftc mac-gesture/GestureCore.swift mac-gesture/GestureCoreTests.swift -o /tmp/photon-gesture-tests
+xcrun swiftc mac-gesture/GestureCore.swift mac-gesture/DesktopMapping.swift mac-gesture/GestureCoreTests.swift -o /tmp/photon-gesture-tests
 /tmp/photon-gesture-tests
 ```
 

@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 
 @main struct GestureTests {
@@ -120,8 +121,58 @@ import Foundation
         point: CGPoint(x: 0.5, y: 0.6), delta: 0.04, time: 0.1, speed: 1, inverted: true,
         continuous: false) > 0
     else { fatalError("Scroll inversion did not reverse direction") }
+    func rightHand() -> HandFrame {
+      var h = hand()
+      h.thumb = CGPoint(x: h.middle.x + 0.01, y: h.middle.y)
+      return h
+    }
+    t.reset()
+    t.scrollOnly = false
+    _ = t.update(hand(), time: 0)
+    _ = t.update(hand(), time: 0.2)
+    _ = t.update(rightHand(), time: 0.25)
+    guard case .holdRight = t.update(rightHand(), time: 0.42) else {
+      fatalError("Right pinch did not hold")
+    }
+    _ = t.update(hand(), time: 0.5)
+    guard case .rightClick = t.update(hand(), time: 0.64) else {
+      fatalError("Right pinch release did not click")
+    }
+    t.reset()
+    _ = t.update(rightHand(), time: 0)
+    if case .holdRight = t.update(rightHand(), time: 0.2) {
+      fatalError("Unarmed right pinch was accepted")
+    }
+    t.reset()
+    _ = t.update(hand(), time: 0)
+    _ = t.update(hand(), time: 0.2)
+    _ = t.update(rightHand(), time: 0.25)
+    _ = t.update(rightHand(), time: 0.42)
+    guard case .cancel = t.update(nil, time: 0.5) else {
+      fatalError("Lost right pinch was not cancelled")
+    }
+    if case .rightClick = t.update(hand(), time: 0.65) { fatalError("Lost right pinch clicked") }
+    let single = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+    guard DesktopMapping.position(.zero, displays: [single]) == .zero,
+      DesktopMapping.position(CGPoint(x: 1, y: 1), displays: [single]) == CGPoint(x: 1919, y: 1079)
+    else { fatalError("Whole-screen corners") }
+    let twoDisplays = [CGRect(x: -1600, y: 0, width: 1600, height: 900), single]
+    guard DesktopMapping.position(.zero, displays: twoDisplays) == CGPoint(x: -1600, y: 0),
+      DesktopMapping.position(CGPoint(x: 1, y: 1), displays: twoDisplays)
+        == CGPoint(x: 1919, y: 1079)
+    else { fatalError("Multi-screen mapping") }
+    let gap = [
+      CGRect(x: 0, y: 0, width: 100, height: 100), CGRect(x: 200, y: 0, width: 100, height: 100),
+    ]
+    guard let snap = DesktopMapping.position(CGPoint(x: 0.5, y: 0.5), displays: gap),
+      gap.contains(where: { $0.contains(snap) })
+    else { fatalError("Monitor gap was not snapped") }
+    guard
+      DesktopMapping.position(CGPoint(x: -1, y: 2), displays: [single]) == CGPoint(x: 0, y: 1079),
+      DesktopMapping.position(.zero, displays: []) == nil
+    else { fatalError("Mapping validation") }
     print(
-      "PASS: rearming, pinch debounce, drag, release, tracking loss, scroll direction, dedicated scroll mode, continuous scrolling, neutral stop, inversion, fist stop, stale frames, finite coordinates and mirror mapping"
+      "PASS: left/right click, deliberate rearming, tracking cancellation, dragging, scrolling, neutral stop, fist stop, screen corners, multiple displays, monitor gaps and finite coordinates"
     )
   }
 }

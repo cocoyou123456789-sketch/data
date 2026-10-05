@@ -29,7 +29,7 @@ final class DesktopControl: NSObject, ObservableObject {
   @Published var scrollSpeed = 1.4
   @Published var invertScroll = false
   @Published var globalStopAvailable = true
-  @Published var screenID: UInt32 = CGMainDisplayID()
+  @Published var screenID: UInt32 = 0
   let camera = HandCamera()
   private var tracker = GestureTracker(), run = 0, pressed = false, clickCount: Int64 = 1
   private var scrollMotion = ScrollMotion()
@@ -86,7 +86,7 @@ final class DesktopControl: NSObject, ObservableObject {
       }
     }
     statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    statusItem?.button?.title = "◈ 手势"
+    statusItem?.button?.title = "◈ 桌面手势"
     let menu = NSMenu()
     let show = NSMenuItem(
       title: "打开 Photon Gesture", action: #selector(showWindow), keyEquivalent: "")
@@ -164,7 +164,7 @@ final class DesktopControl: NSObject, ObservableObject {
         self.tracker.reset()
         self.running = true
         self.lastFrame = ProcessInfo.processInfo.systemUptime
-        self.status = "举起一只手，先张开，再捏合"
+        self.status = "桌面控制已启动：移动、点击、拖动、双指滚动"
         self.camera.start(run: token)
       }
     }
@@ -204,18 +204,29 @@ final class DesktopControl: NSObject, ObservableObject {
       URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera")!)
   }
   private func position(_ normalized: CGPoint) -> CGPoint {
-    let bounds = CGDisplayBounds(screenID)
-    return CGPoint(
-      x: bounds.minX + normalized.x * max(1, bounds.width - 1),
-      y: bounds.minY + normalized.y * max(1, bounds.height - 1))
+    let bounds =
+      screenID == 0
+      ? NSScreen.screens.compactMap { s -> CGRect? in
+        guard
+          let id = (s.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?
+            .uint32Value
+        else { return nil }
+        return CGDisplayBounds(id)
+      } : [CGDisplayBounds(screenID)]
+    return DesktopMapping.position(normalized, displays: bounds)
+      ?? (CGEvent(source: nil)?.location ?? .zero)
   }
   private func mouse(_ type: CGEventType, _ p: CGPoint) {
     guard
       let event = CGEvent(
-        mouseEventSource: nil, mouseType: type, mouseCursorPosition: p, mouseButton: .left)
+        mouseEventSource: nil, mouseType: type, mouseCursorPosition: p,
+        mouseButton: type == .rightMouseDown || type == .rightMouseUp ? .right : .left)
     else { return }
     if type == .leftMouseDown || type == .leftMouseUp {
       event.setIntegerValueField(.mouseEventClickState, value: clickCount)
+    }
+    if type == .rightMouseDown || type == .rightMouseUp {
+      event.setIntegerValueField(.mouseEventClickState, value: 1)
     }
     event.post(tap: .cghidEventTap)
     point = p
@@ -269,6 +280,17 @@ final class DesktopControl: NSObject, ObservableObject {
       mouse(.leftMouseUp, position(p))
       lastClick = time
       lastClickPoint = point
+    case .holdRight(let p):
+      scrollMotion.reset()
+      scrollCursor = nil
+      mouse(.mouseMoved, position(p))
+      status = "拇指与中指捏合中 · 松开打开右键菜单"
+    case .rightClick(let p):
+      release()
+      let target = position(p)
+      mouse(.rightMouseDown, target)
+      mouse(.rightMouseUp, target)
+      status = "右键菜单已打开"
     case .scroll(let p, let delta):
       if scrollCursor == nil {
         let target = scrollOnly ? (CGEvent(source: nil)?.location ?? position(p)) : position(p)
@@ -317,7 +339,7 @@ struct ControlView: View {
         Image(systemName: "hand.point.up.left.fill").font(.largeTitle).foregroundStyle(.mint)
         VStack(alignment: .leading) {
           Text("Photon Gesture").font(.title.bold())
-          Text("用手势操控 Mac 桌面").foregroundStyle(.secondary)
+          Text("控制整个 Mac 桌面 · 所有应用与窗口").foregroundStyle(.secondary)
         }
         Spacer()
       }
@@ -350,10 +372,11 @@ struct ControlView: View {
         ).foregroundStyle(.secondary)
       }
       Picker("操作模式", selection: $control.scrollOnly) {
-        Text("选择 / 拖动").tag(false)
-        Text("上下滚动 ⌃⌥S").tag(true)
+        Text("移动 / 点击 / 滚动").tag(false)
+        Text("连续滚动 ⌃⌥S").tag(true)
       }.pickerStyle(.segmented)
-      Picker("控制的屏幕", selection: $control.screenID) {
+      Picker("控制范围", selection: $control.screenID) {
+        Text("整个桌面（所有显示器）").tag(UInt32(0))
         ForEach(NSScreen.screens.indices, id: \.self) { i in
           let screen = NSScreen.screens[i]
           Text(screen.localizedName).tag(
@@ -380,13 +403,15 @@ struct ControlView: View {
       VStack(alignment: .leading, spacing: 8) {
         Text("食指移动  →  光标跟随")
         Text("拇指与食指捏合  →  点击；按住并移动  →  拖动")
+        Text("拇指与中指捏合后松开  →  右键菜单")
         Text("快速捏合两次  →  双击")
         Text("伸出食指和中指，上下移动  →  滚动")
         Text("⌃⌥S 切换连续滚动：先把光标放在目标列表，再移动手；回到起始位置停止")
         Text("握拳停留约 0.7 秒  →  停止控制")
       }.font(.callout)
-      Text("视频在 Mac 本机处理，不上传或保存。启动前先张开手，让识别稳定；鼠标和触控板仍可使用。").font(.caption).foregroundStyle(
-        .secondary)
+      Text("可操作 Finder、Dock、菜单栏、浏览器和其他应用。视频在 Mac 本机处理，不上传或保存。启动前先张开手，让识别稳定。").font(.caption)
+        .foregroundStyle(
+          .secondary)
     }.padding(26).frame(width: 540).onAppear { if !renderOnly { control.setup() } }
   }
 }
