@@ -11,7 +11,10 @@
     <link rel="stylesheet" href="half-beamlines.css?v=20260925" />
     <script defer src="half-beamlines.js?v=20260925"></script>
     <script defer src="photon-lab-core.js?v=20260925"></script>
-    <script defer src="photon-lab.js?v=20260925"></script>
+    <link rel="stylesheet" href="photon-gesture.css?v=20261004" />
+    <script defer src="photon-lab.js?v=20261004"></script>
+    <script defer src="photon-gesture-core.js?v=20261004"></script>
+    <script defer src="photon-gesture.js?v=20261004"></script>
   </head>
   <body>
     <header class="masthead">
@@ -62,6 +65,13 @@
           >
         </button>
       </div>
+      <section class="gesture-bar" aria-label="Camera gesture controls">
+        <button id="gestureStart" data-en="Enable camera gestures" data-zh="开启摄像头手势">Enable camera gestures</button>
+        <button id="gestureStop" hidden data-en="Stop camera" data-zh="关闭摄像头">Stop camera</button>
+        <button id="gesturePreviewToggle" hidden data-en="Show / hide preview" data-zh="显示 / 隐藏预览">Show / hide preview</button>
+        <p data-en="Point to aim · Pinch to select / drag · Two hands to zoom · Screen edges to scroll · Esc to stop. Video stays on this device." data-zh="食指指向 · 捏合选择或拖动 · 双手缩放 · 屏幕边缘滚动 · Esc 关闭。视频仅在本机处理。">Point to aim · Pinch to select / drag · Two hands to zoom · Screen edges to scroll · Esc to stop. Video stays on this device.</p>
+        <span id="gestureStatus" class="gesture-status" role="status" data-en="Camera off" data-zh="摄像头已关闭">Camera off</span>
+      </section>
       <div class="lab-layout">
         <aside class="panel library">
           <div class="panel-title">
@@ -409,5 +419,11 @@
       </footer>
     </main>
     <div id="toast" role="status" class="toast" hidden></div>
+    <div id="gesturePreview" class="gesture-preview" hidden>
+      <video id="gestureVideo" autoplay muted playsinline></video>
+      <canvas id="gestureSkeleton" width="320" height="240" aria-hidden="true"></canvas>
+      <p data-en="Mirror view · Keep your hand inside the camera frame" data-zh="镜像预览 · 请把手放在摄像头画面内">Mirror view · Keep your hand inside the camera frame</p>
+    </div>
+    <div id="gestureCursor" class="gesture-cursor" hidden aria-hidden="true"></div>
   </body>
 </html>

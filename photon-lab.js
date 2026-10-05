@@ -817,6 +817,16 @@
     speechSynthesis.speak(speech);
   };
   window.addEventListener("pagehide", () => window.speechSynthesis?.cancel());
+  window.PhotonControls = {
+    orbit(dx,dy) {
+      state.auto=false;$("rotate").classList.remove('selected');
+      state.yaw+=dx*.008;state.pitch=Math.max(.1,Math.min(1.4,state.pitch+dy*.008));dirty=true;
+    },
+    zoom(scale) {
+      if (!Number.isFinite(scale)||scale<=0) return;
+      state.zoom=Math.max(.5,Math.min(2.2,state.zoom*scale));dirty=true;
+    },
+  };
   new ResizeObserver(() => (dirty = true)).observe(viewport);
   translate();
   rebuild();

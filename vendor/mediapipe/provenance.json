@@ -1,0 +1,9 @@
+{
+  "package": "@mediapipe/tasks-vision",
+  "version": "1.0.1",
+  "packageSource": "https://registry.npmjs.org/@mediapipe/tasks-vision/-/tasks-vision-1.0.1.tgz",
+  "modelSource": "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+  "license": "Apache-2.0",
+  "runtime": "ES module Web Worker, CPU inference, SIMD WASM",
+  "downloaded": "2026-10-04"
+}
