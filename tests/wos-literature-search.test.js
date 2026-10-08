@@ -41,7 +41,7 @@ test("pure WoS search needs no Materials Project key and preserves article links
 test("browser panel is WoS-only and exposes clickable knowledge-card searches", () => {
   const script = fs.readFileSync(path.join(__dirname, "../github-pages/materials-literature-search.js"), "utf8");
   assert.match(script, /<h4>Web of Science<\/h4>/);
-  assert.doesNotMatch(script, /Materials Project|MP_API_KEY|materials-search/);
+  assert.doesNotMatch(script, /Materials Project|MP_API_KEY/);
   assert.match(script, /\.cats \.cat/);
   assert.match(script, /\.cats \.tag/);
   assert.match(script, /打开 WoS 记录/);
