@@ -1,0 +1,62 @@
+import base64
+import importlib.util
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+
+MODULE_PATH = Path(__file__).resolve().parents[1] / "xafs-native" / "native_bridge.py"
+SPEC = importlib.util.spec_from_file_location("xafs_native_bridge", MODULE_PATH)
+bridge = importlib.util.module_from_spec(SPEC)
+assert SPEC.loader
+SPEC.loader.exec_module(bridge)
+
+
+class NativeBridgeTests(unittest.TestCase):
+    def test_configured_executable_is_detected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            executable = Path(directory) / "dathena.exe"
+            executable.write_bytes(b"test")
+            tools = bridge.discover_tools({"tools": {"athena": str(executable)}})
+            self.assertTrue(tools["athena"]["installed"])
+            self.assertEqual(tools["athena"]["source"], "config")
+            self.assertEqual(Path(tools["athena"]["path"]), executable.resolve())
+
+    def test_job_preserves_hashes_and_paper_constraints(self):
+        with tempfile.TemporaryDirectory() as directory:
+            payload = {
+                "project_name": "Ni sample/../bad",
+                "files": [{
+                    "name": "sample.xdi",
+                    "role": "sample_raw",
+                    "content_base64": base64.b64encode(b"energy mu\n1 2\n").decode("ascii"),
+                }],
+                "options": {"final_kweights": [1, 2, 3]},
+            }
+            result = bridge.create_job(payload, Path(directory))
+            job_dir = Path(result["job_dir"])
+            self.assertEqual(job_dir.parent, Path(directory).resolve())
+            manifest = json.loads(Path(result["manifest"]).read_text(encoding="utf-8"))
+            self.assertEqual(manifest["files"][0]["role"], "sample_raw")
+            self.assertEqual(len(manifest["files"][0]["sha256"]), 64)
+            self.assertEqual(manifest["standards"]["fit"]["kweights"], [1, 2, 3])
+            self.assertTrue(manifest["provenance"]["native_execution_required"])
+
+    def test_non_loopback_binding_is_rejected_by_contract(self):
+        source = MODULE_PATH.read_text(encoding="utf-8")
+        self.assertIn('args.host not in ("127.0.0.1", "localhost", "::1")', source)
+
+    def test_vendored_skill_is_discovered(self):
+        skill = bridge.discover_skill({})
+        self.assertTrue(skill["installed"])
+        self.assertTrue(Path(skill["runner"]).is_file())
+
+    def test_browser_origin_allowlist_is_not_wildcard(self):
+        source = MODULE_PATH.read_text(encoding="utf-8")
+        self.assertNotIn('Access-Control-Allow-Origin", "*"', source)
+        self.assertIn("https://cocoyou123456789-sketch.github.io", source)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -17,6 +17,8 @@ https://cocoyou123456789-sketch.github.io/data/chemistry.html?v=20260827-4
 ## 当前内容
 
 - `github-pages/`：可发布到 GitHub Pages 的静态网站。
+- `github-pages/exafs-fit.html`：EXAFS 在线工作台。默认连接 `xafs-native/` 本机桥接服务，自动检测/打开 Athena、Artemis、FEFF 和 HAMA，并可调用 vendored `artemis-xafs-fit-skill` 执行真实 Demeter 首壳层拟合与日志审计；浏览器数值实现仅保留为明确标注的探索模式。
+- `xafs-native/`：可打包为无需 Python 的 Windows 本机桥接器；GitHub Release 提供按用户安装的 EXE 与便携 ZIP，使其他电脑无需依赖开发电脑即可运行原生拟合。
 - `arpes_lit_extractor/`：本地 Python 文献信息抽取工具。
 - `github-pages/data/articles.json`：精选/手动导入文章和图表数据，目前包含 28 篇文章记录，其中包含 WoS indexed / publisher DOI 记录和 20 张可直连显示的真实论文图。
 - `github-pages/data/free_arpes_articles.json`：由免费官方/开放 API 导入的 ARPES 题录数据，目前包含 80 条记录，当前由 OpenAlex、arXiv 和 Crossref 生成；这些记录只作为元数据索引，实验数值和图表仍需全文核验。

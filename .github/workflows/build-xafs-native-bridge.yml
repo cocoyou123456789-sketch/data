@@ -1,0 +1,67 @@
+name: Build XAFS Native Bridge
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags:
+      - "xafs-bridge-v*"
+    paths:
+      - "xafs-native/**"
+      - "vendor/artemis-xafs-fit-skill-main/**"
+      - ".github/workflows/build-xafs-native-bridge.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packager
+        run: python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+
+      - name: Build standalone bridge
+        run: pyinstaller --noconfirm --clean xafs-native/XAFSNativeBridge.spec
+
+      - name: Smoke-test packaged executable
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath .\dist\XAFSNativeBridge.exe -ArgumentList '--probe' -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Packaged probe failed: $($process.ExitCode)" }
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build per-user installer
+        shell: pwsh
+        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" xafs-native\installer\XAFSNativeBridge.iss'
+
+      - name: Build portable ZIP
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist-portable\XAFS-Native-Bridge | Out-Null
+          Copy-Item dist\XAFSNativeBridge.exe, xafs-native\README.md, xafs-native\xafs-native.local.example.json dist-portable\XAFS-Native-Bridge
+          Compress-Archive -Path dist-portable\XAFS-Native-Bridge -DestinationPath dist-installer\XAFS-Native-Bridge-Portable.zip
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: XAFS-Native-Bridge-Windows
+          path: dist-installer/*
+
+      - name: Publish tagged release assets
+        if: startsWith(github.ref, 'refs/tags/xafs-bridge-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist-installer/XAFS-Native-Bridge-Setup.exe
+            dist-installer/XAFS-Native-Bridge-Portable.zip

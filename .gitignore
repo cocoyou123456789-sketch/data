@@ -17,3 +17,12 @@ skills-lock.json
 !.env.example
 inputs/wos/
 outputs/materials_project_summary_cache.json
+
+# XAFS native bridge local state and build products
+xafs-native/jobs/
+xafs-native/xafs-native.local.json
+xafs-native/__pycache__/
+build/
+dist/
+dist-installer/
+dist-portable/

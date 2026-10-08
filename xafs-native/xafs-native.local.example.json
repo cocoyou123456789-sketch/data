@@ -1,0 +1,11 @@
+{
+  "demeter_root": "C:\\Users\\YOUR_NAME\\DemeterPerl",
+  "tools": {
+    "athena": "C:\\Strawberry\\perl\\site\\bin\\dathena.exe",
+    "artemis": "C:\\Strawberry\\perl\\site\\bin\\dartemis.exe",
+    "hephaestus": "C:\\Strawberry\\perl\\site\\bin\\dhephaestus.exe",
+    "feff": "C:\\Strawberry\\c\\bin\\feff6.exe",
+    "hama": "C:\\HAMA\\HAMA.exe"
+  },
+  "artemis_skill": "C:\\Users\\YOUR_NAME\\.codex\\skills\\artemis-xafs-fit-skill"
+}
