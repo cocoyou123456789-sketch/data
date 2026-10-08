@@ -46,4 +46,6 @@ test("browser panel is WoS-only and exposes clickable knowledge-card searches", 
   assert.match(script, /\.cats \.tag/);
   assert.match(script, /打开 WoS 记录/);
   assert.match(script, /https:\/\/doi\.org/);
+  assert.match(script, /fetchWithFallback/);
+  assert.match(script, /unavailableEndpoints\.has\(storedEndpoint\) \? compatibilityEndpoint/);
 });

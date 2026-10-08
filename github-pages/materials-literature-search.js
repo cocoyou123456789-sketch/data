@@ -2,11 +2,11 @@
   const module = document.querySelector("#m1");
   if (!module || document.querySelector("#wosPanel")) return;
   const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
-  const host = location.hostname;
-  const hostedBackend = host.endsWith("vercel.app") || host.endsWith("netlify.app") || host === "localhost" || host === "127.0.0.1";
-  const defaultEndpoint = hostedBackend ? "/api/wos" : "https://arpes-materials-explorer-cocoyou-361.netlify.app/.netlify/functions/wos";
-  const compatibilityEndpoint = hostedBackend ? "/api/materials-search" : "https://arpes-materials-explorer-cocoyou-361.netlify.app/.netlify/functions/materials-search";
-  const savedEndpoint = localStorage.getItem("wosSearchApiEndpoint") || defaultEndpoint;
+  const compatibilityEndpoint = "https://arpes-materials-explorer-cocoyou-361.netlify.app/.netlify/functions/materials-search";
+  const unavailableEndpoints = new Set(["/api/wos", "https://arpes-materials-explorer-cocoyou-361.netlify.app/.netlify/functions/wos"]);
+  const storedEndpoint = localStorage.getItem("wosSearchApiEndpoint");
+  const savedEndpoint = !storedEndpoint || unavailableEndpoints.has(storedEndpoint) ? compatibilityEndpoint : storedEndpoint;
+  if (storedEndpoint !== savedEndpoint) localStorage.setItem("wosSearchApiEndpoint", savedEndpoint);
   const panel = document.createElement("section");
   panel.id = "wosPanel"; panel.className = "wos-panel";
   panel.innerHTML = `<div class="wos-heading"><div><span class="wos-kicker">LIVE LITERATURE SEARCH</span><h4>Web of Science</h4></div><span class="wos-source">可追溯文献</span></div><p class="wos-intro">输入材料、材料性质、表征方法或应用关键词，直接检索 Web of Science 文献。也可以点击下方分类卡片或标签自动进入对应检索。</p><form class="wos-form" id="wosForm"><label><span>Web of Science 关键词</span><input id="wosQuery" type="search" placeholder="例如：BaTiO3 dielectric properties；MoS2 photocatalysis" required></label><label><span>返回篇数</span><select id="wosLimit"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></label><button type="submit" id="wosSubmit">搜索 Web of Science</button></form><details class="wos-config"><summary>检索服务设置</summary><label>后端 API 地址<input id="wosEndpoint" type="url" value="${escapeHtml(savedEndpoint)}"></label><p>WOS_API_KEY 只保存在后端，不会暴露在网页中。</p></details><div class="wos-status" id="wosStatus" role="status">等待检索。点击下方任意材料、性质或研究方向即可开始。</div><div class="wos-result-tools" id="wosResultTools" hidden><label>筛选当前结果<input id="wosResultFilter" type="search" placeholder="标题、作者、期刊、年份、DOI 或关键词"></label><button type="button" id="wosClear">清空结果</button></div><div class="wos-results" id="wosResults"></div>`;
@@ -22,5 +22,16 @@
   module.querySelectorAll(".cats .cat").forEach(card=>{card.classList.add("wos-clickable");card.tabIndex=0;card.setAttribute("role","button");const title=card.querySelector("h4")?.textContent.trim()||"";card.title=`在 Web of Science 中检索：${title}`;card.addEventListener("click",event=>{if(!event.target.closest(".tag"))runSearch(title);});card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();runSearch(title);}});});
   module.querySelectorAll(".cats .tag").forEach(tag=>{tag.classList.add("wos-clickable");tag.tabIndex=0;tag.setAttribute("role","button");tag.title=`在 Web of Science 中检索：${tag.textContent.trim()}`;tag.addEventListener("click",event=>{event.stopPropagation();runSearch(tag.textContent.trim());});tag.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();event.stopPropagation();runSearch(tag.textContent.trim());}});});
   endpointInput.addEventListener("change",()=>{const value=endpointInput.value.trim();if(value)localStorage.setItem("wosSearchApiEndpoint",value);});resultFilter.addEventListener("input",()=>filterRendered(resultFilter.value));panel.querySelector("#wosClear").addEventListener("click",()=>{results.innerHTML="";resultTools.hidden=true;resultFilter.value="";status.className="wos-status";status.textContent="结果已清空，可以开始新的 Web of Science 检索。";});results.addEventListener("click",event=>{const keyword=event.target.closest("[data-wos-query]")?.dataset.wosQuery;if(keyword)runSearch(keyword);});
-  form.addEventListener("submit",async event=>{event.preventDefault();const query=queryInput.value.trim(),endpoint=endpointInput.value.trim();if(!endpoint){status.className="wos-status error";status.textContent="请先填写 WoS 后端 API 地址。";panel.querySelector(".wos-config").open=true;return;}localStorage.setItem("wosSearchApiEndpoint",endpoint);submit.disabled=true;results.innerHTML="";resultTools.hidden=true;status.className="wos-status loading";status.textContent=`正在检索 Web of Science：${query}…`;try{const request={method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query,limit:Number(panel.querySelector("#wosLimit").value),max_materials:1})};let response=await fetch(endpoint,request);if(response.status===404&&endpoint===defaultEndpoint)response=await fetch(compatibilityEndpoint,request);const data=await response.json().catch(()=>({}));if(!response.ok||!data.ok)throw new Error(data.error||`检索服务返回 HTTP ${response.status}`);render(data);}catch(error){status.className="wos-status error";status.textContent=`${error.message} 请检查 API 地址及后端 WOS_API_KEY。`;}finally{submit.disabled=false;}});
+  async function fetchWithFallback(endpoint, request) {
+    try {
+      const response = await fetch(endpoint, request);
+      if (response.status !== 404 || endpoint === compatibilityEndpoint) return response;
+    } catch (error) {
+      if (endpoint === compatibilityEndpoint) throw error;
+    }
+    endpointInput.value = compatibilityEndpoint;
+    localStorage.setItem("wosSearchApiEndpoint", compatibilityEndpoint);
+    return fetch(compatibilityEndpoint, request);
+  }
+  form.addEventListener("submit",async event=>{event.preventDefault();const query=queryInput.value.trim(),endpoint=endpointInput.value.trim();if(!endpoint){status.className="wos-status error";status.textContent="请先填写 WoS 后端 API 地址。";panel.querySelector(".wos-config").open=true;return;}localStorage.setItem("wosSearchApiEndpoint",endpoint);submit.disabled=true;results.innerHTML="";resultTools.hidden=true;status.className="wos-status loading";status.textContent=`正在检索 Web of Science：${query}…`;try{const request={method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query,limit:Number(panel.querySelector("#wosLimit").value),max_materials:1})};const response=await fetchWithFallback(endpoint,request);const data=await response.json().catch(()=>({}));if(!response.ok||!data.ok)throw new Error(data.error||`检索服务返回 HTTP ${response.status}`);render(data);}catch(error){status.className="wos-status error";status.textContent=`${error.message} 请检查网络连接、API 地址及后端 WOS_API_KEY。`;}finally{submit.disabled=false;}});
 })();
