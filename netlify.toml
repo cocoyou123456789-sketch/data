@@ -18,6 +18,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/wos"
+  to = "/.netlify/functions/wos"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/materials-search"
   to = "/.netlify/functions/materials-search"
   status = 200
