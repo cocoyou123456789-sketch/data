@@ -38,11 +38,11 @@ DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
-    "athena": ("athena.exe", "dathena.exe"),
-    "artemis": ("artemis.exe", "dartemis.exe"),
-    "hephaestus": ("hephaestus.exe", "dhephaestus.exe"),
+    "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
+    "artemis": ("artemis.exe", "dartemis.exe", "dartemis.bat", "dartemis"),
+    "hephaestus": ("hephaestus.exe", "dhephaestus.exe", "dhephaestus.bat", "dhephaestus"),
     "feff": ("feff8l.exe", "feff8.exe", "feff6l.exe", "feff6.exe"),
-    "hama": ("hama.exe", "HAMA.exe"),
+    "hama": ("hama.exe", "HAMA.exe", "hama_fortran.exe", "hamaFortran.exe"),
 }
 ENV_NAMES = {
     "athena": "XAFS_ATHENA_EXE",
@@ -52,6 +52,9 @@ ENV_NAMES = {
     "hama": "XAFS_HAMA_EXE",
 }
 SAFE_FILE = re.compile(r"[^A-Za-z0-9._()\-\u4e00-\u9fff]+")
+PROCESS_CACHE_SECONDS = 2.0
+_PROCESS_CACHE: tuple[float, list[dict[str, Any]]] = (0.0, [])
+_PROCESS_LOCK = threading.Lock()
 
 
 def load_config(path: Path | None = None) -> dict[str, Any]:
@@ -65,7 +68,7 @@ def load_config(path: Path | None = None) -> dict[str, Any]:
 
 
 def _common_roots() -> list[Path]:
-    values: list[str | None] = [r"C:\Strawberry", r"C:\Demeter", r"C:\IFEFFIT", r"C:\HAMA"]
+    values: list[str | None] = [r"C:\Strawberry", r"C:\Demeter", r"C:\DemeterPerl", r"C:\IFEFFIT", r"C:\HAMA"]
     for variable in ("ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA", "APPDATA"):
         base = os.environ.get(variable)
         if base:
@@ -121,8 +124,70 @@ def discover_tools(config: dict[str, Any] | None = None) -> dict[str, dict[str, 
         found[tool] = {
             "installed": bool(path), "path": str(path) if path else None,
             "source": source, "env_override": ENV_NAMES[tool],
+            "running": False, "process_ids": [],
         }
     return found
+
+
+def _windows_processes() -> list[dict[str, Any]]:
+    """Read process names and command lines without an optional psutil dependency."""
+    global _PROCESS_CACHE
+    if os.name != "nt":
+        return []
+    with _PROCESS_LOCK:
+        if time.monotonic() - _PROCESS_CACHE[0] < PROCESS_CACHE_SECONDS:
+            return _PROCESS_CACHE[1]
+    command = [
+        "powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+        "[Console]::OutputEncoding=[Text.Encoding]::UTF8; "
+        "Get-CimInstance Win32_Process | "
+        "Select-Object ProcessId,Name,ExecutablePath,CommandLine | ConvertTo-Json -Compress",
+    ]
+    try:
+        completed = subprocess.run(
+            command, capture_output=True, text=True, encoding="utf-8",
+            errors="replace", timeout=12, check=False,
+        )
+        if completed.returncode or not completed.stdout.strip():
+            return []
+        payload = json.loads(completed.stdout)
+        processes = payload if isinstance(payload, list) else [payload]
+    except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError):
+        return []
+    with _PROCESS_LOCK:
+        _PROCESS_CACHE = (time.monotonic(), processes)
+    return processes
+
+
+def _running_tools_from_processes(processes: list[dict[str, Any]]) -> dict[str, list[int]]:
+    """Match native tools by executable name and, for Perl launchers, command line."""
+    result = {tool: [] for tool in TOOLS}
+    for process in processes:
+        image = str(process.get("Name") or "").lower()
+        executable = Path(str(process.get("ExecutablePath") or image)).name.lower()
+        command_line = str(process.get("CommandLine") or "").lower()
+        searchable = f"{image} {executable} {command_line}"
+        pid = int(process.get("ProcessId") or 0)
+        for tool in TOOLS:
+            names = {name.lower() for name in EXECUTABLE_NAMES[tool]}
+            direct_match = image in names or executable in names
+            launcher_match = image in {"perl.exe", "perl"} and any(name in command_line for name in names)
+            if direct_match or launcher_match:
+                if pid and pid not in result[tool]:
+                    result[tool].append(pid)
+                continue
+            # HAMA distributions use several versioned executable names.
+            if tool == "hama" and ("hama" in image or "hama" in executable) and pid and pid not in result[tool]:
+                result[tool].append(pid)
+    return result
+
+
+def with_running_status(tools: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    running = _running_tools_from_processes(_windows_processes())
+    return {
+        name: {**record, "running": bool(running.get(name)), "process_ids": running.get(name, [])}
+        for name, record in tools.items()
+    }
 
 
 def discover_skill(config: dict[str, Any]) -> dict[str, Any]:
@@ -265,6 +330,8 @@ def launch_tool(tool: str, tools: dict[str, dict[str, Any]], job_dir: Path | Non
         )
         if chosen:
             args.append(str(chosen))
+    if os.name == "nt" and Path(record["path"]).suffix.lower() in {".bat", ".cmd"}:
+        args = ["cmd.exe", "/d", "/c", *args]
     process = subprocess.Popen(args, cwd=str(job_dir or ROOT), close_fds=True)
     return process.pid
 
@@ -285,8 +352,9 @@ class BridgeState:
 
     def status(self) -> dict[str, Any]:
         with self.lock:
-            return {"service": "xafs-native-bridge", "version": 1, "native": True,
-                    "tools": self.tools, "artemis_skill": self.skill,
+            tools = with_running_status(self.tools)
+            return {"service": "xafs-native-bridge", "version": 2, "native": True,
+                    "tools": tools, "artemis_skill": self.skill,
                     "demeter_root": self.demeter_root,
                     "automation_ready": bool(self.demeter_root and self.skill.get("installed")),
                     "standards": standards()}
@@ -402,7 +470,7 @@ def finalize_job(state: BridgeState, job_dir: Path, payload: dict[str, Any]) -> 
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "XAFSNativeBridge/1"
+    server_version = "XAFSNativeBridge/2"
 
     def _origin_allowed(self) -> bool:
         origin = self.headers.get("Origin")
@@ -422,6 +490,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", origin)
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        if self.headers.get("Access-Control-Request-Private-Network") == "true":
+            self.send_header("Access-Control-Allow-Private-Network", "true")
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(body)

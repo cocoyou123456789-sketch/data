@@ -57,6 +57,30 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertNotIn('Access-Control-Allow-Origin", "*"', source)
         self.assertIn("https://cocoyou123456789-sketch.github.io", source)
 
+    def test_running_processes_detect_demeter_and_hama(self):
+        processes = [
+            {"ProcessId": 101, "Name": "dathena.exe", "ExecutablePath": r"C:\\Demeter\\dathena.exe", "CommandLine": "dathena.exe"},
+            {"ProcessId": 202, "Name": "perl.exe", "ExecutablePath": r"C:\\Demeter\\perl.exe", "CommandLine": r"perl.exe C:\\Demeter\\dartemis.exe"},
+            {"ProcessId": 303, "Name": "HAMA-Fortran.exe", "ExecutablePath": r"C:\\HAMA\\HAMA-Fortran.exe", "CommandLine": "HAMA-Fortran.exe"},
+        ]
+        running = bridge._running_tools_from_processes(processes)
+        self.assertEqual(running["athena"], [101])
+        self.assertEqual(running["artemis"], [202])
+        self.assertEqual(running["hama"], [303])
+        self.assertEqual(running["hephaestus"], [])
+
+    def test_status_exposes_installed_and_running_separately(self):
+        tools = {"athena": {"installed": True, "path": "dathena.exe"}}
+        original = bridge._windows_processes
+        try:
+            bridge._windows_processes = lambda: [{"ProcessId": 7, "Name": "dathena.exe"}]
+            status = bridge.with_running_status(tools)["athena"]
+        finally:
+            bridge._windows_processes = original
+        self.assertTrue(status["installed"])
+        self.assertTrue(status["running"])
+        self.assertEqual(status["process_ids"], [7])
+
 
 if __name__ == "__main__":
     unittest.main()
