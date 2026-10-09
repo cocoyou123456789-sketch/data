@@ -33,15 +33,18 @@ function renderNativeStatus(status) {
   const tools = status.tools || {};
   $('#native-tools').innerHTML = ['athena', 'artemis', 'feff', 'hama', 'hephaestus'].map(name => {
     const item = tools[name] || {};
-    const label = item.running ? '正在运行' : item.installed ? '已安装' : '未检测到';
+    const label = item.running && !item.installed ? '正在运行（路径未知）' : item.running ? '正在运行' : item.installed ? '已安装' : '未检测到';
     const pids = item.process_ids?.length ? `PID ${item.process_ids.join(', ')}` : '';
-    return `<div class="tool-state ${item.installed ? 'installed' : ''} ${item.running ? 'running' : ''}"><b>${name.toUpperCase()} · ${label}</b><small>${item.path || item.env_override || '未找到程序路径'}</small><div class="state-row"><em>${item.installed ? '可用' : '不可用'}</em>${pids ? `<em>${pids}</em>` : ''}</div></div>`;
+    const path = item.path || (item.running ? `已发现进程；未定位启动路径，可配置 ${item.env_override}` : `可配置 ${item.env_override}`);
+    const capability = item.installed ? '可从网页启动' : item.running ? '仅可监测' : '不可用';
+    return `<div class="tool-state ${item.installed ? 'installed' : ''} ${item.running ? 'running' : ''}"><b>${name.toUpperCase()} · ${label}</b><small>${path}</small><div class="state-row"><em>${capability}</em>${pids ? `<em>${pids}</em>` : ''}</div></div>`;
   }).join('');
   const installed = Object.values(tools).filter(item => item.installed).length;
+  const runningCount = Object.values(tools).filter(item => item.running).length;
   const skill = status.artemis_skill && status.artemis_skill.installed ? '已检测到自动化 skill' : '未检测到自动化 skill';
-  $('#native-status').className = installed ? 'status ok' : 'status error';
+  $('#native-status').className = 'status ok';
   const automation = status.automation_ready ? 'Demeter 自动拟合已就绪' : 'Demeter 自动拟合尚未就绪';
-  $('#native-status').textContent = `桥接服务已连接；检测到 ${installed}/5 个原生工具；${skill}；${automation}。`;
+  $('#native-status').textContent = `本次检测完成：桥接服务已连接；发现 ${runningCount}/5 个运行进程，可从网页启动 ${installed}/5 个工具；${skill}；${automation}。页面不会自动复查。`;
   const running = Object.entries(tools).filter(([, item]) => item.running).map(([name]) => name.toUpperCase());
   const health = $('#bridge-health');
   health.className = 'bridge-pill ok'; health.textContent = '桥接器已连接';
@@ -117,8 +120,7 @@ function setExecutionMode() {
 }
 
 async function prepareNativeJob(form) {
-  if (!nativeState.connected) await detectNative();
-  if (!nativeState.connected) throw new Error('本机桥接服务未启动，不能执行原生拟合。');
+  if (!nativeState.connected) throw new Error('尚未连接本机桥接器。请先点击“重新检测”，确认桥接器与所需软件状态。');
   const data = $('#data-file').files[0];
   if (!data) throw new Error('请选择原始 XAFS 数据。');
   const files = [await encodeFile(data, 'sample_raw')];
@@ -173,8 +175,7 @@ async function launchNative(tool) {
   const body = nativeState.jobId ? { job_id: nativeState.jobId } : {};
   const result = await nativeRequest(`/api/native-tools/${tool}/launch`, { method: 'POST', body: JSON.stringify(body) });
   $('#native-status').className = 'status ok';
-  $('#native-status').textContent = `${tool.toUpperCase()} 已启动（PID ${result.pid}）。`;
-  setTimeout(() => detectNative(true), 1200);
+  $('#native-status').textContent = `${tool.toUpperCase()} 已启动（PID ${result.pid}）。如需确认运行状态，请点击“重新检测”。`;
 }
 
 $('#refresh-native').onclick = () => detectNative(true);
@@ -217,12 +218,6 @@ $('#fit-form').addEventListener('submit', async event => {
   }
 }, true);
 
-detectNative();
 setExecutionMode();
-
-let nativePollTimer = setInterval(() => {
-  if (nativeState.connected && document.visibilityState === 'visible') detectNative(false);
-}, 15000);
-window.addEventListener('pagehide', () => clearInterval(nativePollTimer), { once: true });
 
 if (typeof module !== 'undefined' && module.exports) module.exports = { nativeOptions, bytesToBase64 };
