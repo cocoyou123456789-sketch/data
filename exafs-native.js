@@ -46,7 +46,7 @@ function renderNativeStatus(status) {
   const health = $('#bridge-health');
   health.className = 'bridge-pill ok'; health.textContent = '桥接器已连接';
   $('#bridge-version').className = 'bridge-pill ok';
-  $('#bridge-version').textContent = `协议 v${status.version || '?'}`;
+  $('#bridge-version').textContent = `桥接器 ${status.app_version || '旧版'} · 协议 v${status.version || '?'}`;
   $('#bridge-capability').className = `bridge-pill ${status.automation_ready ? 'ok' : ''}`;
   $('#bridge-capability').textContent = running.length ? `运行中：${running.join('、')}` : automation;
   for (const button of document.querySelectorAll('.native-launch')) {
@@ -221,8 +221,8 @@ detectNative();
 setExecutionMode();
 
 let nativePollTimer = setInterval(() => {
-  if (nativeState.connected && document.visibilityState === 'visible') detectNative(true);
-}, 10000);
+  if (nativeState.connected && document.visibilityState === 'visible') detectNative(false);
+}, 15000);
 window.addEventListener('pagehide', () => clearInterval(nativePollTimer), { once: true });
 
 if (typeof module !== 'undefined' && module.exports) module.exports = { nativeOptions, bytesToBase64 };
