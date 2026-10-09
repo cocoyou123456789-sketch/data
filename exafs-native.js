@@ -43,7 +43,7 @@ async function detectNative(refresh = false) {
     nativeState.connected = false;
     $('#native-tools').innerHTML = '';
     $('#native-status').className = 'status error';
-    $('#native-status').textContent = `未连接本机桥接服务：${error.message}。请先运行 xafs-native/start-native-bridge.ps1。`;
+    $('#native-status').textContent = `未连接本机桥接服务：${error.message}。请下载安装本机桥接器；安装完成后点击“重新检测”。源码开发环境才需要运行 start-native-bridge.ps1。`;
     return null;
   }
 }
