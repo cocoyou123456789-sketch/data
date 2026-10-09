@@ -240,6 +240,7 @@
         .tool-grid { grid-template-columns:1fr 1fr; }
       }
     </style>
+    <link rel="stylesheet" href="./exafs-workbench.css?v=1" />
   </head>
   <body>
     <header class="hero">
@@ -251,8 +252,19 @@
       </p>
     </header>
     <main class="shell">
-      <section class="card native-panel" id="native-panel">
+      <nav class="workflow-nav" aria-label="EXAFS 工作流程">
+        <button type="button" data-scroll-target="native-panel"><span>01</span>连接与模式</button>
+        <button type="button" data-scroll-target="fit-form"><span>02</span>数据与模型</button>
+        <button type="button" data-scroll-target="path-list"><span>03</span>路径与拟合</button>
+        <button type="button" data-scroll-target="result-dashboard"><span>04</span>结果与导出</button>
+      </nav>
+      <section class="card native-panel workbench-section" id="native-panel">
         <h2>原生 Demeter / HAMA 后端</h2>
+        <div class="bridge-summary" aria-live="polite">
+          <span id="bridge-health" class="bridge-pill pending">正在连接桥接器</span>
+          <span id="bridge-version" class="bridge-pill">版本待检测</span>
+          <span id="bridge-capability" class="bridge-pill">原生能力待检测</span>
+        </div>
         <p>
           默认模式通过本机桥接服务使用 Athena、Artemis、FEFF 与 HAMA；网页不会把
           JavaScript 近似计算标记成 Demeter/HAMA 结果。桥接服务仅监听本机回环地址。
@@ -262,6 +274,13 @@
             <select id="execution-mode">
               <option value="native" selected>原生 Demeter/HAMA（推荐）</option>
               <option value="browser">浏览器探索模式（非 Demeter）</option>
+            </select>
+          </label>
+          <label>样品角色 / 振幅约束
+            <select id="analysis-role">
+              <option value="standard">晶体标准样：固定 N，拟合 S₀²</option>
+              <option value="unknown" selected>未知样：固定 S₀²，拟合 N</option>
+              <option value="manual">手动设置（进行可辨识性检查）</option>
             </select>
           </label>
           <label>桥接服务地址
@@ -286,7 +305,7 @@
             <input id="native-sigma-groups" value="first" pattern="[A-Za-z0-9_-]+(,[A-Za-z0-9_-]+)*" />
           </label>
         </div>
-        <div id="native-tools" class="tool-grid"></div>
+        <div id="native-tools" class="tool-grid" aria-label="本机软件状态"></div>
         <p id="native-status" class="status" aria-live="polite">正在检测本机软件……</p>
         <div class="toolbar">
           <a class="button" href="https://github.com/cocoyou123456789-sketch/data/releases/latest/download/XAFS-Native-Bridge-Setup.exe">下载安装本机桥接器</a>
@@ -329,8 +348,12 @@
           >
         </div>
       </section>
+      <div class="readiness-strip card" id="readiness-strip">
+        <div><strong>运行前检查</strong><span id="readiness-summary">请完成必要输入</span></div>
+        <ul id="readiness-list"></ul>
+      </div>
       <div class="layout">
-        <form id="fit-form" class="card">
+        <form id="fit-form" class="card workbench-section">
           <h2>输入与参数</h2>
           <div class="mode-panel">
             <label>输入数据类型<select id="input-kind"><option value="energy">能量 E–μ(E)：在线标准化后拟合</option><option value="chi">已提取 k–χ(k)</option></select></label>
@@ -541,12 +564,16 @@
               >
             </div>
           </div>
-          <button type="submit">在浏览器中运行分壳层拟合</button>
+          <button id="run-fit" class="run-button" type="submit">开始拟合</button>
           <p id="status" class="status" aria-live="polite">
             请选择实验数据与真实 FEFF 路径。
           </p>
         </form>
-        <section class="results">
+        <section class="results workbench-section" id="result-dashboard">
+          <div id="result-empty" class="card result-empty">
+            <span>04</span>
+            <div><strong>结果区尚未生成</strong><p>完成数据、范围和模型设置后运行。能量、k、复数 R、小波、参数与报告会集中显示在这里。</p></div>
+          </div>
           <div class="card">
             <h2>拟合摘要</h2>
             <div id="metrics" class="metrics"></div>
@@ -604,8 +631,9 @@
         </section>
       </div>
     </main>
-    <script src="./exafs-fit.js?v=7"></script>
-    <script src="./exafs-online.js?v=1"></script>
-    <script src="./exafs-native.js?v=2"></script>
+    <script src="./exafs-fit.js?v=8"></script>
+    <script src="./exafs-online.js?v=2"></script>
+    <script src="./exafs-native.js?v=3"></script>
+    <script src="./exafs-workbench.js?v=1"></script>
   </body>
 </html>

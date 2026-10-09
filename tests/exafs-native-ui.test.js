@@ -29,3 +29,19 @@ test('connection failure directs users to the packaged bridge', () => {
   assert.match(source, /下载安装本机桥接器/);
   assert.match(source, /源码开发环境才需要运行 start-native-bridge\.ps1/);
 });
+
+test('native status distinguishes installation from running processes', () => {
+  assert.match(source, /item\.running \? '正在运行'/);
+  assert.match(source, /process_ids/);
+  assert.match(source, /xafs-native-status/);
+  assert.match(html, /id="bridge-health"/);
+});
+
+test('workbench exposes staged navigation and sample amplitude roles', () => {
+  assert.match(html, /data-scroll-target="native-panel"/);
+  assert.match(html, /data-scroll-target="result-dashboard"/);
+  assert.match(html, /id="analysis-role"/);
+  assert.match(html, /晶体标准样：固定 N，拟合 S₀²/);
+  assert.match(html, /未知样：固定 S₀²，拟合 N/);
+  assert.match(html, /exafs-workbench\.js/);
+});
