@@ -47,7 +47,7 @@
     const rmax = Number(form.elements.fit_rmax.value);
     const validRanges = Number.isFinite(kmin) && Number.isFinite(kmax) && kmax > kmin && rmax > rmin && rmin >= 0;
     const hasPaths = Boolean(byId('path-files').files?.length);
-    const hasCif = Boolean(byId('cif-file').files?.length);
+    const hasCif = Boolean(byId('cif-file').files?.length || window.xafsCifSelection);
     const bridgeConnected = Boolean(window.xafsNativeState?.connected);
     return [
       { label: '实验数据', ok: hasData },
@@ -96,6 +96,7 @@
   role.addEventListener('change', applyRole);
   window.addEventListener('xafs-native-status', updateReadiness);
   window.addEventListener('xafs-cif-ready', updateReadiness);
+  window.addEventListener('xafs-cif-source-changed', updateReadiness);
   setModePresentation();
   applyRole();
 })();

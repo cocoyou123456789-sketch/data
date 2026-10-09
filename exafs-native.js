@@ -132,6 +132,7 @@ async function prepareNativeJob(form) {
   const files = [await encodeFile(data, 'sample_raw')];
   const cif = $('#cif-file').files[0];
   if (cif) files.push(await encodeFile(cif, 'structure_cif'));
+  else if (window.xafsCifSelection) files.push(encodeTextFile(window.xafsCifSelection.name, window.xafsCifSelection.content, 'structure_cif'));
   for (const path of $('#path-files').files) files.push(await encodeFile(path, 'feff_path'));
   if ($('#native-input-stage').value === 'chi') files[0].role = 'chi_k';
   if ($('#native-input-stage').value === 'chi') {
