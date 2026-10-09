@@ -31,7 +31,8 @@ function renderNativeStatus(status) {
   nativeState.status = status;
   nativeState.connected = true;
   const tools = status.tools || {};
-  $('#native-tools').innerHTML = ['athena', 'artemis', 'feff', 'hama', 'hephaestus'].map(name => {
+  const visibleTools = ['athena', 'artemis', 'hama', 'hephaestus'];
+  $('#native-tools').innerHTML = visibleTools.map(name => {
     const item = tools[name] || {};
     const label = item.running && !item.installed ? '正在运行（路径未知）' : item.running ? '正在运行' : item.installed ? '已安装' : '未检测到';
     const pids = item.process_ids?.length ? `PID ${item.process_ids.join(', ')}` : '';
@@ -39,12 +40,13 @@ function renderNativeStatus(status) {
     const capability = item.installed ? '可从网页启动' : item.running ? '仅可监测' : '不可用';
     return `<div class="tool-state ${item.installed ? 'installed' : ''} ${item.running ? 'running' : ''}"><b>${name.toUpperCase()} · ${label}</b><small>${path}</small><div class="state-row"><em>${capability}</em>${pids ? `<em>${pids}</em>` : ''}</div></div>`;
   }).join('');
-  const installed = Object.values(tools).filter(item => item.installed).length;
-  const runningCount = Object.values(tools).filter(item => item.running).length;
+  const installed = visibleTools.filter(name => tools[name]?.installed).length;
+  const runningCount = visibleTools.filter(name => tools[name]?.running).length;
   const skill = status.artemis_skill && status.artemis_skill.installed ? '已检测到自动化 skill' : '未检测到自动化 skill';
   $('#native-status').className = 'status ok';
   const automation = status.automation_ready ? 'Demeter 自动拟合已就绪' : 'Demeter 自动拟合尚未就绪';
-  $('#native-status').textContent = `本次检测完成：桥接服务已连接；发现 ${runningCount}/5 个运行进程，可从网页启动 ${installed}/5 个工具；${skill}；${automation}。页面不会自动复查。`;
+  const pathEngine = tools.feff?.installed ? 'CIF 路径引擎已就绪' : '尚未定位 Demeter 内置路径引擎';
+  $('#native-status').textContent = `本次检测完成：桥接服务已连接；发现 ${runningCount}/4 个运行进程，可从网页启动 ${installed}/4 个工具；${pathEngine}；${skill}；${automation}。页面不会自动复查。`;
   const running = Object.entries(tools).filter(([, item]) => item.running).map(([name]) => name.toUpperCase());
   const health = $('#bridge-health');
   health.className = 'bridge-pill ok'; health.textContent = '桥接器已连接';
@@ -96,6 +98,10 @@ async function encodeFile(file, role) {
   return { name: file.name, role, content_base64: bytesToBase64(new Uint8Array(await file.arrayBuffer())) };
 }
 
+function encodeTextFile(name, content, role) {
+  return { name, role, content_base64: bytesToBase64(new TextEncoder().encode(content)) };
+}
+
 function nativeOptions(form) {
   return {
     method: 'paper-constrained-first-shell-demeter',
@@ -115,7 +121,7 @@ function nativeOptions(form) {
 function setExecutionMode() {
   const browser = $('#execution-mode').value === 'browser';
   $('#path-files').required = browser;
-  $('#native-feff-file').required = !browser && $('#native-input-stage').value === 'chi';
+  $('#browser-path-fallback').hidden = !browser;
   $('#native-panel').classList.toggle('browser-selected', browser);
 }
 
@@ -127,9 +133,11 @@ async function prepareNativeJob(form) {
   const cif = $('#cif-file').files[0];
   if (cif) files.push(await encodeFile(cif, 'structure_cif'));
   for (const path of $('#path-files').files) files.push(await encodeFile(path, 'feff_path'));
-  const feff = $('#native-feff-file').files[0];
-  if (feff) files.push(await encodeFile(feff, 'feff_input'));
   if ($('#native-input-stage').value === 'chi') files[0].role = 'chi_k';
+  if ($('#native-input-stage').value === 'chi') {
+    const generated = window.xafsGeneratedFeffInput || await window.prepareFeffFromCif();
+    files.push(encodeTextFile(generated.name, generated.content, 'feff_input'));
+  }
   const payload = {
     project_name: data.name.replace(/\.[^.]+$/, '') || 'xafs-fit',
     files, options: nativeOptions(form),
@@ -205,7 +213,7 @@ $('#fit-form').addEventListener('submit', async event => {
       if (nativeState.status.tools.athena && nativeState.status.tools.athena.installed) await launchNative('athena');
       return;
     }
-    $('#status').textContent = `原生任务 ${result.job_id} 正在调用 Demeter/FEFF……`;
+    $('#status').textContent = `原生任务 ${result.job_id} 正在由 CIF 生成第一配位层理论路径并执行 Demeter 拟合……`;
     const job = await runDemeterFirstShell(result, event.currentTarget);
     if (job.status === 'failed') throw new Error(job.error || 'Demeter 拟合失败');
     $('#status').className = job.status === 'fit_complete_unreviewed' ? 'status ok' : 'status error';

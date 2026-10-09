@@ -266,7 +266,7 @@
           <span id="bridge-capability" class="bridge-pill">原生能力待检测</span>
         </div>
         <p>
-          默认模式通过本机桥接服务使用 Athena、Artemis、FEFF 与 HAMA；网页不会把
+          默认模式通过本机桥接服务使用 Athena、Artemis 与 HAMA；CIF 会自动交给 Demeter 内置计算引擎生成路径。网页不会把
           JavaScript 近似计算标记成 Demeter/HAMA 结果。桥接服务仅监听本机回环地址。
         </p>
         <div class="grid">
@@ -295,15 +295,8 @@
           <label>同边标准得到的 S₀²
             <input id="native-s02" type="number" value="0.9" min="0.01" max="1.5" step="0.01" />
           </label>
-          <label>FEFF 输入文件
-            <input id="native-feff-file" type="file" accept=".inp" />
-          </label>
-          <label>FEFF 路径编号（零基）
-            <input id="native-paths" value="0" pattern="[0-9]+(,[0-9]+)*" />
-          </label>
-          <label>σ² 分组（与路径一一对应）
-            <input id="native-sigma-groups" value="first" pattern="[A-Za-z0-9_-]+(,[A-Za-z0-9_-]+)*" />
-          </label>
+          <input id="native-paths" type="hidden" value="0" />
+          <input id="native-sigma-groups" type="hidden" value="first" />
         </div>
         <div id="native-tools" class="tool-grid" aria-label="本机软件状态"></div>
         <p id="native-status" class="status" aria-live="polite">尚未检测。点击“重新检测”后才会查询一次桥接器与本机软件；页面不会自动轮询。</p>
@@ -315,14 +308,6 @@
           <button class="secondary native-launch" data-tool="artemis" type="button" disabled>打开 Artemis</button>
           <button class="secondary native-launch" data-tool="hama" type="button" disabled>打开 HAMA</button>
         </div>
-        <details class="feff-help">
-          <summary><strong>FEFF 是什么？是否需要单独安装？</strong></summary>
-          <p class="hint">FEFF 根据 CIF/晶体结构计算 EXAFS 的单散射和多重散射路径，生成 Artemis 拟合所需的 <code>feffNNNN.dat</code>。Demeter/IFEFFIT 通常已包含适用于 EXAFS 的 FEFF6；请先在 Artemis 中导入 CIF 并尝试运行 FEFF。只有 Artemis 无法生成路径时，才需要另行安装或配置路径。</p>
-          <div class="toolbar">
-            <a class="button secondary" href="https://feff.phys.washington.edu/feffproject-feff-download.html" target="_blank" rel="noopener">FEFF 官方下载页</a>
-            <a class="button secondary" href="https://bruceravel.github.io/demeter/documents/DPG/feff/index.html" target="_blank" rel="noopener">Demeter 的 FEFF 说明</a>
-          </div>
-        </details>
         <div id="native-finalize" class="mode-panel" hidden>
           <label class="check"><input id="dpj-reopened" type="checkbox" />我已在匹配版本的 Artemis 中实际重新打开 fit.dpj</label>
           <label class="check"><input id="hama-reviewed" type="checkbox" />我已用 HAMA 检查数据、模型和复数残差，并采用共同色标</label>
@@ -343,9 +328,8 @@
         <p>
           浏览器版使用透明的 JavaScript 数值实现：能量预处理采用显式前边/后边多项式，
           小波采用 Morlet 型局部变换；不会冒充原生 Athena、Artemis 或 HAMA。
-          本页面不会从 CIF 运行 FEFF。请使用真实 FEFF
-          路径，检查独立点数、参数相关性和物理边界。需要
-          CIF→FEFF、HAMA、批处理或原生程序时仍可使用桌面版。
+          原生模式会把 CIF 转换为计算输入，并调用本机 Demeter 自带引擎生成真实路径；浏览器探索模式仍须上传已有路径。
+          当前工作台固定为第一配位层模型，请检查独立点数、参数相关性和物理边界。
         </p>
         <div class="toolbar">
           <a class="button secondary" href="./chemistry.html">返回谱学工作流</a
@@ -430,13 +414,7 @@
                 <option value="r" selected>复数 R 空间（推荐）</option>
                 <option value="k">原始 K 空间（不隔离壳层）</option>
               </select></label
-            ><label
-              >参与拟合的壳层<select name="max_shell">
-                <option value="1">仅第一配位层</option>
-                <option value="2" selected>第一 + 第二配位层</option>
-                <option value="99">全部已选路径</option>
-              </select></label
-            ><label
+            ><input name="max_shell" type="hidden" value="1" /><label
               >k-weight<input
                 name="kweight"
                 type="number"
@@ -458,11 +436,10 @@
             /></label>
           </div>
           <details open>
-            <summary><strong>CIF → FEFF 输入文件</strong></summary>
+            <summary><strong>CIF → 第一配位层理论路径</strong></summary>
             <p class="hint">
-              网页可由含完整对称操作的有序 CIF 生成
-              <code>feff.inp</code>。随后仍需用 FEFF 引擎运行该文件，得到
-              <code>feffNNNN.dat</code> 后再拟合。
+              选择有完整对称操作的有序 CIF。网页建立计算输入；原生拟合时由桥接器调用
+              Demeter 自带引擎生成 <code>feffNNNN.dat</code>，并且只使用第一配位层路径。
             </p>
             <label
               >CIF 结构文件<input id="cif-file" type="file" accept=".cif"
@@ -492,7 +469,7 @@
             </div>
             <div class="toolbar">
               <button id="generate-feff-input" type="button">
-                生成 feff.inp</button
+                解析 CIF 并准备第一壳层路径</button
               ><button
                 id="download-structure-summary"
                 class="secondary"
@@ -503,20 +480,15 @@
               </button>
             </div>
             <p id="cif-status" class="status" aria-live="polite">
-              原始 CIF 只在当前浏览器中读取。
+              请选择 CIF；准备完成后运行拟合即可自动生成理论路径。
             </p>
           </details>
-          <label
-            >FEFF 运行后产生的路径文件（可多选，仅接受 feffNNNN.dat）<input
-              id="path-files"
-              type="file"
-              accept=".dat"
-              multiple
-              required
-          /></label>
-          <p class="hint">
-            上传后请为每条路径指定第一或第二配位层及配位结构标签。多重散射路径的振幅不是配位数。
-          </p>
+          <details id="browser-path-fallback">
+            <summary><strong>浏览器探索模式备用：上传已有第一壳层路径</strong></summary>
+            <label>FEFF 第一壳层路径文件（可多选，仅接受 feffNNNN.dat）<input
+                id="path-files" type="file" accept=".dat" multiple /></label>
+            <p class="hint">仅浏览器探索模式需要手动上传路径；原生模式直接使用上方 CIF。</p>
+          </details>
           <div id="path-list"></div>
           <h3>全局参数</h3>
           <div class="path">
@@ -574,7 +546,7 @@
           </div>
           <button id="run-fit" class="run-button" type="submit">开始拟合</button>
           <p id="status" class="status" aria-live="polite">
-            请选择实验数据与真实 FEFF 路径。
+            请选择实验数据与 CIF；本工作台仅进行第一配位层拟合。
           </p>
         </form>
         <section class="results workbench-section" id="result-dashboard">
@@ -639,9 +611,9 @@
         </section>
       </div>
     </main>
-    <script src="./exafs-fit.js?v=8"></script>
+    <script src="./exafs-fit.js?v=9"></script>
     <script src="./exafs-online.js?v=2"></script>
-    <script src="./exafs-native.js?v=5"></script>
-    <script src="./exafs-workbench.js?v=1"></script>
+    <script src="./exafs-native.js?v=6"></script>
+    <script src="./exafs-workbench.js?v=2"></script>
   </body>
 </html>

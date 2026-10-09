@@ -47,13 +47,13 @@
     const rmax = Number(form.elements.fit_rmax.value);
     const validRanges = Number.isFinite(kmin) && Number.isFinite(kmax) && kmax > kmin && rmax > rmin && rmin >= 0;
     const hasPaths = Boolean(byId('path-files').files?.length);
-    const hasNativeFeff = Boolean(byId('native-feff-file').files?.length);
+    const hasCif = Boolean(byId('cif-file').files?.length);
     const bridgeConnected = Boolean(window.xafsNativeState?.connected);
     return [
       { label: '实验数据', ok: hasData },
       { label: 'k / R 范围', ok: validRanges },
       { label: nativeMode ? '本机桥接' : 'FEFF 路径', ok: nativeMode ? bridgeConnected : hasPaths },
-      { label: nativeMode && !rawStage ? 'feff.inp' : '振幅约束', ok: nativeMode && !rawStage ? hasNativeFeff : !amplitudeConflict() },
+      { label: nativeMode && !rawStage ? 'CIF 结构' : '振幅约束', ok: nativeMode && !rawStage ? hasCif : !amplitudeConflict() },
     ];
   }
 
@@ -95,6 +95,7 @@
   byId('native-input-stage').addEventListener('change', setModePresentation);
   role.addEventListener('change', applyRole);
   window.addEventListener('xafs-native-status', updateReadiness);
+  window.addEventListener('xafs-cif-ready', updateReadiness);
   setModePresentation();
   applyRole();
 })();
