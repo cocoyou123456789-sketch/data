@@ -261,7 +261,7 @@
       <section class="card native-panel workbench-section" id="native-panel">
         <h2>原生 Demeter / HAMA 后端</h2>
         <div class="bridge-summary" aria-live="polite">
-          <span id="bridge-health" class="bridge-pill pending">正在连接桥接器</span>
+          <span id="bridge-health" class="bridge-pill">等待手动检测</span>
           <span id="bridge-version" class="bridge-pill">版本待检测</span>
           <span id="bridge-capability" class="bridge-pill">原生能力待检测</span>
         </div>
@@ -306,15 +306,23 @@
           </label>
         </div>
         <div id="native-tools" class="tool-grid" aria-label="本机软件状态"></div>
-        <p id="native-status" class="status" aria-live="polite">正在检测本机软件……</p>
+        <p id="native-status" class="status" aria-live="polite">尚未检测。点击“重新检测”后才会查询一次桥接器与本机软件；页面不会自动轮询。</p>
         <div class="toolbar">
           <a class="button" href="https://github.com/cocoyou123456789-sketch/data/releases/latest/download/XAFS-Native-Bridge-Setup.exe">下载安装本机桥接器</a>
           <a class="button secondary" href="https://github.com/cocoyou123456789-sketch/data/releases/latest/download/XAFS-Native-Bridge-Portable.zip">下载便携版</a>
           <button id="refresh-native" type="button">重新检测</button>
-          <button class="secondary native-launch" data-tool="athena" type="button">打开 Athena</button>
-          <button class="secondary native-launch" data-tool="artemis" type="button">打开 Artemis</button>
-          <button class="secondary native-launch" data-tool="hama" type="button">打开 HAMA</button>
+          <button class="secondary native-launch" data-tool="athena" type="button" disabled>打开 Athena</button>
+          <button class="secondary native-launch" data-tool="artemis" type="button" disabled>打开 Artemis</button>
+          <button class="secondary native-launch" data-tool="hama" type="button" disabled>打开 HAMA</button>
         </div>
+        <details class="feff-help">
+          <summary><strong>FEFF 是什么？是否需要单独安装？</strong></summary>
+          <p class="hint">FEFF 根据 CIF/晶体结构计算 EXAFS 的单散射和多重散射路径，生成 Artemis 拟合所需的 <code>feffNNNN.dat</code>。Demeter/IFEFFIT 通常已包含适用于 EXAFS 的 FEFF6；请先在 Artemis 中导入 CIF 并尝试运行 FEFF。只有 Artemis 无法生成路径时，才需要另行安装或配置路径。</p>
+          <div class="toolbar">
+            <a class="button secondary" href="https://feff.phys.washington.edu/feffproject-feff-download.html" target="_blank" rel="noopener">FEFF 官方下载页</a>
+            <a class="button secondary" href="https://bruceravel.github.io/demeter/documents/DPG/feff/index.html" target="_blank" rel="noopener">Demeter 的 FEFF 说明</a>
+          </div>
+        </details>
         <div id="native-finalize" class="mode-panel" hidden>
           <label class="check"><input id="dpj-reopened" type="checkbox" />我已在匹配版本的 Artemis 中实际重新打开 fit.dpj</label>
           <label class="check"><input id="hama-reviewed" type="checkbox" />我已用 HAMA 检查数据、模型和复数残差，并采用共同色标</label>
@@ -633,7 +641,7 @@
     </main>
     <script src="./exafs-fit.js?v=8"></script>
     <script src="./exafs-online.js?v=2"></script>
-    <script src="./exafs-native.js?v=4"></script>
+    <script src="./exafs-native.js?v=5"></script>
     <script src="./exafs-workbench.js?v=1"></script>
   </body>
 </html>

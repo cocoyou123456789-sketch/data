@@ -46,7 +46,10 @@ test('workbench exposes staged navigation and sample amplitude roles', () => {
   assert.match(html, /exafs-workbench\.js/);
 });
 
-test('native client uses lightweight polling without forced rediscovery', () => {
-  assert.match(source, /detectNative\(false\)/);
-  assert.match(source, /}, 15000\)/);
+test('native detection runs only after the user clicks refresh', () => {
+  assert.match(source, /refresh-native'\)\.onclick = \(\) => detectNative\(true\)/);
+  assert.doesNotMatch(source, /setInterval\(/);
+  assert.doesNotMatch(source, /^detectNative\(\);/m);
+  assert.match(html, /页面不会自动轮询/);
+  assert.match(html, /feff\.phys\.washington\.edu\/feffproject-feff-download\.html/);
 });
