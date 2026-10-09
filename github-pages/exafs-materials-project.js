@@ -70,8 +70,11 @@
   }
 
   async function searchMaterials() {
-    const query = q('#mp-query').value.trim();
-    if (!selected.size && !query) throw new Error('请至少点击一个元素，或输入化学式/Materials Project ID。');
+    const typedQuery = q('#mp-query').value.trim();
+    if (!selected.size && !typedQuery) throw new Error('请至少点击一个元素，或输入化学式/Materials Project ID。');
+    const exactChemsys = !typedQuery && selected.size > 1 ? [...selected].join('-') : '';
+    const query = typedQuery || exactChemsys;
+    const elements = exactChemsys ? [] : [...selected];
     const button = q('#mp-search');
     const status = q('#mp-status');
     button.disabled = true;
@@ -82,13 +85,13 @@
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({query, elements: [...selected], stable: q('#mp-stability').value, limit: 20})
+        body: JSON.stringify({query, elements, stable: q('#mp-stability').value, limit: 20})
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || !data.ok) throw new Error(data.error || `Materials Project 服务返回 HTTP ${response.status}`);
       renderResults(data.materials || []);
       status.className = 'status ok';
-      status.textContent = `找到 ${data.statistics?.total_returned ?? 0} 个候选结构；请核对化学式、空间群和 Materials Project ID。`;
+      status.textContent = `找到 ${data.statistics?.total_returned ?? 0} 个候选结构${exactChemsys ? `（精确元素体系 ${exactChemsys}）` : ''}；请核对化学式、空间群和 Materials Project ID。`;
     } finally {
       button.disabled = false;
     }

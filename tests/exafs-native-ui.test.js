@@ -73,6 +73,7 @@ test('Materials Project element picker loads a selected CIF into the native firs
   assert.match(materialsSource, /materials-structure/);
   assert.match(materialsSource, /globalThis\.xafsCifSelection/);
   assert.match(materialsSource, /material_id/);
+  assert.match(materialsSource, /selected\.size > 1 \? \[\.\.\.selected\]\.join\('-'\)/);
   assert.match(fitSource, /structure_source=source\.source/);
   assert.match(source, /window\.xafsCifSelection\.content, 'structure_cif'/);
 });
