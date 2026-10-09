@@ -37,6 +37,21 @@ jobs:
         run: |
           $process = Start-Process -FilePath .\dist\XAFSNativeBridge.exe -ArgumentList '--probe' -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "Packaged probe failed: $($process.ExitCode)" }
+          $server = Start-Process -FilePath .\dist\XAFSNativeBridge.exe -ArgumentList '--port 18766' -PassThru
+          try {
+            $status = $null
+            for ($attempt = 0; $attempt -lt 20; $attempt++) {
+              try {
+                $status = Invoke-RestMethod -Uri 'http://127.0.0.1:18766/api/status' -TimeoutSec 3
+                break
+              } catch {
+                Start-Sleep -Milliseconds 500
+              }
+            }
+            if ($status.service -ne 'xafs-native-bridge') { throw 'Packaged HTTP status endpoint did not respond' }
+          } finally {
+            Stop-Process -Id $server.Id -Force -ErrorAction SilentlyContinue
+          }
 
       - name: Install Inno Setup
         run: choco install innosetup --no-progress -y

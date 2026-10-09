@@ -16,10 +16,12 @@ import json
 import os
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import threading
 import time
+import traceback
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -55,6 +57,17 @@ SAFE_FILE = re.compile(r"[^A-Za-z0-9._()\-\u4e00-\u9fff]+")
 PROCESS_CACHE_SECONDS = 2.0
 _PROCESS_CACHE: tuple[float, list[dict[str, Any]]] = (0.0, [])
 _PROCESS_LOCK = threading.Lock()
+_LOG_LOCK = threading.Lock()
+
+
+def _append_log(message: str) -> None:
+    """Write diagnostics to disk because the packaged app has no console."""
+    try:
+        APP_ROOT.mkdir(parents=True, exist_ok=True)
+        with _LOG_LOCK, (APP_ROOT / "bridge.log").open("a", encoding="utf-8") as stream:
+            stream.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} {message.rstrip()}\n")
+    except OSError:
+        pass
 
 
 def load_config(path: Path | None = None) -> dict[str, Any]:
@@ -353,7 +366,7 @@ class BridgeState:
     def status(self) -> dict[str, Any]:
         with self.lock:
             tools = with_running_status(self.tools)
-            return {"service": "xafs-native-bridge", "version": 2, "native": True,
+            return {"service": "xafs-native-bridge", "version": 3, "native": True,
                     "tools": tools, "artemis_skill": self.skill,
                     "demeter_root": self.demeter_root,
                     "automation_ready": bool(self.demeter_root and self.skill.get("installed")),
@@ -470,7 +483,7 @@ def finalize_job(state: BridgeState, job_dir: Path, payload: dict[str, Any]) -> 
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "XAFSNativeBridge/2"
+    server_version = "XAFSNativeBridge/3"
 
     def _origin_allowed(self) -> bool:
         origin = self.headers.get("Origin")
@@ -583,7 +596,23 @@ class Handler(BaseHTTPRequestHandler):
             self._send(500, {"error": f"native bridge error: {error}"})
 
     def log_message(self, fmt: str, *args: Any) -> None:
-        sys.stderr.write("[%s] %s\n" % (self.log_date_time_string(), fmt % args))
+        # BaseHTTPRequestHandler normally writes to sys.stderr. PyInstaller
+        # windowed applications set that stream to None, which used to abort
+        # every response before its headers were sent.
+        _append_log(f"{self.client_address[0]} {fmt % args}")
+
+
+class BridgeHTTPServer(ThreadingHTTPServer):
+    allow_reuse_address = False
+    allow_reuse_port = False
+
+    def server_bind(self) -> None:
+        if os.name == "nt" and hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+    def handle_error(self, request: Any, client_address: Any) -> None:
+        _append_log(f"request from {client_address!r} failed\n{traceback.format_exc()}")
 
 
 def main() -> int:
@@ -602,10 +631,16 @@ def main() -> int:
         print(json.dumps(state.status(), ensure_ascii=False, indent=2))
         return 0
     args.jobs.mkdir(parents=True, exist_ok=True)
-    server = ThreadingHTTPServer((args.host, args.port), Handler)
+    try:
+        server = BridgeHTTPServer((args.host, args.port), Handler)
+    except OSError as error:
+        _append_log(f"startup failed on {args.host}:{args.port}: {error}")
+        return 1
     server.state = state  # type: ignore[attr-defined]
-    print(f"XAFS native bridge: http://{args.host}:{args.port}")
-    print(json.dumps(state.status(), ensure_ascii=False, indent=2))
+    _append_log(f"started on http://{args.host}:{args.port}")
+    if sys.stdout is not None:
+        print(f"XAFS native bridge: http://{args.host}:{args.port}")
+        print(json.dumps(state.status(), ensure_ascii=False, indent=2))
     try:
         server.serve_forever()
     except KeyboardInterrupt:

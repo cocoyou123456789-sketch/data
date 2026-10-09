@@ -81,6 +81,26 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertTrue(status["running"])
         self.assertEqual(status["process_ids"], [7])
 
+    def test_windowed_request_logging_does_not_require_stderr(self):
+        with tempfile.TemporaryDirectory() as directory:
+            original_root = bridge.APP_ROOT
+            original_stderr = bridge.sys.stderr
+            try:
+                bridge.APP_ROOT = Path(directory)
+                bridge.sys.stderr = None
+                handler = object.__new__(bridge.Handler)
+                handler.client_address = ("127.0.0.1", 12345)
+                handler.log_message("GET %s", "/api/status")
+            finally:
+                bridge.APP_ROOT = original_root
+                bridge.sys.stderr = original_stderr
+            log = (Path(directory) / "bridge.log").read_text(encoding="utf-8")
+            self.assertIn("GET /api/status", log)
+
+    def test_bridge_server_disables_port_reuse(self):
+        self.assertFalse(bridge.BridgeHTTPServer.allow_reuse_address)
+        self.assertFalse(bridge.BridgeHTTPServer.allow_reuse_port)
+
 
 if __name__ == "__main__":
     unittest.main()

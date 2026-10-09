@@ -24,3 +24,8 @@ test('page offers installable and portable bridge downloads', () => {
   assert.match(html, /releases\/latest\/download\/XAFS-Native-Bridge-Setup\.exe/);
   assert.match(html, /releases\/latest\/download\/XAFS-Native-Bridge-Portable\.zip/);
 });
+
+test('connection failure directs users to the packaged bridge', () => {
+  assert.match(source, /下载安装本机桥接器/);
+  assert.match(source, /源码开发环境才需要运行 start-native-bridge\.ps1/);
+});
