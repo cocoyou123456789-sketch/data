@@ -14,6 +14,14 @@ SPEC.loader.exec_module(bridge)
 
 
 class NativeBridgeTests(unittest.TestCase):
+    def test_windows_helpers_use_no_console_window(self):
+        options = bridge._hidden_subprocess_options("nt")
+        self.assertEqual(options["creationflags"], 0x08000000)
+        self.assertEqual(bridge._hidden_subprocess_options("posix"), {})
+
+    def test_bridge_reports_installer_version(self):
+        self.assertEqual(bridge.APP_VERSION, "1.0.3")
+
     def test_configured_executable_is_detected(self):
         with tempfile.TemporaryDirectory() as directory:
             executable = Path(directory) / "dathena.exe"

@@ -38,6 +38,7 @@ APP_ROOT = (
 ROOT = APP_ROOT
 DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
+APP_VERSION = "1.0.3"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
     "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
@@ -58,6 +59,22 @@ PROCESS_CACHE_SECONDS = 2.0
 _PROCESS_CACHE: tuple[float, list[dict[str, Any]]] = (0.0, [])
 _PROCESS_LOCK = threading.Lock()
 _LOG_LOCK = threading.Lock()
+
+
+def _hidden_subprocess_options(platform: str | None = None) -> dict[str, Any]:
+    """Return Windows flags that prevent helper commands flashing a console."""
+    if (platform or os.name) != "nt":
+        return {}
+    options: dict[str, Any] = {
+        "creationflags": getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000),
+    }
+    startupinfo_type = getattr(subprocess, "STARTUPINFO", None)
+    if startupinfo_type is not None:
+        startupinfo = startupinfo_type()
+        startupinfo.dwFlags |= getattr(subprocess, "STARTF_USESHOWWINDOW", 0x00000001)
+        startupinfo.wShowWindow = 0  # SW_HIDE
+        options["startupinfo"] = startupinfo
+    return options
 
 
 def _append_log(message: str) -> None:
@@ -160,6 +177,7 @@ def _windows_processes() -> list[dict[str, Any]]:
         completed = subprocess.run(
             command, capture_output=True, text=True, encoding="utf-8",
             errors="replace", timeout=12, check=False,
+            **_hidden_subprocess_options(),
         )
         if completed.returncode or not completed.stdout.strip():
             return []
@@ -345,7 +363,8 @@ def launch_tool(tool: str, tools: dict[str, dict[str, Any]], job_dir: Path | Non
             args.append(str(chosen))
     if os.name == "nt" and Path(record["path"]).suffix.lower() in {".bat", ".cmd"}:
         args = ["cmd.exe", "/d", "/c", *args]
-    process = subprocess.Popen(args, cwd=str(job_dir or ROOT), close_fds=True)
+    launch_options = _hidden_subprocess_options() if os.name == "nt" and args[0].lower().endswith("cmd.exe") else {}
+    process = subprocess.Popen(args, cwd=str(job_dir or ROOT), close_fds=True, **launch_options)
     return process.pid
 
 
@@ -366,7 +385,7 @@ class BridgeState:
     def status(self) -> dict[str, Any]:
         with self.lock:
             tools = with_running_status(self.tools)
-            return {"service": "xafs-native-bridge", "version": 3, "native": True,
+            return {"service": "xafs-native-bridge", "version": 3, "app_version": APP_VERSION, "native": True,
                     "tools": tools, "artemis_skill": self.skill,
                     "demeter_root": self.demeter_root,
                     "automation_ready": bool(self.demeter_root and self.skill.get("installed")),
@@ -425,7 +444,10 @@ def execute_demeter_job(state: BridgeState, job_dir: Path, payload: dict[str, An
             "--rmax", str(ranges["rmax"]), "--kweights", "1,2,3",
         ]
         _update_job(job_dir, status="running", native_command="Demeter first-shell driver")
-        completed = subprocess.run(command, cwd=str(job_dir), capture_output=True, text=True, timeout=3600)
+        completed = subprocess.run(
+            command, cwd=str(job_dir), capture_output=True, text=True, timeout=3600,
+            **_hidden_subprocess_options(),
+        )
         log_path.write_text(completed.stdout + "\n--- STDERR ---\n" + completed.stderr, encoding="utf-8")
         if completed.returncode:
             raise RuntimeError(f"Demeter exited with code {completed.returncode}; see native-run.log")
@@ -433,7 +455,7 @@ def execute_demeter_job(state: BridgeState, job_dir: Path, payload: dict[str, An
         audit = subprocess.run([
             sys.executable, str(audit_script), str(results / "fit.log"),
             "--expected-s02", str(s02), "--output", str(job_dir / "audit.json"),
-        ], capture_output=True, text=True, timeout=120)
+        ], capture_output=True, text=True, timeout=120, **_hidden_subprocess_options())
         audit_payload = json.loads((job_dir / "audit.json").read_text(encoding="utf-8"))
         final_status = "review_required" if audit.returncode or audit_payload.get("flags") else "fit_complete_unreviewed"
         _update_job(job_dir, status=final_status, finished_at=time.strftime("%Y-%m-%dT%H:%M:%S%z"),
@@ -470,7 +492,10 @@ def finalize_job(state: BridgeState, job_dir: Path, payload: dict[str, Any]) -> 
         "--project-check", "User confirmed that fit.dpj was reopened in the matching Artemis/Demeter installation",
         "--notes", "User confirmed HAMA review of data, model and complex residual with a shared color scale",
     ])
-    completed = subprocess.run(command, cwd=str(job_dir), capture_output=True, text=True, timeout=300)
+    completed = subprocess.run(
+        command, cwd=str(job_dir), capture_output=True, text=True, timeout=300,
+        **_hidden_subprocess_options(),
+    )
     (job_dir / "delivery-build.log").write_text(
         completed.stdout + "\n--- STDERR ---\n" + completed.stderr, encoding="utf-8"
     )
@@ -483,7 +508,7 @@ def finalize_job(state: BridgeState, job_dir: Path, payload: dict[str, Any]) -> 
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "XAFSNativeBridge/3"
+    server_version = f"XAFSNativeBridge/{APP_VERSION}"
 
     def _origin_allowed(self) -> bool:
         origin = self.headers.get("Origin")

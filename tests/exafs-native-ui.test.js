@@ -45,3 +45,8 @@ test('workbench exposes staged navigation and sample amplitude roles', () => {
   assert.match(html, /未知样：固定 S₀²，拟合 N/);
   assert.match(html, /exafs-workbench\.js/);
 });
+
+test('native client uses lightweight polling without forced rediscovery', () => {
+  assert.match(source, /detectNative\(false\)/);
+  assert.match(source, /}, 15000\)/);
+});

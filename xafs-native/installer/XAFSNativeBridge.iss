@@ -1,5 +1,5 @@
 #define AppName "XAFS Native Bridge"
-#define AppVersion "1.0.2"
+#define AppVersion "1.0.3"
 #define AppPublisher "SynchroChemAI"
 #define AppExeName "XAFSNativeBridge.exe"
 
@@ -38,3 +38,14 @@ Filename: "{app}\{#AppExeName}"; Parameters: "--port 8766"; Description: "启动
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /IM {#AppExeName} /F"; Flags: runhidden; RunOnceId: "StopBridge"
+
+[Code]
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode: Integer;
+begin
+  { Stop an older bridge before replacing its executable during an upgrade. }
+  Exec(ExpandConstant('{cmd}'), '/D /C taskkill /IM {#AppExeName} /F', '', SW_HIDE,
+    ewWaitUntilTerminated, ResultCode);
+  Result := '';
+end;
