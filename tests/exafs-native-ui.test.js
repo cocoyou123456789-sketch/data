@@ -6,6 +6,8 @@ const assert = require('node:assert/strict');
 const root = path.join(__dirname, '..', 'github-pages');
 const html = fs.readFileSync(path.join(root, 'exafs-fit.html'), 'utf8');
 const source = fs.readFileSync(path.join(root, 'exafs-native.js'), 'utf8');
+const fitSource = fs.readFileSync(path.join(root, 'exafs-fit.js'), 'utf8');
+const materialsSource = fs.readFileSync(path.join(root, 'exafs-materials-project.js'), 'utf8');
 
 test('native Demeter mode is the default and browser mode is explicitly labelled', () => {
   assert.match(html, /option value="native" selected/);
@@ -61,4 +63,16 @@ test('native fitting generates first-shell FEFF input from CIF without a FEFF up
   assert.match(html, /解析 CIF 并准备第一壳层路径/);
   assert.match(source, /xafsGeneratedFeffInput/);
   assert.match(source, /encodeTextFile\(generated\.name, generated\.content, 'feff_input'\)/);
+});
+
+test('Materials Project element picker loads a selected CIF into the native first-shell workflow', () => {
+  assert.match(html, /id="mp-elements"/);
+  assert.match(html, /Materials Project 在线选择/);
+  assert.match(html, /exafs-materials-project\.js/);
+  assert.match(materialsSource, /data-element/);
+  assert.match(materialsSource, /materials-structure/);
+  assert.match(materialsSource, /globalThis\.xafsCifSelection/);
+  assert.match(materialsSource, /material_id/);
+  assert.match(fitSource, /structure_source=source\.source/);
+  assert.match(source, /window\.xafsCifSelection\.content, 'structure_cif'/);
 });

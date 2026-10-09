@@ -241,6 +241,7 @@
       }
     </style>
     <link rel="stylesheet" href="./exafs-workbench.css?v=1" />
+    <link rel="stylesheet" href="./exafs-materials-project.css?v=1" />
   </head>
   <body>
     <header class="hero">
@@ -441,9 +442,32 @@
               选择有完整对称操作的有序 CIF。网页建立计算输入；原生拟合时由桥接器调用
               Demeter 自带引擎生成 <code>feffNNNN.dat</code>，并且只使用第一配位层路径。
             </p>
-            <label
-              >CIF 结构文件<input id="cif-file" type="file" accept=".cif"
-            /></label>
+            <div class="cif-source-tabs" role="tablist" aria-label="CIF 结构来源">
+              <button id="cif-source-materials" class="secondary active" type="button">Materials Project 在线选择</button>
+              <button id="cif-source-local" class="secondary" type="button">上传本地 CIF</button>
+            </div>
+            <section id="materials-project-picker" class="mp-picker" aria-label="Materials Project 晶体结构选择">
+              <div class="mp-picker-head">
+                <div><strong>点击元素检索晶体结构</strong><small>可选择多个元素；候选结构来自 Materials Project 计算数据库。</small></div>
+                <a href="https://materialsproject.org/" target="_blank" rel="noopener">Materials Project ↗</a>
+              </div>
+              <div id="mp-elements" class="mp-element-grid" aria-label="元素选择器"></div>
+              <div class="mp-selection-row">
+                <span>已选元素：<b id="mp-selected-elements">无</b></span>
+                <button id="mp-clear-elements" class="secondary" type="button">清空</button>
+              </div>
+              <div class="mp-search-row">
+                <label>化学式或 MP ID（可选）<input id="mp-query" placeholder="例如 IrO2 或 mp-845" /></label>
+                <label>结果范围<select id="mp-stability"><option value="all">全部结构</option><option value="true" selected>优先稳定相</option></select></label>
+                <button id="mp-search" type="button">检索晶体结构</button>
+              </div>
+              <p id="mp-status" class="status">请选择元素，然后点击“检索晶体结构”。</p>
+              <div id="mp-results" class="mp-results" aria-live="polite"></div>
+            </section>
+            <section id="local-cif-picker" hidden>
+              <label>本地 CIF 结构文件<input id="cif-file" type="file" accept=".cif" /></label>
+            </section>
+            <p id="cif-source-summary" class="cif-source-summary">尚未选择晶体结构。</p>
             <div class="grid">
               <label
                 >吸收元素<input
@@ -611,9 +635,10 @@
         </section>
       </div>
     </main>
-    <script src="./exafs-fit.js?v=9"></script>
+    <script src="./exafs-fit.js?v=10"></script>
+    <script src="./exafs-materials-project.js?v=1"></script>
     <script src="./exafs-online.js?v=2"></script>
-    <script src="./exafs-native.js?v=6"></script>
+    <script src="./exafs-native.js?v=7"></script>
     <script src="./exafs-workbench.js?v=2"></script>
   </body>
 </html>
