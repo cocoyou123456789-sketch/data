@@ -38,7 +38,7 @@ APP_ROOT = (
 ROOT = APP_ROOT
 DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
-APP_VERSION = "1.0.3"
+APP_VERSION = "1.0.4"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
     "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
@@ -159,6 +159,40 @@ def discover_tools(config: dict[str, Any] | None = None) -> dict[str, dict[str, 
     return found
 
 
+def infer_tool_paths_from_processes(
+    tools: dict[str, dict[str, Any]], processes: list[dict[str, Any]]
+) -> dict[str, dict[str, Any]]:
+    """Fill missing launch paths from executables or quoted launcher paths."""
+    inferred = {name: dict(record) for name, record in tools.items()}
+    for process in processes:
+        image = str(process.get("Name") or "").lower()
+        executable = Path(str(process.get("ExecutablePath") or ""))
+        command_line = str(process.get("CommandLine") or "")
+        tokens = [left or right for left, right in re.findall(r'"([^"]+)"|(\S+)', command_line)]
+        candidates = ([executable] if executable.is_file() else []) + [Path(token) for token in tokens]
+        for tool, names in EXECUTABLE_NAMES.items():
+            if inferred[tool].get("installed"):
+                continue
+            wanted = {name.lower() for name in names}
+            match = next((path for path in candidates if path.name.lower() in wanted and path.is_file()), None)
+            if match is None and tool == "hama" and "hama" in image and executable.is_file():
+                match = executable
+            if match is not None:
+                inferred[tool].update(installed=True, path=str(match.resolve()), source="running-process")
+    return inferred
+
+
+def demeter_root_from_processes(processes: list[dict[str, Any]]) -> str | None:
+    for process in processes:
+        executable = Path(str(process.get("ExecutablePath") or ""))
+        if executable.name.lower() != "perl.exe":
+            continue
+        for candidate in executable.parents:
+            if (candidate / "perl" / "bin" / "perl.exe").is_file():
+                return str(candidate.resolve())
+    return None
+
+
 def _windows_processes() -> list[dict[str, Any]]:
     """Read process names and command lines without an optional psutil dependency."""
     global _PROCESS_CACHE
@@ -242,13 +276,18 @@ def discover_skill(config: dict[str, Any]) -> dict[str, Any]:
     return {"installed": False, "path": None, "runner": None, "first_shell": None}
 
 
-def discover_demeter_root(config: dict[str, Any], tools: dict[str, dict[str, Any]]) -> str | None:
+def discover_demeter_root(
+    config: dict[str, Any], tools: dict[str, dict[str, Any]], processes: list[dict[str, Any]] | None = None
+) -> str | None:
     candidates = [config.get("demeter_root"), os.environ.get("DEMETER_BASE"), str(Path.home() / "DemeterPerl")]
     feff_path = tools.get("feff", {}).get("path")
     if feff_path:
         path = Path(feff_path).resolve()
         if len(path.parents) >= 3:
             candidates.append(str(path.parents[2]))
+    inferred = demeter_root_from_processes(processes or [])
+    if inferred:
+        candidates.insert(0, inferred)
     for candidate in candidates:
         if candidate and (Path(candidate) / "perl" / "bin" / "perl.exe").is_file():
             return str(Path(candidate).resolve())
@@ -378,9 +417,15 @@ class BridgeState:
 
     def refresh(self) -> None:
         with self.lock:
-            self.tools = discover_tools(self.config)
+            processes = _windows_processes()
+            self.tools = infer_tool_paths_from_processes(discover_tools(self.config), processes)
             self.skill = discover_skill(self.config)
-            self.demeter_root = discover_demeter_root(self.config, self.tools)
+            self.demeter_root = discover_demeter_root(self.config, self.tools, processes)
+            bundled_feff = Path(self.demeter_root) / "c" / "bin" / "feff6.exe" if self.demeter_root else None
+            if bundled_feff and bundled_feff.is_file() and not self.tools["feff"].get("installed"):
+                self.tools["feff"].update(
+                    installed=True, path=str(bundled_feff.resolve()), source="demeter-bundle"
+                )
 
     def status(self) -> dict[str, Any]:
         with self.lock:

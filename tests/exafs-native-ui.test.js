@@ -35,6 +35,8 @@ test('native status distinguishes installation from running processes', () => {
   assert.match(source, /process_ids/);
   assert.match(source, /xafs-native-status/);
   assert.match(html, /id="bridge-health"/);
+  assert.match(source, /const visibleTools = \['athena', 'artemis', 'hama', 'hephaestus'\]/);
+  assert.doesNotMatch(source, /visibleTools = \[[^\]]*'feff'/);
 });
 
 test('workbench exposes staged navigation and sample amplitude roles', () => {
@@ -51,5 +53,12 @@ test('native detection runs only after the user clicks refresh', () => {
   assert.doesNotMatch(source, /setInterval\(/);
   assert.doesNotMatch(source, /^detectNative\(\);/m);
   assert.match(html, /页面不会自动轮询/);
-  assert.match(html, /feff\.phys\.washington\.edu\/feffproject-feff-download\.html/);
+});
+
+test('native fitting generates first-shell FEFF input from CIF without a FEFF upload field', () => {
+  assert.doesNotMatch(html, /id="native-feff-file"/);
+  assert.match(html, /name="max_shell" type="hidden" value="1"/);
+  assert.match(html, /解析 CIF 并准备第一壳层路径/);
+  assert.match(source, /xafsGeneratedFeffInput/);
+  assert.match(source, /encodeTextFile\(generated\.name, generated\.content, 'feff_input'\)/);
 });

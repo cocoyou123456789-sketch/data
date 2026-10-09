@@ -20,7 +20,25 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(bridge._hidden_subprocess_options("posix"), {})
 
     def test_bridge_reports_installer_version(self):
-        self.assertEqual(bridge.APP_VERSION, "1.0.3")
+        self.assertEqual(bridge.APP_VERSION, "1.0.4")
+
+    def test_running_demeter_process_reveals_launchers_root_and_bundled_feff(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "DemeterPerl"
+            perl = root / "perl" / "bin" / "perl.exe"
+            athena = root / "perl" / "site" / "bin" / "dathena.bat"
+            feff = root / "c" / "bin" / "feff6.exe"
+            for executable in (perl, athena, feff):
+                executable.parent.mkdir(parents=True, exist_ok=True)
+                executable.write_bytes(b"test")
+            processes = [{
+                "ProcessId": 101, "Name": "perl.exe", "ExecutablePath": str(perl),
+                "CommandLine": f'perl -x -S "{athena}"',
+            }]
+            tools = bridge.infer_tool_paths_from_processes(bridge.discover_tools({}), processes)
+            self.assertTrue(tools["athena"]["installed"])
+            self.assertEqual(Path(tools["athena"]["path"]), athena.resolve())
+            self.assertEqual(bridge.demeter_root_from_processes(processes), str(root.resolve()))
 
     def test_configured_executable_is_detected(self):
         with tempfile.TemporaryDirectory() as directory:
