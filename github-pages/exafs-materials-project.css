@@ -5,8 +5,8 @@
 .mp-picker-head strong, .mp-picker-head small { display: block; }
 .mp-picker-head small { margin-top: 4px; color: var(--muted); font-size: 11px; font-weight: 500; }
 .mp-picker-head a { color: #087cad; font-size: 11px; font-weight: 800; text-decoration: none; white-space: nowrap; }
-.mp-element-grid { display: grid; grid-template-columns: repeat(18, 32px); gap: 3px; width: 100%; padding-bottom: 5px; overflow-x: auto; }
-.mp-element { min-width: 0; min-height: 29px; padding: 2px; border: 1px solid #b8cbd5; border-radius: 4px; color: #31566a; background: #fff; font-size: 10px; font-weight: 800; }
+.mp-element-grid { display: grid; grid-template-columns: repeat(18, minmax(18px, 1fr)); gap: 2px; width: 100%; min-width: 358px; padding-bottom: 5px; overflow-x: auto; }
+.mp-element { min-width: 0; min-height: 27px; padding: 1px; border: 1px solid #b8cbd5; border-radius: 4px; color: #31566a; background: #fff; font-size: 9px; font-weight: 800; }
 .mp-element:hover { border-color: #22a69a; background: #e9f8f5; }
 .mp-element.selected { color: #fff; border-color: #078b7d; background: #078b7d; box-shadow: 0 0 0 2px rgba(7,139,125,.14); }
 .mp-element.lanthanide, .mp-element.actinide { background: #f3f0fb; }
