@@ -233,6 +233,66 @@ async function pollNativeJob(jobId) {
   }
 }
 
+function nativeEscape(value) {
+  return String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[character]);
+}
+
+function renderNativeTable(rows) {
+  if (!rows?.length) return '<p class="hint">原生结果文件中没有可显示的记录。</p>';
+  const columns = Object.keys(rows[0]);
+  return `<table><thead><tr>${columns.map(column => `<th>${nativeEscape(column)}</th>`).join('')}</tr></thead>`
+    + `<tbody>${rows.map(row => `<tr>${columns.map(column => `<td>${nativeEscape(row[column])}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function downloadNativeResult(file) {
+  const bytes = Uint8Array.from(atob(file.content_base64), character => character.charCodeAt(0));
+  const url = URL.createObjectURL(new Blob([bytes], { type: 'application/octet-stream' }));
+  const link = document.createElement('a');
+  link.href = url; link.download = file.name; link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function renderNativeResults(result) {
+  const card = $('#native-result-card');
+  card.hidden = false;
+  $('#result-empty').hidden = true;
+  const verdict = $('#native-result-verdict');
+  verdict.className = result.rejected ? 'status error' : result.review_required ? 'status' : 'status ok';
+  verdict.textContent = result.rejected
+    ? '硬性拒绝：参数越界、统计条件或物理约束未通过；禁止作为正式拟合结果。'
+    : result.review_required
+      ? '需专家复核：存在警告，复核残差、相关性、边界和化学合理性后方可接受。'
+      : '原生计算完成：仍须在 Artemis 重开工程并用 HAMA 检查复数残差后才能最终交付。';
+  $('#native-result-statistics').innerHTML = (result.statistics || []).map(row =>
+    `<div><b>${nativeEscape(row.value)}${row.unit ? ` ${nativeEscape(row.unit)}` : ''}</b><span>${nativeEscape(row.metric)}</span></div>`).join('');
+  $('#native-result-parameters').innerHTML = renderNativeTable(result.parameters || []);
+  const audit = result.audit || {};
+  const flags = audit.flags || [];
+  const warnings = audit.warnings || [];
+  $('#native-result-audit').innerHTML = `<p><b>审计状态：</b>${nativeEscape(audit.status || result.status)}</p>`
+    + (flags.length ? `<h4>拒绝原因</h4><ul>${flags.map(item => `<li>${nativeEscape(item)}</li>`).join('')}</ul>` : '')
+    + (warnings.length ? `<h4>复核警告</h4><ul>${warnings.map(item => `<li>${nativeEscape(item)}</li>`).join('')}</ul>` : '')
+    + (!flags.length && !warnings.length ? '<p class="status ok">自动审计未发现越界项；这不替代人工结构审查。</p>' : '');
+  $('#native-result-files').innerHTML = `<table><thead><tr><th>文件</th><th>大小</th><th>SHA-256</th><th>下载</th></tr></thead><tbody>`
+    + (result.files || []).map((file, index) => `<tr><td>${nativeEscape(file.name)}</td><td>${file.size}</td><td><code>${nativeEscape(file.sha256)}</code></td><td><button type="button" data-native-result-file="${index}">下载</button></td></tr>`).join('')
+    + '</tbody></table>';
+  for (const button of document.querySelectorAll('[data-native-result-file]')) {
+    button.onclick = () => downloadNativeResult(result.files[Number(button.dataset.nativeResultFile)]);
+  }
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function loadNativeResults(jobId) {
+  const result = await nativeRequest(`/api/workflow/${jobId}/results`, { timeout: 30000 });
+  if (!result.native_execution || result.engine !== 'Demeter/IFEFFIT') {
+    throw new Error('桥接器未返回可验证的 Demeter 原生结果。');
+  }
+  renderNativeResults(result);
+  return result;
+}
+
 async function runDemeterFirstShell(result, form) {
   const s02 = Number($('#native-s02').value);
   const profile = $('#constraint-profile').value;
@@ -300,10 +360,13 @@ $('#fit-form').addEventListener('submit', async event => {
     $('#status').textContent = `原生任务 ${result.job_id} 正在由 CIF 生成第一配位层理论路径并执行 Demeter 拟合……`;
     const job = await runDemeterFirstShell(result, event.currentTarget);
     if (job.status === 'failed') throw new Error(job.error || 'Demeter 拟合失败');
-    $('#status').className = job.status === 'fit_complete_unreviewed' ? 'status ok' : 'status error';
-    $('#status').textContent = `原生拟合已完成，状态：${job.status}。结果位于 ${job.results_dir || '任务目录'}；必须检查审计、残差和相关性后才能接受。`;
-    $('#native-finalize').hidden = false;
-    if (nativeState.status.tools.artemis && nativeState.status.tools.artemis.installed) await launchNative('artemis');
+    const nativeResult = await loadNativeResults(result.job_id);
+    $('#status').className = nativeResult.rejected ? 'status error' : nativeResult.review_required ? 'status' : 'status ok';
+    $('#status').textContent = nativeResult.rejected
+      ? 'Demeter 已完成计算，但专业审计硬性拒绝该结果。请修正数据、路径、范围或约束后重新拟合。'
+      : `Demeter 原生拟合已完成，状态：${job.status}。实际参数、误差、审计和原始文件已在结果区显示。`;
+    $('#native-finalize').hidden = nativeResult.rejected;
+    if (!nativeResult.rejected && nativeState.status.tools.artemis && nativeState.status.tools.artemis.installed) await launchNative('artemis');
   } catch (error) {
     $('#status').className = 'status error';
     $('#status').textContent = error.message;
@@ -312,4 +375,4 @@ $('#fit-form').addEventListener('submit', async event => {
 
 setExecutionMode();
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { nativeOptions, bytesToBase64 };
+if (typeof module !== 'undefined' && module.exports) module.exports = { nativeOptions, bytesToBase64, renderNativeTable };

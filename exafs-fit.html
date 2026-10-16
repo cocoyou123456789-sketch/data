@@ -606,6 +606,18 @@
             <span>04</span>
             <div><strong>结果区尚未生成</strong><p>完成数据、范围和模型设置后运行。能量、k、复数 R、小波、参数与报告会集中显示在这里。</p></div>
           </div>
+          <div class="card" id="native-result-card" hidden>
+            <h2>Demeter 原生拟合结果</h2>
+            <p id="native-result-verdict" class="status"></p>
+            <div id="native-result-statistics" class="metrics"></div>
+            <h3>实际拟合参数与条件标准误</h3>
+            <div id="native-result-parameters" class="table-wrap"></div>
+            <h3>专业审计</h3>
+            <div id="native-result-audit"></div>
+            <h3>原始结果文件与 SHA-256</h3>
+            <div id="native-result-files" class="table-wrap"></div>
+            <p class="hint">这里显示的是本机 Demeter/IFEFFIT 实际计算输出，不是浏览器建议值。标记为“硬性拒绝”的结果不能生成正式交付包。</p>
+          </div>
           <div class="card">
             <h2>拟合摘要</h2>
             <div id="metrics" class="metrics"></div>
@@ -667,7 +679,7 @@
     <script src="./exafs-materials-project.js?v=2"></script>
     <script src="./exafs-online.js?v=2"></script>
     <script src="./exafs-suggestions.js?v=1"></script>
-    <script src="./exafs-native.js?v=12"></script>
+    <script src="./exafs-native.js?v=13"></script>
     <script src="./exafs-workbench.js?v=2"></script>
   </body>
 </html>
