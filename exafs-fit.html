@@ -286,6 +286,12 @@
               <option value="manual">手动设置（进行可辨识性检查）</option>
             </select>
           </label>
+          <label>参数约束规范
+            <select id="constraint-profile">
+              <option value="paper-metal" selected>两篇文献：金属第一壳层严格域</option>
+              <option value="professional-general">专业通用：按结构与同边标准审查</option>
+            </select>
+          </label>
           <label>桥接服务地址
             <input id="native-endpoint" value="http://127.0.0.1:8766" spellcheck="false" />
           </label>
@@ -325,6 +331,8 @@
             <li><strong>kmin：</strong>在 2.0–4.0 Å⁻¹ 以 0.2 Å⁻¹ 步长扫描首壳 FEFF 模型；在 R-factor 最小附近选择保留数据最多的最早稳定点，而不是只追求单个最低数值。</li>
             <li><strong>最终拟合：</strong>Hanning、dk=1 Å⁻¹，在复数 R 空间联合审查 k-weight 1、2、3；多 k 权重不增加独立点数。</li>
             <li><strong>振幅可辨识性：</strong>标准样固定晶体学 CN 拟合 S₀²；未知样使用同吸收边标准所得 S₀² 并拟合 CN，禁止从单条谱同时自由拟合 N 与 S₀²。</li>
+            <li><strong>文献金属第一壳层域：</strong>S₀²=0.75–1.20、N=4–13、ΔR=−0.20–0.20 Å、σ²=0.001–0.020 Å²、ΔE₀=−10–10 eV。该组数值来自 Journal of Catalysis 工作的训练/搜索域，只对匹配的金属第一壳层模型执行严格限制，不冒充所有材料的普适物理定律。</li>
+            <li><strong>专业通用审查：</strong>|ΔR|&gt;0.10 Å、|ΔE₀|&gt;10 eV、σ²&gt;0.015–0.020 Å²、相关系数 0.90–0.95 必须警告和做窗口敏感性检查；负 σ²、Nvar≥Nind、核心参数相关系数&gt;0.95、无解释的边界命中直接拒绝。</li>
             <li><strong>接受条件：</strong>Nvar&lt;Nind，检查参数边界、相关性、条件统计误差、噪声/异常点和 k/R 窗口敏感性；较低 R-factor 不能单独证明结构模型。</li>
             <li>HAMA 输出数据、模型和复数残差小波图，并使用同一色标；小波只作诊断。</li>
           </ul>
@@ -534,7 +542,7 @@
                 >下限<input
                   name="s02_min"
                   type="number"
-                  value="0.5"
+                  value="0.75"
                   step="0.01" /></label
               ><label
                 >上限<input
@@ -560,13 +568,13 @@
                 >下限<input
                   name="de0_min"
                   type="number"
-                  value="-15"
+                  value="-10"
                   step="0.1" /></label
               ><label
                 >上限<input
                   name="de0_max"
                   type="number"
-                  value="15"
+                  value="10"
                   step="0.1" /></label
               ><label class="check"
                 ><input name="vary_de0" type="checkbox" checked />拟合
@@ -641,10 +649,10 @@
         </section>
       </div>
     </main>
-    <script src="./exafs-fit.js?v=10"></script>
+    <script src="./exafs-fit.js?v=11"></script>
     <script src="./exafs-materials-project.js?v=2"></script>
     <script src="./exafs-online.js?v=2"></script>
-    <script src="./exafs-native.js?v=9"></script>
+    <script src="./exafs-native.js?v=10"></script>
     <script src="./exafs-workbench.js?v=2"></script>
   </body>
 </html>
