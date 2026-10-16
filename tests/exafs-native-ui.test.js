@@ -110,3 +110,12 @@ test('curve and CIF can generate traceable parameter suggestions before fitting'
   assert.match(source, /parameter_suggestion: globalThis\.xafsParameterSuggestion/);
   assert.match(fitSource, /lastResult\.parameter_suggestion/);
 });
+
+test('CIF preparation gives visible progress and a first-shell result card', () => {
+  assert.match(html, /id="cif-first-shell-preview"/);
+  assert.match(html, /exafs-fit\.js\?v=13/);
+  assert.match(fitSource, /renderCifFirstShellPreview/);
+  assert.match(fitSource, /正在解析 CIF/);
+  assert.match(fitSource, /第一壳层候选已生成/);
+  assert.match(fitSource, /不是 FEFF 拟合结果/);
+});
