@@ -40,7 +40,7 @@ APP_ROOT = (
 ROOT = APP_ROOT
 DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
-APP_VERSION = "1.3.0"
+APP_VERSION = "1.4.0"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
     "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
@@ -661,7 +661,7 @@ class BridgeState:
     def status(self) -> dict[str, Any]:
         with self.lock:
             tools = with_running_status(self.tools)
-            return {"service": "xafs-native-bridge", "version": 4, "app_version": APP_VERSION, "native": True,
+            return {"service": "xafs-native-bridge", "version": 5, "app_version": APP_VERSION, "native": True,
                     "tools": tools, "artemis_skill": self.skill,
                     "demeter_root": self.demeter_root,
                     "automation_ready": bool(self.demeter_root and self.skill.get("installed")),
@@ -686,6 +686,102 @@ def _update_job(job_dir: Path, **updates: Any) -> None:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest.update(updates)
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _feff_path_metadata(path: Path, index: int) -> dict[str, Any]:
+    """Extract the identifiers needed for a human-selectable FEFF path list."""
+    text = path.read_text(encoding="utf-8", errors="replace")
+
+    def number(patterns: list[str]) -> float | None:
+        for pattern in patterns:
+            match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+            if match:
+                try:
+                    return float(match.group(1))
+                except ValueError:
+                    pass
+        return None
+
+    nleg = number([r"\bnleg\s*[=:]\s*(\d+)"])
+    degeneracy = number([r"\bdegen(?:eracy)?\s*[=:]\s*([+\-\d.eE]+)"])
+    reff = number([r"\breff\s*[=:]\s*([+\-\d.eE]+)"])
+    # FEFF6/8 commonly writes an unlabeled '# nleg degeneracy reff ...' line.
+    if nleg is None or degeneracy is None or reff is None:
+        for match in re.finditer(
+            r"^\s*#?\s*(\d+)\s+([+\-\d.eE]+)\s+([+\-\d.eE]+)(?:\s|$)", text, re.MULTILINE
+        ):
+            candidate_nleg, candidate_degen, candidate_reff = (
+                int(match.group(1)), float(match.group(2)), float(match.group(3))
+            )
+            if 2 <= candidate_nleg <= 12 and candidate_degen > 0 and 0.5 <= candidate_reff <= 20:
+                nleg = nleg if nleg is not None else float(candidate_nleg)
+                degeneracy = degeneracy if degeneracy is not None else candidate_degen
+                reff = reff if reff is not None else candidate_reff
+                break
+    scatterer_match = re.search(
+        r"\b(?:scatterer|atom)\s*[=:]\s*([A-Z][a-z]?)\b", text, re.IGNORECASE
+    )
+    return {
+        "index": index,
+        "name": path.name,
+        "nleg": int(nleg) if nleg is not None else None,
+        "degeneracy": degeneracy,
+        "reff_A": reff,
+        "scatterer": scatterer_match.group(1).capitalize() if scatterer_match else None,
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "content_base64": base64.b64encode(path.read_bytes()).decode("ascii"),
+    }
+
+
+def prepare_feff_paths(state: BridgeState, payload: dict[str, Any]) -> dict[str, Any]:
+    """Run only the allow-listed FEFF executable and return its immutable path inventory."""
+    record = state.tools.get("feff", {})
+    if not record.get("installed") or not record.get("path"):
+        raise FileNotFoundError("FEFF is not installed or configured in the native bridge")
+    encoded = payload.get("content_base64")
+    if not isinstance(encoded, str):
+        raise ValueError("missing FEFF input content")
+    content = base64.b64decode(encoded, validate=True)
+    if not content or len(content) > 5 * 1024 * 1024:
+        raise ValueError("FEFF input must be between 1 byte and 5 MiB")
+    project = safe_name(str(payload.get("project_name") or "cif-paths"))
+    job_id = f"{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:8]}"
+    job_dir = (state.jobs_root / f"{project}-{job_id}").resolve()
+    if state.jobs_root.resolve() not in job_dir.parents:
+        raise ValueError("invalid FEFF job path")
+    run_dir = job_dir / "feff"
+    run_dir.mkdir(parents=True, exist_ok=False)
+    (run_dir / "feff.inp").write_bytes(content)
+    completed = subprocess.run(
+        [str(record["path"])], cwd=str(run_dir), capture_output=True, text=True,
+        timeout=300, **_hidden_subprocess_options(),
+    )
+    (job_dir / "feff-run.log").write_text(
+        completed.stdout + "\n--- STDERR ---\n" + completed.stderr, encoding="utf-8"
+    )
+    if completed.returncode:
+        raise RuntimeError(f"FEFF exited with code {completed.returncode}; see {job_dir / 'feff-run.log'}")
+    path_files = sorted(
+        (path for path in run_dir.glob("feff[0-9][0-9][0-9][0-9].dat") if path.is_file()),
+        key=lambda item: int(item.stem[4:]),
+    )
+    if not path_files:
+        raise RuntimeError("FEFF completed but did not produce any feffNNNN.dat files")
+    paths = [_feff_path_metadata(path, index) for index, path in enumerate(path_files)]
+    manifest = {
+        "schema": "xafs-feff-paths/v1", "job_id": job_id, "status": "paths_ready",
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "feff_executable": str(Path(record["path"]).resolve()),
+        "input_sha256": hashlib.sha256(content).hexdigest(),
+        "paths": [{key: value for key, value in item.items() if key != "content_base64"} for item in paths],
+        "provenance": {"native_feff_executed": True, "path_order_is_zero_based": True},
+    }
+    (job_dir / "workflow.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    return {"job_id": job_id, "status": "paths_ready", "paths": paths,
+            "paths_dat_available": (run_dir / "paths.dat").is_file(),
+            "files_dat_available": (run_dir / "files.dat").is_file()}
 
 
 def execute_demeter_job(state: BridgeState, job_dir: Path, payload: dict[str, Any]) -> None:
@@ -888,6 +984,9 @@ class Handler(BaseHTTPRequestHandler):
                 return
             if path == "/api/workflow/prepare":
                 self._send(201, create_job(payload, self.state.jobs_root))
+                return
+            if path == "/api/feff/paths":
+                self._send(201, prepare_feff_paths(self.state, payload))
                 return
             if path == "/api/workflow/run":
                 if not self.state.demeter_root:

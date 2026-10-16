@@ -24,7 +24,51 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(bridge._hidden_subprocess_options("posix"), {})
 
     def test_bridge_reports_installer_version(self):
-        self.assertEqual(bridge.APP_VERSION, "1.3.0")
+        self.assertEqual(bridge.APP_VERSION, "1.4.0")
+
+    def test_feff_path_metadata_reads_standard_header_values(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "feff0001.dat"
+            path.write_text(
+                "# nleg=2 degen=6 reff=1.967 scatterer=O\n# k phase magnitude\n",
+                encoding="utf-8",
+            )
+            result = bridge._feff_path_metadata(path, 0)
+        self.assertEqual(result["name"], "feff0001.dat")
+        self.assertEqual(result["nleg"], 2)
+        self.assertEqual(result["degeneracy"], 6.0)
+        self.assertEqual(result["reff_A"], 1.967)
+        self.assertEqual(result["scatterer"], "O")
+        self.assertEqual(len(result["sha256"]), 64)
+
+    def test_prepare_feff_paths_runs_allowlisted_executable_and_returns_inventory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            executable = root / "feff6.exe"
+            executable.write_bytes(b"test")
+            jobs = root / "jobs"
+            jobs.mkdir()
+            state = type("State", (), {
+                "tools": {"feff": {"installed": True, "path": str(executable)}},
+                "jobs_root": jobs,
+            })()
+
+            def fake_run(command, cwd, **kwargs):
+                Path(cwd, "feff0001.dat").write_text(
+                    "# nleg=2 degen=4 reff=2.01 scatterer=O\n", encoding="utf-8")
+                Path(cwd, "paths.dat").write_text("paths", encoding="utf-8")
+                return subprocess.CompletedProcess(command, 0, "ok", "")
+
+            payload = {
+                "project_name": "IrO2",
+                "content_base64": base64.b64encode(b"TITLE test\nEND\n").decode("ascii"),
+            }
+            with patch.object(bridge.subprocess, "run", side_effect=fake_run):
+                result = bridge.prepare_feff_paths(state, payload)
+        self.assertEqual(result["status"], "paths_ready")
+        self.assertTrue(result["paths_dat_available"])
+        self.assertEqual(result["paths"][0]["name"], "feff0001.dat")
+        self.assertEqual(result["paths"][0]["index"], 0)
 
     def test_standards_publish_literature_domains_and_professional_warnings(self):
         rules = bridge.standards()["parameter_domains"]

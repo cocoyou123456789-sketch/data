@@ -81,7 +81,7 @@ test('native detection runs only after the user clicks refresh', () => {
 test('native fitting generates first-shell FEFF input from CIF without a FEFF upload field', () => {
   assert.doesNotMatch(html, /id="native-feff-file"/);
   assert.match(html, /name="max_shell" type="hidden" value="1"/);
-  assert.match(html, /解析 CIF 并准备第一壳层路径/);
+  assert.match(html, /解析 CIF 并生成 FEFF 第一壳层路径/);
   assert.match(source, /xafsGeneratedFeffInput/);
   assert.match(source, /encodeTextFile\(generated\.name, generated\.content, 'feff_input'\)/);
 });
@@ -113,9 +113,20 @@ test('curve and CIF can generate traceable parameter suggestions before fitting'
 
 test('CIF preparation gives visible progress and a first-shell result card', () => {
   assert.match(html, /id="cif-first-shell-preview"/);
-  assert.match(html, /exafs-fit\.js\?v=13/);
+  assert.match(html, /exafs-fit\.js\?v=14/);
   assert.match(fitSource, /renderCifFirstShellPreview/);
   assert.match(fitSource, /正在解析 CIF/);
-  assert.match(fitSource, /第一壳层候选已生成/);
+  assert.match(fitSource, /FEFF 路径已生成/);
   assert.match(fitSource, /不是 FEFF 拟合结果/);
+});
+
+test('native FEFF generation returns a freely selectable first-shell path list', () => {
+  assert.match(html, /id="generated-feff-path-panel"/);
+  assert.match(html, /id="generated-feff-paths"/);
+  assert.match(html, /exafs-fit\.js\?v=14/);
+  assert.match(html, /exafs-native\.js\?v=12/);
+  assert.match(fitSource, /setGeneratedFeffPaths/);
+  assert.match(fitSource, /data-feff-choice/);
+  assert.match(source, /\/api\/feff\/paths/);
+  assert.match(source, /version \|\| 0\) < 5/);
 });
