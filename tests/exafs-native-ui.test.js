@@ -59,6 +59,17 @@ test('workbench exposes staged navigation and sample amplitude roles', () => {
   assert.match(html, /exafs-workbench\.js/);
 });
 
+test('EXAFS parameters use explicit literature and professional acceptance rules', () => {
+  assert.match(html, /id="constraint-profile"/);
+  assert.match(html, /S₀²=0\.75–1\.20、N=4–13/);
+  assert.match(html, /相关系数&gt;0\.95/);
+  assert.match(fitSource, /EXAFS_PARAMETER_RULES/);
+  assert.match(fitSource, /禁止从同一条谱同时自由拟合 N 与 S₀²/);
+  assert.match(fitSource, /命中拟合边界/);
+  assert.match(source, /paper_metal_domain/);
+  assert.match(source, /analysis_role/);
+});
+
 test('native detection runs only after the user clicks refresh', () => {
   assert.match(source, /refresh-native'\)\.onclick = \(\) => detectNative\(true\)/);
   assert.doesNotMatch(source, /setInterval\(/);

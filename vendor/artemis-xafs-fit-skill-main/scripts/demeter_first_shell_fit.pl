@@ -22,6 +22,7 @@ sub tsv_clean {
 }
 
 my ($datafile, $feffinp, $outdir, $s02, $path_csv, $group_csv);
+my ($analysis_role, $constraint_profile) = ('unknown', 'paper-metal');
 my ($rmin, $rmax, $kmin, $kmax) = (1.0, 2.5, 3.0, 12.0);
 my $kweights = '1,2,3';
 GetOptions(
@@ -36,12 +37,20 @@ GetOptions(
     'kmin=f'         => \$kmin,
     'kmax=f'         => \$kmax,
     'kweights=s'     => \$kweights,
+    'analysis-role=s' => \$analysis_role,
+    'constraint-profile=s' => \$constraint_profile,
 ) or die "invalid arguments\n";
 die "usage: demeter_first_shell_fit.pl --data DATA --feff FEFF.INP --out DIR "
   . "--s02 VALUE --paths 0,1,... --sigma-groups 0,0,... [--rmin 1 --rmax 2.5]\n"
   unless defined $datafile && defined $feffinp && defined $outdir
       && defined $s02 && defined $path_csv && defined $group_csv;
 die "S02 must be >0 and <=1.5\n" unless $s02 > 0 && $s02 <= 1.5;
+die "analysis-role must be standard or unknown\n"
+  unless $analysis_role eq 'standard' || $analysis_role eq 'unknown';
+die "constraint-profile must be paper-metal or professional-general\n"
+  unless $constraint_profile eq 'paper-metal' || $constraint_profile eq 'professional-general';
+die "paper-metal profile requires S02 in 0.75-1.20\n"
+  if $constraint_profile eq 'paper-metal' && ($s02 < 0.75 || $s02 > 1.20);
 die "invalid k or R range\n" unless $kmax > $kmin && $rmax > $rmin;
 my %use_kw = map { int($_) => 1 } split /,/, $kweights;
 die "kweights must be a comma-separated subset of 1,2,3\n"
@@ -108,6 +117,11 @@ my @gds = (
     Demeter::GDS->new(gds => 'guess', name => 'enot',   mathexp => '0'),
     Demeter::GDS->new(gds => 'guess', name => 'dr_all', mathexp => '0'),
 );
+if ($analysis_role eq 'standard') {
+    push @gds, Demeter::GDS->new(gds => 'guess', name => 's02_fit', mathexp => "$s02");
+} else {
+    push @gds, Demeter::GDS->new(gds => 'guess', name => 'amp', mathexp => '1');
+}
 my %seen;
 for my $group (@groups) {
     next if $seen{$group}++;
@@ -117,13 +131,14 @@ for my $group (@groups) {
 }
 
 my @paths;
+my $s02_expression = $analysis_role eq 'standard' ? 's02_fit' : "$s02*amp";
 for my $i (0 .. $#indices) {
     my $idx = $indices[$i];
     my $sp = $sp[$idx];
     my $name = sprintf('FEFF[%d] %s Reff=%.5f', $idx, $sp->scatterer, $sp->halflength);
     push @paths, Demeter::Path->new(
         name => $name, parent => $feff, sp => $sp, data => $data, n => $sp->n,
-        s02 => "$s02", e0 => 'enot', delr => 'dr_all', sigma2 => "ss_$groups[$i]",
+        s02 => $s02_expression, e0 => 'enot', delr => 'dr_all', sigma2 => "ss_$groups[$i]",
     );
 }
 
@@ -155,6 +170,8 @@ $data->save('fit', File::Spec->catfile($outdir, 'fit_rim.dat'),  'rim');
 open my $summary, '>', File::Spec->catfile($outdir, 'summary.tsv')
   or die "cannot write summary.tsv: $!\n";
 print {$summary} "s02_fixed\t$s02\n";
+print {$summary} "analysis_role\t$analysis_role\n";
+print {$summary} "constraint_profile\t$constraint_profile\n";
 print {$summary} "k_range\t$kmin-$kmax\n";
 print {$summary} "kweights\t" . join(',', sort { $a <=> $b } keys %use_kw) . "\n";
 print {$summary} "r_range\t$rmin-$rmax\n";
@@ -180,6 +197,8 @@ my $e0_value = $gds_by_name{enot}->bestfit;
 my $e0_error = $gds_by_name{enot}->error;
 my $dr_value = $gds_by_name{dr_all}->bestfit;
 my $dr_error = $gds_by_name{dr_all}->error;
+my $s02_value = $analysis_role eq 'standard' ? $gds_by_name{s02_fit}->bestfit : $s02;
+my $amplitude = $analysis_role eq 'unknown' ? $gds_by_name{amp}->bestfit : 1;
 
 my @parameter_columns = qw(
     sample path_index path scatterer degeneracy_theory amplitude_factor cn_fit
@@ -201,8 +220,9 @@ for my $i (0 .. $#indices) {
     my $path_name = sprintf('FEFF[%d] %s', $indices[$i], $sp->scatterer);
     my @values = (
         'XAFS data', $indices[$i], $path_name, $sp->scatterer,
-        $degeneracy, 1, $degeneracy, $reff, $dr_value, $dr_error, $rfit,
-        $ss_value, $ss_error, $e0_value, $e0_error, $s02, 'fixed',
+        $degeneracy, $amplitude, $degeneracy * $amplitude, $reff, $dr_value, $dr_error, $rfit,
+        $ss_value, $ss_error, $e0_value, $e0_error, $s02_value,
+        ($analysis_role eq 'standard' ? 'fitted_same_edge_standard' : 'fixed_same_edge_standard'),
         $fit->r_factor, 'unreviewed', "first-shell; delR=dr_all; sigma2=$ss_name",
     );
     print {$ptable} join("\t", map { tsv_clean($_) } @values), "\n";
@@ -224,7 +244,9 @@ print {$stats} "nvar\t" . $fit->n_varys . "\t\t\n";
 print {$stats} "r_factor\t" . $fit->r_factor . "\t\t\n";
 print {$stats} "chi_square\t" . $fit->chi_square . "\t\t\n";
 print {$stats} "reduced_chi_square\t" . $fit->chi_reduced . "\t\t\n";
-print {$stats} "s02\t$s02\t\tfixed from standard\n";
+print {$stats} "analysis_role\t$analysis_role\t\tstandard fixes N; unknown fixes S02\n";
+print {$stats} "constraint_profile\t$constraint_profile\t\t\n";
+print {$stats} "s02\t$s02_value\t\t" . ($analysis_role eq 'standard' ? 'fitted with crystallographic N fixed' : 'fixed from same-edge standard') . "\n";
 close $stats;
 
 open my $workflow, '>', File::Spec->catfile($outdir, 'FIT_WORKFLOW.txt')
@@ -233,7 +255,9 @@ print {$workflow} "XAFS FIT WORKFLOW — XAFS data\n";
 print {$workflow} "=================================\n\n";
 print {$workflow} "Input spectrum: $datafile\n";
 print {$workflow} "FEFF input: $feffinp\n";
-print {$workflow} "Fixed S0^2: $s02\n";
+print {$workflow} "Analysis role: $analysis_role\n";
+print {$workflow} "Constraint profile: $constraint_profile\n";
+print {$workflow} ($analysis_role eq 'standard' ? "Fitted S0^2 initial value: $s02; crystallographic N fixed\n" : "Fixed same-edge-standard S0^2: $s02; shared amplitude/CN refined\n");
 print {$workflow} "k range: $kmin-$kmax A^-1\n";
 print {$workflow} "simultaneous k weights: " . join(',', sort { $a <=> $b } keys %use_kw) . "\n";
 print {$workflow} "R fit range: $rmin-$rmax A\n";

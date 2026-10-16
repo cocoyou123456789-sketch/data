@@ -40,7 +40,7 @@ APP_ROOT = (
 ROOT = APP_ROOT
 DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
-APP_VERSION = "1.2.0"
+APP_VERSION = "1.3.0"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
     "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
@@ -450,6 +450,17 @@ def standards() -> dict[str, Any]:
             "known_standard": "fix crystallographic CN and refine S02",
             "unknown_sample": "fix same-edge S02 and refine justified CN/amplitude groups",
         },
+        "parameter_domains": {
+            "paper_metal_first_shell": {
+                "scope": "J Catal 447 (2025) 116145 training/search domain; not universal physics",
+                "s02": [0.75, 1.20], "cn": [4.0, 13.0], "delta_r_A": [-0.20, 0.20],
+                "sigma2_A2": [0.001, 0.020], "delta_e0_eV": [-10.0, 10.0],
+            },
+            "professional_warnings": {
+                "absolute_delta_r_A": 0.10, "absolute_delta_e0_eV": 10.0,
+                "sigma2_A2": [0.015, 0.020], "correlation": [0.90, 0.95],
+            },
+        },
         "audit": {
             "nind": "2*delta_k*delta_R/pi+2", "require": "Nvar < Nind", "prefer": "Nvar <= 2/3 Nind",
             "reject": ["negative sigma2", "unphysical CN", "unexplained boundary hit"],
@@ -686,6 +697,14 @@ def execute_demeter_job(state: BridgeState, job_dir: Path, payload: dict[str, An
         s02 = float(payload["s02"])
         if not 0 < s02 <= 1.5:
             raise ValueError("S02 must be > 0 and <= 1.5")
+        analysis_role = str(payload.get("analysis_role", "unknown"))
+        if analysis_role not in ("standard", "unknown"):
+            raise ValueError("native fitting requires analysis_role standard or unknown")
+        constraint_profile = str(payload.get("constraint_profile", "paper-metal"))
+        if constraint_profile not in ("paper-metal", "professional-general"):
+            raise ValueError("unsupported constraint profile")
+        if constraint_profile == "paper-metal" and not 0.75 <= s02 <= 1.20:
+            raise ValueError("paper-metal profile requires S02 between 0.75 and 1.20")
         path_indices = str(payload["paths"])
         groups = str(payload["sigma_groups"])
         if not re.fullmatch(r"\d+(,\d+)*", path_indices):
@@ -712,6 +731,7 @@ def execute_demeter_job(state: BridgeState, job_dir: Path, payload: dict[str, An
             "--sigma-groups", groups, "--kmin", str(ranges["kmin"]),
             "--kmax", str(ranges["kmax"]), "--rmin", str(ranges["rmin"]),
             "--rmax", str(ranges["rmax"]), "--kweights", "1,2,3",
+            "--analysis-role", analysis_role, "--constraint-profile", constraint_profile,
         ]
         _update_job(job_dir, status="running", native_command="Demeter first-shell driver")
         completed = subprocess.run(
@@ -724,10 +744,11 @@ def execute_demeter_job(state: BridgeState, job_dir: Path, payload: dict[str, An
         audit_script = Path(state.skill["path"]) / "scripts" / "audit_fit_log.py"
         audit = subprocess.run([
             sys.executable, str(audit_script), str(results / "fit.log"),
-            "--expected-s02", str(s02), "--output", str(job_dir / "audit.json"),
+            "--analysis-role", analysis_role, "--constraint-profile", constraint_profile,
+            "--output", str(job_dir / "audit.json"),
         ], capture_output=True, text=True, timeout=120, **_hidden_subprocess_options())
         audit_payload = json.loads((job_dir / "audit.json").read_text(encoding="utf-8"))
-        final_status = "review_required" if audit.returncode or audit_payload.get("flags") else "fit_complete_unreviewed"
+        final_status = "review_required" if audit.returncode or audit_payload.get("flags") or audit_payload.get("warnings") else "fit_complete_unreviewed"
         _update_job(job_dir, status=final_status, finished_at=time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                     results_dir=str(results), audit=audit_payload)
     except Exception as error:

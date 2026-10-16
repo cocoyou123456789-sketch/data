@@ -1,6 +1,8 @@
 import base64
 import importlib.util
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -22,7 +24,35 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(bridge._hidden_subprocess_options("posix"), {})
 
     def test_bridge_reports_installer_version(self):
-        self.assertEqual(bridge.APP_VERSION, "1.2.0")
+        self.assertEqual(bridge.APP_VERSION, "1.3.0")
+
+    def test_standards_publish_literature_domains_and_professional_warnings(self):
+        rules = bridge.standards()["parameter_domains"]
+        self.assertEqual(rules["paper_metal_first_shell"]["s02"], [0.75, 1.2])
+        self.assertEqual(rules["paper_metal_first_shell"]["cn"], [4.0, 13.0])
+        self.assertEqual(rules["paper_metal_first_shell"]["sigma2_A2"], [0.001, 0.02])
+        self.assertEqual(rules["professional_warnings"]["correlation"], [0.9, 0.95])
+
+    def test_fit_audit_rejects_parameter_outside_strict_paper_domain(self):
+        audit_script = (MODULE_PATH.parents[1] / "vendor" / "artemis-xafs-fit-skill-main" /
+                        "scripts" / "audit_fit_log.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "fit.log").write_text(
+                "Independent points: 10\nNumber of variables: 3\nR-factor: 0.01\n", encoding="utf-8")
+            (root / "fit_parameters.tsv").write_text(
+                "path\tamplitude_factor\tcn_fit\tdelr_A\tsigma2_A2\te0_eV\ts02\ts02_status\n"
+                "FEFF[1] O\t0.5\t3\t0.01\t0.006\t2\t0.9\tfixed_same_edge_standard\n",
+                encoding="utf-8")
+            output = root / "audit.json"
+            completed = subprocess.run(
+                [sys.executable, str(audit_script), str(root / "fit.log"),
+                 "--analysis-role", "unknown", "--constraint-profile", "paper-metal",
+                 "--output", str(output)], capture_output=True, text=True)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(completed.returncode, 2)
+        self.assertEqual(payload["status"], "fail")
+        self.assertTrue(any("outside paper-metal domain" in item for item in payload["flags"]))
 
     def test_install_catalog_maps_demeter_suite_and_hama(self):
         for tool in ("athena", "artemis", "hephaestus", "feff", "demeter"):

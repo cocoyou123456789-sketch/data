@@ -162,6 +162,8 @@ function encodeTextFile(name, content, role) {
 function nativeOptions(form) {
   return {
     method: 'paper-constrained-first-shell-demeter',
+    analysis_role: $('#analysis-role').value,
+    constraint_profile: $('#constraint-profile').value,
     input_kind: $('#input-kind').value,
     fit_space: form.fitspace.value,
     requested_k_range: [Number(form.kmin.value), Number(form.kmax.value)],
@@ -171,6 +173,8 @@ function nativeOptions(form) {
       extraction_e0_separate_from_fit_delta_e0: true,
       reject_negative_sigma2: true, max_absolute_correlation: 0.95,
       require_nvar_less_than_nind: true,
+      paper_metal_domain: { s02: [0.75, 1.2], cn: [4, 13], delta_r_A: [-0.2, 0.2], sigma2_A2: [0.001, 0.02], delta_e0_eV: [-10, 10] },
+      warning_thresholds: { absolute_delta_r_A: 0.10, absolute_delta_e0_eV: 10, sigma2_A2: 0.015, correlation: 0.90 },
     },
   };
 }
@@ -215,8 +219,15 @@ async function pollNativeJob(jobId) {
 }
 
 async function runDemeterFirstShell(result, form) {
+  const s02 = Number($('#native-s02').value);
+  const profile = $('#constraint-profile').value;
+  const role = $('#analysis-role').value;
+  if (!['standard', 'unknown'].includes(role)) throw new Error('原生自动拟合必须选择“晶体标准样”或“未知样”；手动模式只用于浏览器探索与可辨识性检查。');
+  if (!Number.isFinite(s02) || s02 <= 0 || s02 > 1.5) throw new Error('S₀² 必须大于 0 且不超过 1.5。');
+  if (profile === 'paper-metal' && (s02 < 0.75 || s02 > 1.2)) throw new Error('文献金属第一壳层严格域要求 S₀² 位于 0.75–1.20。');
   const payload = {
-    job_id: result.job_id, s02: Number($('#native-s02').value),
+    job_id: result.job_id, s02,
+    analysis_role: role, constraint_profile: profile,
     paths: $('#native-paths').value.trim(), sigma_groups: $('#native-sigma-groups').value.trim(),
     kmin: Number(form.kmin.value), kmax: Number(form.kmax.value),
     rmin: Number(form.fit_rmin.value), rmax: Number(form.fit_rmax.value),

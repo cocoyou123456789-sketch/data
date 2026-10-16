@@ -6,7 +6,7 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 function numbers(text){return text.split(/\r?\n/).map(line=>line.trim()).filter(line=>line&&!/^[#*!;%]/.test(line)).map(line=>line.split(/[\s,;]+/).map(Number)).filter(row=>row.length>1&&row.every(Number.isFinite))}
 function interpolate(xs,ys,x){if(x<=xs[0])return ys[0];if(x>=xs.at(-1))return ys.at(-1);let lo=0,hi=xs.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(xs[m]<=x)lo=m;else hi=m}const t=(x-xs[lo])/(xs[hi]-xs[lo]);return ys[lo]*(1-t)+ys[hi]*t}
 function parseMeta(text,key,fallback){const patterns={reff:/reff\s*=\s*([\d.+-Ee]+)/i,degen:/degen(?:eracy)?\s*=\s*([\d.+-Ee]+)/i,nleg:/nleg\s*[=:]\s*(\d+)/i};const m=text.match(patterns[key]);return m?Number(m[1]):fallback}
-async function parsePath(file,index){if(!/^feff\d+\.dat$/i.test(file.name))throw new Error(`${file.name} 不是 FEFF 路径文件。请上传 FEFF 实际运行产生的 feffNNNN.dat。`);const text=await file.text(),rows=numbers(text).filter(r=>r.length>=7);if(rows.length<8)throw new Error(`${file.name} 没有可识别的 FEFF 数值表`);const degen=parseMeta(text,'degen',1),reff=parseMeta(text,'reff',2+index*.5),nleg=parseMeta(text,'nleg',2);if(nleg!==2)throw new Error(`${file.name} 的 nleg=${nleg}，不是第一配位层单散射路径；本工作台拒绝第二层和多重散射路径。`);return{name:file.name,label:file.name.replace(/\.dat$/i,''),structure:`第一壳层路径 ${index+1}`,shell:1,nleg,k:rows.map(r=>r[0]),phc:rows.map(r=>r[1]),mag:rows.map(r=>r[2]),phase:rows.map(r=>r[3]),red:rows.map(r=>r[4]),lambda:rows.map(r=>r[5]),p:rows.map(r=>r[6]),reff,degen,cn:degen,cn_min:0,cn_max:24,dr:0,dr_min:-.2,dr_max:.2,sigma2:.006,sigma2_min:0,sigma2_max:.04,c3:0,c3_min:-.002,c3_max:.002,c4:0,c4_min:-.0002,c4_max:.0002,vary_cn:true,vary_dr:true,vary_sigma2:true,vary_c3:false,vary_c4:false}}
+async function parsePath(file,index){if(!/^feff\d+\.dat$/i.test(file.name))throw new Error(`${file.name} 不是 FEFF 路径文件。请上传 FEFF 实际运行产生的 feffNNNN.dat。`);const text=await file.text(),rows=numbers(text).filter(r=>r.length>=7);if(rows.length<8)throw new Error(`${file.name} 没有可识别的 FEFF 数值表`);const degen=parseMeta(text,'degen',1),reff=parseMeta(text,'reff',2+index*.5),nleg=parseMeta(text,'nleg',2);if(nleg!==2)throw new Error(`${file.name} 的 nleg=${nleg}，不是第一配位层单散射路径；本工作台拒绝第二层和多重散射路径。`);return{name:file.name,label:file.name.replace(/\.dat$/i,''),structure:`第一壳层路径 ${index+1}`,shell:1,nleg,k:rows.map(r=>r[0]),phc:rows.map(r=>r[1]),mag:rows.map(r=>r[2]),phase:rows.map(r=>r[3]),red:rows.map(r=>r[4]),lambda:rows.map(r=>r[5]),p:rows.map(r=>r[6]),reff,degen,cn:degen,cn_min:4,cn_max:13,dr:0,dr_min:-.2,dr_max:.2,sigma2:.006,sigma2_min:.001,sigma2_max:.02,c3:0,c3_min:-.002,c3_max:.002,c4:0,c4_min:-.0002,c4_max:.0002,vary_cn:true,vary_dr:true,vary_sigma2:true,vary_c3:false,vary_c4:false}}
 function renderPaths(){const root=$('#path-list');root.innerHTML=paths.map((p,i)=>`<section class="path" data-i="${i}"><strong>${escapeHtml(p.name)}</strong><small>第一配位层 · FEFF: Reff=${p.reff.toFixed(4)} Å · degeneracy=${p.degen.toFixed(2)} · nleg=${p.nleg}${p.nleg===2?' · 单散射':' · 多重散射（振幅≠CN）'}</small><div class="grid"><label>配位结构标签<input data-k="structure" value="${escapeHtml(p.structure)}"></label><label>${p.nleg===2?'CN':'相对振幅'} 初值<input data-k="cn" type="number" value="${p.cn}" step="0.1"></label><label class="check"><input data-k="vary_cn" type="checkbox" ${p.vary_cn?'checked':''}>拟合${p.nleg===2?' CN':'振幅'}</label><label>CN/振幅下限<input data-k="cn_min" type="number" value="${p.cn_min}" step="0.1"></label><label>CN/振幅上限<input data-k="cn_max" type="number" value="${p.cn_max}" step="0.1"></label><label>ΔR 初值 (Å)<input data-k="dr" type="number" value="${p.dr}" step="0.001"></label><label class="check"><input data-k="vary_dr" type="checkbox" ${p.vary_dr?'checked':''}>拟合 ΔR</label><label>ΔR 下限<input data-k="dr_min" type="number" value="${p.dr_min}" step="0.001"></label><label>ΔR 上限<input data-k="dr_max" type="number" value="${p.dr_max}" step="0.001"></label><label>σ² 初值 (Å²)<input data-k="sigma2" type="number" value="${p.sigma2}" step="0.0001"></label><label class="check"><input data-k="vary_sigma2" type="checkbox" ${p.vary_sigma2?'checked':''}>拟合 σ²</label><label>σ² 下限<input data-k="sigma2_min" type="number" value="${p.sigma2_min}" step="0.0001"></label><label>σ² 上限<input data-k="sigma2_max" type="number" value="${p.sigma2_max}" step="0.0001"></label><label>C3 初值 (Å³)<input data-k="c3" type="number" value="${p.c3}" step="0.00001"></label><label class="check"><input data-k="vary_c3" type="checkbox" ${p.vary_c3?'checked':''}>拟合 C3</label><label>C3 下限<input data-k="c3_min" type="number" value="${p.c3_min}" step="0.00001"></label><label>C3 上限<input data-k="c3_max" type="number" value="${p.c3_max}" step="0.00001"></label><label>C4 初值 (Å⁴)<input data-k="c4" type="number" value="${p.c4}" step="0.000001"></label><label class="check"><input data-k="vary_c4" type="checkbox" ${p.vary_c4?'checked':''}>拟合 C4</label><label>C4 下限<input data-k="c4_min" type="number" value="${p.c4_min}" step="0.000001"></label><label>C4 上限<input data-k="c4_max" type="number" value="${p.c4_max}" step="0.000001"></label></div></section>`).join('');root.querySelectorAll('[data-k]').forEach(el=>el.onchange=()=>{const p=paths[Number(el.closest('.path').dataset.i)],key=el.dataset.k;p[key]=el.type==='checkbox'?el.checked:(el.type==='number'||el.tagName==='SELECT'?Number(el.value):el.value)})}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 const elementZ=Object.fromEntries('H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og'.split(' ').map((e,i)=>[e,i+1]));
@@ -67,6 +67,9 @@ function equationValue(expression,variables){
 
 const renderPathsWithAdvanced=renderPaths;
 renderPaths=function(){
+  const role=$('#analysis-role')?.value;
+  if(role==='standard')paths.forEach(p=>p.vary_cn=false);
+  if(role==='unknown')paths.forEach(p=>p.vary_cn=true);
   renderPathsWithAdvanced();
   document.querySelectorAll('#path-list .path').forEach(card=>{
     const advanced=[...card.querySelectorAll('label')].filter(label=>/^C[34]/.test(label.textContent.trim()));
@@ -86,8 +89,57 @@ function artemisLikeRFactor(result){
   const d=result.k_space,numerator=d.weighted_data.reduce((s,v,i)=>s+(v-d.weighted_fit[i])**2,0),denominator=d.weighted_data.reduce((s,v)=>s+v*v,0);
   return{value:numerator/(denominator||1),numerator,denominator,points:d.k.length,space:'weighted k',definition:'sum((k^w chi_data-k^w chi_fit)^2) / sum((k^w chi_data)^2)',range:[settings.kmin,settings.kmax]};
 }
+
+const EXAFS_PARAMETER_RULES={
+  'paper-metal':{label:'两篇文献金属第一壳层严格域',s02:[.75,1.2],cn:[4,13],dr:[-.2,.2],sigma2:[.001,.02],de0:[-10,10]},
+  'professional-general':{label:'专业通用审查域',s02:[.01,1.5],cn:[.01,24],dr:[-.2,.2],sigma2:[0,.04],de0:[-15,15]},
+};
+function exafsProfile(){return EXAFS_PARAMETER_RULES[$('#constraint-profile')?.value]||EXAFS_PARAMETER_RULES['paper-metal']}
+function applyExafsProfile(){
+  const rule=exafsProfile(),fields={'[name="s02_min"]':rule.s02[0],'[name="s02_max"]':rule.s02[1],'[name="de0_min"]':rule.de0[0],'[name="de0_max"]':rule.de0[1]};
+  Object.entries(fields).forEach(([selector,value])=>{const el=$(selector);if(el)el.value=value});
+  const ids={'#core-n-min':rule.cn[0],'#core-n-max':rule.cn[1],'#core-sigma2-min':rule.sigma2[0],'#core-sigma2-max':rule.sigma2[1],'#core-dr-min':rule.dr[0],'#core-dr-max':rule.dr[1]};
+  Object.entries(ids).forEach(([id,value])=>{const el=$(id);if(el)el.value=value});
+  paths.forEach(p=>{p.cn_min=rule.cn[0];p.cn_max=rule.cn[1];p.dr_min=rule.dr[0];p.dr_max=rule.dr[1];p.sigma2_min=rule.sigma2[0];p.sigma2_max=rule.sigma2[1]});
+  if(paths.length)renderPaths();
+}
+function applyAnalysisRole(){
+  const role=$('#analysis-role')?.value,form=$('#fit-form');
+  const vary=form?.querySelector?.('[name="vary_s02"]');
+  if(role==='standard'){if(vary)vary.checked=true;paths.forEach(p=>p.vary_cn=false)}
+  if(role==='unknown'){if(vary)vary.checked=false;paths.forEach(p=>p.vary_cn=true)}
+  if(paths.length)renderPaths();
+}
+function exafsConfigurationAudit(form,active,nind=null,nvar=null){
+  const rule=exafsProfile(),role=$('#analysis-role')?.value||'unknown',errors=[],warnings=[];
+  const values=[['S₀²',Number(form.s02.value),rule.s02],['ΔE₀',Number(form.de0.value),rule.de0]];
+  const bounds=[['S₀²',Number(form.s02_min.value),Number(form.s02_max.value),rule.s02],['ΔE₀',Number(form.de0_min.value),Number(form.de0_max.value),rule.de0]];
+  active.forEach((p,i)=>values.push([`路径 ${i+1} N`,p.cn,rule.cn],[`路径 ${i+1} ΔR`,p.dr,rule.dr],[`路径 ${i+1} σ²`,p.sigma2,rule.sigma2]));
+  active.forEach((p,i)=>bounds.push([`路径 ${i+1} N`,p.cn_min,p.cn_max,rule.cn],[`路径 ${i+1} ΔR`,p.dr_min,p.dr_max,rule.dr],[`路径 ${i+1} σ²`,p.sigma2_min,p.sigma2_max,rule.sigma2]));
+  values.forEach(([label,value,[lo,hi]])=>{if(!Number.isFinite(value)||value<lo||value>hi)errors.push(`${label}=${value} 超出 ${rule.label} [${lo}, ${hi}]`)});
+  bounds.forEach(([label,low,high,[allowedLow,allowedHigh]])=>{if(!Number.isFinite(low)||!Number.isFinite(high)||low<allowedLow||high>allowedHigh||low>=high)errors.push(`${label} 拟合边界 [${low}, ${high}] 超出 ${rule.label} [${allowedLow}, ${allowedHigh}]`)});
+  if(role==='standard'&&(!form.vary_s02.checked||active.some(p=>p.vary_cn)))errors.push('标准样必须固定晶体学 N，只拟合 S₀²。');
+  if(role==='unknown'&&(form.vary_s02.checked||!active.some(p=>p.vary_cn)))errors.push('未知样必须固定同吸收边标准得到的 S₀²，并拟合 N。');
+  if(form.vary_s02.checked&&active.some(p=>p.vary_cn))errors.push('禁止从同一条谱同时自由拟合 N 与 S₀²。');
+  active.forEach((p,i)=>{if(p.sigma2<0)errors.push(`路径 ${i+1} σ² 为负值`);if(Math.abs(p.dr)>.1)warnings.push(`路径 ${i+1} |ΔR|>0.10 Å`);if(p.sigma2>.015)warnings.push(`路径 ${i+1} σ²>0.015 Å²，需检查无序或壳层分裂`)});
+  if(Math.abs(Number(form.de0.value))>10)warnings.push('|ΔE₀|>10 eV，需检查能量校准与结构模型');
+  if(nind!=null&&nvar!=null){
+    const atBoundary=(value,range)=>Math.min(Math.abs(value-range[0]),Math.abs(value-range[1]))<=Math.max(1e-8,(range[1]-range[0])*1e-4);
+    if(form.vary_s02.checked&&atBoundary(Number(form.s02.value),[Number(form.s02_min.value),Number(form.s02_max.value)]))errors.push('S₀² 命中拟合边界');
+    if(form.vary_de0.checked&&atBoundary(Number(form.de0.value),[Number(form.de0_min.value),Number(form.de0_max.value)]))errors.push('ΔE₀ 命中拟合边界');
+    active.forEach((p,i)=>{if(p.vary_cn&&atBoundary(p.cn,[p.cn_min,p.cn_max]))errors.push(`路径 ${i+1} N 命中拟合边界`);if(p.vary_dr&&atBoundary(p.dr,[p.dr_min,p.dr_max]))errors.push(`路径 ${i+1} ΔR 命中拟合边界`);if(p.vary_sigma2&&atBoundary(p.sigma2,[p.sigma2_min,p.sigma2_max]))errors.push(`路径 ${i+1} σ² 命中拟合边界`)});
+    if(nvar>=nind)errors.push(`Nvar=${nvar} 不小于 Nind=${nind.toFixed(2)}`);else if(nvar>(2*nind/3))warnings.push('Nvar 超过 2/3 Nind，需加强物理约束和敏感性分析')
+  }
+  return{profile:rule.label,role,errors,warnings,accepted:errors.length===0};
+}
+$('#constraint-profile').onchange=applyExafsProfile;
+$('#analysis-role').onchange=applyAnalysisRole;
+applyExafsProfile();applyAnalysisRole();
+globalThis.exafsConfigurationAudit=exafsConfigurationAudit;
 const shellFitHandler=$('#fit-form').onsubmit;
 $('#fit-form').onsubmit=async event=>{
+  const form=event.currentTarget,active=paths.filter(p=>p.shell<=Number(form.max_shell.value)),preAudit=exafsConfigurationAudit(form,active);
+  if(preAudit.errors.length){event.preventDefault();setStatus(`参数审查未通过：${preAudit.errors.join('；')}`,'error');return}
   await shellFitHandler(event);
   if(!lastResult)return;
   const rfactor=artemisLikeRFactor(lastResult);
@@ -95,8 +147,14 @@ $('#fit-form').onsubmit=async event=>{
   lastResult.statistics.r_factor=rfactor.value;
   lastResult.statistics.r_factor_percent=100*rfactor.value;
   lastResult.statistics.r_factor_details=rfactor;
+  const audit=exafsConfigurationAudit(form,active,lastResult.statistics.n_independent,lastResult.statistics.n_variables);
+  lastResult.parameter_audit=audit;
+  lastResult.warnings.push(...audit.warnings);
+  if(audit.errors.length)lastResult.warnings.push(...audit.errors.map(message=>`拒绝：${message}`));
   const metric=$('#metrics')?.querySelector('.metric b');
   if(metric)metric.textContent=`${rfactor.value.toPrecision(6)} (${(100*rfactor.value).toFixed(3)}%)`;
+  const quality=$('#quality');
+  if(quality){quality.textContent=audit.errors.length?`参数审查拒绝：${audit.errors.join('；')}`:audit.warnings.length?`拟合需专业复核：${audit.warnings.join('；')}`:'拟合通过当前参数硬性条件；仍须完成窗口、权重与模型敏感性检查。';quality.className=`status ${audit.errors.length||audit.warnings.length?'error':'ok'}`}
   const table=$('#parameters');
-  if(table)table.insertAdjacentHTML('afterbegin',`<p><strong>Artemis 风格 R-factor：</strong>${rfactor.value.toPrecision(6)}（${(100*rfactor.value).toFixed(3)}%），按 ${escapeHtml(rfactor.space)} 拟合范围计算。</p>`);
+  if(table)table.insertAdjacentHTML('afterbegin',`<p><strong>参数审查：</strong>${audit.accepted?'通过硬性条件':'未通过，结果不得作为接受拟合'}；规范：${escapeHtml(audit.profile)}。${audit.warnings.length?` 警告：${escapeHtml(audit.warnings.join('；'))}`:''}</p><p><strong>Artemis 风格 R-factor：</strong>${rfactor.value.toPrecision(6)}（${(100*rfactor.value).toFixed(3)}%），按 ${escapeHtml(rfactor.space)} 拟合范围计算。</p>`);
 };

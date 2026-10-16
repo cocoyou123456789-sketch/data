@@ -14,6 +14,10 @@ Hephaestus、FEFF 和 HAMA。服务只监听 `127.0.0.1:8766`，HTTP 请求不�
 从旧版本升级时可直接运行新版安装器：安装器会先静默停止旧桥接进程，完成覆盖后重新启动。
 1.0.3 起，软件状态探测及拟合辅助命令均以无控制台窗口方式运行，不再周期性闪出终端窗口。
 1.0.4 起，手动检测会从正在运行的 Demeter/Perl 进程反推出非默认安装目录，并使用其中自带的 FEFF6 从 CIF 生成第一壳层路径。
+1.3.0 起，原生第一壳层拟合会把样品角色真正传给 Demeter：晶体标准样固定 FEFF
+简并度并拟合 `S0²`，未知样固定同吸收边标准得到的 `S0²` 并拟合共享振幅/CN；两者
+不会在同一条谱上同时自由变化。拟合后审查区分硬性拒绝与专业警告，并记录所选的
+“文献金属第一壳层严格域”或“专业通用域”。
 
 状态接口会分别返回每个软件的“已安装”和“正在运行”状态及进程 PID。因此网页
 不仅能发现 Athena、Artemis、Hephaestus、FEFF 和 HAMA 的安装路径，也能在程序
@@ -60,5 +64,5 @@ Demeter/HAMA 实际运行并产生结果后，才能把输出标记为原生拟�
 
 GitHub Actions 工作流 `.github/workflows/build-xafs-native-bridge.yml` 会在 Windows
 环境构建单文件 EXE 和唯一的 Inno Setup 完整安装程序。推送形如
-`xafs-bridge-v1.2.0` 的 tag 后，安装包会自动发布到 GitHub Releases，网页按钮始终指向
+`xafs-bridge-v1.3.0` 的 tag 后，安装包会自动发布到 GitHub Releases，网页按钮始终指向
 最新 release；不再发布便携 ZIP。
