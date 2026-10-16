@@ -1,5 +1,5 @@
 #define AppName "XAFS Native Bridge"
-#define AppVersion "1.1.0"
+#define AppVersion "1.2.0"
 #define AppPublisher "SynchroChemAI"
 #define AppExeName "XAFSNativeBridge.exe"
 
@@ -34,7 +34,8 @@ Name: "{group}\配置说明"; Filename: "{app}\README.md"
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "XAFSNativeBridge"; ValueData: """{app}\{#AppExeName}"" --port 8766"; Flags: uninsdeletevalue
 
 [Run]
-Filename: "{app}\{#AppExeName}"; Parameters: "--port 8766"; Description: "启动 XAFS 本机桥接"; Flags: nowait postinstall skipifsilent runhidden
+Filename: "{app}\{#AppExeName}"; Parameters: "--install-all --silent-demeter"; Description: "安装 HAMA 与 Demeter 全部拟合环境"; StatusMsg: "正在从官方来源安装 HAMA、Demeter、Athena、Artemis 与 FEFF，请稍候..."; Flags: runhidden waituntilterminated
+Filename: "{app}\{#AppExeName}"; Parameters: "--port 8766"; Description: "启动 XAFS 本机桥接"; Flags: nowait runhidden
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /IM {#AppExeName} /F"; Flags: runhidden; RunOnceId: "StopBridge"

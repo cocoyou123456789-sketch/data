@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "xafs-native" / "native_bridge.py"
@@ -21,7 +22,7 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(bridge._hidden_subprocess_options("posix"), {})
 
     def test_bridge_reports_installer_version(self):
-        self.assertEqual(bridge.APP_VERSION, "1.1.0")
+        self.assertEqual(bridge.APP_VERSION, "1.2.0")
 
     def test_install_catalog_maps_demeter_suite_and_hama(self):
         for tool in ("athena", "artemis", "hephaestus", "feff", "demeter"):
@@ -30,6 +31,31 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(bridge.install_product_for_tool("all"), "all")
         self.assertTrue(bridge.INSTALL_CATALOG["demeter"]["url"].startswith("https://"))
         self.assertTrue(bridge.INSTALL_CATALOG["hama"]["url"].startswith("https://"))
+
+    def test_installer_contract_requests_complete_silent_environment(self):
+        installer = (MODULE_PATH.parent / "installer" / "XAFSNativeBridge.iss").read_text(encoding="utf-8")
+        self.assertIn("--install-all --silent-demeter", installer)
+        self.assertIn("waituntilterminated", installer)
+        self.assertNotIn("Portable", installer)
+
+    def test_silent_demeter_install_waits_and_uses_unattended_flags(self):
+        class CompletedProcess:
+            pid = 42
+
+            @staticmethod
+            def wait(timeout=None):
+                return 0
+
+        with tempfile.TemporaryDirectory() as directory:
+            installer = Path(directory) / "demeter.exe"
+            installer.write_bytes(b"installer")
+            with patch.object(bridge, "_download_official_product", return_value=installer), \
+                    patch.object(bridge.subprocess, "Popen", return_value=CompletedProcess()) as popen:
+                result = bridge._launch_demeter_installer(silent=True, wait=True)
+        command = popen.call_args.args[0]
+        self.assertIn("/VERYSILENT", command)
+        self.assertIn("/SUPPRESSMSGBOXES", command)
+        self.assertTrue(result["installed"])
 
     def test_hama_archive_extraction_rejects_path_traversal(self):
         with tempfile.TemporaryDirectory() as directory:

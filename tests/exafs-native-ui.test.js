@@ -22,14 +22,14 @@ test('native client uses fixed bridge routes and paper fit weights', () => {
   assert.match(source, /stopImmediatePropagation/);
 });
 
-test('page offers installable and portable bridge downloads', () => {
+test('page offers one complete environment installer without a portable download', () => {
   assert.match(html, /releases\/latest\/download\/XAFS-Native-Bridge-Setup\.exe/);
-  assert.match(html, /releases\/latest\/download\/XAFS-Native-Bridge-Portable\.zip/);
+  assert.match(html, /id="install-complete-environment"/);
+  assert.match(html, /一键安装本机桥接和全部拟合环境/);
+  assert.doesNotMatch(html, /XAFS-Native-Bridge-Portable\.zip/);
 });
 
-test('missing native tools can be installed from the connected bridge', () => {
-  assert.match(html, /id="install-native-tools"/);
-  assert.match(html, /一键安装缺失拟合工具/);
+test('missing native tools can still be repaired from the connected bridge', () => {
   assert.match(source, /\/api\/native-tools\/\$\{tool\}\/install/);
   assert.match(source, /\/api\/native-tools\/install-status/);
   assert.match(source, /data-install-tool/);
@@ -37,7 +37,7 @@ test('missing native tools can be installed from the connected bridge', () => {
 });
 
 test('connection failure directs users to the packaged bridge', () => {
-  assert.match(source, /下载安装本机桥接器/);
+  assert.match(source, /一键安装本机桥接和全部拟合环境/);
   assert.match(source, /源码开发环境才需要运行 start-native-bridge\.ps1/);
 });
 

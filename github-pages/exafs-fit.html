@@ -305,15 +305,13 @@
         <p id="native-status" class="status" aria-live="polite">尚未检测。点击“重新检测”后才会查询一次桥接器与本机软件；页面不会自动轮询。</p>
         <p id="install-status" class="status install-progress" aria-live="polite" hidden></p>
         <div class="toolbar">
-          <a class="button" href="https://github.com/cocoyou123456789-sketch/data/releases/latest/download/XAFS-Native-Bridge-Setup.exe">下载安装本机桥接器</a>
-          <a class="button secondary" href="https://github.com/cocoyou123456789-sketch/data/releases/latest/download/XAFS-Native-Bridge-Portable.zip">下载便携版</a>
-          <button id="install-native-tools" type="button" disabled>一键安装缺失拟合工具</button>
+          <a class="button" id="install-complete-environment" href="https://github.com/cocoyou123456789-sketch/data/releases/latest/download/XAFS-Native-Bridge-Setup.exe">一键安装本机桥接和全部拟合环境</a>
           <button id="refresh-native" type="button">重新检测</button>
           <button class="secondary native-launch" data-tool="athena" type="button" disabled>打开 Athena</button>
           <button class="secondary native-launch" data-tool="artemis" type="button" disabled>打开 Artemis</button>
           <button class="secondary native-launch" data-tool="hama" type="button" disabled>打开 HAMA</button>
         </div>
-        <p class="hint"><strong>无需预先确认已经安装。</strong>先安装并启动本机桥接器，再点击“重新检测”；缺失的软件卡片会显示“下载安装”。Demeter 官方安装向导需要在桌面完成，HAMA 由桥接器自动解压配置。安装任务结束后由你再次点击“重新检测”，页面不会持续扫描本机。</p>
+        <p class="hint"><strong>只需下载并运行一次完整安装包。</strong>安装包会自动配置本机桥接、HAMA、Demeter、Athena、Artemis、Hephaestus 与 FEFF，并在完成后启动桥接服务。浏览器安全机制要求你在下载完成后手动打开一次安装包；无需再下载便携版或逐项安装。完成后点击“重新检测”，页面不会持续扫描本机。</p>
         <div id="native-finalize" class="mode-panel" hidden>
           <label class="check"><input id="dpj-reopened" type="checkbox" />我已在匹配版本的 Artemis 中实际重新打开 fit.dpj</label>
           <label class="check"><input id="hama-reviewed" type="checkbox" />我已用 HAMA 检查数据、模型和复数残差，并采用共同色标</label>
@@ -646,7 +644,7 @@
     <script src="./exafs-fit.js?v=10"></script>
     <script src="./exafs-materials-project.js?v=2"></script>
     <script src="./exafs-online.js?v=2"></script>
-    <script src="./exafs-native.js?v=8"></script>
+    <script src="./exafs-native.js?v=9"></script>
     <script src="./exafs-workbench.js?v=2"></script>
   </body>
 </html>

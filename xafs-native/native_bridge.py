@@ -40,7 +40,7 @@ APP_ROOT = (
 ROOT = APP_ROOT
 DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.2.0"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
     "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
@@ -192,16 +192,51 @@ def _install_hama(config: dict[str, Any], progress: Any = None) -> dict[str, Any
     return {"product": "hama", "installed": True, "path": str(executable.resolve())}
 
 
-def _launch_demeter_installer(progress: Any = None) -> dict[str, Any]:
+def _launch_demeter_installer(
+    progress: Any = None, *, silent: bool = False, wait: bool = False
+) -> dict[str, Any]:
     if os.name != "nt":
         raise OSError("the one-click Demeter installer is available on Windows only")
     installer = _download_official_product("demeter", progress)
-    process = subprocess.Popen([str(installer)], cwd=str(installer.parent), close_fds=True)
-    return {
+    command = [str(installer)]
+    if silent:
+        command.extend(["/SP-", "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"])
+    process = subprocess.Popen(command, cwd=str(installer.parent), close_fds=True)
+    result = {
         "product": "demeter", "installer_launched": True, "pid": process.pid,
         "path": str(installer),
-        "message": "Complete the visible official Demeter setup wizard, then click refresh detection.",
+        "silent": silent,
+        "message": (
+            "Demeter was installed silently. Click refresh detection."
+            if silent else "Complete the visible official Demeter setup wizard, then click refresh detection."
+        ),
     }
+    if wait:
+        return_code = process.wait(timeout=3600)
+        if return_code not in (0, 1641, 3010):
+            raise RuntimeError(f"Demeter installer exited with code {return_code}")
+        result.update(installed=True, return_code=return_code)
+    return result
+
+
+def install_all_environment(config: dict[str, Any], silent_demeter: bool = True) -> list[dict[str, Any]]:
+    """Install the complete Windows environment from fixed official sources."""
+    actions: list[dict[str, Any]] = []
+
+    def log_progress(received: int, expected: int) -> None:
+        suffix = f"/{expected}" if expected else ""
+        _append_log(f"environment download progress: {received}{suffix} bytes")
+
+    tools = discover_tools(config)
+    if not tools.get("hama", {}).get("installed"):
+        actions.append(_install_hama(config, log_progress))
+    demeter_root = discover_demeter_root(config, tools)
+    demeter_ready = bool(demeter_root) and all(
+        tools.get(name, {}).get("installed") for name in ("athena", "artemis", "hephaestus", "feff")
+    )
+    if not demeter_ready:
+        actions.append(_launch_demeter_installer(log_progress, silent=silent_demeter, wait=True))
+    return actions
 
 
 def _common_roots() -> list[Path]:
@@ -888,10 +923,20 @@ def main() -> int:
     parser.add_argument("--config", type=Path)
     parser.add_argument("--jobs", type=Path, default=DEFAULT_JOBS)
     parser.add_argument("--probe", action="store_true")
+    parser.add_argument("--install-all", action="store_true")
+    parser.add_argument("--silent-demeter", action="store_true")
     args = parser.parse_args()
     if args.host not in ("127.0.0.1", "localhost", "::1"):
         parser.error("native GUI bridge must bind to loopback only")
     config = load_config(args.config)
+    if args.install_all:
+        try:
+            actions = install_all_environment(config, silent_demeter=args.silent_demeter)
+            _append_log(f"complete environment installation finished: {actions!r}")
+            return 0
+        except Exception as error:
+            _append_log(f"complete environment installation failed: {error}\n{traceback.format_exc()}")
+            return 2
     state = BridgeState(config, args.jobs.resolve())
     if args.probe:
         print(json.dumps(state.status(), ensure_ascii=False, indent=2))

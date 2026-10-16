@@ -6,10 +6,10 @@ Hephaestus、FEFF 和 HAMA。服务只监听 `127.0.0.1:8766`，HTTP 请求不�
 
 ## 其他电脑一键安装
 
-从网页点击“下载安装本机桥接器”，或直接下载 GitHub Release 中的
-`XAFS-Native-Bridge-Setup.exe`。安装程序按当前用户安装，不要求管理员权限，
-并注册登录后自动启动。安装包已经包含 Python 运行时和自动化 skill；目标电脑
-无需安装 Python，也不依赖构建安装包的电脑。
+从网页点击“一键安装本机桥接和全部拟合环境”，下载并运行 GitHub Release 中唯一的
+`XAFS-Native-Bridge-Setup.exe`。安装程序会安装桥接器和自动化 skill，从固定官方地址
+下载并配置 HAMA，再静默安装 Demeter 套件（Athena、Artemis、Hephaestus 与 FEFF），
+最后启动桥接服务并注册登录后自动启动。目标电脑无需预装 Python，也无需逐项判断软件状态。
 
 从旧版本升级时可直接运行新版安装器：安装器会先静默停止旧桥接进程，完成覆盖后重新启动。
 1.0.3 起，软件状态探测及拟合辅助命令均以无控制台窗口方式运行，不再周期性闪出终端窗口。
@@ -19,10 +19,10 @@ Hephaestus、FEFF 和 HAMA。服务只监听 `127.0.0.1:8766`，HTTP 请求不�
 不仅能发现 Athena、Artemis、Hephaestus、FEFF 和 HAMA 的安装路径，也能在程序
 打开后确认其进程正在运行。
 
-桥接器不会把 Demeter/HAMA 本体塞进自身安装包。1.1.0 起，网页检测到软件缺失时会显示
-“下载安装”：桥接器只从硬编码的官方 HTTPS 地址下载。Demeter 会打开官方可见安装向导，
-用户完成向导后点击“重新检测”；HAMA 会从 ESRF 官方 ZIP 安全解压到当前用户目录并自动写入配置。
-安装过程只轮询当前下载任务，不会持续扫描本机。也可以把下面的示例配置复制为：
+桥接器不会把 Demeter/HAMA 本体塞进自身安装包。1.2.0 起，完整安装包会在安装阶段只从
+硬编码的官方 HTTPS 地址获取环境：HAMA 从 ESRF 官方 ZIP 安全解压到当前用户目录，Demeter
+使用官方安装程序的静默模式。安装后仍可在网页中对单个缺失组件执行修复安装。也可以把下面的
+示例配置复制为：
 
 ```text
 %LOCALAPPDATA%\SynchroChemAI\XAFSNativeBridge\xafs-native.local.json
@@ -59,6 +59,6 @@ Demeter/HAMA 实际运行并产生结果后，才能把输出标记为原生拟�
 ## 发布安装包
 
 GitHub Actions 工作流 `.github/workflows/build-xafs-native-bridge.yml` 会在 Windows
-环境构建单文件 EXE、Inno Setup 安装程序和便携 ZIP。推送形如
-`xafs-bridge-v1.0.0` 的 tag 后，两个文件会自动发布到 GitHub Releases，网页的
-下载按钮会始终指向最新 release。
+环境构建单文件 EXE 和唯一的 Inno Setup 完整安装程序。推送形如
+`xafs-bridge-v1.2.0` 的 tag 后，安装包会自动发布到 GitHub Releases，网页按钮始终指向
+最新 release；不再发布便携 ZIP。
