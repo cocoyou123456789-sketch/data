@@ -124,9 +124,19 @@ test('native FEFF generation returns a freely selectable first-shell path list',
   assert.match(html, /id="generated-feff-path-panel"/);
   assert.match(html, /id="generated-feff-paths"/);
   assert.match(html, /exafs-fit\.js\?v=14/);
-  assert.match(html, /exafs-native\.js\?v=12/);
+  assert.match(html, /exafs-native\.js\?v=13/);
   assert.match(fitSource, /setGeneratedFeffPaths/);
   assert.match(fitSource, /data-feff-choice/);
   assert.match(source, /\/api\/feff\/paths/);
   assert.match(source, /version \|\| 0\) < 5/);
+});
+
+test('native results expose actual Demeter tables, audit verdict and hashed downloads', () => {
+  assert.match(html, /id="native-result-card"/);
+  assert.match(html, /Demeter 原生拟合结果/);
+  assert.match(source, /\/api\/workflow\/\$\{jobId\}\/results/);
+  assert.match(source, /result\.native_execution/);
+  assert.match(source, /result\.engine !== 'Demeter\/IFEFFIT'/);
+  assert.match(source, /data-native-result-file/);
+  assert.match(source, /硬性拒绝/);
 });

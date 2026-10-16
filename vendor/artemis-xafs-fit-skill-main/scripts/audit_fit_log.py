@@ -14,8 +14,16 @@ NUMBER = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][-+]?\d+)?"
 
 
 def scalar(text: str, label: str):
-    m = re.search(rf"(?mi)^\s*{re.escape(label)}\s*:\s*({NUMBER})", text)
+    m = re.search(rf"(?mi)^\s*{re.escape(label)}\s*(?::|=)\s*({NUMBER})", text)
     return float(m.group(1)) if m else None
+
+
+def first_scalar(text: str, *labels: str):
+    for label in labels:
+        value = scalar(text, label)
+        if value is not None:
+            return value
+    return None
 
 
 def main() -> int:
@@ -34,11 +42,12 @@ def main() -> int:
     text = args.log.read_text(encoding="utf-8", errors="replace")
     result = {
         "log": str(args.log.resolve()),
-        "nind": scalar(text, "Independent points"),
-        "nvar": scalar(text, "Number of variables"),
-        "r_factor": scalar(text, "R-factor"),
-        "chi_square": scalar(text, "Chi-square"),
-        "reduced_chi_square": scalar(text, "Reduced chi-square"),
+        "nind": first_scalar(text, "Independent points", "n_independent", "n_idp"),
+        "nvar": first_scalar(text, "Number of variables", "n_variables", "n_varys"),
+        "r_factor": first_scalar(text, "R-factor", "r-factor", "r_factor"),
+        "chi_square": first_scalar(text, "Chi-square", "chi_square"),
+        "reduced_chi_square": first_scalar(
+            text, "Reduced chi-square", "reduced chi-square", "reduced_chi_square", "chi_reduced"),
         "paths": [],
         "correlations": [],
         "flags": [],
@@ -60,8 +69,21 @@ def main() -> int:
         result["paths"].append(path)
     for a, b, value in re.findall(rf"(?m)^\s*(\S+)\s*&\s*(\S+)\s*-->\s*({NUMBER})", text):
         result["correlations"].append({"a": a, "b": b, "value": float(value)})
+    for a, b, value in re.findall(rf"(?m)^\s*([A-Za-z0-9_.-]+)\s*,\s*([A-Za-z0-9_.-]+)\s*=\s*({NUMBER})\s*$", text):
+        result["correlations"].append({"a": a, "b": b, "value": float(value)})
+
+    # Larch/Athena exports use named variables rather than Demeter's path table.
+    # Preserve them in the audit so an extreme Debye-Waller factor cannot pass silently.
+    fitted_variables = {}
+    for name, value, error in re.findall(
+            rf"(?m)^\s*([A-Za-z][A-Za-z0-9_.-]*)\s*=\s*({NUMBER})\s*\+/-\s*({NUMBER})", text):
+        fitted_variables[name] = {"value": float(value), "error": float(error)}
+    result["fitted_variables"] = fitted_variables
 
     nind, nvar = result["nind"], result["nvar"]
+    for field in ("nind", "nvar", "r_factor", "chi_square", "reduced_chi_square"):
+        if result[field] is None:
+            result["flags"].append(f"required fit statistic is missing: {field}")
     if nind is not None and nvar is not None and nvar >= nind:
         result["flags"].append(f"Nvar ({nvar:g}) is not smaller than Nind ({nind:g})")
     elif nind is not None and nvar is not None and nvar > 2 * nind / 3:
@@ -91,6 +113,16 @@ def main() -> int:
         elif abs(corr["value"]) >= 0.90:
             result["warnings"].append(
                 f"strong correlation {corr['a']}/{corr['b']}: {corr['value']:.4f}")
+    for name, item in fitted_variables.items():
+        if not name.lower().startswith(("sigma2", "ss_")):
+            continue
+        value = item["value"]
+        if value < 0:
+            result["flags"].append(f"negative sigma2 variable {name}: {value:.6g} A^2")
+        elif value > 0.04:
+            result["flags"].append(f"extreme sigma2 variable {name}: {value:.6g} A^2")
+        elif value > 0.015:
+            result["warnings"].append(f"large sigma2 variable {name}: {value:.6g} A^2")
 
     parameter_file = args.log.parent / "fit_parameters.tsv"
     result["parameter_table"] = str(parameter_file.resolve()) if parameter_file.is_file() else None

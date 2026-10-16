@@ -24,7 +24,35 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(bridge._hidden_subprocess_options("posix"), {})
 
     def test_bridge_reports_installer_version(self):
-        self.assertEqual(bridge.APP_VERSION, "1.4.0")
+        self.assertEqual(bridge.APP_VERSION, "1.5.0")
+
+    def test_native_results_return_real_tables_hashes_and_rejection_state(self):
+        with tempfile.TemporaryDirectory() as directory:
+            job = Path(directory) / "20261016-120000-deadbeef"
+            results = job / "results"
+            results.mkdir(parents=True)
+            (job / "workflow.json").write_text(json.dumps({
+                "status": "fit_rejected", "audit": {"status": "fail", "flags": ["negative sigma2"]},
+            }), encoding="utf-8")
+            (results / "fit_parameters.tsv").write_text(
+                "path\tcn_fit\tsigma2_A2\nFEFF[0] O\t6\t-0.001\n", encoding="utf-8")
+            (results / "fit_statistics.tsv").write_text(
+                "metric\tvalue\tunit\tnotes\nr_factor\t0.01\t\t\n", encoding="utf-8")
+            (results / "fit.log").write_text("native Demeter log\n", encoding="utf-8")
+            payload = bridge.collect_native_results(job)
+        self.assertTrue(payload["native_execution"])
+        self.assertTrue(payload["rejected"])
+        self.assertFalse(payload["accepted"])
+        self.assertEqual(payload["parameters"][0]["cn_fit"], "6")
+        self.assertEqual(len(payload["files"][0]["sha256"]), 64)
+
+    def test_native_results_are_not_available_for_unrun_job(self):
+        with tempfile.TemporaryDirectory() as directory:
+            job = Path(directory) / "20261016-120000-deadbeef"
+            job.mkdir()
+            (job / "workflow.json").write_text(json.dumps({"status": "prepared"}), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "unavailable"):
+                bridge.collect_native_results(job)
 
     def test_feff_path_metadata_reads_standard_header_values(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -97,6 +125,28 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 2)
         self.assertEqual(payload["status"], "fail")
         self.assertTrue(any("outside paper-metal domain" in item for item in payload["flags"]))
+
+    def test_fit_audit_rejects_larch_report_with_extreme_sigma2(self):
+        audit_script = (MODULE_PATH.parents[1] / "vendor" / "artemis-xafs-fit-skill-main" /
+                        "scripts" / "audit_fit_log.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            report = root / "archived.feffit"
+            report.write_text(
+                "n_variables = 6\nn_independent = 128.323954\nchi_square = 10537.8865\n"
+                "reduced_chi_square = 86.147\nr-factor = 0.287393\n"
+                "sigma2_sfe1 = 0.2623576 +/- 6.3031998\n"
+                "s02, sigma2_sfe2 = 0.855\n", encoding="utf-8")
+            output = root / "audit.json"
+            completed = subprocess.run(
+                [sys.executable, str(audit_script), str(report), "--output", str(output)],
+                capture_output=True, text=True)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(completed.returncode, 2)
+        self.assertEqual(payload["status"], "fail")
+        self.assertTrue(any("extreme sigma2 variable" in item for item in payload["flags"]))
+        self.assertEqual(payload["nind"], 128.323954)
+        self.assertEqual(payload["reduced_chi_square"], 86.147)
 
     def test_install_catalog_maps_demeter_suite_and_hama(self):
         for tool in ("athena", "artemis", "hephaestus", "feff", "demeter"):

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import csv
 import hashlib
 import json
 import os
@@ -40,7 +41,7 @@ APP_ROOT = (
 ROOT = APP_ROOT
 DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
-APP_VERSION = "1.4.0"
+APP_VERSION = "1.5.0"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
     "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
@@ -844,7 +845,12 @@ def execute_demeter_job(state: BridgeState, job_dir: Path, payload: dict[str, An
             "--output", str(job_dir / "audit.json"),
         ], capture_output=True, text=True, timeout=120, **_hidden_subprocess_options())
         audit_payload = json.loads((job_dir / "audit.json").read_text(encoding="utf-8"))
-        final_status = "review_required" if audit.returncode or audit_payload.get("flags") or audit_payload.get("warnings") else "fit_complete_unreviewed"
+        if audit_payload.get("flags"):
+            final_status = "fit_rejected"
+        elif audit_payload.get("warnings"):
+            final_status = "review_required"
+        else:
+            final_status = "fit_complete_unreviewed"
         _update_job(job_dir, status=final_status, finished_at=time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                     results_dir=str(results), audit=audit_payload)
     except Exception as error:
@@ -892,6 +898,67 @@ def finalize_job(state: BridgeState, job_dir: Path, payload: dict[str, Any]) -> 
     _update_job(job_dir, status="delivery_ready", delivery_dir=str(delivery), delivery=verified,
                 finalized_at=time.strftime("%Y-%m-%dT%H:%M:%S%z"))
     return {"status": "delivery_ready", "delivery_dir": str(delivery), "verification": verified}
+
+
+RESULT_FILES = (
+    "fit_parameters.tsv", "fit_statistics.tsv", "fit.log", "summary.tsv", "FIT_WORKFLOW.txt",
+    "chi_k.dat", "fit_k1.dat", "fit_k2.dat", "fit_k3.dat",
+    "fit_r1_mag.dat", "fit_r1_re.dat", "fit_r1_im.dat",
+    "fit_r2_mag.dat", "fit_r2_re.dat", "fit_r2_im.dat",
+    "fit_r3_mag.dat", "fit_r3_re.dat", "fit_r3_im.dat", "fit.dpj",
+)
+MAX_RESULT_FILE = 25 * 1024 * 1024
+MAX_RESULT_BUNDLE = 75 * 1024 * 1024
+
+
+def _read_tsv(path: Path) -> list[dict[str, str]]:
+    if not path.is_file():
+        return []
+    with path.open(encoding="utf-8", errors="replace", newline="") as stream:
+        return [dict(row) for row in csv.DictReader(stream, delimiter="\t")]
+
+
+def collect_native_results(job_dir: Path) -> dict[str, Any]:
+    """Return only files produced by the allow-listed native Demeter driver."""
+    manifest = json.loads((job_dir / "workflow.json").read_text(encoding="utf-8"))
+    status = str(manifest.get("status", ""))
+    allowed = {"fit_complete_unreviewed", "review_required", "fit_rejected", "delivery_ready"}
+    if status not in allowed:
+        raise ValueError(f"native results are unavailable while job status is {status}")
+    results = (job_dir / "results").resolve()
+    if not results.is_dir() or job_dir.resolve() not in results.parents:
+        raise FileNotFoundError("native Demeter results directory was not found")
+    required = (results / "fit_parameters.tsv", results / "fit_statistics.tsv", results / "fit.log")
+    missing = [path.name for path in required if not path.is_file()]
+    if missing:
+        raise FileNotFoundError("native result is incomplete: " + ", ".join(missing))
+    files: list[dict[str, Any]] = []
+    total = 0
+    for name in RESULT_FILES:
+        path = results / name
+        if not path.is_file():
+            continue
+        content = path.read_bytes()
+        if len(content) > MAX_RESULT_FILE:
+            continue
+        total += len(content)
+        if total > MAX_RESULT_BUNDLE:
+            raise ValueError("native result bundle exceeds the safe transfer limit")
+        files.append({
+            "name": name, "size": len(content),
+            "sha256": hashlib.sha256(content).hexdigest(),
+            "content_base64": base64.b64encode(content).decode("ascii"),
+        })
+    audit = manifest.get("audit") or {}
+    return {
+        "schema": "xafs-native-results/v1", "job_id": job_dir.name, "status": status,
+        "native_execution": True, "engine": "Demeter/IFEFFIT", "first_shell_only": True,
+        "accepted": status in {"fit_complete_unreviewed", "delivery_ready"},
+        "review_required": status == "review_required", "rejected": status == "fit_rejected",
+        "statistics": _read_tsv(results / "fit_statistics.tsv"),
+        "parameters": _read_tsv(results / "fit_parameters.tsv"),
+        "audit": audit, "files": files,
+    }
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -958,6 +1025,14 @@ class Handler(BaseHTTPRequestHandler):
                                  "results_dir": manifest.get("results_dir"), "delivery_dir": manifest.get("delivery_dir")})
             except FileNotFoundError as error:
                 self._send(404, {"error": str(error)})
+        elif re.fullmatch(r"/api/workflow/[0-9]{8}-[0-9]{6}-[0-9a-f]{8}/results", path):
+            job_id = path.split("/")[3]
+            try:
+                self._send(200, collect_native_results(find_job(self.state.jobs_root, job_id)))
+            except FileNotFoundError as error:
+                self._send(404, {"error": str(error)})
+            except ValueError as error:
+                self._send(409, {"error": str(error)})
         else:
             self._send(404, {"error": "not found"})
 
