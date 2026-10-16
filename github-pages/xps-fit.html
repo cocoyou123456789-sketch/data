@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>XPS 约束拟合工作台</title>
-  <link rel="stylesheet" href="./xps-fit.css?v=20260927-1">
+  <link rel="stylesheet" href="./xps-fit.css?v=20261016-2">
 </head>
 <body>
 <header class="hero">
-  <div><a href="./chemistry.html">← 返回分析中心</a><p>XPS CHEMICAL-STATE FITTING</p><h1>XPS 物理约束拟合工作台</h1><span>能量校准 · Shirley/Tougaard 背景 · 双峰联动 · 残差与面积分析</span></div>
+  <div><a href="./chemistry.html">← 返回分析中心</a><p>XPS CHEMICAL-STATE FITTING</p><h1>XPS 专业约束拟合工作台</h1><span>高斯/洛伦兹峰型 · 背景充分性审计 · 双峰与 FWHM 联动 · 残差和面积分析</span></div>
   <div id="fitBadge" class="badge">等待数据</div>
 </header>
 <main>
@@ -17,21 +17,24 @@
     <div class="grid four">
       <label>实验谱文件（txt/csv/xy/dat）<input id="file" type="file" accept=".txt,.csv,.xy,.dat"></label>
       <label>谱区模板<select id="region"><option value="ir">Ir 4f 双峰</option><option value="pb">Pb 4f 双峰</option><option value="o">O 1s 单峰组</option><option value="custom">自定义</option></select></label>
-      <label>背景<select id="background"><option value="shirley">Shirley</option><option value="tougaard">Tougaard U3</option><option value="linear">Linear</option><option value="none">None</option></select></label>
-      <label>峰型<select id="shape"><option value="pv30">GL(30)</option><option value="pv50">GL(50)</option><option value="pv70">GL(70)</option><option value="asym">非对称金属峰</option></select></label>
+      <label>背景<select id="background"><option value="shirley">Shirley（默认）</option><option value="tougaard">Tougaard 型（需核查参数）</option><option value="linear">Linear（仅窄区间）</option><option value="none">None（仅已扣背景数据）</option></select></label>
+      <label>峰型<select id="shape"><option value="gaussian">Gaussian</option><option value="pv30">Pseudo-Voigt GL(30)</option><option value="pv50" selected>Pseudo-Voigt GL(50)</option><option value="pv70">Pseudo-Voigt GL(70)</option><option value="lorentzian">Lorentzian</option><option value="asym">非对称金属峰（仅有依据时）</option></select></label>
       <label>校准参考实测位置 (eV)<input id="measuredRef" type="number" step="0.01" placeholder="如 C 1s 实测值"></label>
       <label>校准参考目标位置 (eV)<input id="targetRef" type="number" step="0.01" value="284.80"></label>
       <label>拟合最大迭代次数<input id="iterations" type="number" min="50" max="1500" step="50" value="350"></label>
-      <label>统一 FWHM 容许浮动 (eV)<input id="widthTolerance" type="number" min="0.05" max="1" step="0.05" value="0.25"></label>
+      <label>同元素 FWHM 规则<select id="fwhmPolicy"><option value="tolerance" selected>同批同元素：容差联动</option><option value="linked">同谱各化学态：完全联动</option><option value="independent">独立（必须说明依据）</option></select></label>
+      <label>FWHM 最大差值 (eV)<input id="widthTolerance" type="number" min="0.05" max="1" step="0.05" value="0.25"></label>
+      <label>批次/元素标签<input id="batchLabel" placeholder="例如 batch-01 · Ir 4f"></label>
+      <label class="checkline"><input id="preSubtracted" type="checkbox">输入谱已由可靠流程扣除背景</label>
     </div>
     <div class="actions"><button id="loadDemo" class="secondary">载入 Ir 4f 演示谱</button><button id="applyTemplate">应用谱区模板</button><button id="fit" class="primary">运行约束拟合</button></div>
-    <p id="message" class="message">第一列为结合能、第二列为强度；升序或降序数据均可。</p>
+    <p id="message" class="message">第一列为结合能、第二列为原始强度；升序或降序均可。程序保留原始基线，不再用全谱最小值预先清零。</p>
   </section>
 
   <section class="panel">
     <div class="title-row"><div><h2>2. 峰组分和约束</h2><p>勾选“拟合”才允许参数在上下限内变化。双峰的从峰由主峰、分裂值和面积比生成，不作为孤立峰自由漂移。</p></div><button id="addPeak" class="secondary">+ 添加单峰</button></div>
     <div class="table-wrap"><table><thead><tr><th>组分/归属</th><th>模式</th><th>峰位 (eV)</th><th>峰位范围</th><th>FWHM (eV)</th><th>宽度范围</th><th>面积/强度</th><th>拟合参数</th><th>双峰约束</th><th></th></tr></thead><tbody id="peakRows"></tbody></table></div>
-    <div class="guard"><b>物理约束检查</b><ul id="warnings"><li>请载入数据并应用模板。</li></ul></div>
+    <div class="guard"><b>物理约束与背景检查</b><ul id="warnings"><li>请载入数据并应用模板。</li></ul></div>
   </section>
 
   <section class="panel chart-panel">
@@ -41,13 +44,13 @@
 
   <section class="panel results">
     <h2>4. 拟合质量与化学态结果</h2>
-    <div id="metrics" class="metric-grid"><article><b>R²</b><span>—</span></article><article><b>Reduced χ²</b><span>—</span></article><article><b>RMSE</b><span>—</span></article><article><b>残差偏置</b><span>—</span></article></div>
+    <div id="metrics" class="metric-grid"><article><b>R²</b><span>—</span></article><article><b>SSE / DOF</b><span>—</span></article><article><b>RMSE</b><span>—</span></article><article><b>残差偏置</b><span>—</span></article><article><b>背景过扣点</b><span>—</span></article><article><b>端点基线占比</b><span>—</span></article></div>
     <div class="table-wrap"><table><thead><tr><th>组分</th><th>峰位</th><th>FWHM</th><th>面积</th><th>面积比例</th><th>双峰从峰</th><th>约束状态</th></tr></thead><tbody id="resultRows"><tr><td colspan="7">尚未运行拟合</td></tr></tbody></table></div>
     <div class="actions"><button id="downloadCsv" class="secondary">导出参数 CSV</button><button id="downloadCurve" class="secondary">导出原始/背景/拟合/残差 CSV</button><button id="downloadJson" class="secondary">导出完整 JSON</button></div>
   </section>
 
-  <aside class="science-note"><h3>结果解释边界</h3><p>较高 R² 不等于化学归属正确。新增峰应同时有原始谱肩峰或系统性残差，以及合理的化学证据。O 1s 的 lattice O、OH、H₂O、碳酸盐/有机氧和缺陷氧高度重叠，应结合 Ir/Pb 核能级、工况趋势、DFT core-level shift、XAS 或 Raman 判断。</p></aside>
+  <aside class="science-note"><h3>专业拟合规则</h3><ul><li>背景必须穿过峰区两侧的真实基线区；背景高于实验谱造成负面积属于过扣，端点仍有明显正信号通常提示欠扣或拟合区间过窄。</li><li>同一自旋轨道双峰必须共享峰型和 FWHM，并约束有依据的能级分裂与面积比。同批、同元素、相同采集条件应使用同一套峰型和背景策略。</li><li>同一元素不同化学态的 FWHM 宜保持相近并在整批数据中一致约束，但不应无条件完全相等；只有充电、无序、寿命展宽或仪器条件等证据充分时才放宽，并记录理由。</li><li>较高 R² 不等于化学归属正确。新增峰必须同时得到原始肩峰/系统性残差和独立化学证据支持；O 1s 高度重叠，不能仅凭单条谱线命名缺陷氧。</li><li>本页的 pseudo-Voigt 为高斯与洛伦兹线性混合。浏览器 Tougaard 为探索实现，正式发表前应在经过验证的软件中复核背景参数和不确定度。</li></ul></aside>
 </main>
-<script src="./xps-fit.js?v=20260927-1"></script>
+<script src="./xps-fit.js?v=20261016-2"></script>
 </body>
 </html>

@@ -315,13 +315,17 @@
           <button id="finalize-native" type="button">验证并生成九文件交付包</button>
         </div>
         <details>
-          <summary><strong>论文拟合标准</strong></summary>
+          <summary><strong>两篇文献约束的第一配位层标准</strong></summary>
           <ul>
-            <li>kmax 选取：以高 R 无信号区噪声阈值选取最大可靠 k；Hanning 窗，dk=1。</li>
-            <li>kmin 选取：在 2–4 Å⁻¹ 扫描首壳 FEFF 模型，选取接近最小 R-factor 的最早稳定点。</li>
-            <li>最终在复数 R 空间同时使用 k-weight 1、2、3；标准样固定 CN 拟合 S₀²，未知样固定 S₀² 拟合 CN。</li>
+            <li><strong>仅第一配位层：</strong>只接受属于完整首壳的 FEFF 单散射路径；R 窗口以首壳主峰两侧谷值/约 30% 峰高界定，必要时以峰中心 ±0.6 Å 为起点，必须排除第二峰。</li>
+            <li><strong>kmax：</strong>从 3 Å⁻¹ 起，以短 k 区定位高 R 无信号窗口，使用 k³、Hanning、dk=1 Å⁻¹ 扫描；取噪声越过阈值之前的最大可靠 k。论文的 0.16 是八组数据的经验值，界面记录但不把它当成所有仪器的通用常数。</li>
+            <li><strong>kmin：</strong>在 2.0–4.0 Å⁻¹ 以 0.2 Å⁻¹ 步长扫描首壳 FEFF 模型；在 R-factor 最小附近选择保留数据最多的最早稳定点，而不是只追求单个最低数值。</li>
+            <li><strong>最终拟合：</strong>Hanning、dk=1 Å⁻¹，在复数 R 空间联合审查 k-weight 1、2、3；多 k 权重不增加独立点数。</li>
+            <li><strong>振幅可辨识性：</strong>标准样固定晶体学 CN 拟合 S₀²；未知样使用同吸收边标准所得 S₀² 并拟合 CN，禁止从单条谱同时自由拟合 N 与 S₀²。</li>
+            <li><strong>接受条件：</strong>Nvar&lt;Nind，检查参数边界、相关性、条件统计误差、噪声/异常点和 k/R 窗口敏感性；较低 R-factor 不能单独证明结构模型。</li>
             <li>HAMA 输出数据、模型和复数残差小波图，并使用同一色标；小波只作诊断。</li>
           </ul>
+          <p class="hint">依据：Chen, Huang &amp; Kelly, <em>Photon Science</em> (2026), DOI 10.1021/photonsci.5c00040；Marcella et al., <em>Journal of Catalysis</em> 447 (2025) 116145, DOI 10.1016/j.jcat.2025.116145。神经网络仅在吸收元素、吸收边和训练域匹配的预训练模型存在时作为快速趋势工具，不替代最终可审计拟合。</p>
         </details>
       </section>
       <section class="notice">
@@ -407,7 +411,7 @@
               >拟合 Rmax (Å)<input
                 name="fit_rmax"
                 type="number"
-                value="3.5"
+                value="2.8"
                 min="0"
                 step="0.1" /></label
             ><label
@@ -416,7 +420,7 @@
                 <option value="k">原始 K 空间（不隔离壳层）</option>
               </select></label
             ><input name="max_shell" type="hidden" value="1" /><label
-              >k-weight<input
+              >显示用 k-weight（正式拟合联合 1/2/3）<input
                 name="kweight"
                 type="number"
                 value="2"
@@ -424,8 +428,7 @@
                 max="3" /></label
             ><label
               >FT 窗口<select name="window">
-                <option value="hanning" selected>Hanning</option>
-                <option value="kaiser">Kaiser–Bessel</option>
+                <option value="hanning" selected>Hanning（文献固定）</option>
               </select></label
             ><label
               >R 图上限 (Å)<input
