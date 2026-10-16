@@ -324,19 +324,16 @@
           <button id="finalize-native" type="button">验证并生成九文件交付包</button>
         </div>
         <details>
-          <summary><strong>两篇文献约束的第一配位层标准</strong></summary>
+          <summary><strong>第一配位层拟合标准（仅首壳）</strong></summary>
           <ul>
-            <li><strong>仅第一配位层：</strong>只接受属于完整首壳的 FEFF 单散射路径；R 窗口以首壳主峰两侧谷值/约 30% 峰高界定，必要时以峰中心 ±0.6 Å 为起点，必须排除第二峰。</li>
-            <li><strong>kmax：</strong>从 3 Å⁻¹ 起，以短 k 区定位高 R 无信号窗口，使用 k³、Hanning、dk=1 Å⁻¹ 扫描；取噪声越过阈值之前的最大可靠 k。论文的 0.16 是八组数据的经验值，界面记录但不把它当成所有仪器的通用常数。</li>
-            <li><strong>kmin：</strong>在 2.0–4.0 Å⁻¹ 以 0.2 Å⁻¹ 步长扫描首壳 FEFF 模型；在 R-factor 最小附近选择保留数据最多的最早稳定点，而不是只追求单个最低数值。</li>
-            <li><strong>最终拟合：</strong>Hanning、dk=1 Å⁻¹，在复数 R 空间联合审查 k-weight 1、2、3；多 k 权重不增加独立点数。</li>
+            <li><strong>路径范围：</strong>只接受由真实 FEFF 运行生成、并经 <code>paths.dat</code>/路径头确认的完整第一配位层单散射路径（nleg=2）；严禁第二配位层和多重散射进入模型。</li>
+            <li><strong>首壳 R 窗口：</strong>以第一峰两侧谷值或约 30% 峰高界定，必要时以峰中心 ±0.6 Å 为初始范围；窗口必须隔离第一峰并排除第二峰。</li>
+            <li><strong>拟合方式：</strong>使用 Hanning 窗、dk=1 Å⁻¹，在复数 R 空间联合审查 k-weight 1、2、3；k 范围只能位于实验数据和所选 FEFF 路径共同可靠的覆盖区间内。</li>
             <li><strong>振幅可辨识性：</strong>标准样固定晶体学 CN 拟合 S₀²；未知样使用同吸收边标准所得 S₀² 并拟合 CN，禁止从单条谱同时自由拟合 N 与 S₀²。</li>
             <li><strong>文献金属第一壳层域：</strong>S₀²=0.75–1.20、N=4–13、ΔR=−0.20–0.20 Å、σ²=0.001–0.020 Å²、ΔE₀=−10–10 eV。该组数值来自 Journal of Catalysis 工作的训练/搜索域，只对匹配的金属第一壳层模型执行严格限制，不冒充所有材料的普适物理定律。</li>
-            <li><strong>专业通用审查：</strong>|ΔR|&gt;0.10 Å、|ΔE₀|&gt;10 eV、σ²&gt;0.015–0.020 Å²、相关系数 0.90–0.95 必须警告和做窗口敏感性检查；负 σ²、Nvar≥Nind、核心参数相关系数&gt;0.95、无解释的边界命中直接拒绝。</li>
-            <li><strong>接受条件：</strong>Nvar&lt;Nind，检查参数边界、相关性、条件统计误差、噪声/异常点和 k/R 窗口敏感性；较低 R-factor 不能单独证明结构模型。</li>
-            <li>HAMA 输出数据、模型和复数残差小波图，并使用同一色标；小波只作诊断。</li>
+            <li><strong>首壳验收：</strong>Nvar&lt;Nind；负 σ²、核心参数相关系数&gt;0.95 或无解释的边界命中直接拒绝；|ΔR|&gt;0.10 Å、|ΔE₀|&gt;10 eV、σ²&gt;0.015–0.020 Å²、相关系数 0.90–0.95 必须警告并做 k/R 窗口敏感性检查。较低 R-factor 不能单独证明第一壳层模型成立。</li>
           </ul>
-          <p class="hint">依据：Chen, Huang &amp; Kelly, <em>Photon Science</em> (2026), DOI 10.1021/photonsci.5c00040；Marcella et al., <em>Journal of Catalysis</em> 447 (2025) 116145, DOI 10.1016/j.jcat.2025.116145。神经网络仅在吸收元素、吸收边和训练域匹配的预训练模型存在时作为快速趋势工具，不替代最终可审计拟合。</p>
+          <p class="hint">本区仅说明第一配位层模型，不包含第二配位层、多重散射、小波或其他扩展分析。依据：Chen, Huang &amp; Kelly, <em>Photon Science</em> (2026), DOI 10.1021/photonsci.5c00040；Marcella et al., <em>Journal of Catalysis</em> 447 (2025) 116145, DOI 10.1016/j.jcat.2025.116145。</p>
         </details>
       </section>
       <section class="notice">
