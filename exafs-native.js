@@ -1,6 +1,6 @@
 'use strict';
 
-const nativeState = { status: null, jobId: null, connected: false };
+const nativeState = { status: null, jobId: null, connected: false, installing: false };
 window.xafsNativeState = nativeState;
 
 function nativeEndpoint() {
@@ -38,7 +38,9 @@ function renderNativeStatus(status) {
     const pids = item.process_ids?.length ? `PID ${item.process_ids.join(', ')}` : '';
     const path = item.path || (item.running ? `已发现进程；未定位启动路径，可配置 ${item.env_override}` : `可配置 ${item.env_override}`);
     const capability = item.installed ? '可从网页启动' : item.running ? '仅可监测' : '不可用';
-    return `<div class="tool-state ${item.installed ? 'installed' : ''} ${item.running ? 'running' : ''}"><b>${name.toUpperCase()} · ${label}</b><small>${path}</small><div class="state-row"><em>${capability}</em>${pids ? `<em>${pids}</em>` : ''}</div></div>`;
+    const product = name === 'hama' ? 'HAMA' : 'Demeter 套件';
+    const install = item.installed ? '' : `<button class="install-tool secondary" data-install-tool="${name}" type="button">下载安装 ${product}</button>`;
+    return `<div class="tool-state ${item.installed ? 'installed' : ''} ${item.running ? 'running' : ''}"><b>${name.toUpperCase()} · ${label}</b><small>${path}</small><div class="state-row"><em>${capability}</em>${pids ? `<em>${pids}</em>` : ''}</div>${install}</div>`;
   }).join('');
   const installed = visibleTools.filter(name => tools[name]?.installed).length;
   const runningCount = visibleTools.filter(name => tools[name]?.running).length;
@@ -59,7 +61,68 @@ function renderNativeStatus(status) {
     button.disabled = !item.installed || item.running;
     button.title = !item.installed ? '未检测到该程序' : item.running ? '程序已经运行' : '';
   }
+  for (const button of document.querySelectorAll('.install-tool')) {
+    button.disabled = nativeState.installing;
+    button.onclick = () => installNativeTools(button.dataset.installTool);
+  }
+  const installAll = $('#install-native-tools');
+  const allReady = Boolean(status.automation_ready && tools.feff?.installed && tools.hama?.installed);
+  installAll.disabled = nativeState.installing || allReady;
+  installAll.textContent = allReady ? '拟合工具已安装' : '一键安装缺失拟合工具';
+  if (status.installation && status.installation.status !== 'idle') showInstallation(status.installation);
   window.dispatchEvent(new CustomEvent('xafs-native-status', { detail: status }));
+}
+
+function showInstallation(task) {
+  const root = $('#install-status');
+  root.hidden = false;
+  const product = (task.current_product || task.product || 'tool').toUpperCase();
+  const progress = Number.isFinite(task.progress) ? ` ${task.progress}%` : '';
+  const messages = {
+    starting: `正在准备 ${product} 官方下载……`,
+    downloading: `正在下载 ${product}……${progress}`,
+    installing: task.message || `正在安装 ${product}……`,
+    waiting_user: 'Demeter 官方安装向导已打开。请在桌面完成安装，然后点击“重新检测”。',
+    complete: '工具安装完成。请点击“重新检测”验证本机软件。',
+    failed: `安装失败：${task.error || task.message || '未知错误'}`,
+  };
+  root.textContent = messages[task.status] || task.message || `安装状态：${task.status}`;
+  root.className = `status install-progress ${task.status === 'failed' ? 'error' : task.status === 'complete' || task.status === 'waiting_user' ? 'ok' : ''}`;
+}
+
+async function pollInstallation() {
+  for (;;) {
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    const task = await nativeRequest('/api/native-tools/install-status');
+    showInstallation(task);
+    if (['complete', 'waiting_user', 'failed'].includes(task.status)) {
+      nativeState.installing = false;
+      $('#install-native-tools').disabled = false;
+      for (const button of document.querySelectorAll('.install-tool')) button.disabled = false;
+      return task;
+    }
+  }
+}
+
+async function installNativeTools(tool = 'all') {
+  if (!nativeState.connected) throw new Error('请先安装并启动本机桥接器，然后点击“重新检测”。');
+  nativeState.installing = true;
+  $('#install-native-tools').disabled = true;
+  for (const button of document.querySelectorAll('.install-tool')) button.disabled = true;
+  try {
+    const task = await nativeRequest(`/api/native-tools/${tool}/install`, {
+      method: 'POST', body: '{}', timeout: 15000,
+    });
+    showInstallation(task);
+    await pollInstallation();
+  } catch (error) {
+    nativeState.installing = false;
+    const message = /HTTP 404/.test(error.message)
+      ? '当前桥接器版本过旧，不支持一键安装。请先下载并覆盖安装最新版桥接器。'
+      : error.message;
+    showInstallation({ status: 'failed', error: message });
+    if (nativeState.status) renderNativeStatus(nativeState.status);
+  }
 }
 
 async function detectNative(refresh = false) {
@@ -82,6 +145,7 @@ async function detectNative(refresh = false) {
     $('#bridge-version').className = 'bridge-pill'; $('#bridge-version').textContent = '版本未知';
     $('#bridge-capability').className = 'bridge-pill'; $('#bridge-capability').textContent = '原生能力不可用';
     for (const button of document.querySelectorAll('.native-launch')) button.disabled = true;
+    $('#install-native-tools').disabled = true;
     window.dispatchEvent(new CustomEvent('xafs-native-status', { detail: null }));
     return null;
   }
@@ -188,6 +252,7 @@ async function launchNative(tool) {
 }
 
 $('#refresh-native').onclick = () => detectNative(true);
+$('#install-native-tools').onclick = () => installNativeTools('all');
 $('#execution-mode').onchange = setExecutionMode;
 $('#native-input-stage').onchange = setExecutionMode;
 $('#finalize-native').onclick = () => finalizeNativeJob().catch(error => {
