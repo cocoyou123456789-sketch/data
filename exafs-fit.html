@@ -507,7 +507,7 @@
             </div>
             <div class="toolbar">
               <button id="generate-feff-input" type="button">
-                解析 CIF 并准备第一壳层路径</button
+                解析 CIF 并生成 FEFF 第一壳层路径</button
               ><button
                 id="download-structure-summary"
                 class="secondary"
@@ -521,6 +521,11 @@
               请选择 CIF；准备完成后运行拟合即可自动生成理论路径。
             </p>
             <div id="cif-first-shell-preview" class="path" hidden tabindex="-1" aria-live="polite"></div>
+            <section id="generated-feff-path-panel" class="path" hidden tabindex="-1" aria-live="polite">
+              <h3>FEFF 路径选择</h3>
+              <p class="hint">以下文件由本机 FEFF 实际运行生成。这里只列出第一配位层单散射候选；可自由勾选用于拟合的 feffNNNN.dat。</p>
+              <div id="generated-feff-paths"></div>
+            </section>
           </details>
           <section class="mode-panel" id="parameter-suggestion-panel">
             <h3>实验曲线 + CIF 参数建议</h3>
@@ -661,11 +666,11 @@
         </section>
       </div>
     </main>
-    <script src="./exafs-fit.js?v=13"></script>
+    <script src="./exafs-fit.js?v=14"></script>
     <script src="./exafs-materials-project.js?v=2"></script>
     <script src="./exafs-online.js?v=2"></script>
     <script src="./exafs-suggestions.js?v=1"></script>
-    <script src="./exafs-native.js?v=11"></script>
+    <script src="./exafs-native.js?v=12"></script>
     <script src="./exafs-workbench.js?v=2"></script>
   </body>
 </html>

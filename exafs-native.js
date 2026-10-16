@@ -1,6 +1,6 @@
 'use strict';
 
-const nativeState = { status: null, jobId: null, connected: false, installing: false };
+const nativeState = { status: null, jobId: null, feffJobId: null, connected: false, installing: false };
 window.xafsNativeState = nativeState;
 
 function nativeEndpoint() {
@@ -158,6 +158,20 @@ async function encodeFile(file, role) {
 function encodeTextFile(name, content, role) {
   return { name, role, content_base64: bytesToBase64(new TextEncoder().encode(content)) };
 }
+
+async function prepareNativeFeffPaths(generated) {
+  if (!nativeState.connected) throw new Error('尚未连接本机桥接器。请先点击“重新检测”，确认 FEFF 已安装。');
+  if (Number(nativeState.status?.version || 0) < 5) throw new Error('本机桥接器版本过旧，请点击“一键安装本机桥接和全部拟合环境”升级到 1.4.0 或更高版本。');
+  if (!nativeState.status?.tools?.feff?.installed) throw new Error('本机桥接器未检测到 FEFF；请先完成一键环境安装并重新检测。');
+  const result = await nativeRequest('/api/feff/paths', {
+    method: 'POST', timeout: 310000,
+    body: JSON.stringify({project_name: generated.summary?.formula || 'cif-paths',content_base64: encodeTextFile(generated.name,generated.content,'feff_input').content_base64}),
+  });
+  nativeState.feffJobId = result.job_id;
+  await globalThis.setGeneratedFeffPaths(result);
+  return result;
+}
+globalThis.prepareNativeFeffPaths = prepareNativeFeffPaths;
 
 function nativeOptions(form) {
   return {
