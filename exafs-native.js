@@ -164,6 +164,7 @@ function nativeOptions(form) {
     method: 'paper-constrained-first-shell-demeter',
     analysis_role: $('#analysis-role').value,
     constraint_profile: $('#constraint-profile').value,
+    parameter_suggestion: globalThis.xafsParameterSuggestion || null,
     input_kind: $('#input-kind').value,
     fit_space: form.fitspace.value,
     requested_k_range: [Number(form.kmin.value), Number(form.kmax.value)],

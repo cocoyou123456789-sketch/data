@@ -521,6 +521,17 @@
               请选择 CIF；准备完成后运行拟合即可自动生成理论路径。
             </p>
           </details>
+          <section class="mode-panel" id="parameter-suggestion-panel">
+            <h3>实验曲线 + CIF 参数建议</h3>
+            <p class="hint">读取当前实验曲线和所选 CIF，建议第一壳层 CN/Reff、k/R 范围及五个核心参数初值。建议值不是拟合结果；S₀² 仍须由同吸收边标准标定，未相移校正的 R 峰位不会被当作键长。</p>
+            <div class="toolbar">
+              <button id="suggest-fit-parameters" type="button">生成参数建议</button>
+              <button id="apply-fit-suggestions" class="secondary" type="button" disabled>应用建议值</button>
+              <button id="download-fit-suggestions" class="secondary" type="button" disabled>下载建议 JSON</button>
+            </div>
+            <p id="fit-suggestion-status" class="status" aria-live="polite">请先选择实验数据和 CIF。</p>
+            <div id="fit-suggestion-results" class="table-wrap"></div>
+          </section>
           <details id="browser-path-fallback">
             <summary><strong>浏览器探索模式备用：上传已有第一壳层路径</strong></summary>
             <label>FEFF 第一壳层路径文件（可多选，仅接受 feffNNNN.dat）<input
@@ -649,10 +660,11 @@
         </section>
       </div>
     </main>
-    <script src="./exafs-fit.js?v=11"></script>
+    <script src="./exafs-fit.js?v=12"></script>
     <script src="./exafs-materials-project.js?v=2"></script>
     <script src="./exafs-online.js?v=2"></script>
-    <script src="./exafs-native.js?v=10"></script>
+    <script src="./exafs-suggestions.js?v=1"></script>
+    <script src="./exafs-native.js?v=11"></script>
     <script src="./exafs-workbench.js?v=2"></script>
   </body>
 </html>

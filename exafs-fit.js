@@ -19,7 +19,22 @@ function expandCif(cif){const expanded=[],seen=new Set;for(const atom of cif.ato
 function lattice(c){const d=Math.PI/180,ca=Math.cos(c.alpha*d),cb=Math.cos(c.beta*d),cg=Math.cos(c.gamma*d),sg=Math.sin(c.gamma*d);if(Math.abs(sg)<1e-8)throw new Error('CIF 晶格 gamma 导致奇异晶胞。');const avec=[c.a,0,0],bvec=[c.b*cg,c.b*sg,0],cx=c.c*cb,cy=c.c*(ca-cb*cg)/sg,cz2=c.c*c.c-cx*cx-cy*cy;if(cz2<=0)throw new Error('CIF 晶格参数不构成有效三维晶胞。');return[avec,bvec,[cx,cy,Math.sqrt(cz2)]]}
 function cart(frac,m){return[0,1,2].map(j=>frac[0]*m[0][j]+frac[1]*m[1][j]+frac[2]*m[2][j])}
 function buildFeffInput(cif,absorber,edge,radius,fileName){const atoms=expandCif(cif),centerIndex=atoms.findIndex(a=>a.element===absorber);if(centerIndex<0)throw new Error(`CIF 中没有吸收元素 ${absorber}。`);const m=lattice(cif),center=atoms[centerIndex].frac,n=Math.ceil(radius/Math.min(cif.a,cif.b,cif.c))+1,cluster=[];for(const atom of atoms)for(let i=-n;i<=n;i++)for(let j=-n;j<=n;j++)for(let k=-n;k<=n;k++){const rel=[atom.frac[0]+i-center[0],atom.frac[1]+j-center[1],atom.frac[2]+k-center[2]],xyz=cart(rel,m),distance=Math.hypot(...xyz);if(distance<=radius+1e-7&&distance>1e-6)cluster.push({element:atom.element,xyz,distance})}cluster.sort((x,y)=>x.distance-y.distance);if(!cluster.length)throw new Error('所选半径内没有邻近原子。');if(cluster[0].distance<.5)throw new Error(`发现过短原子间距 ${cluster[0].distance.toFixed(3)} Å；请检查 CIF 和占位。`);const elements=[...new Set([absorber,...cluster.map(x=>x.element)])],ipot=Object.fromEntries(elements.map((e,i)=>[e,i+1])),lines=[`TITLE ${fileName} | absorber ${absorber} | browser-generated input`,`EDGE ${edge}`,`S02 1.0`,`CONTROL 1 1 1 1 1 1`,`PRINT 1 0 0 0 0 3`,`RPATH ${radius.toFixed(2)}`,`NLEG 4`,`CRITERIA 4.0 2.5`,`SCF ${Math.min(4,radius).toFixed(1)} 0 20 .2 1`,`EXAFS`,``,`POTENTIALS`,`* ipot Z element`,`0 ${elementZ[absorber]} ${absorber}_absorber`,...elements.map(e=>`${ipot[e]} ${elementZ[e]} ${e}`),``,`ATOMS`,`* x y z ipot tag distance`,`0.000000 0.000000 0.000000 0 ${absorber} 0.000000`,...cluster.map(x=>`${x.xyz.map(v=>v.toFixed(6)).join(' ')} ${ipot[x.element]} ${x.element} ${x.distance.toFixed(6)}`),`END`,``,];return{input:lines.join('\n'),summary:{source_file:fileName,formula:cif.formula,cell:{a:cif.a,b:cif.b,c:cif.c,alpha:cif.alpha,beta:cif.beta,gamma:cif.gamma},absorber,absorber_fractional:center,edge,radius,asymmetric_atoms:cif.atoms.length,symmetry_operations:cif.symops.length,expanded_atoms:atoms.length,cluster_atoms:cluster.length,nearest_neighbor_A:cluster[0].distance,generated_at:new Date().toISOString(),fit_scope:'first_shell_only',limitations:['native Demeter engine runs after job submission','first matching absorber site selected','partial occupancies are rejected']}}}
-async function prepareFeffFromCif(){const file=$('#cif-file').files[0],remote=globalThis.xafsCifSelection,status=$('#cif-status');if(!file&&!remote)throw new Error('请从 Materials Project 选择结构，或上传本地 CIF。');const source=file?{name:file.name,content:await file.text(),source:{database:'local',name:file.name}}:remote;status.textContent='正在解析 CIF、展开对称性并建立第一配位层计算输入…';status.className='status';const rawAbsorber=$('#cif-absorber').value.trim(),absorber=rawAbsorber?rawAbsorber[0].toUpperCase()+rawAbsorber.slice(1).toLowerCase():'',edge=$('#cif-edge').value,radius=Number($('#cif-radius').value);if(!elementZ[absorber])throw new Error(`无效吸收元素：${rawAbsorber}`);const result=buildFeffInput(parseCif(source.content),absorber,edge,radius,source.name);result.summary.structure_source=source.source;lastStructure=result.summary;globalThis.xafsGeneratedFeffInput={name:'feff.inp',content:result.input,summary:result.summary};$('#download-structure-summary').hidden=false;status.textContent=`CIF 已准备：展开 ${result.summary.expanded_atoms} 个晶胞内原子，${radius.toFixed(1)} Å 团簇含 ${result.summary.cluster_atoms} 个邻近原子；最近邻 ${result.summary.nearest_neighbor_A.toFixed(3)} Å。运行原生拟合时将自动生成 feffNNNN.dat，并只使用第一配位层。`;status.className='status ok';if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('xafs-cif-ready',{detail:result.summary}));return globalThis.xafsGeneratedFeffInput}
+function summarizeFirstShellAtoms(atoms){
+  const sorted=atoms.filter(atom=>Number.isFinite(atom.distance)&&atom.distance>.5).sort((a,b)=>a.distance-b.distance);
+  if(!sorted.length)throw new Error('无法从 CIF 团簇识别第一配位层。');
+  const nearest=sorted[0].distance,gapThreshold=Math.max(.25,.12*nearest);let cutoff=nearest+Math.max(.22,.1*nearest),method='nearest-distance tolerance';
+  for(let i=1;i<sorted.length;i++){const gap=sorted[i].distance-sorted[i-1].distance;if(gap>=gapThreshold&&sorted[i-1].distance<=nearest+.65){cutoff=(sorted[i].distance+sorted[i-1].distance)/2;method='first significant radial gap';break}}
+  const shell=sorted.filter(atom=>atom.distance<=cutoff+1e-7),scatterers={};
+  shell.forEach(atom=>{scatterers[atom.element]=(scatterers[atom.element]||0)+1});
+  const distances=shell.map(atom=>atom.distance),mean=distances.reduce((sum,value)=>sum+value,0)/distances.length;
+  return{coordination_number:shell.length,scatterers,distance_mean_A:mean,distance_min_A:Math.min(...distances),distance_max_A:Math.max(...distances),cutoff_A:cutoff,assignment_method:method,confidence:method==='first significant radial gap'?'medium':'low'};
+}
+function firstShellFromFeffInput(input){
+  let inAtoms=false;const atoms=[];
+  for(const line of String(input).split(/\r?\n/)){const trimmed=line.trim();if(trimmed==='ATOMS'){inAtoms=true;continue}if(inAtoms&&trimmed==='END')break;if(!inAtoms||!trimmed||trimmed.startsWith('*'))continue;const columns=trimmed.split(/\s+/),distance=Number(columns[5]);if(columns.length>=6&&distance>.5)atoms.push({element:columns[4],distance})}
+  return summarizeFirstShellAtoms(atoms);
+}
+async function prepareFeffFromCif(){const file=$('#cif-file').files[0],remote=globalThis.xafsCifSelection,status=$('#cif-status');if(!file&&!remote)throw new Error('请从 Materials Project 选择结构，或上传本地 CIF。');const source=file?{name:file.name,content:await file.text(),source:{database:'local',name:file.name}}:remote;status.textContent='正在解析 CIF、展开对称性并建立第一配位层计算输入…';status.className='status';const rawAbsorber=$('#cif-absorber').value.trim(),absorber=rawAbsorber?rawAbsorber[0].toUpperCase()+rawAbsorber.slice(1).toLowerCase():'',edge=$('#cif-edge').value,radius=Number($('#cif-radius').value);if(!elementZ[absorber])throw new Error(`无效吸收元素：${rawAbsorber}`);const result=buildFeffInput(parseCif(source.content),absorber,edge,radius,source.name);result.summary.structure_source=source.source;result.summary.first_shell=firstShellFromFeffInput(result.input);lastStructure=result.summary;globalThis.xafsGeneratedFeffInput={name:'feff.inp',content:result.input,summary:result.summary};$('#download-structure-summary').hidden=false;const shell=result.summary.first_shell;status.textContent=`CIF 已准备：展开 ${result.summary.expanded_atoms} 个晶胞内原子，${radius.toFixed(1)} Å 团簇含 ${result.summary.cluster_atoms} 个邻近原子；第一壳层建议 CN=${shell.coordination_number}，平均距离 ${shell.distance_mean_A.toFixed(3)} Å（${shell.assignment_method}，${shell.confidence} 可信度）。运行原生拟合时仍以 FEFF 路径和审查结果为准。`;status.className='status ok';if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('xafs-cif-ready',{detail:result.summary}));return globalThis.xafsGeneratedFeffInput}
 globalThis.prepareFeffFromCif=prepareFeffFromCif;
 ['#cif-absorber','#cif-edge','#cif-radius'].forEach(selector=>$(selector).addEventListener('change',()=>{globalThis.xafsGeneratedFeffInput=null}));
 $('#generate-feff-input').onclick=()=>prepareFeffFromCif().catch(err=>{const status=$('#cif-status');status.textContent=err.message;status.className='status error'});
@@ -136,6 +151,12 @@ $('#constraint-profile').onchange=applyExafsProfile;
 $('#analysis-role').onchange=applyAnalysisRole;
 applyExafsProfile();applyAnalysisRole();
 globalThis.exafsConfigurationAudit=exafsConfigurationAudit;
+globalThis.applyExafsPathSuggestion=suggestion=>{
+  const parameter=suggestion?.parameters;if(!parameter)return;
+  paths.forEach(path=>{path.dr=parameter.delta_r_A.initial;path.sigma2=parameter.sigma2_A2.initial});
+  if(paths.length===1&&paths[0].nleg===2)paths[0].cn=parameter.n.initial;
+  renderPaths();
+};
 const shellFitHandler=$('#fit-form').onsubmit;
 $('#fit-form').onsubmit=async event=>{
   const form=event.currentTarget,active=paths.filter(p=>p.shell<=Number(form.max_shell.value)),preAudit=exafsConfigurationAudit(form,active);
@@ -149,6 +170,7 @@ $('#fit-form').onsubmit=async event=>{
   lastResult.statistics.r_factor_details=rfactor;
   const audit=exafsConfigurationAudit(form,active,lastResult.statistics.n_independent,lastResult.statistics.n_variables);
   lastResult.parameter_audit=audit;
+  lastResult.parameter_suggestion=globalThis.xafsParameterSuggestion||null;
   lastResult.warnings.push(...audit.warnings);
   if(audit.errors.length)lastResult.warnings.push(...audit.errors.map(message=>`拒绝：${message}`));
   const metric=$('#metrics')?.querySelector('.metric b');
