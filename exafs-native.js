@@ -65,10 +65,6 @@ function renderNativeStatus(status) {
     button.disabled = nativeState.installing;
     button.onclick = () => installNativeTools(button.dataset.installTool);
   }
-  const installAll = $('#install-native-tools');
-  const allReady = Boolean(status.automation_ready && tools.feff?.installed && tools.hama?.installed);
-  installAll.disabled = nativeState.installing || allReady;
-  installAll.textContent = allReady ? '拟合工具已安装' : '一键安装缺失拟合工具';
   if (status.installation && status.installation.status !== 'idle') showInstallation(status.installation);
   window.dispatchEvent(new CustomEvent('xafs-native-status', { detail: status }));
 }
@@ -97,7 +93,6 @@ async function pollInstallation() {
     showInstallation(task);
     if (['complete', 'waiting_user', 'failed'].includes(task.status)) {
       nativeState.installing = false;
-      $('#install-native-tools').disabled = false;
       for (const button of document.querySelectorAll('.install-tool')) button.disabled = false;
       return task;
     }
@@ -107,7 +102,6 @@ async function pollInstallation() {
 async function installNativeTools(tool = 'all') {
   if (!nativeState.connected) throw new Error('请先安装并启动本机桥接器，然后点击“重新检测”。');
   nativeState.installing = true;
-  $('#install-native-tools').disabled = true;
   for (const button of document.querySelectorAll('.install-tool')) button.disabled = true;
   try {
     const task = await nativeRequest(`/api/native-tools/${tool}/install`, {
@@ -139,13 +133,12 @@ async function detectNative(refresh = false) {
     const detail = error.message === 'Failed to fetch'
       ? '浏览器无法访问 127.0.0.1:8766。请更新并启动桥接器，再检查防火墙或安全软件是否拦截。'
       : error.message;
-    $('#native-status').textContent = `未连接本机桥接服务：${detail} 请下载安装本机桥接器；安装完成后点击“重新检测”。源码开发环境才需要运行 start-native-bridge.ps1，普通用户不需要运行 PowerShell 脚本。`;
+    $('#native-status').textContent = `未连接本机桥接服务：${detail} 请运行“一键安装本机桥接和全部拟合环境”；安装完成后点击“重新检测”。源码开发环境才需要运行 start-native-bridge.ps1，普通用户不需要运行 PowerShell 脚本。`;
     $('#bridge-health').className = 'bridge-pill error';
     $('#bridge-health').textContent = '桥接器未连接';
     $('#bridge-version').className = 'bridge-pill'; $('#bridge-version').textContent = '版本未知';
     $('#bridge-capability').className = 'bridge-pill'; $('#bridge-capability').textContent = '原生能力不可用';
     for (const button of document.querySelectorAll('.native-launch')) button.disabled = true;
-    $('#install-native-tools').disabled = true;
     window.dispatchEvent(new CustomEvent('xafs-native-status', { detail: null }));
     return null;
   }
@@ -252,7 +245,6 @@ async function launchNative(tool) {
 }
 
 $('#refresh-native').onclick = () => detectNative(true);
-$('#install-native-tools').onclick = () => installNativeTools('all');
 $('#execution-mode').onchange = setExecutionMode;
 $('#native-input-stage').onchange = setExecutionMode;
 $('#finalize-native').onclick = () => finalizeNativeJob().catch(error => {
