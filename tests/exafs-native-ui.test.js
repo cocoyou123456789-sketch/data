@@ -8,6 +8,7 @@ const html = fs.readFileSync(path.join(root, 'exafs-fit.html'), 'utf8');
 const source = fs.readFileSync(path.join(root, 'exafs-native.js'), 'utf8');
 const fitSource = fs.readFileSync(path.join(root, 'exafs-fit.js'), 'utf8');
 const materialsSource = fs.readFileSync(path.join(root, 'exafs-materials-project.js'), 'utf8');
+const suggestionSource = fs.readFileSync(path.join(root, 'exafs-suggestions.js'), 'utf8');
 
 test('native Demeter mode is the default and browser mode is explicitly labelled', () => {
   assert.match(html, /option value="native" selected/);
@@ -96,4 +97,16 @@ test('Materials Project element picker loads a selected CIF into the native firs
   assert.match(materialsSource, /selected\.size > 1 \? \[\.\.\.selected\]\.join\('-'\)/);
   assert.match(fitSource, /structure_source=source\.source/);
   assert.match(source, /window\.xafsCifSelection\.content, 'structure_cif'/);
+});
+
+test('curve and CIF can generate traceable parameter suggestions before fitting', () => {
+  assert.match(html, /id="suggest-fit-parameters"/);
+  assert.match(html, /id="apply-fit-suggestions"/);
+  assert.match(html, /exafs-suggestions\.js/);
+  assert.match(fitSource, /first_shell=firstShellFromFeffInput/);
+  assert.match(suggestionSource, /proposal_not_fit/);
+  assert.match(suggestionSource, /estimated_from_curve: false/);
+  assert.match(suggestionSource, /uncorrected_r_peak_A/);
+  assert.match(source, /parameter_suggestion: globalThis\.xafsParameterSuggestion/);
+  assert.match(fitSource, /lastResult\.parameter_suggestion/);
 });

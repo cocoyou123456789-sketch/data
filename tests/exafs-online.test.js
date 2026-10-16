@@ -22,7 +22,7 @@ function loadWorkbench() {
   global.Blob = class {};
   const root = path.join(__dirname, '..', 'github-pages');
   let source = fs.readFileSync(path.join(root, 'exafs-fit.js'), 'utf8');
-  source += '\nglobalThis.__fitCore={numbers,dft,equationValue};';
+  source += '\nglobalThis.__fitCore={numbers,dft,equationValue,firstShellFromFeffInput};';
   vm.runInThisContext(source, { filename: 'exafs-fit.js' });
   source = fs.readFileSync(path.join(root, 'exafs-online.js'), 'utf8');
   source += '\nglobalThis.__onlineCore={preprocessEnergy,polynomialFit,morletMap};';
@@ -61,4 +61,23 @@ test('Morlet diagnostic exports finite R by k matrices', () => {
   assert.equal(wavelet.r.length, 24);
   assert.equal(wavelet.magnitude.length, 24);
   assert.ok(wavelet.magnitude.flat().every(Number.isFinite));
+});
+
+test('FEFF input summary derives first-shell CN and distance from the CIF cluster', () => {
+  const input = `ATOMS
+* x y z ipot tag distance
+0 0 0 0 Ir 0
+1.98 0 0 1 O 1.98
+-1.98 0 0 1 O 1.98
+0 2.01 0 1 O 2.01
+0 -2.01 0 1 O 2.01
+0 0 2.03 1 O 2.03
+0 0 -2.03 1 O 2.03
+3.1 0 0 2 Ir 3.1
+END`;
+  const shell = __fitCore.firstShellFromFeffInput(input);
+  assert.equal(shell.coordination_number, 6);
+  assert.deepEqual(shell.scatterers, { O: 6 });
+  assert.ok(shell.distance_mean_A > 1.99 && shell.distance_mean_A < 2.02);
+  assert.equal(shell.assignment_method, 'first significant radial gap');
 });
