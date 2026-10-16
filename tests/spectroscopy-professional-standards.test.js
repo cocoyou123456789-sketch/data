@@ -10,10 +10,11 @@ const xpsHtml = page('xps-fit.html');
 const xpsJs = page('xps-fit.js');
 
 test('EXAFS workbench is explicitly limited to literature-constrained first-shell fitting', () => {
-  assert.match(exafsHtml, /仅第一配位层/);
-  assert.match(exafsHtml, /2\.0–4\.0 Å⁻¹ 以 0\.2 Å⁻¹ 步长/);
-  assert.match(exafsHtml, /Hanning、dk=1 Å⁻¹/);
-  assert.match(exafsHtml, /k-weight 1、2、3/);
+  assert.match(exafsHtml, /第一配位层拟合标准（仅首壳）/);
+  assert.match(exafsHtml, /nleg=2/);
+  assert.match(exafsHtml, /严禁第二配位层和多重散射进入模型/);
+  assert.match(exafsHtml, /S₀²=0\.75–1\.20/);
+  assert.match(exafsHtml, /本区仅说明第一配位层模型/);
   assert.match(exafsHtml, /10\.1021\/photonsci\.5c00040/);
   assert.match(exafsHtml, /10\.1016\/j\.jcat\.2025\.116145/);
   assert.match(exafsJs, /if\(nleg!==2\)throw new Error/);
