@@ -1,5 +1,5 @@
 #define AppName "XAFS Native Bridge"
-#define AppVersion "1.0.4"
+#define AppVersion "1.1.0"
 #define AppPublisher "SynchroChemAI"
 #define AppExeName "XAFSNativeBridge.exe"
 

@@ -19,8 +19,10 @@ Hephaestus、FEFF 和 HAMA。服务只监听 `127.0.0.1:8766`，HTTP 请求不�
 不仅能发现 Athena、Artemis、Hephaestus、FEFF 和 HAMA 的安装路径，也能在程序
 打开后确认其进程正在运行。
 
-桥接器不会捆绑 Demeter/HAMA 本体。它会自动检测目标电脑已有的软件；未检测到时，
-请安装官方软件，或把下面的示例配置复制为：
+桥接器不会把 Demeter/HAMA 本体塞进自身安装包。1.1.0 起，网页检测到软件缺失时会显示
+“下载安装”：桥接器只从硬编码的官方 HTTPS 地址下载。Demeter 会打开官方可见安装向导，
+用户完成向导后点击“重新检测”；HAMA 会从 ESRF 官方 ZIP 安全解压到当前用户目录并自动写入配置。
+安装过程只轮询当前下载任务，不会持续扫描本机。也可以把下面的示例配置复制为：
 
 ```text
 %LOCALAPPDATA%\SynchroChemAI\XAFSNativeBridge\xafs-native.local.json

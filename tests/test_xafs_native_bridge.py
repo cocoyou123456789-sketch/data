@@ -3,6 +3,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 
@@ -20,7 +21,24 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(bridge._hidden_subprocess_options("posix"), {})
 
     def test_bridge_reports_installer_version(self):
-        self.assertEqual(bridge.APP_VERSION, "1.0.4")
+        self.assertEqual(bridge.APP_VERSION, "1.1.0")
+
+    def test_install_catalog_maps_demeter_suite_and_hama(self):
+        for tool in ("athena", "artemis", "hephaestus", "feff", "demeter"):
+            self.assertEqual(bridge.install_product_for_tool(tool), "demeter")
+        self.assertEqual(bridge.install_product_for_tool("hama"), "hama")
+        self.assertEqual(bridge.install_product_for_tool("all"), "all")
+        self.assertTrue(bridge.INSTALL_CATALOG["demeter"]["url"].startswith("https://"))
+        self.assertTrue(bridge.INSTALL_CATALOG["hama"]["url"].startswith("https://"))
+
+    def test_hama_archive_extraction_rejects_path_traversal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "unsafe.zip"
+            with zipfile.ZipFile(archive, "w") as bundle:
+                bundle.writestr("../escape.exe", b"bad")
+            with self.assertRaises(ValueError):
+                bridge._safe_extract_zip(archive, Path(directory) / "target")
+            self.assertFalse((Path(directory) / "escape.exe").exists())
 
     def test_running_demeter_process_reveals_launchers_root_and_bundled_feff(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -27,6 +27,15 @@ test('page offers installable and portable bridge downloads', () => {
   assert.match(html, /releases\/latest\/download\/XAFS-Native-Bridge-Portable\.zip/);
 });
 
+test('missing native tools can be installed from the connected bridge', () => {
+  assert.match(html, /id="install-native-tools"/);
+  assert.match(html, /一键安装缺失拟合工具/);
+  assert.match(source, /\/api\/native-tools\/\$\{tool\}\/install/);
+  assert.match(source, /\/api\/native-tools\/install-status/);
+  assert.match(source, /data-install-tool/);
+  assert.match(source, /安装向导已打开/);
+});
+
 test('connection failure directs users to the packaged bridge', () => {
   assert.match(source, /下载安装本机桥接器/);
   assert.match(source, /源码开发环境才需要运行 start-native-bridge\.ps1/);

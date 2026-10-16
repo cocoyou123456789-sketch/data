@@ -23,9 +23,11 @@ import threading
 import time
 import traceback
 import uuid
+import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
+from urllib.request import Request, urlopen
 from urllib.parse import urlparse
 
 
@@ -38,7 +40,7 @@ APP_ROOT = (
 ROOT = APP_ROOT
 DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
-APP_VERSION = "1.0.4"
+APP_VERSION = "1.1.0"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
     "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
@@ -59,6 +61,22 @@ PROCESS_CACHE_SECONDS = 2.0
 _PROCESS_CACHE: tuple[float, list[dict[str, Any]]] = (0.0, [])
 _PROCESS_LOCK = threading.Lock()
 _LOG_LOCK = threading.Lock()
+INSTALL_CATALOG = {
+    "demeter": {
+        "url": "https://s3.amazonaws.com/demeter4xas/Demeter_0.9.26_with_Strawberry_Perl_%2864%29.exe",
+        "filename": "Demeter_0.9.26_with_Strawberry_Perl_64.exe",
+        "source": "Demeter official Windows download",
+        "homepage": "https://bruceravel.github.io/demeter/",
+    },
+    "hama": {
+        "url": "https://www.esrf.fr/files/live/sites/www/files/UsersAndScience/Experiments/CRG/BM20/Software/Wavelets/HAMA/hama_1.zip",
+        "filename": "hama_1.zip",
+        "source": "ESRF HAMA Fortran download",
+        "homepage": "https://www.esrf.fr/UsersAndScience/Experiments/CRG/BM20/Software/Wavelets/HAMA",
+    },
+}
+DEMETER_TOOLS = {"athena", "artemis", "hephaestus", "feff", "demeter"}
+MAX_INSTALL_DOWNLOAD = 1024 * 1024 * 1024
 
 
 def _hidden_subprocess_options(platform: str | None = None) -> dict[str, Any]:
@@ -95,6 +113,95 @@ def load_config(path: Path | None = None) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("native bridge config must be a JSON object")
     return data
+
+
+def save_config(data: dict[str, Any], path: Path | None = None) -> Path:
+    candidate = path or ROOT / CONFIG_NAME
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    temporary = candidate.with_suffix(candidate.suffix + ".tmp")
+    temporary.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    temporary.replace(candidate)
+    return candidate
+
+
+def install_product_for_tool(tool: str) -> str:
+    if tool in DEMETER_TOOLS:
+        return "demeter"
+    if tool == "hama":
+        return "hama"
+    if tool == "all":
+        return "all"
+    raise ValueError("tool is not installable")
+
+
+def _download_official_product(product: str, progress: Any = None) -> Path:
+    item = INSTALL_CATALOG[product]
+    downloads = APP_ROOT / "downloads"
+    downloads.mkdir(parents=True, exist_ok=True)
+    target = downloads / item["filename"]
+    temporary = target.with_suffix(target.suffix + ".part")
+    request = Request(item["url"], headers={"User-Agent": f"XAFSNativeBridge/{APP_VERSION}"})
+    with urlopen(request, timeout=60) as response:  # nosec B310: URL is selected only from the fixed catalog
+        final = urlparse(response.geturl())
+        allowed_hosts = {"s3.amazonaws.com", "www.esrf.fr"}
+        if final.scheme != "https" or final.hostname not in allowed_hosts:
+            raise RuntimeError("official download redirected to an unapproved host")
+        expected = int(response.headers.get("Content-Length") or 0)
+        if expected > MAX_INSTALL_DOWNLOAD:
+            raise RuntimeError("official download is unexpectedly large")
+        received = 0
+        with temporary.open("wb") as stream:
+            while True:
+                block = response.read(1024 * 1024)
+                if not block:
+                    break
+                received += len(block)
+                if received > MAX_INSTALL_DOWNLOAD:
+                    raise RuntimeError("official download exceeded the safety limit")
+                stream.write(block)
+                if progress:
+                    progress(received, expected)
+    if not temporary.is_file() or temporary.stat().st_size == 0:
+        raise RuntimeError("official download returned an empty file")
+    temporary.replace(target)
+    return target
+
+
+def _safe_extract_zip(archive: Path, destination: Path) -> None:
+    destination.mkdir(parents=True, exist_ok=True)
+    root = destination.resolve()
+    with zipfile.ZipFile(archive) as bundle:
+        if sum(member.file_size for member in bundle.infolist()) > 500 * 1024 * 1024:
+            raise ValueError("downloaded archive expands beyond the safety limit")
+        for member in bundle.infolist():
+            output = (root / member.filename).resolve()
+            if output != root and root not in output.parents:
+                raise ValueError("downloaded archive contains an unsafe path")
+        bundle.extractall(root)
+
+
+def _install_hama(config: dict[str, Any], progress: Any = None) -> dict[str, Any]:
+    archive = _download_official_product("hama", progress)
+    destination = APP_ROOT / "tools" / "HAMA"
+    _safe_extract_zip(archive, destination)
+    executable = _bounded_find(destination, EXECUTABLE_NAMES["hama"], max_depth=8)
+    if not executable:
+        raise FileNotFoundError("HAMA archive did not contain a recognized executable")
+    config.setdefault("tools", {})["hama"] = str(executable.resolve())
+    save_config(config)
+    return {"product": "hama", "installed": True, "path": str(executable.resolve())}
+
+
+def _launch_demeter_installer(progress: Any = None) -> dict[str, Any]:
+    if os.name != "nt":
+        raise OSError("the one-click Demeter installer is available on Windows only")
+    installer = _download_official_product("demeter", progress)
+    process = subprocess.Popen([str(installer)], cwd=str(installer.parent), close_fds=True)
+    return {
+        "product": "demeter", "installer_launched": True, "pid": process.pid,
+        "path": str(installer),
+        "message": "Complete the visible official Demeter setup wizard, then click refresh detection.",
+    }
 
 
 def _common_roots() -> list[Path]:
@@ -414,6 +521,84 @@ class BridgeState:
         self.skill = discover_skill(config)
         self.demeter_root = discover_demeter_root(config, self.tools)
         self.lock = threading.Lock()
+        self.installation: dict[str, Any] = {
+            "status": "idle", "product": None, "message": "No installation is running."
+        }
+
+    def _set_installation(self, **updates: Any) -> None:
+        with self.lock:
+            self.installation = {**self.installation, **updates, "updated_at": time.time()}
+
+    def installation_status(self) -> dict[str, Any]:
+        with self.lock:
+            return dict(self.installation)
+
+    def start_install(self, tool: str) -> dict[str, Any]:
+        product = install_product_for_tool(tool)
+        with self.lock:
+            if self.installation.get("status") in {"starting", "downloading", "installing"}:
+                raise RuntimeError("another installation is already running")
+            if product == "all":
+                products = []
+                if not self.tools.get("hama", {}).get("installed"):
+                    products.append("hama")
+                demeter_ready = bool(self.demeter_root) and all(
+                    self.tools.get(name, {}).get("installed")
+                    for name in ("athena", "artemis", "hephaestus", "feff")
+                )
+                if not demeter_ready:
+                    products.append("demeter")
+            else:
+                products = [product]
+            if not products:
+                self.installation = {
+                    "status": "complete", "product": product, "requested_tool": tool,
+                    "message": "All requested tools are already installed.", "progress": 100,
+                    "updated_at": time.time(),
+                }
+                return dict(self.installation)
+            self.installation = {
+                "status": "starting", "product": product, "requested_tool": tool,
+                "message": "Preparing the official download.", "progress": 0,
+                "updated_at": time.time(),
+            }
+        threading.Thread(target=self._install_worker, args=(products,), daemon=True).start()
+        return self.installation_status()
+
+    def _install_worker(self, products: list[str]) -> None:
+        actions: list[dict[str, Any]] = []
+
+        def progress(received: int, expected: int) -> None:
+            percent = round(received * 100 / expected) if expected else None
+            self._set_installation(
+                status="downloading", bytes_received=received, bytes_total=expected or None,
+                progress=percent, message="Downloading from the official software source.",
+            )
+
+        try:
+            for current in products:
+                self._set_installation(
+                    status="downloading", current_product=current, progress=0,
+                    message=f"Downloading {current.upper()} from its official source.",
+                )
+                if current == "hama":
+                    action = _install_hama(self.config, progress)
+                    actions.append(action)
+                    self._set_installation(status="installing", message="HAMA was extracted and configured.")
+                else:
+                    actions.append(_launch_demeter_installer(progress))
+            self.refresh()
+            waiting = any(action.get("installer_launched") for action in actions)
+            self._set_installation(
+                status="waiting_user" if waiting else "complete", progress=100, actions=actions,
+                message=(
+                    "The official Demeter setup wizard is open. Complete it, then click refresh detection."
+                    if waiting else "Installation finished. Click refresh detection to verify it."
+                ),
+            )
+        except Exception as error:
+            _append_log(f"installation failed: {error}\n{traceback.format_exc()}")
+            self._set_installation(status="failed", error=str(error), message=f"Installation failed: {error}")
 
     def refresh(self) -> None:
         with self.lock:
@@ -430,10 +615,15 @@ class BridgeState:
     def status(self) -> dict[str, Any]:
         with self.lock:
             tools = with_running_status(self.tools)
-            return {"service": "xafs-native-bridge", "version": 3, "app_version": APP_VERSION, "native": True,
+            return {"service": "xafs-native-bridge", "version": 4, "app_version": APP_VERSION, "native": True,
                     "tools": tools, "artemis_skill": self.skill,
                     "demeter_root": self.demeter_root,
                     "automation_ready": bool(self.demeter_root and self.skill.get("installed")),
+                    "installation": dict(self.installation),
+                    "install_catalog": {
+                        name: {"source": item["source"], "homepage": item["homepage"]}
+                        for name, item in INSTALL_CATALOG.items()
+                    },
                     "standards": standards()}
 
 
@@ -602,6 +792,8 @@ class Handler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         if path in ("/api/status", "/api/native-tools/status"):
             self._send(200, self.state.status())
+        elif path == "/api/native-tools/install-status":
+            self._send(200, self.state.installation_status())
         elif path == "/api/workflow/spec":
             self._send(200, standards())
         elif re.fullmatch(r"/api/workflow/[0-9]{8}-[0-9]{6}-[0-9a-f]{8}/status", path):
@@ -627,6 +819,10 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/native-tools/refresh":
                 self.state.refresh()
                 self._send(200, self.state.status())
+                return
+            install_match = re.fullmatch(r"/api/native-tools/([a-z]+)/install", path)
+            if install_match:
+                self._send(202, self.state.start_install(install_match.group(1)))
                 return
             match = re.fullmatch(r"/api/native-tools/([a-z]+)/launch", path)
             if match:
