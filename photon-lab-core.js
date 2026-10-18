@@ -473,6 +473,22 @@
     }
     return null;
   }
+  function sessionState(raw) {
+    // Only local scene settings cross the embed boundary; never auth/chat/camera state.
+    try {
+      if (!raw || raw.version !== 1 || !['ring', 'beamline', 'crucible', 'crystal'].includes(raw.mode)) return null;
+      if (!beamlines.some(b => b.id === raw.beamline)) return null;
+      const ranges = {yaw: [-1000, 1000], pitch: [.1, 1.4], zoom: [.5, 2.2], energy: [20, 150], temperature: [10, 300]};
+      for (const [key, [min, max]] of Object.entries(ranges)) {
+        if (!Number.isFinite(raw[key]) || raw[key] < min || raw[key] > max) return null;
+      }
+      return {
+        version: 1, mode: raw.mode, counts: normalize(raw.counts), beamline: raw.beamline,
+        exploded: raw.exploded === true, yaw: raw.yaw, pitch: raw.pitch, zoom: raw.zoom,
+        energy: raw.energy, temperature: raw.temperature,
+      };
+    } catch { return null; }
+  }
   const api = {
     ELEMENTS,
     color,
@@ -482,6 +498,7 @@
     scene,
     gltf,
     pickBeamline,
+    sessionState,
   };
   root.PhotonLab = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

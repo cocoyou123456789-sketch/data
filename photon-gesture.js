@@ -146,5 +146,6 @@
   $('gesturePreviewToggle').addEventListener('click',()=>{preview.hidden=!preview.hidden;});
   window.addEventListener('keydown',e=>{if(e.key==='Escape' && (active||stream||$('gestureStart').disabled))stop();});
   window.addEventListener('pagehide',stop);
+  window.addEventListener('photon:deactivate',stop);
   document.addEventListener('visibilitychange',()=>{if(document.hidden && (active||stream||$('gestureStart').disabled))stop();});
 })();
