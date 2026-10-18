@@ -8,6 +8,7 @@
   let worker=null,stream=null,active=false,generation=0,raf=0,busy=false,lastTime=0,lastVideo=-1,press=null,hover=null,watchdog=0,scrollAnchor=null,scrollTarget=null;
   const status=(en,zh)=>{const text=copy(en,zh);if($('gestureStatus').textContent!==text)$('gestureStatus').textContent=text;};
   function clearInteraction(){
+    window.PhotonGestureAdapter?.cancel();
     window.PhotonSelection?.clear();
     tracker.reset();press=null;cursor.hidden=true;
     scrollAnchor=null;scrollTarget=null;
@@ -45,6 +46,11 @@
   function handle(hands,time){
     drawHands(hands);
     const action=tracker.update(hands,time);
+    if(window.PhotonGestureAdapter){
+      const message=window.PhotonGestureAdapter.handle(action);
+      if(message && active)status(...message);
+      return;
+    }
     if(action.kind==='lost'){clearInteraction();status('Show one hand to point','举起一只手以移动光标');return;}
     if(action.kind==='zoom'){
       window.PhotonSelection?.clear();
@@ -146,6 +152,5 @@
   $('gesturePreviewToggle').addEventListener('click',()=>{preview.hidden=!preview.hidden;});
   window.addEventListener('keydown',e=>{if(e.key==='Escape' && (active||stream||$('gestureStart').disabled))stop();});
   window.addEventListener('pagehide',stop);
-  window.addEventListener('photon:deactivate',stop);
   document.addEventListener('visibilitychange',()=>{if(document.hidden && (active||stream||$('gestureStart').disabled))stop();});
 })();

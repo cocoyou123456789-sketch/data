@@ -23,11 +23,6 @@
       " ",
     );
   const copy = (en, zh) => (state.lang === "zh" ? zh : en);
-  function embeddedHost() {
-    if (new URLSearchParams(location.search).get('embedded') !== '1' || window.parent === window) return null;
-    try { return window.parent.location.origin === location.origin ? window.parent.PhotonLabHost : null; }
-    catch { return null; }
-  }
   const stations = {
     ring: {
       label: "HALF / PHASE I / 10 BEAMLINES",
@@ -778,7 +773,6 @@
   $("language").onclick = () => {
     state.lang = state.lang === "en" ? "zh" : "en";
     translate();
-    embeddedHost()?.setLanguage(state.lang);
   };
   $("save").onclick = () => {
     try {
@@ -827,9 +821,7 @@
       sessionStorage.setItem("arpes-research-agent-context-v1", brief());
       // Keep the brief and the authorized session on this origin. The existing
       // GitHub mirror otherwise redirects agent.html to Netlify.
-      const host = embeddedHost();
-      if (host) host.openAgent();
-      else window.location.href = "./agent.html?stay_on_github=1";
+      window.location.href = "./agent.html?stay_on_github=1";
     } catch {
       toast(
         copy(
@@ -861,7 +853,6 @@
     speechSynthesis.speak(speech);
   };
   window.addEventListener("pagehide", () => window.speechSynthesis?.cancel());
-  window.addEventListener('photon:deactivate', () => window.speechSynthesis?.cancel());
   function beamlineAt(x,y) {
     if(state.mode!=='ring')return null;
     const r=canvas.getBoundingClientRect();
@@ -869,32 +860,6 @@
     return C.pickBeamline(drawnTriangles,x-r.left,y-r.top);
   }
   window.PhotonControls = {
-    snapshot() { return C.sessionState({...state, version: 1}); },
-    restore(raw) {
-      const saved = C.sessionState(raw);
-      if (!saved) return false;
-      state.undo = [];
-      setCounts(saved.counts, false);
-      state.beamline = saved.beamline;
-      mode(saved.mode);
-      state.exploded = saved.exploded;
-      state.auto = false;
-      $('rotate').classList.remove('selected');
-      $('explode').classList.toggle('selected', state.exploded);
-      for (const key of ['yaw', 'pitch', 'zoom', 'energy', 'temperature']) state[key] = saved[key];
-      for (const key of ['energy', 'temperature']) {
-        $(key).value = state[key];
-        $(key + 'Value').textContent = state[key] + (key === 'energy' ? ' eV' : ' K');
-      }
-      rebuild();
-      return true;
-    },
-    setLanguage(value) {
-      const next = value === 'zh' ? 'zh' : 'en';
-      if (state.lang === next) return;
-      state.lang = next;
-      translate();
-    },
     beamlineAt,
     selectBeamline,
     hoverBeamline(id) {if(hoveredBeamline!==id){hoveredBeamline=id;dirty=true;}},
@@ -907,19 +872,6 @@
       state.zoom=Math.max(.5,Math.min(2.2,state.zoom*scale));dirty=true;
     },
   };
-  if (embeddedHost()) {
-    document.body.classList.add('embedded-lab');
-    document.querySelectorAll('.masthead a').forEach(link => link.addEventListener('click', event => {
-      event.preventDefault(); embeddedHost()?.close();
-    }));
-    document.querySelector('a[href="./photon-lab-guide.html"]')?.setAttribute('target', '_blank');
-    document.querySelector('a[href="./photon-lab-guide.html"]')?.setAttribute('rel', 'noopener');
-    window.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && $('gestureStop').hidden && !$('gestureStart').disabled) {
-        event.preventDefault(); embeddedHost()?.close();
-      }
-    });
-  }
   new ResizeObserver(() => (dirty = true)).observe(viewport);
   translate();
   rebuild();

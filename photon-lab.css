@@ -109,7 +109,6 @@ h2 {
   justify-content: space-between;
   gap: 16px;
 }
-body.embedded-lab .masthead { display: none; }
 .brand {
   display: flex;
   gap: 10px;
