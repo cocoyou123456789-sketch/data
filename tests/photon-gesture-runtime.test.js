@@ -36,12 +36,14 @@ test('manual mode stops web gestures and restores deliberate mouse control',asyn
   const h=harness();await h.start();assert.equal(h.nodes.gestureManual.attributes['aria-pressed'],'false');
   h.handlers['gestureManual:click']();assert.equal(h.counts.stop,1);assert.equal(h.nodes.gestureManual.attributes['aria-pressed'],'true');assert.equal(h.nodes.gestureStart.attributes['aria-pressed'],'false');
 });
-test('closing the integrated lab stops active gestures and cancels a pending camera request',async()=>{
-  const h=harness();await h.start();h.handlers['window:photon:deactivate']();
-  assert.equal(h.counts.stop,1);assert.ok(h.workers[0].terminated);assert.equal(h.nodes.gestureVideo.srcObject,null);
-  let resolve;const camera=new Promise(r=>resolve=r),pending=harness(()=>camera);
-  const start=pending.handlers['gestureStart:click']();pending.handlers['window:photon:deactivate']();resolve(pending.stream);await start;
-  assert.equal(pending.counts.stop,1);assert.equal(pending.workers.length,0);
+test('main website adapter receives tracked actions and is cancelled when the camera stops',async()=>{
+  const h=harness(),actions=[];let cancellations=0;
+  h.scope.window.PhotonGestureAdapter={handle(action){actions.push(action);return ['Website pointing','网页指向'];},cancel(){cancellations++;}};
+  delete h.scope.window.PhotonControls;
+  await h.start();h.send([h.hand()],0);h.send([h.hand()],100);
+  assert.equal(actions.length,2);assert.equal(actions[0].kind,'pointer');assert.equal(h.nodes.gestureStatus.textContent,'Website pointing');
+  h.handlers['gestureStop:click']();assert.ok(cancellations>=2);assert.equal(h.nodes.gestureStatus.textContent,'Camera off');
+  assert.equal(h.counts.click,0);assert.equal(h.counts.stop,1);
 });
 test('camera pinching can activate a regular button or checkbox',async()=>{
   for(const tagName of ['BUTTON','INPUT']){
