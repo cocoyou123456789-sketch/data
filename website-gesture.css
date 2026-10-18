@@ -9,7 +9,7 @@
 #websiteGesturePanel {position:absolute;right:0;bottom:56px;width:320px;max-width:calc(100vw - 28px);max-height:calc(100dvh - 110px);overflow-y:auto;padding:18px;border:1px solid #4c7b87;border-radius:14px;background:#0d1c28;box-shadow:0 12px 45px #0009;box-sizing:border-box;}
 #websiteGesturePanel[hidden],.website-gesture-preview[hidden],.website-gesture-cursor[hidden] {display:none!important;}
 .website-gesture-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;}
-#websiteGesturePanel .website-gesture-heading button {padding:0;min-width:32px;min-height:32px;font-size:24px;}
+#websiteGesturePanel .website-gesture-heading button {padding:0;width:32px;flex:0 0 32px;min-width:32px;min-height:32px;font-size:24px;}
 #websiteGesturePanel p {margin:12px 0;color:#c2d4df;font-size:13px;}
 .website-gesture-actions {display:flex;gap:8px;flex-wrap:wrap;}
 #websiteGesturePanel #gestureStart {background:#2b655f;}
