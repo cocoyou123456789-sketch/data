@@ -26,3 +26,8 @@ build/
 dist/
 dist-installer/
 dist-portable/
+
+# Local Paper2Agent source, review evidence and tool runtime
+.paper2agent-review/
+.paper2agent-sources/
+.paper2agent-tools/
