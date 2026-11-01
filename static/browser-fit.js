@@ -85,3 +85,179 @@ $('#fit-form').onsubmit=async event=>{
   const table=$('#parameters');
   if(table)table.insertAdjacentHTML('afterbegin',`<p><strong>Artemis 风格 R-factor：</strong>${rfactor.value.toPrecision(6)}（${(100*rfactor.value).toFixed(3)}%），按 ${escapeHtml(rfactor.space)} 拟合范围计算。</p>`);
 };
+
+// Literature-constrained protocol layer. The browser engine remains an
+// auditable approximation; Athena/Artemis/IFEFFIT remains the publication
+// reference implementation.
+const HARD_XAS_METHOD_REFERENCES=[
+  {authors:'Ravel & Newville',year:2005,doi:'10.1107/S0909049505012719',use:'Athena/Artemis workflow and reproducible project state'},
+  {authors:'Michalowicz & Vlaic',year:1998,doi:'10.1107/S0909049598002970',use:'starting-point sensitivity and false-minimum warning'},
+  {authors:'Stern',year:1993,doi:'10.1103/PhysRevB.48.9825',use:'independent-point estimate'},
+  {authors:'Delgado-Jaime & Kennepohl',year:2010,doi:'10.1107/S090904950904655X',use:'broad solution-space exploration and independent-fit populations'},
+  {authors:'Timoshenko & Roldan Cuenya',year:2021,doi:'10.1021/acs.chemrev.0c00396',use:'heterogeneous/disordered catalyst interpretation limits'},
+];
+
+function equationValue(expression,variables){
+  const tokens=String(expression).match(/\s*(\*\*|[()+\-*/]|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+\-]?\d+)?|[A-Za-z_][A-Za-z0-9_]*)\s*/g)?.map(x=>x.trim())||[];
+  if(!tokens.length||tokens.join('').replace(/\s/g,'')!==String(expression).replace(/\s/g,''))throw new Error(`无法解析方程：${expression}`);
+  let i=0;
+  const primary=()=>{const t=tokens[i++];if(t==='('){const v=add();if(tokens[i++]!==')')throw new Error(`方程缺少右括号：${expression}`);return v}if(t==='+'||t==='-'){const v=primary();return t==='-'?-v:v}if(Object.prototype.hasOwnProperty.call(variables,t))return variables[t];const n=Number(t);if(Number.isFinite(n))return n;throw new Error(`方程包含未知变量 ${t}`)},
+    power=()=>{let v=primary();if(tokens[i]==='**'){i++;v=v**power()}return v},
+    multiply=()=>{let v=power();while(tokens[i]==='*'||tokens[i]==='/'){const op=tokens[i++],rhs=power();v=op==='*'?v*rhs:v/rhs}return v},
+    add=()=>{let v=multiply();while(tokens[i]==='+'||tokens[i]==='-'){const op=tokens[i++],rhs=multiply();v=op==='+'?v+rhs:v-rhs}return v},value=add();
+  if(i!==tokens.length||!Number.isFinite(value))throw new Error(`方程结果无效：${expression}`);
+  return value;
+}
+
+function applyPathRelations(active,s02,strict=false){
+  const first=active.find(p=>p.shell===1&&p.nleg===2)||active.find(p=>p.shell===1);
+  if(!first)return [];
+  const variables={N1:first.cn,dR1:first.dr,sigma1:first.sigma2,Reff1:first.reff,R1:first.reff+first.dr,S02:s02};
+  const applied=[];
+  for(const path of active.filter(p=>p.shell>1)){
+    for(const [field,expressionKey,boundsKey,label] of [['cn','cn_expr','cn_bounds','N'],['dr','dr_expr','dr_bounds','ΔR'],['sigma2','sigma2_expr','sigma2_bounds','σ²']]){
+      const expression=String(path[expressionKey]||'').trim();if(!expression)continue;
+      const raw=equationValue(expression,variables),bounds=path[boundsKey]||[path[`${field}_min`],path[`${field}_max`]];
+      if(strict&&(raw<bounds[0]||raw>bounds[1]))throw new Error(`${path.name} 的 ${label} 方程结果 ${raw} 超出边界 [${bounds[0]}, ${bounds[1]}]。`);
+      path[field]=clamp(raw,bounds[0],bounds[1]);path[`vary_${field==='cn'?'cn':field}`]=false;
+      applied.push({path:path.name,parameter:field,expression,value:path[field],clamped:path[field]!==raw});
+    }
+  }
+  return applied;
+}
+
+const modelAtWithoutRelations=modelAt;
+modelAt=function(k,s02,de0,active=paths){applyPathRelations(active,s02);return modelAtWithoutRelations(k,s02,de0,active)};
+
+const renderPathsBeforeRelations=renderPaths;
+renderPaths=function(){
+  renderPathsBeforeRelations();
+  document.querySelectorAll('#path-list .path').forEach(card=>{
+    const path=paths[Number(card.dataset.i)];if(!path||path.shell<2)return;
+    const details=document.createElement('details');details.className='relation-panel';
+    details.innerHTML=`<summary><strong>第二/高壳层方程约束（可选）</strong></summary><p class="hint">可用变量：N1、dR1、sigma1、Reff1、R1、S02。填写方程后该参数不再独立拟合。</p><div class="grid"><label>N 方程<input data-expr="cn_expr" value="${escapeHtml(path.cn_expr||'')}" placeholder="例如 N1*0.5"></label><label>ΔR 方程<input data-expr="dr_expr" value="${escapeHtml(path.dr_expr||'')}" placeholder="例如 dR1"></label><label>σ² 方程<input data-expr="sigma2_expr" value="${escapeHtml(path.sigma2_expr||'')}" placeholder="例如 sigma1*1.2"></label></div>`;
+    details.querySelectorAll('[data-expr]').forEach(input=>input.onchange=()=>{path[input.dataset.expr]=input.value.trim();const field=input.dataset.expr.replace('_expr','');if(path[input.dataset.expr])path[`vary_${field}`]=false;renderPaths()});
+    card.appendChild(details);
+  });
+};
+
+function applyAmplitudePolicy(form,rerender=false){
+  const role=form.analysis_role.value;
+  if(role==='standard'){
+    form.vary_s02.checked=true;form.vary_s02.disabled=true;
+    paths.filter(p=>p.nleg===2).forEach(p=>p.vary_cn=false);
+    $('#policy-status').textContent='标准样：结构给定的 N 固定，拟合 S₀²；用于把标定后的 S₀² 带到未知样。';
+  }else{
+    form.vary_s02.checked=false;form.vary_s02.disabled=true;
+    $('#policy-status').textContent='未知样：S₀² 固定为外部标定值，允许所选单散射路径拟合 N；S₀² 与 N 不会同时自由变化。';
+  }
+  if(rerender)renderPaths();
+}
+$('#analysis-role').onchange=()=>applyAmplitudePolicy($('#fit-form'),true);
+applyAmplitudePolicy($('#fit-form'));
+$('#multi-start-count').max='8';
+if(Number($('#multi-start-count').value)>3)$('#multi-start-count').value='3';
+
+function mulberry32(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let optimizerInvocation=0,lastOptimizerAudit=null;
+const singleStartNelderMead=nelderMead;
+nelderMead=function(start,objective,specs,maxIter=900){
+  const form=$('#fit-form'),count=clamp(Number(form?.multi_start_count?.value)||1,1,8),seed=(Number(form?.fit_seed?.value)||202603)+1009*(optimizerInvocation++),rng=mulberry32(seed),runs=[];
+  for(let run=0;run<count;run++){
+    let candidate=start.slice(),candidateScore=objective(candidate);
+    if(run>0)for(let trial=0;trial<6;trial++){
+      const point=specs.map(spec=>spec.bounds[0]+rng()*(spec.bounds[1]-spec.bounds[0])),score=objective(point);
+      if(score<candidateScore){candidate=point;candidateScore=score}
+    }
+    const fit=singleStartNelderMead(candidate,objective,specs,count>1?Math.min(maxIter,350):maxIter);
+    runs.push({run:run+1,start_score:candidateScore,objective:fit.value,iterations:fit.iterations,point:fit.point.slice(),parameters:specs.map((spec,i)=>({key:spec.key,label:spec.label,path:spec.path?.name||null,value:fit.point[i],bounds:spec.bounds.slice()}))});
+  }
+  runs.sort((a,b)=>a.objective-b.objective);const best=runs[0];
+  lastOptimizerAudit={strategy:'deterministic candidate-screened multi-start',adaptation:'Each browser fit screens 6 seeded candidates per additional run, then applies bounded Nelder-Mead; this is inspired by, but not identical to, the 1000-candidate/100-fit XANES procedure.',seed,count,runs,near_best_count:runs.filter(x=>x.objective<=best.objective*1.01+1e-15).length};
+  return{point:best.point,value:best.objective,iterations:best.iterations,runs};
+};
+
+function degreesOfFreedomGuard(form,maxShell){
+  const active=paths.filter(p=>p.shell<=maxShell);if(!active.length)throw new Error('所选壳层没有 FEFF 路径。');
+  applyPathRelations(active,Number(form.s02.value),true);
+  const nind=1+2*(Number(form.kmax.value)-Number(form.kmin.value))*(Number(form.fit_rmax.value)-Number(form.fit_rmin.value))/Math.PI,
+    nvar=parameterSpec(form,active).length;
+  if(form.vary_s02.checked&&active.some(p=>p.nleg===2&&p.vary_cn))throw new Error('S₀² 与配位数 N 不能同时自由拟合；请选择标准样或未知样协议。');
+  if(nvar>=nind)throw new Error(`模型被阻止：Nvar=${nvar} 不小于 Nind=${nind.toFixed(2)}。请减少路径/自由参数或扩大有效 k、R 范围。`);
+  return{nind,nvar,active_paths:active.length,margin:nind-nvar};
+}
+
+function compactFitResult(result,label,optimizer){
+  return{label,kweight:result.fit_settings.kweight,max_shell:result.fit_settings.max_shell,r_factor:result.statistics.r_factor,nind:result.statistics.n_independent,nvar:result.statistics.n_variables,s02:result.global_parameters.s02.value,delta_e0:result.global_parameters.delta_e0.value,paths:result.paths.map(p=>({name:p.name,shell:p.shell,N_or_amplitude:p.amplitude,delta_r:p.delta_r,R:p.distance,sigma2:p.sigma2})),optimizer};
+}
+
+function parameterRows(result){
+  const rows=[{key:'S02',label:'S₀²',value:result.global_parameters.s02.value},{key:'delta_E0',label:'ΔE₀',value:result.global_parameters.delta_e0.value}];
+  result.paths.forEach((p,i)=>rows.push({key:`${p.name}:N`,label:`${p.name} N/振幅`,value:p.amplitude},{key:`${p.name}:dR`,label:`${p.name} ΔR`,value:p.delta_r},{key:`${p.name}:sigma2`,label:`${p.name} σ²`,value:p.sigma2}));
+  return rows;
+}
+
+function stabilitySummary(weightRuns,optimizer){
+  const groups=new Map();
+  weightRuns.forEach(run=>parameterRows(run.full).forEach(row=>{if(!groups.has(row.key))groups.set(row.key,{label:row.label,values:[]});groups.get(row.key).values.push(row.value)}));
+  const acrossWeights=[...groups.values()].map(group=>{const min=Math.min(...group.values),max=Math.max(...group.values),mean=group.values.reduce((a,b)=>a+b,0)/group.values.length;return{parameter:group.label,mean,min,max,spread:max-min,relative_spread:Math.abs(mean)>1e-12?(max-min)/Math.abs(mean):null}});
+  const multiStart=(optimizer?.runs||[])[0]?.parameters?.map((parameter,index)=>{const values=optimizer.runs.map(run=>run.point[index]),min=Math.min(...values),max=Math.max(...values),mean=values.reduce((a,b)=>a+b,0)/values.length;return{parameter:`${parameter.path?parameter.path+' · ':''}${parameter.label}`,mean,min,max,spread:max-min,relative_spread:Math.abs(mean)>1e-12?(max-min)/Math.abs(mean):null}})||[];
+  return{across_kweights:acrossWeights,multi_start:multiStart};
+}
+
+function morletMap(k,values,rmax,centers=48,radialPoints=48){
+  const kmin=k[0],kmax=k.at(-1),sigmaK=Math.max(.45,(kmax-kmin)/18),kAxis=Array.from({length:centers},(_,i)=>kmin+i*(kmax-kmin)/(centers-1)),rAxis=Array.from({length:radialPoints},(_,i)=>i*rmax/(radialPoints-1));
+  const magnitude=rAxis.map(r=>kAxis.map(center=>{let real=0,imaginary=0,norm=0;for(let i=0;i<k.length;i++){const weight=Math.exp(-.5*((k[i]-center)/sigmaK)**2);real+=values[i]*weight*Math.cos(2*k[i]*r);imaginary+=values[i]*weight*Math.sin(2*k[i]*r);norm+=weight*weight}return Math.hypot(real,imaginary)/Math.sqrt(norm||1)}));
+  return{k:kAxis,r:rAxis,magnitude,sigma_k:sigmaK,kernel:'Morlet/Gabor localized Fourier diagnostic'};
+}
+function heatColor(value){const t=clamp(value,0,1),stops=[[7,20,61],[17,86,139],[28,144,153],[126,210,79],[253,231,37]],scaled=t*(stops.length-1),index=Math.min(stops.length-2,Math.floor(scaled)),f=scaled-index;return stops[index].map((channel,i)=>Math.round(channel+f*(stops[index+1][i]-channel)))}
+function drawWavelet(selector,wavelet,maxValue){
+  const canvas=$(selector);if(!canvas?.getContext)return;const context=canvas.getContext('2d'),rows=wavelet.r.length,columns=wavelet.k.length,image=context.createImageData(columns,rows);
+  for(let row=0;row<rows;row++)for(let col=0;col<columns;col++){const [red,green,blue]=heatColor(wavelet.magnitude[rows-1-row][col]/(maxValue||1)),offset=4*(row*columns+col);image.data[offset]=red;image.data[offset+1]=green;image.data[offset+2]=blue;image.data[offset+3]=255}
+  const buffer=document.createElement('canvas');buffer.width=columns;buffer.height=rows;buffer.getContext('2d').putImageData(image,0,0);context.imageSmoothingEnabled=true;context.clearRect(0,0,canvas.width,canvas.height);context.drawImage(buffer,42,10,canvas.width-52,canvas.height-38);context.fillStyle='#52677d';context.font='11px sans-serif';context.fillText(`${wavelet.k[0].toFixed(1)}  k (Å⁻¹)  ${wavelet.k.at(-1).toFixed(1)}`,44,canvas.height-9);context.save();context.translate(12,canvas.height/2+20);context.rotate(-Math.PI/2);context.fillText(`R (Å), 0–${wavelet.r.at(-1).toFixed(1)}`,0,0);context.restore();
+}
+
+function renderStability(stability,weightRuns,optimizer){
+  const rows=stability.across_kweights,objectiveRuns=optimizer?.runs||[];
+  $('#stability').innerHTML=`<p><strong>k-weight 结果：</strong>${weightRuns.map(run=>`k${run.summary.kweight}: R=${run.summary.r_factor.toPrecision(4)}`).join('；')}。</p><p><strong>多起点：</strong>${objectiveRuns.length} 次；${optimizer?.near_best_count||0} 次落在最佳目标函数 1% 内。</p><table><thead><tr><th>参数</th><th>均值</th><th>最小</th><th>最大</th><th>跨 k-weight 差值</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${escapeHtml(row.parameter)}</td><td>${row.mean.toPrecision(6)}</td><td>${row.min.toPrecision(6)}</td><td>${row.max.toPrecision(6)}</td><td>${row.spread.toPrecision(4)}</td></tr>`).join('')}</tbody></table>`;
+}
+
+function methodReport(result){
+  const p=result.method_provenance,a=result.protocol_audit,s=result.statistics;
+  return `# Hard X-ray EXAFS fit report\n\n- Source: ${result.source}\n- Engine: ${result.engine}\n- Sample role: ${p.sample_role}\n- Amplitude policy: ${p.amplitude_policy}\n- Shell protocol: ${p.shell_protocol}\n- k weights audited: ${p.kweights.join(', ')}\n- Multi-start count: ${p.multi_start_count}; seed: ${p.seed}\n- Fit range: k=${result.fit_settings.kmin}–${result.fit_settings.kmax} Å⁻¹; R=${result.fit_settings.rmin}–${result.fit_settings.rmax} Å\n- R-factor: ${s.r_factor}\n- Nind / Nvar: ${s.n_independent} / ${s.n_variables}\n\n## Audit\n\n${a.messages.map(x=>`- ${x}`).join('\n')}\n\n## Parameters\n\n${parameterRows(result).map(x=>`- ${x.label}: ${x.value}`).join('\n')}\n\n## References\n\n${HARD_XAS_METHOD_REFERENCES.map(x=>`- ${x.authors} (${x.year}), DOI ${x.doi}: ${x.use}`).join('\n')}\n\n## Limitations\n\n- Browser FEFF-shell approximation; no AUTOBK/IFEFFIT execution.\n- Wavelet map is diagnostic only.\n- Publication claims require Athena/Artemis review and independent physical validation.\n`;
+}
+
+const literatureProtocolFit=$('#fit-form').onsubmit;
+$('#fit-form').onsubmit=async event=>{
+  event.preventDefault();const form=event.target,originalShell=form.max_shell.value,displayWeight=Number(form.kweight.value),stageMode=form.stage_mode.value,role=form.analysis_role.value;
+  lastResult=null;applyAmplitudePolicy(form,true);optimizerInvocation=0;
+  try{
+    const selected=[...form.querySelectorAll('[name="audit_kweight"]:checked')].map(x=>Number(x.value));if(!selected.length)selected.push(displayWeight);if(!selected.includes(displayWeight))selected.push(displayWeight);
+    const ordered=[...new Set(selected)].filter(x=>x!==displayWeight).concat(displayWeight),targetShell=Number(originalShell),stageRuns=[],weightRuns=[];
+    for(const weight of ordered){
+      form.kweight.value=weight;
+      if(stageMode==='staged'&&targetShell>1&&paths.some(p=>p.shell===1)&&paths.some(p=>p.shell>1&&p.shell<=targetShell)){
+        form.max_shell.value='1';const guard=degreesOfFreedomGuard(form,1);lastResult=null;await literatureProtocolFit(event);if(!lastResult)throw new Error($('#status').textContent||'首壳拟合失败。');stageRuns.push({weight,stage:'first_shell',guard,result:compactFitResult(lastResult,'first_shell',lastOptimizerAudit)});
+      }
+      form.max_shell.value=String(targetShell);const guard=degreesOfFreedomGuard(form,targetShell);lastResult=null;await literatureProtocolFit(event);if(!lastResult)throw new Error($('#status').textContent||'联合拟合失败。');
+      weightRuns.push({summary:compactFitResult(lastResult,targetShell>1?'joint_shells':'first_shell',lastOptimizerAudit),full:JSON.parse(JSON.stringify(lastResult)),guard,optimizer:JSON.parse(JSON.stringify(lastOptimizerAudit))});
+    }
+    form.max_shell.value=originalShell;form.kweight.value=String(displayWeight);
+    const finalRun=weightRuns.at(-1);lastResult=finalRun.full;lastOptimizerAudit=finalRun.optimizer;
+    const relations=applyPathRelations(paths.filter(p=>p.shell<=targetShell),lastResult.global_parameters.s02.value,true),stability=stabilitySummary(weightRuns,lastOptimizerAudit),amplitudePolicy=role==='standard'?'fixed known N; fit S02':'fixed externally calibrated S02; fit selected N';
+    const messages=[role==='standard'?'标准样协议：N 固定，S₀² 可变。':'未知样协议：S₀² 固定，所选 N 可变。',stageMode==='staged'&&targetShell>1?'已先完成首壳诊断，再以其结果作为多壳联合拟合起点。':'采用直接联合或仅首壳模式；第二壳结论应与分阶段结果对照。',`自由度：Nind=${lastResult.statistics.n_independent.toFixed(2)}，Nvar=${lastResult.statistics.n_variables}，余量=${(lastResult.statistics.n_independent-lastResult.statistics.n_variables).toFixed(2)}。`,`多起点 ${lastOptimizerAudit.count} 次，${lastOptimizerAudit.near_best_count} 次位于最佳目标函数 1% 内。`,`R-factor=${lastResult.statistics.r_factor.toPrecision(6)}；R-factor 只用于比较相同数据范围与模型，不单独证明结构正确。`];
+    if(form.vary_de0.checked&&lastResult.paths.some(p=>p.vary.delta_r))messages.push('ΔE₀ 与 ΔR 同时变化，需结合多起点/多 k-weight 稳定性和物理边界判断相关性。');
+    if(relations.length)messages.push(`已应用 ${relations.length} 条第二/高壳层方程约束。`);
+    lastResult.engine='browser-feff-shell-v3-literature-constrained';lastResult.method_provenance={paper2agent_package:'./methods/hard-xas-methods/',paper2agent_review_status:'reviewed_with_limitations',sample_role:role,amplitude_policy:amplitudePolicy,shell_protocol:stageMode,kweights:ordered,multi_start_count:lastOptimizerAudit.count,seed:Number(form.fit_seed.value),references:HARD_XAS_METHOD_REFERENCES,implementation_notes:['candidate-screened deterministic multi-start is a browser adaptation, not an exact reproduction of Blueprint XAS','FEFF paths are consumed but FEFF and IFEFFIT are not executed in GitHub Pages','standard errors remain null rather than being fabricated']};
+    lastResult.protocol_audit={messages,stage_runs:stageRuns,weight_runs:weightRuns.map(x=>x.summary),relations,stability};
+    lastResult.fit_settings.kweight=displayWeight;lastResult.fit_settings.kweights_audited=ordered;
+    const data=lastResult.k_space,rmax=Number(form.rplotmax.value),dataWavelet=morletMap(data.k,data.weighted_data,rmax),fitWavelet=morletMap(data.k,data.weighted_fit,rmax),residualWavelet=morletMap(data.k,data.weighted_residual,rmax),scale=Math.max(...dataWavelet.magnitude.flat(),...fitWavelet.magnitude.flat(),1e-12);
+    lastResult.wavelet={data:dataWavelet,fit:fitWavelet,residual:residualWavelet,normalization_max:scale,interpretation:'diagnostic only; not an independent coordination-number measurement'};
+    drawWavelet('#wavelet-data',dataWavelet,scale);drawWavelet('#wavelet-fit',fitWavelet,scale);drawWavelet('#wavelet-residual',residualWavelet,scale);
+    $('#protocol-audit').innerHTML=`<ul>${messages.map(message=>`<li>${escapeHtml(message)}</li>`).join('')}</ul>`;$('#protocol-audit').className=`status ${lastResult.warnings.length?'error':'ok'}`;
+    renderStability(stability,weightRuns,lastOptimizerAudit);$('#download-method-report').hidden=false;setStatus('文献约束拟合完成：已导出分阶段、多起点、多 k-weight、自由度、边界与小波诊断；数据未上传。','ok');
+  }catch(error){form.max_shell.value=originalShell;form.kweight.value=String(displayWeight);lastResult=null;setStatus(error.message,'error');$('#protocol-audit').textContent=error.message;$('#protocol-audit').className='status error'}
+};
+
+$('#download-method-report').onclick=()=>lastResult&&download('browser-exafs-method-report.md',methodReport(lastResult),'text/markdown;charset=utf-8');
+globalThis.__hardXasCore={equationValue,applyPathRelations,degreesOfFreedomGuard,morletMap,mulberry32,HARD_XAS_METHOD_REFERENCES};
