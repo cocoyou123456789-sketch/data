@@ -35,3 +35,16 @@
   }
   form.addEventListener("submit",async event=>{event.preventDefault();const query=queryInput.value.trim(),endpoint=endpointInput.value.trim();if(!endpoint){status.className="wos-status error";status.textContent="请先填写 WoS 后端 API 地址。";panel.querySelector(".wos-config").open=true;return;}localStorage.setItem("wosSearchApiEndpoint",endpoint);submit.disabled=true;results.innerHTML="";resultTools.hidden=true;status.className="wos-status loading";status.textContent=`正在检索 Web of Science：${query}…`;try{const request={method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query,limit:Number(panel.querySelector("#wosLimit").value),max_materials:1})};const response=await fetchWithFallback(endpoint,request);const data=await response.json().catch(()=>({}));if(!response.ok||!data.ok)throw new Error(data.error||`检索服务返回 HTTP ${response.status}`);render(data);}catch(error){status.className="wos-status error";status.textContent=`${error.message} 请检查网络连接、API 地址及后端 WOS_API_KEY。`;}finally{submit.disabled=false;}});
 })();
+
+// The chemistry hub is a static GitHub Pages application.  Mount the shared
+// spectroscopy database here so hard-XAS and XPS result pages can hand records
+// to one persistent, searchable browser store.
+(()=>{
+  if(document.querySelector('#spectral-database'))return;
+  const section=document.createElement('section');
+  section.className='spectral-db search-zone';section.id='spectral-database';
+  section.innerHTML=`<div class="spectral-db-head"><div><div class="kicker">TRACEABLE SPECTROSCOPY RECORDS</div><h2>硬线与 XPS 谱学结果数据库</h2><p>集中保存谱图数据、拟合曲线、参数、配位结构、约束和方法审计。记录仅保存在当前浏览器，支持 JSON 导入/导出备份。</p></div><b id="spectralCount">0 条记录</b></div><div class="spectral-db-controls"><input id="spectralSearch" type="search" placeholder="搜索样品名、化学式、编号、吸收边或谱区"><select id="spectralType"><option value="">全部类型</option><option value="hard_xas_exafs">硬线 EXAFS</option><option value="xps">XPS</option></select><label class="spectral-upload">上传数据库 JSON<input id="spectralImport" type="file" accept=".json,application/json" multiple></label><button id="spectralExportAll" type="button">导出全部</button></div><div class="spectral-db-controls" style="grid-template-columns:1fr auto"><div id="spectralStatus" class="spectral-status">可从硬线或 XPS 拟合结果一键加入，也可上传以前导出的 JSON。</div><button id="spectralClear" class="danger" type="button">清空本机数据库</button></div><div id="spectralRecords" class="spectral-records"></div>`;
+  const roadmap=document.querySelector('#roadmap');roadmap?.before(section);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='./spectral-database.css?v=20261102-1';document.head.append(css);
+  const script=document.createElement('script');script.src='./spectral-database.js?v=20261102-1';document.body.append(script);
+})();

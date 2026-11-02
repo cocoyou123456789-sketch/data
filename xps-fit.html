@@ -25,6 +25,11 @@
       <label>同元素 FWHM 规则<select id="fwhmPolicy"><option value="tolerance" selected>同批同元素：容差联动</option><option value="linked">同谱各化学态：完全联动</option><option value="independent">独立（必须说明依据）</option></select></label>
       <label>FWHM 最大差值 (eV)<input id="widthTolerance" type="number" min="0.05" max="1" step="0.05" value="0.25"></label>
       <label>批次/元素标签<input id="batchLabel" placeholder="例如 batch-01 · Ir 4f"></label>
+      <label>样品名称（入库必填）<input id="sampleName" placeholder="例如 IrOx-01"></label>
+      <label>化学式<input id="sampleFormula" placeholder="例如 IrO₂ / PbIrO₃"></label>
+      <label>样品编号/批次<input id="sampleId" placeholder="例如 2026-APXPS-01"></label>
+      <label>实验日期<input id="experimentDate" type="date"></label>
+      <label>数据库备注<input id="databaseNotes" placeholder="条件、气氛、电位或独立证据"></label>
       <label class="checkline"><input id="preSubtracted" type="checkbox">输入谱已由可靠流程扣除背景</label>
     </div>
     <div class="actions"><button id="loadDemo" class="secondary">载入 Ir 4f 演示谱</button><button id="applyTemplate">应用谱区模板</button><button id="fit" class="primary">运行约束拟合</button></div>
@@ -46,11 +51,13 @@
     <h2>4. 拟合质量与化学态结果</h2>
     <div id="metrics" class="metric-grid"><article><b>R²</b><span>—</span></article><article><b>SSE / DOF</b><span>—</span></article><article><b>RMSE</b><span>—</span></article><article><b>残差偏置</b><span>—</span></article><article><b>背景过扣点</b><span>—</span></article><article><b>端点基线占比</b><span>—</span></article></div>
     <div class="table-wrap"><table><thead><tr><th>组分</th><th>峰位</th><th>FWHM</th><th>面积</th><th>面积比例</th><th>双峰从峰</th><th>约束状态</th></tr></thead><tbody id="resultRows"><tr><td colspan="7">尚未运行拟合</td></tr></tbody></table></div>
-    <div class="actions"><button id="downloadCsv" class="secondary">导出参数 CSV</button><button id="downloadCurve" class="secondary">导出原始/背景/拟合/残差 CSV</button><button id="downloadJson" class="secondary">导出完整 JSON</button></div>
+    <div class="actions"><button id="downloadCsv" class="secondary">导出参数 CSV</button><button id="downloadCurve" class="secondary">导出原始/背景/拟合/残差 CSV</button><button id="downloadJson" class="secondary">导出完整 JSON</button><button id="downloadDbRecord" class="secondary">下载数据库记录</button><button id="saveToChemistryDb" class="primary">一键加入化学数据库</button></div>
+    <p id="databaseStatus" class="message">运行拟合并填写样品名称后，可生成可追溯的 XPS 数据库记录。</p>
   </section>
 
   <aside class="science-note"><h3>专业拟合规则</h3><ul><li>背景必须穿过峰区两侧的真实基线区；背景高于实验谱造成负面积属于过扣，端点仍有明显正信号通常提示欠扣或拟合区间过窄。</li><li>同一自旋轨道双峰必须共享峰型和 FWHM，并约束有依据的能级分裂与面积比。同批、同元素、相同采集条件应使用同一套峰型和背景策略。</li><li>同一元素不同化学态的 FWHM 宜保持相近并在整批数据中一致约束，但不应无条件完全相等；只有充电、无序、寿命展宽或仪器条件等证据充分时才放宽，并记录理由。</li><li>较高 R² 不等于化学归属正确。新增峰必须同时得到原始肩峰/系统性残差和独立化学证据支持；O 1s 高度重叠，不能仅凭单条谱线命名缺陷氧。</li><li>本页的 pseudo-Voigt 为高斯与洛伦兹线性混合。浏览器 Tougaard 为探索实现，正式发表前应在经过验证的软件中复核背景参数和不确定度。</li></ul></aside>
 </main>
-<script src="./xps-fit.js?v=20261016-2"></script>
+<script src="./spectral-database.js?v=20261102-1"></script>
+<script src="./xps-fit.js?v=20261102-db1"></script>
 </body>
 </html>
