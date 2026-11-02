@@ -1,5 +1,5 @@
-#define AppName "XAFS Native Bridge"
-#define AppVersion "1.5.0"
+#define AppName "XAFS 硬线拟合工作台"
+#define AppVersion "1.6.0"
 #define AppPublisher "SynchroChemAI"
 #define AppExeName "XAFSNativeBridge.exe"
 
@@ -27,7 +27,9 @@ Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\xafs-native.local.example.json"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\启动 XAFS 本机桥接"; Filename: "{app}\{#AppExeName}"
+Name: "{autodesktop}\XAFS 硬线拟合工作台"; Filename: "{app}\{#AppExeName}"; Parameters: "--open-workbench --port 8766"; WorkingDir: "{app}"; Comment: "一键启动本机桥接并打开硬线 EXAFS 拟合工作台"
+Name: "{group}\XAFS 硬线拟合工作台"; Filename: "{app}\{#AppExeName}"; Parameters: "--open-workbench --port 8766"; WorkingDir: "{app}"
+Name: "{group}\仅启动 XAFS 本机桥接"; Filename: "{app}\{#AppExeName}"; Parameters: "--port 8766"; WorkingDir: "{app}"
 Name: "{group}\配置说明"; Filename: "{app}\README.md"
 
 [Registry]
@@ -35,7 +37,7 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: 
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Parameters: "--install-all --silent-demeter"; Description: "安装 HAMA 与 Demeter 全部拟合环境"; StatusMsg: "正在从官方来源安装 HAMA、Demeter、Athena、Artemis 与 FEFF，请稍候..."; Flags: runhidden waituntilterminated
-Filename: "{app}\{#AppExeName}"; Parameters: "--port 8766"; Description: "启动 XAFS 本机桥接"; Flags: nowait runhidden
+Filename: "{app}\{#AppExeName}"; Parameters: "--open-workbench --port 8766"; Description: "启动 XAFS 硬线拟合工作台"; Flags: nowait runhidden
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /IM {#AppExeName} /F"; Flags: runhidden; RunOnceId: "StopBridge"

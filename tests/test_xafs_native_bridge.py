@@ -24,7 +24,17 @@ class NativeBridgeTests(unittest.TestCase):
         self.assertEqual(bridge._hidden_subprocess_options("posix"), {})
 
     def test_bridge_reports_installer_version(self):
-        self.assertEqual(bridge.APP_VERSION, "1.5.0")
+        self.assertEqual(bridge.APP_VERSION, "1.6.0")
+
+    def test_desktop_launcher_opens_fixed_native_fit_workbench(self):
+        self.assertEqual(
+            bridge.WORKBENCH_URL,
+            "https://cocoyou123456789-sketch.github.io/data/exafs-fit.html?source=desktop-app",
+        )
+        with patch.object(bridge, "bridge_is_running", return_value=True), \
+                patch.object(bridge.webbrowser, "open", return_value=True) as opener:
+            self.assertTrue(bridge.open_workbench_when_ready(8766))
+        opener.assert_called_once_with(bridge.WORKBENCH_URL)
 
     def test_native_results_return_real_tables_hashes_and_rejection_state(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -160,6 +170,8 @@ class NativeBridgeTests(unittest.TestCase):
         installer = (MODULE_PATH.parent / "installer" / "XAFSNativeBridge.iss").read_text(encoding="utf-8")
         self.assertIn("--install-all --silent-demeter", installer)
         self.assertIn("waituntilterminated", installer)
+        self.assertIn('{autodesktop}\\XAFS 硬线拟合工作台', installer)
+        self.assertIn('--open-workbench --port 8766', installer)
         self.assertNotIn("Portable", installer)
 
     def test_silent_demeter_install_waits_and_uses_unattended_flags(self):

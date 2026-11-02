@@ -9,7 +9,10 @@ Hephaestus、FEFF 和 HAMA。服务只监听 `127.0.0.1:8766`，HTTP 请求不�
 从网页点击“一键安装本机桥接和全部拟合环境”，下载并运行 GitHub Release 中唯一的
 `XAFS-Native-Bridge-Setup.exe`。安装程序会安装桥接器和自动化 skill，从固定官方地址
 下载并配置 HAMA，再静默安装 Demeter 套件（Athena、Artemis、Hephaestus 与 FEFF），
-最后启动桥接服务并注册登录后自动启动。目标电脑无需预装 Python，也无需逐项判断软件状态。
+最后创建桌面“XAFS 硬线拟合工作台”快捷方式、启动桥接服务并注册登录后自动启动。
+目标电脑无需预装 Python，也无需逐项判断软件状态。以后双击桌面快捷方式即可：若桥接器
+尚未运行会先启动 `127.0.0.1:8766`，确认服务就绪后自动打开完整的 EXAFS 原生拟合页面；
+若桥接器已经随 Windows 登录启动，则直接打开工作台，不会重复占用端口。
 
 从旧版本升级时可直接运行新版安装器：安装器会先静默停止旧桥接进程，完成覆盖后重新启动。
 1.0.3 起，软件状态探测及拟合辅助命令均以无控制台窗口方式运行，不再周期性闪出终端窗口。
@@ -24,6 +27,8 @@ Hephaestus、FEFF 和 HAMA。服务只监听 `127.0.0.1:8766`，HTTP 请求不�
 1.5.0 起，网页直接读取 Demeter 生成的参数表、统计表、审计和原始结果文件，逐文件显示
 SHA-256 并允许下载。参数越界或统计条件不完整会进入 `fit_rejected`，不能生成正式交付包；
 专业警告进入 `review_required`，与自动审计通过的结果明确分开。
+1.6.0 起，安装器会在桌面和开始菜单创建“XAFS 硬线拟合工作台”。该入口使用固定的
+公开工作台网址，不接受用户传入任意跳转地址；启动时先确认本机桥接器身份，再打开网页。
 
 状态接口会分别返回每个软件的“已安装”和“正在运行”状态及进程 PID。因此网页
 不仅能发现 Athena、Artemis、Hephaestus、FEFF 和 HAMA 的安装路径，也能在程序
@@ -70,5 +75,5 @@ Demeter/HAMA 实际运行并产生结果后，才能把输出标记为原生拟�
 
 GitHub Actions 工作流 `.github/workflows/build-xafs-native-bridge.yml` 会在 Windows
 环境构建单文件 EXE 和唯一的 Inno Setup 完整安装程序。推送形如
-`xafs-bridge-v1.5.0` 的 tag 后，安装包会自动发布到 GitHub Releases，网页按钮始终指向
+`xafs-bridge-v1.6.0` 的 tag 后，安装包会自动发布到 GitHub Releases，网页按钮始终指向
 最新 release；不再发布便携 ZIP。

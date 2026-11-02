@@ -24,6 +24,7 @@ import threading
 import time
 import traceback
 import uuid
+import webbrowser
 import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -41,7 +42,8 @@ APP_ROOT = (
 ROOT = APP_ROOT
 DEFAULT_JOBS = APP_ROOT / "jobs"
 CONFIG_NAME = "xafs-native.local.json"
-APP_VERSION = "1.5.0"
+APP_VERSION = "1.6.0"
+WORKBENCH_URL = "https://cocoyou123456789-sketch.github.io/data/exafs-fit.html?source=desktop-app"
 TOOLS = ("athena", "artemis", "hephaestus", "feff", "hama")
 EXECUTABLE_NAMES = {
     "athena": ("athena.exe", "dathena.exe", "dathena.bat", "dathena"),
@@ -78,6 +80,27 @@ INSTALL_CATALOG = {
 }
 DEMETER_TOOLS = {"athena", "artemis", "hephaestus", "feff", "demeter"}
 MAX_INSTALL_DOWNLOAD = 1024 * 1024 * 1024
+
+
+def bridge_is_running(port: int = 8766) -> bool:
+    """Return true only when the loopback port is this XAFS bridge."""
+    try:
+        with urlopen(f"http://127.0.0.1:{port}/api/status", timeout=1.5) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        return response.status == 200 and payload.get("service") == "xafs-native-bridge"
+    except Exception:
+        return False
+
+
+def open_workbench_when_ready(port: int = 8766) -> bool:
+    """Wait briefly for the bridge, then open the fixed native-fit web app."""
+    for _ in range(80):
+        if bridge_is_running(port):
+            webbrowser.open(WORKBENCH_URL)
+            return True
+        time.sleep(0.25)
+    _append_log(f"desktop launcher timed out waiting for bridge on port {port}")
+    return False
 
 
 def _hidden_subprocess_options(platform: str | None = None) -> dict[str, Any]:
@@ -1120,6 +1143,7 @@ def main() -> int:
     parser.add_argument("--probe", action="store_true")
     parser.add_argument("--install-all", action="store_true")
     parser.add_argument("--silent-demeter", action="store_true")
+    parser.add_argument("--open-workbench", action="store_true")
     args = parser.parse_args()
     if args.host not in ("127.0.0.1", "localhost", "::1"):
         parser.error("native GUI bridge must bind to loopback only")
@@ -1136,6 +1160,9 @@ def main() -> int:
     if args.probe:
         print(json.dumps(state.status(), ensure_ascii=False, indent=2))
         return 0
+    if args.open_workbench and bridge_is_running(args.port):
+        webbrowser.open(WORKBENCH_URL)
+        return 0
     args.jobs.mkdir(parents=True, exist_ok=True)
     try:
         server = BridgeHTTPServer((args.host, args.port), Handler)
@@ -1144,6 +1171,8 @@ def main() -> int:
         return 1
     server.state = state  # type: ignore[attr-defined]
     _append_log(f"started on http://{args.host}:{args.port}")
+    if args.open_workbench:
+        threading.Thread(target=open_workbench_when_ready, args=(args.port,), daemon=True).start()
     if sys.stdout is not None:
         print(f"XAFS native bridge: http://{args.host}:{args.port}")
         print(json.dumps(state.status(), ensure_ascii=False, indent=2))
