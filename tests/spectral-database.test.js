@@ -30,13 +30,40 @@ test('database handoff validates origins and has JSON backup import/export', () 
 });
 
 test('XPS fitting exports complete database records and can save them locally', () => {
-  for (const id of ['sampleName','sampleFormula','sampleId','experimentDate','databaseNotes','downloadDbRecord','saveToChemistryDb']) {
+  for (const id of ['sampleName','sampleFormula','sampleId','databaseNotes','downloadDbRecord','saveToChemistryDb']) {
     assert.match(xpsHtml, new RegExp(`id="${id}"`));
   }
+  assert.doesNotMatch(xpsHtml, /id="experimentDate"/);
   assert.match(xpsJs, /function buildDatabaseRecord\(\)/);
   assert.match(xpsJs, /record_type:'xps'/);
   assert.match(xpsJs, /raw_intensity:data\.raw/);
   assert.match(xpsJs, /background:last\.bg/);
   assert.match(xpsJs, /components/);
   assert.match(xpsJs, /SpectralDatabase\.put\(record\)/);
+});
+
+test('XPS fitting accepts separate C 1s and target spectra with automatic calibration', () => {
+  for (const id of ['c1sFile','file','calibrationMin','calibrationMax','autoCalibrate','calibrationStatus']) {
+    assert.match(xpsHtml, new RegExp(`id="${id}"`));
+  }
+  assert.match(xpsHtml, /C–C\/C–H 主峰并校准到 284\.80 eV/);
+  assert.match(xpsJs, /function detectC1s\(rows\)/);
+  assert.match(xpsJs, /target-measured/);
+  assert.match(xpsJs, /automatic_detection:calibration/);
+  assert.match(xpsJs, /uncorrected_energy:data\.rawEnergy/);
+});
+
+test('element selection supplies constrained peak recommendations', () => {
+  for (const id of ['element','region','recommendation','applyTemplate']) {
+    assert.match(xpsHtml, new RegExp(`id="${id}"`));
+  }
+  for (const key of ['c','o','ir','pb','pt','au']) {
+    assert.match(xpsJs, new RegExp(`${key}:\\[`));
+  }
+  assert.match(xpsJs, /split:3\.0,ratio:\.75/);
+  assert.match(xpsJs, /split:4\.86,ratio:\.75/);
+  assert.doesNotMatch(xpsJs, /p\.center=mid/);
+  assert.match(xpsJs, /推荐峰位不在当前数据范围/);
+  assert.match(xpsJs, /NIST XPS Database/);
+  assert.match(xpsJs, /automatic_peak_assignments_are_starting_suggestions:true/);
 });
