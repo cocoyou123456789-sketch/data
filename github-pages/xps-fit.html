@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>XPS 约束拟合工作台</title>
-  <link rel="stylesheet" href="./xps-fit.css?v=20261105-c1s1">
+  <link rel="stylesheet" href="./xps-fit.css?v=20261106-fold1">
   <style>
     label small{color:#82b9be;font-size:10px;font-weight:500;line-height:1.35}
     .calibration-card{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:16px;padding:14px 16px;border:1px solid #258c83;border-radius:12px;background:#063a3b}
@@ -14,7 +14,9 @@
     .template-selector{display:grid;grid-template-columns:minmax(120px,.45fr) minmax(220px,1fr) auto;align-items:end;gap:12px;margin:12px 0}
     .recommendation{margin:10px 0 16px;padding:13px 15px;border-left:3px solid var(--mint);color:#bfe4e5;background:#073039;font-size:12px;line-height:1.55}
     .recommendation strong{color:#6ff0d3}.recommendation .recommendation-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.recommendation .recommendation-tags span{padding:4px 7px;border-radius:99px;color:#bffff2;background:#075348;font-size:10px}
-    @media(max-width:600px){.calibration-card{align-items:start;flex-direction:column}.template-selector{grid-template-columns:1fr}.calibration-metrics{justify-content:flex-start}}
+    .section-overview{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border:1px solid #1c6874;border-radius:14px;background:#062832}.section-overview strong,.section-overview span{display:block}.section-overview strong{color:#efffff;font-size:14px}.section-overview span{margin-top:3px;color:#8fc2c8;font-size:11px}.overview-actions{display:flex;gap:8px;flex-shrink:0}
+    details.collapsible-panel{padding:0;overflow:hidden}details.collapsible-panel>summary{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:18px 20px;cursor:pointer;list-style:none;transition:background .18s ease}details.collapsible-panel>summary::-webkit-details-marker{display:none}details.collapsible-panel>summary:hover{background:#07323c}details.collapsible-panel[open]>summary{border-bottom:1px solid #174e59;background:#073039}details.collapsible-panel .section-index{display:grid;width:34px;height:34px;border:1px solid #2bd9bf;border-radius:10px;place-items:center;color:#70f5dc;background:#06423f;font-size:15px;font-weight:900}details.collapsible-panel .summary-copy h2,details.collapsible-panel .summary-copy h3{margin:0;color:#f2ffff;font-size:17px}details.collapsible-panel .summary-copy p{margin:4px 0 0;color:#89bdc3;font-size:11px;line-height:1.45}details.collapsible-panel .fold-cue{display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid #247b80;border-radius:99px;color:#8debdc;background:#063a3d;font-size:10px;font-weight:800}details.collapsible-panel .fold-cue::after{content:'＋';font-size:15px;line-height:1}details.collapsible-panel[open] .fold-cue::after{content:'−'}details.collapsible-panel .panel-body{padding:18px 20px 20px}details.collapsible-panel .panel-body>.title-row:first-child{margin-bottom:12px}.rules-panel .panel-body{padding-top:8px}
+    @media(max-width:600px){.calibration-card{align-items:start;flex-direction:column}.template-selector{grid-template-columns:1fr}.calibration-metrics{justify-content:flex-start}.section-overview{align-items:flex-start;flex-direction:column}.overview-actions{width:100%}.overview-actions button{flex:1}details.collapsible-panel>summary{grid-template-columns:auto minmax(0,1fr);padding:15px}.fold-cue{grid-column:2;justify-self:start}.panel-body{padding:15px!important}}
   </style>
 </head>
 <body>
@@ -23,8 +25,11 @@
   <div id="fitBadge" class="badge">等待数据</div>
 </header>
 <main>
-  <section class="panel setup">
-    <h2>1. 原始数据与 C 1s 自动校准</h2>
+  <nav class="section-overview" aria-label="区域折叠控制"><div><strong>区域功能总览</strong><span>点击任一区域标题即可展开；默认全部折叠，便于快速查看工作流程。</span></div><div class="overview-actions"><button id="expandAll" class="secondary" type="button">展开全部</button><button id="collapseAll" class="secondary" type="button">折叠全部</button></div></nav>
+
+  <details class="panel setup collapsible-panel" data-area="data">
+    <summary><span class="section-index">1</span><span class="summary-copy"><h2>原始数据与 C 1s 自动校准</h2><p>上传 C 1s 与目标谱，统一完成能量校准、背景和峰型策略设置。</p></span><span class="fold-cue">展开</span></summary>
+    <div class="panel-body">
     <div class="grid four">
       <label>C 1s 校准谱（原始数据）<input id="c1sFile" type="file" accept=".txt,.csv,.xy,.dat"><small>自动寻找 C–C/C–H 主峰并校准到 284.80 eV</small></label>
       <label>待拟合目标谱文件<input id="file" type="file" accept=".txt,.csv,.xy,.dat"><small>例如 Ir 4f、Pb 4f、O 1s；自动应用同一能量位移</small></label>
@@ -47,32 +52,41 @@
     <div class="calibration-card"><div><b>C 1s 校准状态</b><span id="calibrationStatus">等待 C 1s 原始谱</span></div><div id="calibrationMetrics" class="calibration-metrics"><span>实测峰位：—</span><span>能量位移：—</span><span>识别质量：—</span></div></div>
     <div class="actions"><button id="autoCalibrate" class="secondary">重新自动识别 C 1s</button><button id="loadDemo" class="secondary">载入 C 1s + Ir 4f 演示</button><button id="fit" class="primary">运行约束拟合</button></div>
     <p id="message" class="message">文件第一列为结合能、第二列为原始强度；升序或降序均可。只上传 C 1s 时会同时把它作为当前目标谱，上传目标谱后则自动应用同一校准位移。</p>
-  </section>
+    </div>
+  </details>
 
-  <section class="panel">
-    <div class="title-row"><div><h2>2. 元素模板、峰组分和约束</h2><p>选择元素和能级后自动给出推荐结合能、范围、FWHM、双峰分裂和面积比。推荐值仅作为可编辑起点，不能替代样品专属文献和独立化学证据。</p></div><button id="addPeak" class="secondary">+ 添加单峰</button></div>
+  <details class="panel collapsible-panel" data-area="peaks">
+    <summary><span class="section-index">2</span><span class="summary-copy"><h2>元素模板、峰组分和约束</h2><p>按元素生成推荐结合能、FWHM、双峰分裂、面积比和物理边界。</p></span><span class="fold-cue">展开</span></summary>
+    <div class="panel-body">
+    <div class="title-row"><div><p>推荐值仅作为可编辑起点，不能替代样品专属文献和独立化学证据。</p></div><button id="addPeak" class="secondary">+ 添加单峰</button></div>
     <div class="template-selector"><label>元素<select id="element"><option value="C">C</option><option value="O">O</option><option value="Ir" selected>Ir</option><option value="Pb">Pb</option><option value="Pt">Pt</option><option value="Au">Au</option></select></label><label>能级/谱区<select id="region"></select></label><button id="applyTemplate" type="button">应用推荐峰组</button></div>
     <div id="recommendation" class="recommendation" aria-live="polite"></div>
     <div class="table-wrap"><table><thead><tr><th>组分/归属</th><th>模式</th><th>峰位 (eV)</th><th>峰位范围</th><th>FWHM (eV)</th><th>宽度范围</th><th>面积/强度</th><th>拟合参数</th><th>双峰约束</th><th></th></tr></thead><tbody id="peakRows"></tbody></table></div>
     <div class="guard"><b>物理约束与背景检查</b><ul id="warnings"><li>请载入数据并应用模板。</li></ul></div>
-  </section>
+    </div>
+  </details>
 
-  <section class="panel chart-panel">
-    <div class="title-row"><div><h2>3. 实验、拟合与残差</h2><p>上图显示实验谱、总拟合、背景与各组分；下图为实验值减拟合值。</p></div><button id="downloadSvg" class="secondary">下载 SVG</button></div>
+  <details class="panel chart-panel collapsible-panel" data-area="chart">
+    <summary><span class="section-index">3</span><span class="summary-copy"><h2>实验、拟合与残差</h2><p>对比实验谱、背景、各组分、总拟合曲线及残差分布。</p></span><span class="fold-cue">展开</span></summary>
+    <div class="panel-body">
+    <div class="title-row"><div><p>上图显示实验谱、总拟合、背景与各组分；下图为实验值减拟合值。</p></div><button id="downloadSvg" class="secondary">下载 SVG</button></div>
     <svg id="chart" viewBox="0 0 1200 620" role="img" aria-label="XPS 拟合图"></svg>
-  </section>
+    </div>
+  </details>
 
-  <section class="panel results">
-    <h2>4. 拟合质量与化学态结果</h2>
+  <details class="panel results collapsible-panel" data-area="results">
+    <summary><span class="section-index">4</span><span class="summary-copy"><h2>拟合质量与化学态结果</h2><p>查看 R²、误差、峰参数、面积比例，并导出或写入化学数据库。</p></span><span class="fold-cue">展开</span></summary>
+    <div class="panel-body">
     <div id="metrics" class="metric-grid"><article><b>R²</b><span>—</span></article><article><b>SSE / DOF</b><span>—</span></article><article><b>RMSE</b><span>—</span></article><article><b>残差偏置</b><span>—</span></article><article><b>背景过扣点</b><span>—</span></article><article><b>端点基线占比</b><span>—</span></article></div>
     <div class="table-wrap"><table><thead><tr><th>组分</th><th>峰位</th><th>FWHM</th><th>面积</th><th>面积比例</th><th>双峰从峰</th><th>约束状态</th></tr></thead><tbody id="resultRows"><tr><td colspan="7">尚未运行拟合</td></tr></tbody></table></div>
     <div class="actions"><button id="downloadCsv" class="secondary">导出参数 CSV</button><button id="downloadCurve" class="secondary">导出原始/背景/拟合/残差 CSV</button><button id="downloadJson" class="secondary">导出完整 JSON</button><button id="downloadDbRecord" class="secondary">下载数据库记录</button><button id="saveToChemistryDb" class="primary">一键加入化学数据库</button></div>
     <p id="databaseStatus" class="message">运行拟合并填写样品名称后，可生成可追溯的 XPS 数据库记录。</p>
-  </section>
+    </div>
+  </details>
 
-  <aside class="science-note"><h3>专业拟合规则</h3><ul><li>背景必须穿过峰区两侧的真实基线区；背景高于实验谱造成负面积属于过扣，端点仍有明显正信号通常提示欠扣或拟合区间过窄。</li><li>同一自旋轨道双峰必须共享峰型和 FWHM，并约束有依据的能级分裂与面积比。同批、同元素、相同采集条件应使用同一套峰型和背景策略。</li><li>同一元素不同化学态的 FWHM 宜保持相近并在整批数据中一致约束，但不应无条件完全相等；只有充电、无序、寿命展宽或仪器条件等证据充分时才放宽，并记录理由。</li><li>较高 R² 不等于化学归属正确。新增峰必须同时得到原始肩峰/系统性残差和独立化学证据支持；O 1s 高度重叠，不能仅凭单条谱线命名缺陷氧。</li><li>本页的 pseudo-Voigt 为高斯与洛伦兹线性混合。浏览器 Tougaard 为探索实现，正式发表前应在经过验证的软件中复核背景参数和不确定度。</li></ul></aside>
+  <details class="science-note collapsible-panel rules-panel" data-area="rules"><summary><span class="section-index">i</span><span class="summary-copy"><h3>专业拟合规则</h3><p>背景、双峰、FWHM、峰数和化学归属的质量控制边界。</p></span><span class="fold-cue">展开</span></summary><div class="panel-body"><ul><li>背景必须穿过峰区两侧的真实基线区；背景高于实验谱造成负面积属于过扣，端点仍有明显正信号通常提示欠扣或拟合区间过窄。</li><li>同一自旋轨道双峰必须共享峰型和 FWHM，并约束有依据的能级分裂与面积比。同批、同元素、相同采集条件应使用同一套峰型和背景策略。</li><li>同一元素不同化学态的 FWHM 宜保持相近并在整批数据中一致约束，但不应无条件完全相等；只有充电、无序、寿命展宽或仪器条件等证据充分时才放宽，并记录理由。</li><li>较高 R² 不等于化学归属正确。新增峰必须同时得到原始肩峰/系统性残差和独立化学证据支持；O 1s 高度重叠，不能仅凭单条谱线命名缺陷氧。</li><li>本页的 pseudo-Voigt 为高斯与洛伦兹线性混合。浏览器 Tougaard 为探索实现，正式发表前应在经过验证的软件中复核背景参数和不确定度。</li></ul></div></details>
 </main>
 <script src="./spectral-database.js?v=20261102-1"></script>
-<script src="./xps-fit.js?v=20261105-c1s1"></script>
+<script src="./xps-fit.js?v=20261106-fold1"></script>
 </body>
 </html>

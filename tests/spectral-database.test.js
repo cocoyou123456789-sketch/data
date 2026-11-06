@@ -67,3 +67,13 @@ test('element selection supplies constrained peak recommendations', () => {
   assert.match(xpsJs, /NIST XPS Database/);
   assert.match(xpsJs, /automatic_peak_assignments_are_starting_suggestions:true/);
 });
+
+test('XPS workbench provides a collapsed functional overview for every area', () => {
+  assert.equal((xpsHtml.match(/<details class="[^"]*collapsible-panel/g) || []).length, 5);
+  assert.equal((xpsHtml.match(/<summary>/g) || []).length, 5);
+  assert.doesNotMatch(xpsHtml, /<details[^>]+\sopen(?:\s|>)/);
+  for (const id of ['expandAll','collapseAll']) assert.match(xpsHtml, new RegExp(`id="${id}"`));
+  for (const area of ['data','peaks','chart','results','rules']) assert.match(xpsHtml, new RegExp(`data-area="${area}"`));
+  assert.match(xpsJs, /function setAllPanels\(open\)/);
+  assert.match(xpsJs, /foldPanels\.forEach\(panel=>panel\.addEventListener\('toggle',syncFoldCues\)\)/);
+});
