@@ -91,7 +91,7 @@ struct GazeCalibration {
   enum Phase { case training, validation, ready, failed }
   var phase: Phase = .training
   private(set) var index = 0, model: GazeModel?, meanError = 0.0, maxError = 0.0,
-    message = "请看圆点，保持头部稳定"
+    message = "请看圆点，保持头部稳定。校准期间不会选择"
   let training: [CGPoint], validation: [CGPoint], desktopSize: CGSize
   private var since: Double?, buffer: [EyeFrame] = [], samples: [GazeSample] = [],
     errors: [Double] = []
@@ -110,7 +110,7 @@ struct GazeCalibration {
     guard let eye, eye.valid else {
       buffer = []
       since = nil
-      message = "未检测到清晰瞳孔，请调整光线并看圆点"
+      message = "未检测到清晰瞳孔，请调整光线并看圆点。校准期间不会选择"
       return
     }
     if since == nil { since = time }
@@ -118,7 +118,8 @@ struct GazeCalibration {
     buffer.append(eye)
     message =
       phase == .training
-      ? "九点校准 \(index+1) / \(training.count)" : "独立验证 \(index+1) / \(validation.count)"
+      ? "九点校准 \(index+1) / \(training.count)。看这里不会选择"
+      : "独立验证 \(index+1) / \(validation.count)。验证期间不会选择"
     guard buffer.count >= 15 else { return }
     let n = Double(buffer.count)
     let frame = EyeFrame(
@@ -131,7 +132,7 @@ struct GazeCalibration {
     guard jitter < 0.06 else {
       buffer = []
       since = time
-      message = "瞳孔定位不稳定，请保持不动并重新采样"
+      message = "瞳孔定位不稳定，请保持不动并重新采样。校准期间不会选择"
       return
     }
     if phase == .training {
@@ -180,23 +181,37 @@ struct GazeDwell {
     since = nil
     fired = false
   }
-  mutating func update(_ point: CGPoint?, at time: Double) -> (progress: Double, click: Bool) {
+  mutating func update(_ point: CGPoint?, at time: Double) -> (progress: Double, click: Bool, armed: Bool)
+  {
     guard let point else {
       if !fired { reset() }
-      return (0, false)
+      return (0, false, !fired)
     }
     if let anchor, hypot(point.x - anchor.x, point.y - anchor.y) <= 40 {
-      guard !fired else { return (0, false) }
+      guard !fired else { return (0, false, false) }
       let progress = min(1, (time - (since ?? time)) / 1.2)
       if progress == 1 {
         fired = true
-        return (1, true)
+        return (1, true, false)
       }
-      return (progress, false)
+      return (progress, false, true)
     }
     anchor = point
     since = time
     fired = false
-    return (0, false)
+    return (0, false, true)
+  }
+}
+
+enum GazeCameraReport {
+  static func text(found: Int) -> String {
+    let count = max(0, found)
+    if count >= 2 {
+      return "发现 \(count) 个摄像头。眼球控制只用默认这一路；第二台没有接入定位。"
+    }
+    if count == 1 {
+      return "眼球控制使用 1 个摄像头。左右眼来自同一画面。第二台定位摄像头未连接。"
+    }
+    return "未找到摄像头。眼球控制需要前置摄像头；第二台定位摄像头未连接。"
   }
 }

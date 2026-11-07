@@ -3,7 +3,6 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const gaze = require('../github-pages/website-gaze-core.js');
-const {WebsiteGestureSurface} = require('../github-pages/website-gesture-core.js');
 
 const face = {x: 0.35, y: 0.25, width: 0.3, height: 0.4};
 const eye = (x, y) => ({features: [x * 0.4 - 0.2, y * 0.3 - 0.15, 0.5, 0.45, 0, 0], faceBounds: face});
@@ -66,7 +65,10 @@ test('steady gaze selects once; blinking does not, and looking away arms the nex
   assert.equal(controller.update(eye(0.5, 0.5), 1.2).phase, 'move');
   assert.equal(controller.update(eye(0.5, 0.5), 2.5).phase, 'down');
   assert.equal(controller.update(null, 2.6).phase, 'up');
-  assert.equal(controller.update(eye(0.5, 0.5), 3).phase, 'move');
+  const held = controller.update(eye(0.5, 0.5), 3);
+  assert.equal(held.phase, 'move');
+  assert.match(held.zh, /移开/);
+  assert.match(held.en, /1\.2|Look away/);
   assert.equal(controller.update(eye(0.9, 0.5), 3.1).phase, 'move');
   assert.equal(controller.update(eye(0.9, 0.5), 4.4).phase, 'down');
 });
@@ -80,6 +82,11 @@ test('one front camera is reported even when a second camera is present', () => 
     assert.match(report.en, /second/i);
   }
   assert.match(gaze.cameraReport(2).zh, /只用前置/);
+  const unknown = gaze.cameraStatus('');
+  assert.equal(unknown.used, null);
+  assert.equal(unknown.secondConnected, false);
+  assert.match(unknown.zh, /第二台不用于定位/);
+  assert.doesNotMatch(unknown.zh, /使用 1 个/);
 });
 
 test('iris landmarks become the same six gaze features, and a missing iris does not', () => {
@@ -102,46 +109,90 @@ test('iris landmarks become the same six gaze features, and a missing iris does 
   assert.equal(gaze.eyeFrameFromLandmarks(Array.from({length: 468}, () => ({x: 0.5, y: 0.5}))), null);
 });
 
-test('the website eye path calibrates from the front camera and selects only after the explicit dwell', async () => {
-  const handlers = {}, nodes = {}, clicks = {button: 0};
+test('the lab eye path uses one front camera and selects only after the explicit dwell', async () => {
+  const html = fs.readFileSync('github-pages/photon-lab.html', 'utf8');
+  assert.match(html, /id="gestureModeEye"/);
+  assert.match(html, /眼球控制/);
+  assert.match(html, /1\.2/);
+  assert.match(html, /眨眼不会确认/);
+  assert.ok(html.includes('website-gaze-core.js'));
+  assert.ok(html.indexOf('website-gaze-core.js') < html.indexOf('photon-gesture.js'));
+  const guide = fs.readFileSync('github-pages/photon-lab-guide.html', 'utf8');
+  assert.match(guide, /眼球控制/);
+  assert.match(guide, /第二台/);
+
+  const handlers = {}, nodes = {}, workers = [];
   const classes = () => ({add() {}, remove() {}});
-  for (const id of ['gestureVideo', 'gestureCursor', 'gesturePreview', 'gestureStart', 'gestureStop', 'gesturePreviewToggle', 'gestureStatus', 'gestureSkeleton', 'gestureModeEye', 'gazeCalibration', 'gazeDot', 'gazeCalibrationText', 'gazeEnable', 'websiteGestureWidget']) {
-    nodes[id] = {hidden: id === 'gazeCalibration' || id === 'gazeDot', disabled: id === 'gazeEnable', style: {}, dataset: {}, textContent: '', attributes: {}, classList: classes(),
+  for (const id of ['gestureVideo', 'gestureCursor', 'gesturePreview', 'gestureStart', 'gestureStop', 'gesturePreviewToggle', 'gestureStatus', 'gestureSkeleton', 'gestureModeEye', 'gestureModeHand', 'gestureCameraNote', 'gestureEyeHelp', 'gestureHandHelp', 'gazeCalibration', 'gazeDot', 'gazeCalibrationText', 'gazeEnable', 'gazeRetry']) {
+    nodes[id] = {hidden: id === 'gazeCalibration' || id === 'gazeDot' || id === 'gestureEyeHelp', disabled: id === 'gazeEnable', style: {setProperty() {}}, dataset: {}, textContent: '', attributes: {}, classList: classes(),
       setAttribute(name, value) { this.attributes[name] = value; }, getAttribute(name) { return this.attributes[name]; },
       addEventListener(name, fn) { handlers[id + ':' + name] = fn; }};
   }
   nodes.gestureModeEye.attributes['aria-pressed'] = 'true';
+  nodes.gestureModeHand.attributes['aria-pressed'] = 'false';
   nodes.gestureSkeleton.getContext = () => Object.fromEntries(['clearRect', 'beginPath', 'arc', 'fill'].map(name => [name, () => {}]));
   nodes.gestureVideo.play = async () => {};
-  const button = {clicks: 0, disabled: false, isConnected: true, classList: classes(), closest() { return this; }, click() { this.clicks++; clicks.button++; }, focus() {}};
-  const cursor = {hidden: true, dataset: {}, style: {setProperty() {}}};
-  const view = {innerWidth: 1000, innerHeight: 600, document: null};
-  const document = {documentElement: {lang: 'zh'}, baseURI: 'http://localhost/index.html', hidden: false,
-    getElementById: id => nodes[id], elementFromPoint: () => button, addEventListener(name, fn) { handlers['document:' + name] = fn; }};
-  view.document = document;
-  const surface = new WebsiteGestureSurface(document, view, cursor);
-  const messages = [];
+  const button = {clicks: 0, disabled: false, isConnected: true, classList: classes(), closest(selector) { return selector === '[inert]' ? null : this; }, click() { this.clicks++; }, focus() {}};
   class Worker {
-    constructor() { this.messages = messages; }
-    postMessage(data) { messages.push(data); }
+    constructor() { workers.push(this); this.sent = []; }
+    postMessage(data) { this.sent.push(data); }
     terminate() { this.terminated = true; }
   }
   const stream = {getTracks: () => [{stop() {}}], getVideoTracks: () => [{addEventListener() {}}]};
-  const scope = {window: view, document, navigator: {mediaDevices: {getUserMedia: async () => stream, enumerateDevices: async () => [{kind: 'videoinput'}, {kind: 'videoinput'}]}},
-    Worker, URL, Event, performance: {now: () => 0}, innerWidth: 1000, innerHeight: 600, requestAnimationFrame: () => 1, cancelAnimationFrame() {}, setTimeout: () => 1, clearTimeout() {},
-    console: {warn() {}}};
-  scope.window.WebsiteGaze = gaze;
-  scope.window.PhotonGestureCore = {GestureTracker: class {reset() {} update() { return {kind: 'lost'}; }}};
-  scope.window.PhotonGestureAdapter = {handle(action) { return surface.handle(action); }, cancel() { surface.cancel(); }};
+  const scope = {window: {isSecureContext: true, WebsiteGaze: gaze, PhotonGestureCore: {GestureTracker: class {reset() {} update() { return {kind: 'lost'}; }}}, addEventListener() {}},
+    document: {documentElement: {lang: 'zh'}, baseURI: 'http://localhost/photon-lab.html', hidden: false, getElementById: id => nodes[id], elementFromPoint: () => button, addEventListener() {}},
+    navigator: {mediaDevices: {getUserMedia: async () => stream, enumerateDevices: async () => [{kind: 'videoinput'}, {kind: 'videoinput'}]}},
+    Worker, URL, Event, performance: {now: () => 0}, innerWidth: 1000, innerHeight: 600, requestAnimationFrame: () => 1, cancelAnimationFrame() {}, setTimeout: () => 1, clearTimeout() {}, console: {warn() {}}};
   vm.runInNewContext(fs.readFileSync('github-pages/photon-gesture.js', 'utf8'), scope);
   await handlers['gestureStart:click']();
-  assert.equal(messages[0].mode, 'face');
-  assert.equal(nodes.websiteGestureWidget.dataset.cameras, '2');
-  scope.window.workers = null;
-  const worker = {onmessage() {}};
-  // The script's Worker is the scope Worker; recover it by replacing the instance message path.
-  const started = handlers['gestureStart:click'];
-  await started;
-  // Re-bind: the live worker is not exposed, so drive the same controller contract through the recorded init and a second controlled start is unnecessary.
-  // Use the onmessage captured from the most recent Worker by patching post-construction below.
+  assert.equal(workers[0].sent[0].mode, 'face');
+  assert.equal(nodes.gestureCameraNote.dataset.cameras, '2');
+  assert.match(nodes.gestureCameraNote.textContent, /只用前置/);
+  assert.match(nodes.gestureCameraNote.textContent, /第二台/);
+  assert.equal(nodes.gestureCameraNote.textContent.includes('第二台定位摄像头已连接'), false);
+  workers[0].onmessage({data: {type: 'ready'}});
+  const left = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246];
+  const right = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398];
+  const landmarksFor = target => {
+    const shiftX = (target.x - 0.5) * 0.08, shiftY = (target.y - 0.5) * 0.06;
+    const landmarks = Array.from({length: 478}, () => ({x: 0.5, y: 0.45}));
+    landmarks[10] = {x: 0.32, y: 0.22}; landmarks[152] = {x: 0.68, y: 0.78}; landmarks[1] = {x: 0.5, y: 0.52};
+    const place = (indices, cx, cy, iris) => {
+      landmarks[indices[0]] = {x: cx - 0.04, y: cy}; landmarks[indices[1]] = {x: cx + 0.04, y: cy};
+      landmarks[indices[2]] = {x: cx, y: cy - 0.015}; landmarks[indices[3]] = {x: cx, y: cy + 0.015};
+      landmarks[iris] = {x: cx + shiftX, y: cy + shiftY};
+    };
+    place(left, 0.42, 0.4, 468); place(right, 0.58, 0.4, 473);
+    return landmarks;
+  };
+  const dot = () => ({x: parseFloat(nodes.gazeDot.style.left) / 1000, y: parseFloat(nodes.gazeDot.style.top) / 600});
+  let time = 0;
+  for (let step = 0; step < 800 && nodes.gazeEnable.disabled; step++) {
+    time += 100;
+    workers[0].onmessage({data: {type: 'face', landmarks: landmarksFor(dot()), time}});
+  }
+  assert.equal(button.clicks, 0);
+  assert.equal(nodes.gazeEnable.disabled, false, nodes.gazeCalibrationText.textContent);
+  assert.match(nodes.gazeCalibrationText.textContent, /才会选择|不会选择/);
+  handlers['gazeEnable:click']();
+  assert.match(nodes.gestureStatus.textContent, /1\.2/);
+  const send = marks => { time += 50; workers[0].onmessage({data: {type: 'face', landmarks: marks, time}}); };
+  const center = landmarksFor({x: 0.5, y: 0.5});
+  send(center);
+  assert.equal(button.clicks, 0);
+  time += 1250;
+  send(center);
+  assert.equal(button.clicks, 0);
+  send(center);
+  assert.equal(button.clicks, 1);
+  send([]);
+  send(center);
+  assert.equal(button.clicks, 1);
+  assert.match(nodes.gestureStatus.textContent, /移开|眨眼/);
+  const away = landmarksFor({x: 0.88, y: 0.18});
+  send(away);
+  time += 1250;
+  send(away);
+  send(away);
+  assert.equal(button.clicks, 2);
 });

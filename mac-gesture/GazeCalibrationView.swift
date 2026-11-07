@@ -4,7 +4,7 @@ final class CalibrationPanel: NSPanel { override var canBecomeKey: Bool { true }
 final class CalibrationCanvas: NSView {
   var target = CGPoint.zero, primary = CGRect.zero, desktop = CGRect.zero, progress = 0.0,
     message = "", heading = "", prediction: CGPoint?
-  var finished = false, passed = false
+  var finished = false, passed = false, confirm = ""
   var cancel: (() -> Void)?, activate: (() -> Void)?, retry: (() -> Void)?
   override var acceptsFirstResponder: Bool { true }
   private func local(_ p: CGPoint) -> CGPoint {
@@ -24,8 +24,11 @@ final class CalibrationCanvas: NSView {
     message.draw(
       in: NSRect(x: origin.x, y: origin.y - 30, width: primary.width - 70, height: 24),
       withAttributes: text)
-    "保持头部稳定，眼睛跟随圆点。Esc / ⌃⌥G 停止；完成后 Return 启用，R 重试。".draw(
+    "保持头部稳定，眼睛跟随圆点。Esc / ⌃⌥G 停止；完成后 Return 启用，R 重试。校准期间不会选择。".draw(
       in: NSRect(x: origin.x, y: origin.y - 57, width: primary.width - 70, height: 24),
+      withAttributes: text)
+    confirm.draw(
+      in: NSRect(x: origin.x, y: origin.y - 84, width: primary.width - 70, height: 44),
       withAttributes: text)
     if !finished {
       let p = local(target)

@@ -6,8 +6,8 @@ import SwiftUI
 
 enum InputMethod: String, CaseIterable {
   case hand = "手势控制"
-  case eyePinch = "眼睛定位＋捏合点击"
-  case eyeDwell = "纯眼控：停留点击"
+  case eyePinch = "眼球控制：捏合确认"
+  case eyeDwell = "眼球控制：注视 1.2 秒确认"
 }
 
 final class CursorView: NSView {
@@ -46,9 +46,15 @@ final class DesktopControl: NSObject, ObservableObject {
   @Published var globalStopAvailable = true
   @Published var screenID: UInt32 = 0
   @Published var inputMethod: InputMethod = .hand {
-    didSet { if oldValue != inputMethod { stop() } }
+    didSet {
+      if oldValue != inputMethod {
+        stop()
+        if inputMethod != .hand { refreshGazeCameras() }
+      }
+    }
   }
-  @Published var gazeInfo = "实验眼控需完成九点校准和五点独立验证"
+  @Published var gazeInfo = "眼球控制需完成九点校准和五点独立验证。校准和验证期间不会选择"
+  @Published var gazeCameraNote = GazeCameraReport.text(found: 0)
   @Published var gazeActive = false
   let camera = HandCamera()
   private var tracker = GestureTracker(), run = 0, pressed = false, clickCount: Int64 = 1
@@ -107,6 +113,7 @@ final class DesktopControl: NSObject, ObservableObject {
   func setup() {
     guard timer == nil else { return }
     refreshPermissions()
+    refreshGazeCameras()
     timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
       guard let self else { return }
       self.refreshPermissions()
@@ -224,7 +231,9 @@ final class DesktopControl: NSObject, ObservableObject {
     gazeFilter.reset()
     gazeDwell.reset()
     cursor.progress = 0
-    if inputMethod != .hand { gazeInfo = "眼控已停止，重新启动将重新校准" }
+    if inputMethod != .hand {
+      gazeInfo = "眼球控制已停止。重新启动会重新校准；校准完成并按 Return 启用前不会选择"
+    }
     status = "已停止，摄像头已关闭"
   }
   private func resetInteraction() {
@@ -301,7 +310,11 @@ final class DesktopControl: NSObject, ObservableObject {
     if let session = gazeSession {
       calibrationOverlay.update(session, target: position(session.target), prediction: nil)
     }
-    gazeInfo = "请看校准圆点，校准期间不控制桌面光标"
+    calibrationOverlay.canvas.confirm =
+      inputMethod == .eyeDwell
+      ? "确认方式：按 Return 启用后，在同一位置稳定注视 1.2 秒才点击。眨眼不点击，移开视线后才能再次确认。"
+      : "确认方式：按 Return 启用后，注视只移动光标。拇指与食指捏合后松开才点击。"
+    gazeInfo = "请看校准圆点。校准期间不会选择"
   }
   private func enableGaze() {
     guard let session = gazeSession, session.phase == .ready, let model = session.model else {
@@ -314,7 +327,15 @@ final class DesktopControl: NSObject, ObservableObject {
     tracker.reset()
     gazeFilter.reset()
     gazeDwell.reset()
-    gazeInfo = String(format: "实验眼控已启用 · 验证平均误差 %.0f 屏幕坐标点", session.meanError)
+    gazeInfo = String(
+      format: inputMethod == .eyeDwell
+        ? "眼球控制已启用 · 稳定注视 1.2 秒确认，眨眼不确认 · 验证平均误差 %.0f 点"
+        : "眼球控制已启用 · 捏合后松开确认，注视只移动光标 · 验证平均误差 %.0f 点",
+      session.meanError)
+    status =
+      inputMethod == .eyeDwell
+      ? "眼球控制已启用。稳定注视 1.2 秒确认选择，眨眼不确认。"
+      : "眼球控制已启用。注视移动光标，捏合后松开确认选择。"
   }
   private func processGaze(hand: HandFrame?, eye: EyeFrame?, time: Double) {
     guard layoutKey() == calibrationLayout else {
@@ -354,7 +375,10 @@ final class DesktopControl: NSObject, ObservableObject {
         mouse(.leftMouseDown, gaze)
         mouse(.leftMouseUp, gaze)
       }
-      status = "纯眼控：稳定注视 1.2 秒点击；自然眨眼不点击"
+      status =
+        dwell.click || !dwell.armed
+        ? "选择已确认。移开视线后才能再次确认。眨眼不确认。"
+        : "眼球控制：稳定注视 1.2 秒确认选择。眨眼不确认。"
       return
     }
     cursor.progress = 0
@@ -416,7 +440,23 @@ final class DesktopControl: NSObject, ObservableObject {
       }
     case .idle: mouse(.mouseMoved, gaze)
     }
-    if running { status = pressed ? "手势拖动中，松开结束" : "眼睛移动光标 · 捏合点击 · 双指滚动" }
+    if running {
+      status = pressed ? "捏合拖动中，松开结束" : "眼球控制：注视移动光标。捏合后松开确认选择。"
+    }
+  }
+  private func gazeCameraCount() -> Int {
+    var types: [AVCaptureDevice.DeviceType] = [.builtInWideAngleCamera]
+    if #available(macOS 14.0, *) {
+      types.append(contentsOf: [.external, .continuityCamera])
+    } else {
+      types.append(.externalUnknown)
+    }
+    return AVCaptureDevice.DiscoverySession(
+      deviceTypes: types, mediaType: .video, position: .unspecified
+    ).devices.count
+  }
+  private func refreshGazeCameras() {
+    gazeCameraNote = GazeCameraReport.text(found: gazeCameraCount())
   }
   private func mouse(_ type: CGEventType, _ p: CGPoint) {
     guard
@@ -549,6 +589,8 @@ struct ControlView: View {
         ForEach(InputMethod.allCases, id: \.self) { Text($0.rawValue).tag($0) }
       }.disabled(control.running || control.starting)
       if control.inputMethod != .hand {
+        Text("眼球控制").font(.headline)
+        Text(control.gazeCameraNote).font(.caption)
         Text(control.gazeInfo).font(.caption).foregroundStyle(.secondary)
         Button("重新进行九点校准") { control.beginGazeCalibration() }.disabled(!control.running)
       }
@@ -610,13 +652,28 @@ struct ControlView: View {
       }
       Divider()
       VStack(alignment: .leading, spacing: 8) {
-        Text(control.inputMethod == .hand ? "食指移动  →  光标跟随" : "先完成九点校准和五点验证，再按 Return 启用眼控")
-        Text("拇指与食指捏合  →  点击；按住并移动  →  拖动")
-        Text("拇指与中指捏合后松开  →  右键菜单")
-        Text("快速捏合两次  →  双击")
-        Text("伸出食指和中指，上下移动  →  滚动")
-        Text("⌃⌥S 切换连续滚动：先把光标放在目标列表，再移动手；回到起始位置停止")
-        Text("握拳停留约 0.7 秒  →  停止控制")
+        if control.inputMethod == .eyeDwell {
+          Text("眼球控制 · 确认方式")
+          Text("视线移动  →  光标跟随")
+          Text("同一位置稳定注视 1.2 秒  →  确认选择（点击一次）")
+          Text("移开视线  →  才能再次确认；眨眼不会确认")
+          Text("九点校准、五点验证，并按 Return 启用之前，不会点击")
+        } else if control.inputMethod == .eyePinch {
+          Text("眼球控制 · 确认方式")
+          Text("视线移动  →  光标跟随；注视本身不确认")
+          Text("拇指与食指捏合后松开  →  确认选择")
+          Text("按住捏合并移动  →  拖动；拇指与中指捏合后松开  →  右键")
+          Text("伸出食指和中指，上下移动  →  滚动")
+          Text("九点校准、五点验证，并按 Return 启用之前，不会点击")
+        } else {
+          Text("食指移动  →  光标跟随")
+          Text("拇指与食指捏合  →  点击；按住并移动  →  拖动")
+          Text("拇指与中指捏合后松开  →  右键菜单")
+          Text("快速捏合两次  →  双击")
+          Text("伸出食指和中指，上下移动  →  滚动")
+          Text("⌃⌥S 切换连续滚动：先把光标放在目标列表，再移动手；回到起始位置停止")
+          Text("握拳停留约 0.7 秒  →  停止控制")
+        }
       }.font(.callout)
       Text("可操作 Finder、Dock、菜单栏、浏览器和其他应用。视频在 Mac 本机处理，不上传或保存。启动前先张开手，让识别稳定。").font(.caption)
         .foregroundStyle(

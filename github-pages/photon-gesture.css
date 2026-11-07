@@ -1,6 +1,7 @@
 .gesture-bar {display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 20px;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:#12212b;}
 .gesture-bar p {margin:0;font-size:12px;color:var(--muted);flex:1;}
 .gesture-bar button {white-space:nowrap;}
+.gesture-modes {display:flex;gap:8px;flex-wrap:wrap;}
 .gesture-bar button[aria-pressed=true] {border-color:#a6efda;background:#244d50;color:#e2fff5;}
 .gesture-status {font:11px monospace;color:var(--mint);}
 .gesture-preview {position:fixed;right:18px;bottom:18px;width:220px;z-index:80;background:#09131e;border:1px solid #64baac;border-radius:12px;padding:8px;box-shadow:0 10px 40px #0008;}
@@ -9,6 +10,12 @@
 .gesture-preview p {font-size:11px;margin:8px 4px;color:#cbe7dd;}
 .gesture-cursor {position:fixed;width:24px;height:24px;border:2px solid #b1ffe4;border-radius:50%;transform:translate(-50%,-50%);z-index:1000;pointer-events:none;background:#56dcb233;box-shadow:0 0 18px #89ffda77;}
 .gesture-cursor[data-down=true] {background:#8affe5;width:17px;height:17px;}
+.gesture-cursor[data-mode=gaze] {background:conic-gradient(#d8fff3 calc(var(--dwell, 0) * 360deg), #56dcb244 0);}
+.website-gaze-calibration {position:fixed;inset:0;z-index:90;pointer-events:none;}
+.website-gaze-calibration[hidden],.website-gaze-dot[hidden],#gazeActions[hidden] {display:none!important;}
+#gazeActions {display:flex;gap:8px;flex-wrap:wrap;}
+.website-gaze-dot {position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;background:#95f6cc;box-shadow:0 0 0 10px #95f6cc33;}
+.website-gaze-calibration p {position:absolute;left:50%;bottom:24px;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));margin:0;padding:10px 14px;border-radius:10px;background:#0d1c28ee;color:#e9f4fa;text-align:center;}
 .gesture-cursor[data-mode=scroll]::after {content:'↕';position:absolute;inset:0;display:grid;place-items:center;font:18px sans-serif;color:#fff;}
 .gesture-scroll-speed {display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;}
 .gesture-scroll-speed input {width:75px;accent-color:#7be5c7;}

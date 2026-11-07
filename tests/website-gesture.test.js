@@ -141,9 +141,16 @@ test('gaze calibration never clicks, and a dwell confirm does', () => {
   h.setHit(button);
   const calibrating = h.surface.handle({kind: 'calibrating', en: 'Look at the dot', zh: '请看圆点', target: {x: .2, y: .2}});
   assert.equal(button.clicks, 0); assert.match(calibrating[1], /圆点/); assert.equal(h.cursor.hidden, true);
-  h.surface.handle({kind: 'pointer', phase: 'down', down: true, point: {x: .5, y: .4}, dwell: 1});
-  const confirmed = h.surface.handle({kind: 'pointer', phase: 'up', down: false, point: {x: .5, y: .4}, dwell: 0});
-  assert.equal(button.clicks, 1); assert.match(confirmed[1], /松开|注视|确认|点击/);
+  const aiming = h.surface.handle({kind: 'pointer', phase: 'move', down: false, point: {x: .5, y: .4}, dwell: 0.4,
+    en: 'Eye control: hold a steady gaze for 1.2 seconds to select. Blinking does not select.',
+    zh: '眼球控制：稳定注视 1.2 秒确认选择。眨眼不确认。'});
+  assert.equal(button.clicks, 0); assert.match(aiming[1], /1\.2/); assert.match(aiming[0], /Blinking does not select/);
+  h.surface.handle({kind: 'pointer', phase: 'down', down: true, point: {x: .5, y: .4}, dwell: 1,
+    en: 'Steady gaze confirmed the selection.', zh: '稳定注视已确认选择。'});
+  const confirmed = h.surface.handle({kind: 'pointer', phase: 'up', down: false, point: {x: .5, y: .4}, dwell: 0,
+    en: 'Selection confirmed. Look away before the next selection. Blinking does not select.',
+    zh: '选择已确认。移开视线后才能再次确认。眨眼不确认。'});
+  assert.equal(button.clicks, 1); assert.match(confirmed[1], /移开/); assert.doesNotMatch(confirmed[1], /捏合/);
   const lost = h.surface.handle({kind: 'lost', en: 'Gaze unavailable', zh: '视线暂不可用'});
   assert.equal(lost[1], '视线暂不可用'); assert.equal(button.clicks, 1);
 });

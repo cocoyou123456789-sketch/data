@@ -141,6 +141,12 @@
           else target.click();
         }
       }
+      if (typeof action.dwell === 'number') {
+        return [
+          action.en || 'Eye control: hold a steady gaze for 1.2 seconds to select. Blinking does not select.',
+          action.zh || '眼球控制：稳定注视 1.2 秒确认选择。眨眼不确认。'
+        ];
+      }
       return action.down ? ['Pinch held · move to drag', '保持捏合 · 移动以拖动'] : ['Point · pinch and release to click', '指向 · 捏合后松开以点击'];
     }
   }

@@ -115,7 +115,7 @@
     constructor(training, validation, desktopSize) {
       this.training = training; this.validation = validation; this.desktopSize = desktopSize;
       this.phase = 'training'; this.index = 0; this.model = null; this.meanError = 0; this.maxError = 0;
-      this.code = 'wait'; this.message = '请看圆点，保持头部稳定';
+      this.code = 'wait'; this.message = '请看圆点，保持头部稳定。校准期间不会选择';
       this.since = null; this.buffer = []; this.samples = []; this.errors = [];
     }
     get target() {
@@ -127,15 +127,15 @@
       if (this.phase !== 'training' && this.phase !== 'validation') return;
       if (!valid(eye)) {
         this.buffer = []; this.since = null; this.code = 'nopupil';
-        this.message = '未检测到清晰瞳孔，请调整光线并看圆点'; return;
+        this.message = '未检测到清晰瞳孔，请调整光线并看圆点。校准期间不会选择'; return;
       }
       if (this.since === null) this.since = time;
       if (time - this.since <= 0.8) return;
       this.buffer.push(eye);
       this.code = this.phase;
       this.message = this.phase === 'training'
-        ? `九点校准 ${this.index + 1} / ${this.training.length}`
-        : `独立验证 ${this.index + 1} / ${this.validation.length}`;
+        ? `九点校准 ${this.index + 1} / ${this.training.length}。看这里不会选择`
+        : `独立验证 ${this.index + 1} / ${this.validation.length}。验证期间不会选择`;
       if (this.buffer.length < 15) return;
       const count = this.buffer.length;
       const frame = {
@@ -145,7 +145,7 @@
       const jitter = Math.max(...[0, 1].map(index => Math.sqrt(this.buffer.reduce((sum, item) => sum + (item.features[index] - frame.features[index]) ** 2, 0) / count)));
       if (jitter >= 0.06) {
         this.buffer = []; this.since = time; this.code = 'unstable';
-        this.message = '瞳孔定位不稳定，请保持不动并重新采样'; return;
+        this.message = '瞳孔定位不稳定，请保持不动并重新采样。校准期间不会选择'; return;
       }
       if (this.phase === 'training') {
         this.samples.push({eye: frame, target: this.target});
@@ -186,22 +186,32 @@
     update(point, time) {
       if (!point) {
         if (!this.fired) this.reset();
-        return {progress: 0, click: false};
+        return {progress: 0, click: false, armed: !this.fired};
       }
       if (this.anchor && Math.hypot(point.x - this.anchor.x, point.y - this.anchor.y) <= 40) {
-        if (this.fired) return {progress: 0, click: false};
+        if (this.fired) return {progress: 0, click: false, armed: false};
         const progress = Math.min(1, (time - (this.since ?? time)) / 1.2);
-        if (progress === 1) { this.fired = true; return {progress: 1, click: true}; }
-        return {progress, click: false};
+        if (progress === 1) { this.fired = true; return {progress: 1, click: true, armed: false}; }
+        return {progress, click: false, armed: true};
       }
       this.anchor = point; this.since = time; this.fired = false;
-      return {progress: 0, click: false};
+      return {progress: 0, click: false, armed: true};
     }
   }
   function calibrationTargets() {
     const training = [];
     for (const y of [0.18, 0.5, 0.82]) for (const x of [0.12, 0.5, 0.88]) training.push({x, y});
     return {training, validation: [{x: 0.25, y: 0.25}, {x: 0.75, y: 0.25}, {x: 0.5, y: 0.5}, {x: 0.25, y: 0.75}, {x: 0.75, y: 0.75}]};
+  }
+  function cameraStatus(found) {
+    if (found == null || found === '') return {
+      found: null, used: null, secondConnected: false,
+      en: 'Checking cameras. Eye control opens one front camera. A second camera is not used for localization.',
+      zh: '正在检查摄像头。眼球控制只打开前置这一路，第二台不用于定位。'
+    };
+    const count = Number(found);
+    if (!Number.isFinite(count)) return cameraStatus('');
+    return cameraReport(count);
   }
   function cameraReport(found) {
     const count = Math.max(0, found | 0);
@@ -227,8 +237,8 @@
     switch (session.code) {
       case 'nopupil': return ['No clear pupils. Look at the dot. Calibration does not select.', session.message];
       case 'unstable': return ['Pupil estimate is unstable. Hold still. Calibration does not select.', session.message];
-      case 'training': return [`Nine-point calibration ${session.index + 1} / ${session.training.length}. Looking here does not select.`, session.message];
-      case 'validation': return [`Independent check ${session.index + 1} / ${session.validation.length}. Still not selecting.`, session.message];
+      case 'training': return [`Nine-point calibration ${session.index + 1} / ${session.training.length}. Looking here does not select.`, session.message || '看这里不会选择'];
+      case 'validation': return [`Independent check ${session.index + 1} / ${session.validation.length}. Still not selecting.`, session.message || '验证期间不会选择'];
       case 'ready': return [`Check passed (mean error ${error} px). Press “Enable gaze click”. A steady 1.2 second gaze selects; blinking does not.`, session.message];
       case 'failed': return [`Check failed${session.errors.length ? ` (mean error ${error} px)` : ''}. Press retry. Eye control stays off.`, session.message];
       default: return ['Look at the green dot and keep your head still. Calibration does not select.', session.message];
@@ -277,12 +287,17 @@
         return {kind: 'pointer', phase: 'down', down: true, point: prediction, dwell: 1,
           en: 'Steady gaze confirmed the selection.', zh: '稳定注视已确认选择。'};
       }
+      if (!dwell.armed) {
+        return {kind: 'pointer', phase: 'move', down: false, point: prediction, dwell: 0,
+          en: 'Selection confirmed. Look away before the next selection. Blinking does not select.',
+          zh: '选择已确认。移开视线后才能再次确认。眨眼不确认。'};
+      }
       return {kind: 'pointer', phase: 'move', down: false, point: prediction, dwell: dwell.progress,
         en: 'Eye control: hold a steady gaze for 1.2 seconds to select. Blinking does not select.',
         zh: '眼球控制：稳定注视 1.2 秒确认选择。眨眼不确认。'};
     }
   }
-  const api = {GazeModel, GazeCalibration, GazeDwell, GazeController, eyeFrameFromLandmarks, calibrationTargets, cameraReport, pupilInEye};
+  const api = {GazeModel, GazeCalibration, GazeDwell, GazeController, eyeFrameFromLandmarks, calibrationTargets, cameraReport, cameraStatus, pupilInEye};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.WebsiteGaze = api;
 })(typeof window !== 'undefined' ? window : globalThis);

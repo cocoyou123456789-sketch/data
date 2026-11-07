@@ -60,9 +60,17 @@ import Foundation
     guard !dwell.update(CGPoint(x: 500, y: 500), at: 3).click else {
       fatalError("Blink retriggered dwell click")
     }
-    _ = dwell.update(CGPoint(x: 650, y: 500), at: 3.1)
+    let away = dwell.update(CGPoint(x: 650, y: 500), at: 3.1)
+    guard away.armed, !away.click else { fatalError("Look-away did not rearm dwell") }
     guard dwell.update(CGPoint(x: 650, y: 500), at: 4.4).click else {
-      fatalError("Look-away did not rearm dwell")
+      fatalError("Rearmed dwell did not click")
+    }
+    for found in [0, 1, 2] {
+      let text = GazeCameraReport.text(found: found)
+      guard text.contains("第二台") else { fatalError("Camera report hid the second camera") }
+    }
+    guard GazeCameraReport.text(found: 2).contains("只用默认这一路") else {
+      fatalError("Two cameras were treated as a stereo localizer")
     }
     print(
       "PASS: gaze regression, flat-pupil rejection, pose limits, independent validation, dwell cooldown and blink cancellation"

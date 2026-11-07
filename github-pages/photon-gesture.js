@@ -9,12 +9,40 @@
   const status=(en,zh)=>{const text=copy(en,zh);if($('gestureStatus').textContent!==text)$('gestureStatus').textContent=text;};
   let gaze=null;
   const inputMode=()=>$('gestureModeEye')?.getAttribute('aria-pressed')==='true'?'eye':'hand';
+  function refreshCameraNote(){
+    const note=$('gestureCameraNote'); if(!note) return;
+    if(inputMode()!=='eye'){note.hidden=true;return;}
+    note.hidden=false;
+    if(!window.WebsiteGaze?.cameraStatus){note.textContent=copy('Eye control failed to load. Reload the page.','眼球控制没有加载，请刷新页面。');return;}
+    const raw=$('websiteGestureWidget')?.dataset.cameras ?? note.dataset.cameras;
+    const report=window.WebsiteGaze.cameraStatus(raw);
+    note.textContent=copy(report.en,report.zh);
+  }
   function publishCameras(){
-    const widget=$('websiteGestureWidget'); if(!widget || !navigator.mediaDevices?.enumerateDevices) return Promise.resolve();
+    if(!navigator.mediaDevices?.enumerateDevices) return Promise.resolve();
     return navigator.mediaDevices.enumerateDevices().then(list=>{
       const found=Math.max(list.filter(device=>device.kind==='videoinput').length, stream?.getVideoTracks().length||0);
-      if(found>0) widget.dataset.cameras=String(found);
+      const widget=$('websiteGestureWidget');
+      if(widget) widget.dataset.cameras=String(found);
+      const note=$('gestureCameraNote');
+      if(note) note.dataset.cameras=String(found);
+      refreshCameraNote();
     }).catch(()=>{});
+  }
+  function applyModeChrome(){
+    const eye=inputMode()==='eye';
+    const actions=$('gazeActions'); if(actions) actions.hidden=!eye;
+    const handHelp=$('gestureHandHelp'); if(handHelp) handHelp.hidden=eye;
+    const eyeHelp=$('gestureEyeHelp'); if(eyeHelp) eyeHelp.hidden=!eye;
+    const labSpeed=$('gestureScrollSpeedLabel'); if(labSpeed) labSpeed.hidden=eye;
+    const beamlineDwell=$('beamlineDwellLabel'); if(beamlineDwell) beamlineDwell.hidden=eye;
+    const start=$('gestureStart');
+    if(start?.hasAttribute?.('data-en') && !start.disabled && start.getAttribute('aria-pressed')!=='true'){
+      start.dataset.en=eye?'Start eye calibration':'Enable camera gestures';
+      start.dataset.zh=eye?'开始眼球校准':'开启摄像头手势';
+      start.textContent=copy(start.dataset.en,start.dataset.zh);
+    }
+    refreshCameraNote();
   }
   function syncGaze(result){
     const overlay=$('gazeCalibration'),dot=$('gazeDot'),text=$('gazeCalibrationText'),enable=$('gazeEnable');
@@ -63,15 +91,14 @@
       hand.forEach(p=>{ctx.beginPath();ctx.arc((1-p.x)*canvas.width,p.y*canvas.height,2,0,Math.PI*2);ctx.fill();});
     }
   }
-  function handle(hands,time){
-    drawHands(hands);
-    const action=tracker.update(hands,time);
+  function drive(action){
     if(window.PhotonGestureAdapter){
       const message=window.PhotonGestureAdapter.handle(action);
       if(message && active)status(...message);
       return;
     }
-    if(action.kind==='lost'){clearInteraction();status('Show one hand to point','举起一只手以移动光标');return;}
+    if(action.kind==='calibrating'){clearInteraction();status(action.en||'Look at the calibration dot. Calibration does not select.',action.zh||'请看校准圆点。校准期间不会选择。');return;}
+    if(action.kind==='lost'){clearInteraction();status(action.en||'Show one hand to point',action.zh||'举起一只手以移动光标');return;}
     if(action.kind==='zoom'){
       window.PhotonSelection?.clear();
       press=null;cursor.hidden=true;hover?.classList.remove('gesture-hover');hover=null;
@@ -91,7 +118,9 @@
       if(pixels){if(scrollTarget)scrollTarget.scrollBy(0,pixels);else window.scrollBy(0,pixels);}
       status('Two fingers · scroll up / down','双指上下移动 · 滚动中');return;
     }
-    scrollAnchor=null;scrollTarget=null;cursor.dataset.mode='pointer';
+    scrollAnchor=null;scrollTarget=null;
+    cursor.dataset.mode=typeof action.dwell==='number'?'gaze':'pointer';
+    if(typeof action.dwell==='number') cursor.style.setProperty('--dwell',String(action.dwell));
     const x=action.point.x*innerWidth,y=action.point.y*innerHeight;
     cursor.hidden=false;cursor.style.left=`${x}px`;cursor.style.top=`${y}px`;cursor.dataset.down=String(action.down);
     const under=document.elementFromPoint(x,y),target=under?.closest(allowed)||under?.closest('label')?.control;
@@ -126,7 +155,15 @@
       if(beamline)window.PhotonControls.selectBeamline(beamline);
       if(!active)return;
     }
+    if(typeof action.dwell==='number'){
+      status(action.en||'Eye control: hold a steady gaze for 1.2 seconds to select. Blinking does not select.',action.zh||'眼球控制：稳定注视 1.2 秒确认选择。眨眼不确认。');
+      return;
+    }
     status(action.down?'Pinch held · drag the model':'Point · pinch and release to select',action.down?'捏合中 · 拖动模型':'指向 · 捏合后松开以选择');
+  }
+  function handle(hands,time){
+    drawHands(hands);
+    drive(tracker.update(hands,time));
   }
   function drawFace(landmarks){
     const canvas=$('gestureSkeleton'),ctx=canvas.getContext('2d');
@@ -143,8 +180,7 @@
     if(!gaze || !window.WebsiteGaze) return;
     const result=gaze.update(window.WebsiteGaze.eyeFrameFromLandmarks(landmarks),time/1000,{width:innerWidth,height:innerHeight});
     syncGaze(result);
-    const message=window.PhotonGestureAdapter?.handle(result);
-    if(message && active) status(...message);
+    drive(result);
   }
   async function frame(time){
     if(!active) return;
@@ -209,4 +245,19 @@
   window.addEventListener('keydown',e=>{if(e.key==='Escape' && (active||stream||$('gestureStart').disabled))stop();});
   window.addEventListener('pagehide',stop);
   document.addEventListener('visibilitychange',()=>{if(document.hidden && (active||stream||$('gestureStart').disabled))stop();});
+  $('gestureModeHand')?.addEventListener('click',()=>{
+    $('gestureModeHand').setAttribute('aria-pressed','true');
+    $('gestureModeEye')?.setAttribute('aria-pressed','false');
+    applyModeChrome();
+    publishCameras();
+    if(active||stream||$('gestureStart').disabled) stop();
+  });
+  $('gestureModeEye')?.addEventListener('click',()=>{
+    $('gestureModeEye').setAttribute('aria-pressed','true');
+    $('gestureModeHand')?.setAttribute('aria-pressed','false');
+    applyModeChrome();
+    publishCameras();
+    if(active||stream||$('gestureStart').disabled) stop();
+  });
+  applyModeChrome();
 })();
