@@ -3,7 +3,7 @@
   const widget = document.createElement('div');
   widget.id = 'websiteGestureWidget';
   widget.innerHTML = `
-    <button id="websiteGestureToggle" type="button" aria-expanded="false" aria-controls="websiteGesturePanel"><span aria-hidden="true">✋</span> <span data-gesture-en="Gesture" data-gesture-zh="手势">Gesture</span><span aria-hidden="true">·</span><span data-gesture-en="Eye" data-gesture-zh="眼球">Eye</span><span class="website-gesture-dot" aria-hidden="true"></span></button>
+    <button id="websiteGestureToggle" type="button" aria-expanded="false" aria-controls="websiteGesturePanel"><span aria-hidden="true">✋</span> <span data-gesture-en="Gesture" data-gesture-zh="手势">Gesture</span><span aria-hidden="true">·</span><span data-gesture-en="Eye control" data-gesture-zh="眼球控制">Eye control</span><span class="website-gesture-dot" aria-hidden="true"></span></button>
     <section id="websiteGesturePanel" aria-labelledby="websiteGestureTitle" hidden>
       <div class="website-gesture-heading"><strong id="websiteGestureTitle" data-gesture-en="Camera control" data-gesture-zh="摄像头操控">Camera control</strong><button id="websiteGestureClose" type="button" aria-label="Close gesture settings">×</button></div>
       <div class="website-gesture-modes" role="group" aria-label="Control method">
@@ -42,7 +42,11 @@
     const note = document.getElementById('gestureCameraNote');
     if (!eyeMode()) { note.hidden = true; return; }
     note.hidden = false;
-    const report = window.WebsiteGaze.cameraReport(Number(widget.dataset.cameras || 1));
+    if (!window.WebsiteGaze) {
+      note.textContent = document.documentElement.lang.startsWith('zh') ? '眼球控制没有加载，请刷新页面。' : 'Eye control failed to load. Reload the page.';
+      return;
+    }
+    const report = window.WebsiteGaze.cameraStatus(widget.dataset.cameras);
     note.textContent = document.documentElement.lang.startsWith('zh') ? report.zh : report.en;
   }
   function setMode(mode) {
@@ -69,7 +73,7 @@
     renderCameraNote();
   }
   document.getElementById('gestureModeHand').addEventListener('click', () => setMode('hand'));
-  document.getElementById('gestureModeEye').addEventListener('click', () => { widget.dataset.cameras ||= '1'; setMode('eye'); });
+  document.getElementById('gestureModeEye').addEventListener('click', () => setMode('eye'));
   new MutationObserver(renderCameraNote).observe(widget, {attributes: true, attributeFilter: ['data-cameras']});
   translate(); new MutationObserver(translate).observe(document.documentElement, {attributes: true, attributeFilter: ['lang']});
   new MutationObserver(() => { widget.dataset.active = String(document.getElementById('gestureStart').getAttribute('aria-pressed') === 'true'); })

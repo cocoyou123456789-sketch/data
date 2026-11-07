@@ -8878,6 +8878,7 @@
 <script defer src="material-consensus.js"></script>
 <script defer src="material-baseline.js"></script>
 <script defer src="material-synthesizer.js"></script>
+<script defer src="material-host.js"></script>
 <script>
   window.jsfive = window.jsfive || window.hdf5;
   window.addEventListener("error", event => {
@@ -10183,9 +10184,9 @@
                 <div>
                   <span class="material-chair-kicker">ORCHESTRATOR</span>
                   <h4 id="materialChairTitle" data-consensus-i18n="chairTitle">材料研究主持人</h4>
-                  <p data-consensus-i18n="chairSubtitle">收集各模型的独立报告，合并结论与冲突，分配下一轮任务，并持续更新执行报告。</p>
+                  <p data-consensus-i18n="chairSubtitle">你只和主持人说话。主持人按请求调用已有程序，再把材料预测、结构检索、文献检索或谱学的返回汇编成一条结论。</p>
                 </div>
-                <span class="material-chair-mode" data-consensus-i18n="chairMode">本地主持规则 v1 · 不计入科学共识</span>
+                <span class="material-chair-mode" data-consensus-i18n="chairMode">本地主持 · 调用已有程序 · 不计入科学共识</span>
               </div>
               <ol class="material-chair-flow" aria-label="Orchestration workflow">
                 <li><span>01</span><strong data-consensus-i18n="chairStepReports">收取模型报告</strong></li>
@@ -10193,6 +10194,25 @@
                 <li><span>03</span><strong data-consensus-i18n="chairStepTasks">分配验证任务</strong></li>
                 <li><span>04</span><strong data-consensus-i18n="chairStepExecution">生成执行报告</strong></li>
               </ol>
+              <form id="materialHostForm" class="material-host-ask">
+                <label>
+                  <span data-consensus-i18n="hostAskLabel">向主持人说明要做的事</span>
+                  <input id="materialHostRequest" data-consensus-i18n-placeholder="hostAskPlaceholder" maxlength="400" placeholder="例如：预测 FeSe 的形成能，并检索晶体结构和相关文献">
+                </label>
+                <button class="primary" type="submit" data-consensus-i18n="hostAskRun">请主持人调用并给出结论</button>
+              </form>
+              <p class="material-host-hint" data-consensus-i18n="hostAskHint">你只和主持人说话。主持人决定调用材料预测、结构检索、文献检索或谱学，再把返回收成一条结论。</p>
+              <div id="materialHostDesk" class="material-host-desk" hidden>
+                <p id="materialHostSelection" class="material-host-selection"></p>
+                <div class="material-host-calls">
+                  <h5 data-consensus-i18n="hostCallsTitle">主持人调用</h5>
+                  <ul id="materialHostCalls"></ul>
+                </div>
+                <div class="material-host-conclusion">
+                  <h5 data-consensus-i18n="hostConclusionTitle">主持人结论</h5>
+                  <p id="materialHostConclusion"></p>
+                </div>
+              </div>
               <div class="material-chair-toolbar">
                 <button class="primary" id="materialChairRunBtn" type="button" data-consensus-i18n="chairRun">生成 / 更新主持方案</button>
                 <button id="materialChairTaskBtn" type="button" disabled data-consensus-i18n="chairTaskPackage">下载任务包</button>
@@ -10230,7 +10250,7 @@
                   <p id="materialChairSummary"></p>
                 </div>
               </div>
-              <p class="material-chair-boundary" data-consensus-i18n="chairBoundary">主持人只组织已有结果并安排验证，不调用付费计算、不修改证据等级，也不把模型意见当作新材料发现。</p>
+              <p class="material-chair-boundary" data-consensus-i18n="chairBoundary">主持人只调用页面已有的程序并汇编它们的返回。程序不可用时会标明，并继续用其余结果。不发起付费计算、不修改证据等级，也不把模型意见当作新材料发现。</p>
             </section>
 
             <div class="material-consensus-layout">
@@ -29411,6 +29431,14 @@ ${chatTableLines || `| ${t("chatNoGeneratedTable")} | | | | | |`}
     }
 
     // ===== 启动页面 =====
+    window.ARPESMaterialHostContext = function materialHostContext() {
+      const typed = String(document.querySelector("#modelMaterialInput")?.value || "").trim();
+      return {
+        language: currentLang === "en" ? "en" : "zh",
+        counts: modelElementCounts(),
+        formula: modelMixtureFormula() || typed
+      };
+    };
     installModelHub();
     window.addEventListener("arpes:material-baseline-ready", () => renderPeriodicCruciblePanel());
     initAiConfigForm();

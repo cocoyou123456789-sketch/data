@@ -15,7 +15,8 @@
     <script defer src="photon-lab.js?v=20261005-scroll"></script>
     <script defer src="photon-selection.js?v=20261005-scroll"></script>
     <script defer src="photon-gesture-core.js?v=20261005-scroll"></script>
-    <script defer src="photon-gesture.js?v=20261005-manual-click"></script>
+    <script defer src="website-gaze-core.js?v=20261106"></script>
+    <script defer src="photon-gesture.js?v=20261106-eye"></script>
   </head>
   <body>
     <header class="masthead">
@@ -66,14 +67,24 @@
           >
         </button>
       </div>
-      <section class="gesture-bar" aria-label="Camera gesture controls">
+      <section class="gesture-bar" aria-label="Camera gesture and eye controls">
+        <div class="gesture-modes" role="group" aria-label="Control method">
+          <button id="gestureModeHand" type="button" aria-pressed="true" data-en="Gesture" data-zh="手势操控">Gesture</button>
+          <button id="gestureModeEye" type="button" aria-pressed="false" data-en="Eye control" data-zh="眼球控制">Eye control</button>
+        </div>
         <button id="gestureManual" aria-pressed="true" data-en="Manual control" data-zh="手动操作">Manual control</button>
         <button id="gestureStart" aria-pressed="false" data-en="Enable camera gestures" data-zh="开启摄像头手势">Enable camera gestures</button>
         <button id="gestureStop" hidden data-en="Stop camera" data-zh="关闭摄像头">Stop camera</button>
         <button id="gesturePreviewToggle" hidden data-en="Show / hide preview" data-zh="显示 / 隐藏预览">Show / hide preview</button>
-        <label class="beamline-dwell-setting"><input id="beamlineDwell" type="checkbox" /><span data-en="Optional: hover 1s to select" data-zh="可选：停留 1 秒自动选择">Optional: hover 1s to select</span></label>
-        <label class="gesture-scroll-speed"><span data-en="Scroll speed" data-zh="滚动速度">Scroll speed</span><input id="gestureScrollSpeed" aria-label="Scroll speed / 滚动速度" type="range" min="0.5" max="3" step="0.1" value="1.4" /></label>
-        <p data-en="Manual: click to select, drag to rotate, scroll up / down. Camera: point to move, pinch to click / drag, two fingers to scroll. Video stays on this device." data-zh="手动：点击选择、拖动旋转、上下滚动。摄像头：食指移动、捏合点击或拖动、双指滚动。视频仅在本机处理。">Manual: click to select, drag to rotate, scroll up / down. Camera: point to move, pinch to click / drag, two fingers to scroll. Video stays on this device.</p>
+        <div id="gazeActions" hidden>
+          <button id="gazeEnable" type="button" disabled data-en="Enable gaze click" data-zh="启用注视点击">Enable gaze click</button>
+          <button id="gazeRetry" type="button" data-en="Retry calibration" data-zh="重新校准">Retry calibration</button>
+        </div>
+        <label id="beamlineDwellLabel" class="beamline-dwell-setting"><input id="beamlineDwell" type="checkbox" /><span data-en="Optional: hover 1s to select a beamline" data-zh="可选：停留 1 秒选择线站">Optional: hover 1s to select a beamline</span></label>
+        <label id="gestureScrollSpeedLabel" class="gesture-scroll-speed"><span data-en="Scroll speed" data-zh="滚动速度">Scroll speed</span><input id="gestureScrollSpeed" aria-label="Scroll speed / 滚动速度" type="range" min="0.5" max="3" step="0.1" value="1.4" /></label>
+        <p id="gestureHandHelp" data-en="Manual: click to select, drag to rotate, scroll up / down. Camera gesture: point to move, pinch and release to click, hold a pinch to drag, two fingers to scroll. Video stays on this device." data-zh="手动：点击选择、拖动旋转、上下滚动。手势：食指移动，捏合后松开确认点击，按住捏合拖动，双指滚动。视频仅在本机处理。">Manual: click to select, drag to rotate, scroll up / down. Camera gesture: point to move, pinch and release to click, hold a pinch to drag, two fingers to scroll. Video stays on this device.</p>
+        <p id="gestureEyeHelp" hidden data-en="Eye control: look to move the cursor. Selection is a steady gaze on the same spot for 1.2 seconds. Look away to arm the next selection. Blinking does not select. Calibration does not select, and nothing is selected until you press Enable gaze click." data-zh="眼球控制：看向目标移动光标。确认选择是在同一位置稳定注视 1.2 秒。移开视线后才能再次确认。眨眼不会确认。校准期间不会选择；按下启用注视点击之前也不会选择。">Eye control: look to move the cursor. Selection is a steady gaze on the same spot for 1.2 seconds. Look away to arm the next selection. Blinking does not select. Calibration does not select, and nothing is selected until you press Enable gaze click.</p>
+        <p id="gestureCameraNote" hidden></p>
         <span id="gestureStatus" class="gesture-status" role="status" data-en="Camera off" data-zh="摄像头已关闭">Camera off</span>
       </section>
       <div class="lab-layout">
@@ -429,5 +440,9 @@
       <p data-en="Mirror view · Keep your hand inside the camera frame" data-zh="镜像预览 · 请把手放在摄像头画面内">Mirror view · Keep your hand inside the camera frame</p>
     </div>
     <div id="gestureCursor" class="gesture-cursor" hidden aria-hidden="true"></div>
+    <div id="gazeCalibration" class="website-gaze-calibration" hidden>
+      <div id="gazeDot" class="website-gaze-dot" hidden></div>
+      <p id="gazeCalibrationText"></p>
+    </div>
   </body>
 </html>
