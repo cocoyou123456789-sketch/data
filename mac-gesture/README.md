@@ -22,12 +22,24 @@ The HALF exhibit now treats ordinary wheel input as page scrolling. Use Command 
 
 The default mapping uses a mirror view and all active monitors. Gaps between different-sized monitors snap to the nearest real display. The movement-range slider adjusts how much hand movement covers the desktop. Video is processed in memory, never saved or uploaded.
 
+## Experimental gaze control (0.4)
+
+Choose **眼睛定位＋捏合点击** or **纯眼控：停留点击**, then start control. Apple Vision extracts eye outlines and pupils from a 720p camera stream; a locally fitted ridge regression maps the pupil features to desktop coordinates. The app does not use WebGazer or upload face images. Calibration samples and the model live only in memory.
+
+Follow the nine green dots while keeping your head still. Each point waits for settling and collects fifteen valid, stable samples. Five separate validation targets measure prediction error. Desktop input stays off during calibration and validation. If the independent mean error exceeds 100 screen-coordinate points or the worst error exceeds 180, activation is blocked. After a pass, press Return to explicitly enable the experimental cursor. R retries and Esc / Control + Option + G cancels.
+
+In the hybrid mode, gaze moves the cursor; index-thumb pinching clicks, middle-thumb pinching opens a context menu, two fingers scroll, and a deliberately moved held pinch drags. The click position is latched so a glance toward your hand cannot redirect the pending click. In pure gaze mode, steady gaze for 1.2 seconds clicks once, and looking away rearms it. Natural blinking never generates a click. Missing pupils or an out-of-range head pose suspends control; monitor-layout changes require recalibration.
+
+Ordinary webcam pupil estimates are experimental. Passing the synthetic tests or building the application does not establish real-user accuracy. Live calibration and validation are required; small controls may still be difficult. Face/eye landmarks are gaze features, not identity recognition, and no calibration profile is persisted.
+
 ## Build and verify
 
 ```sh
 bash mac-gesture/build.sh
 xcrun swiftc mac-gesture/GestureCore.swift mac-gesture/DesktopMapping.swift mac-gesture/GestureCoreTests.swift -o /tmp/photon-gesture-tests
 /tmp/photon-gesture-tests
+xcrun swiftc mac-gesture/GazeCore.swift mac-gesture/GazeTests.swift -o /tmp/photon-gaze-tests
+/tmp/photon-gaze-tests
 ```
 
 Output: `outputs/mac-gesture/Photon Gesture.app`, locally ad-hoc signed. Builds both x86_64 and arm64 and combines them into a universal executable. The application is locally built, not notarized for general distribution.

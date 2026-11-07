@@ -11,7 +11,10 @@
 .website-gesture-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;}
 #websiteGesturePanel .website-gesture-heading button {padding:0;width:32px;flex:0 0 32px;min-width:32px;min-height:32px;font-size:24px;}
 #websiteGesturePanel p {margin:12px 0;color:#c2d4df;font-size:13px;}
-.website-gesture-actions {display:flex;gap:8px;flex-wrap:wrap;}
+.website-gesture-modes,.website-gesture-actions {display:flex;gap:8px;flex-wrap:wrap;}
+.website-gesture-modes {margin-top:12px;}
+.website-gesture-modes button {flex:1 1 120px;}
+.website-gesture-modes button[aria-pressed=true] {background:#2b655f;border-color:#9ae7ce;}
 #websiteGesturePanel #gestureStart {background:#2b655f;}
 #websiteGesturePanel #gestureStop {border-color:#e0ac9d;}
 .website-gesture-speed {display:flex;align-items:center;gap:12px;margin-top:14px;}
@@ -20,6 +23,11 @@
 #websiteGesturePanel .website-gesture-privacy {font-size:11px;color:#a6b9c6;border-top:1px solid #29434f;padding-top:12px;margin-bottom:0;}
 .website-gesture-preview {left:18px;right:auto;bottom:18px;z-index:20030;pointer-events:none;}
 .website-gesture-cursor {z-index:20060;pointer-events:none;}
+.website-gesture-cursor[data-mode=gaze] {background:conic-gradient(#d8fff3 calc(var(--dwell, 0) * 360deg), #56dcb244 0);}
+.website-gaze-calibration {position:fixed;inset:0;z-index:20035;pointer-events:none;}
+.website-gaze-calibration[hidden],.website-gaze-dot[hidden],#gazeActions[hidden] {display:none!important;}
+.website-gaze-dot {position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;background:#95f6cc;box-shadow:0 0 0 10px #95f6cc33;}
+.website-gaze-calibration p {position:absolute;left:50%;bottom:24px;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));margin:0;padding:10px 14px;border-radius:10px;background:#0d1c28ee;color:#e9f4fa;text-align:center;}
 .website-gesture-options {position:fixed;z-index:20050;width:260px;max-width:calc(100vw - 16px);max-height:min(340px,60vh);overflow-y:auto;border:1px solid #83c4b9;border-radius:10px;background:#102731;padding:6px;box-shadow:0 10px 40px #0009;}
 .website-gesture-options button {display:block;width:100%;text-align:left;padding:12px;color:#eefafa;background:transparent;border:0;border-radius:6px;cursor:pointer;}
 .website-gesture-options button[aria-selected=true] {background:#285d59;}

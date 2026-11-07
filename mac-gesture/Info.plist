@@ -6,9 +6,9 @@
 <key>CFBundleDisplayName</key><string>Photon Gesture</string>
 <key>CFBundleExecutable</key><string>PhotonGesture</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.3.0</string>
-<key>CFBundleVersion</key><string>3</string>
+<key>CFBundleShortVersionString</key><string>0.4.0</string>
+<key>CFBundleVersion</key><string>4</string>
 <key>LSMinimumSystemVersion</key><string>13.0</string>
-<key>NSCameraUsageDescription</key><string>Photon Gesture 使用摄像头在本机识别手势，以控制 Mac 桌面光标。视频不会上传或保存。</string>
+<key>NSCameraUsageDescription</key><string>Photon Gesture 使用摄像头在本机识别手势、眼部和视线，以控制 Mac 桌面光标。视频不会上传或保存。</string>
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>

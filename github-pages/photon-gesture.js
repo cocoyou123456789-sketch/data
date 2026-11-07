@@ -7,6 +7,26 @@
   const allowed='button,a[href],input:not([type="hidden"]),select,textarea';
   let worker=null,stream=null,active=false,generation=0,raf=0,busy=false,lastTime=0,lastVideo=-1,press=null,hover=null,watchdog=0,scrollAnchor=null,scrollTarget=null;
   const status=(en,zh)=>{const text=copy(en,zh);if($('gestureStatus').textContent!==text)$('gestureStatus').textContent=text;};
+  let gaze=null;
+  const inputMode=()=>$('gestureModeEye')?.getAttribute('aria-pressed')==='true'?'eye':'hand';
+  function publishCameras(){
+    const widget=$('websiteGestureWidget'); if(!widget || !navigator.mediaDevices?.enumerateDevices) return Promise.resolve();
+    return navigator.mediaDevices.enumerateDevices().then(list=>{
+      const found=Math.max(list.filter(device=>device.kind==='videoinput').length, stream?.getVideoTracks().length||0);
+      if(found>0) widget.dataset.cameras=String(found);
+    }).catch(()=>{});
+  }
+  function syncGaze(result){
+    const overlay=$('gazeCalibration'),dot=$('gazeDot'),text=$('gazeCalibrationText'),enable=$('gazeEnable');
+    if(!overlay) return;
+    overlay.hidden=result?.kind!=='calibrating';
+    if(dot){
+      dot.hidden=!result?.target;
+      if(result?.target){dot.style.left=`${result.target.x*innerWidth}px`;dot.style.top=`${result.target.y*innerHeight}px`;}
+    }
+    if(text && result?.en) text.textContent=copy(result.en,result.zh);
+    if(enable) enable.disabled=!result?.ready;
+  }
   function clearInteraction(){
     window.PhotonGestureAdapter?.cancel();
     window.PhotonSelection?.clear();
@@ -17,7 +37,7 @@
   function stop(){
     generation++;active=false;cancelAnimationFrame(raf);clearTimeout(watchdog);
     worker?.terminate();worker=null;stream?.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;
-    busy=false;lastTime=0;lastVideo=-1;clearInteraction();preview.hidden=true;
+    busy=false;lastTime=0;lastVideo=-1;gaze=null;clearInteraction();preview.hidden=true;syncGaze(null);
     $('gestureStart').disabled=false;$('gestureStop').hidden=true;$('gesturePreviewToggle').hidden=true;
     $('gestureManual')?.setAttribute('aria-pressed','true');$('gestureStart').setAttribute('aria-pressed','false');
     status('Camera off','摄像头已关闭');
@@ -28,7 +48,7 @@
     if(name==='NotAllowedError') status('Camera permission denied. Allow camera access in your browser and retry.','摄像头权限未允许，请在浏览器中允许访问后重试。');
     else if(name==='NotFoundError') status('No camera found. Connect a webcam and retry.','未找到摄像头，请连接摄像头后重试。');
     else if(name==='NotReadableError') status('Camera is busy. Close other camera apps and retry.','摄像头被占用，请关闭其他使用摄像头的应用后重试。');
-    else status('Could not start hand tracking. Check the connection and retry.','手势识别启动失败，请检查连接后重试。');
+    else status(inputMode()==='eye'?'Could not start eye tracking. Check the connection and retry.':'Could not start hand tracking. Check the connection and retry.',inputMode()==='eye'?'眼球控制启动失败，请检查连接后重试。':'手势识别启动失败，请检查连接后重试。');
     console.warn('PHOTON hand tracking:',error?.message||error);
   }
   function drawHands(hands){
@@ -108,6 +128,24 @@
     }
     status(action.down?'Pinch held · drag the model':'Point · pinch and release to select',action.down?'捏合中 · 拖动模型':'指向 · 捏合后松开以选择');
   }
+  function drawFace(landmarks){
+    const canvas=$('gestureSkeleton'),ctx=canvas.getContext('2d');
+    const height=Math.round(320*(video.videoHeight||480)/(video.videoWidth||640));
+    if(canvas.height!==height)canvas.height=height;
+    ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#8affd7';
+    for(const index of [468,473]){
+      const point=landmarks?.[index]; if(!point) continue;
+      ctx.beginPath();ctx.arc((1-point.x)*canvas.width,point.y*canvas.height,4,0,Math.PI*2);ctx.fill();
+    }
+  }
+  function handleEyes(landmarks,time){
+    drawFace(landmarks);
+    if(!gaze || !window.WebsiteGaze) return;
+    const result=gaze.update(window.WebsiteGaze.eyeFrameFromLandmarks(landmarks),time/1000,{width:innerWidth,height:innerHeight});
+    syncGaze(result);
+    const message=window.PhotonGestureAdapter?.handle(result);
+    if(message && active) status(...message);
+  }
   async function frame(time){
     if(!active) return;
     raf=requestAnimationFrame(frame);
@@ -122,6 +160,7 @@
     }catch(error){if(token===generation)fail(error);}
   }
   async function start(){
+    if(inputMode()==='eye' && !window.WebsiteGaze){status('Eye control failed to load. Reload the page.','眼球控制没有加载，请刷新页面。');return;}
     if(!window.isSecureContext || !navigator.mediaDevices?.getUserMedia){status('Open the HTTPS website to use the camera.','请打开 HTTPS 网站使用摄像头。');return;}
     $('gestureStart').disabled=true;$('gestureStop').hidden=false;
     const token=++generation;
@@ -132,24 +171,41 @@
       stream=acquired;stream.getVideoTracks().forEach(t=>t.addEventListener('ended',()=>{if(token===generation)stop();}));
       video.srcObject=stream;await video.play();
       if(token!==generation)return;
-      preview.hidden=false;$('gesturePreviewToggle').hidden=false;
-      status('Loading hand tracker…','正在加载手部识别…');
+      preview.hidden=false;$('gesturePreviewToggle').hidden=false;await publishCameras();
+      status(inputMode()==='eye'?'Loading eye tracker…':'Loading hand tracker…',inputMode()==='eye'?'正在加载眼球识别…':'正在加载手部识别…');
       worker=new Worker(new URL('./photon-gesture-worker.js',document.baseURI),{type:'module'});
       worker.onerror=event=>{if(token===generation)fail(new Error(event.message));};
       worker.onmessage=({data})=>{
         if(token!==generation)return;
-        if(data.type==='ready'){clearTimeout(watchdog);active=true;clearInteraction();$('gestureManual')?.setAttribute('aria-pressed','false');$('gestureStart').setAttribute('aria-pressed','true');raf=requestAnimationFrame(frame);status('Show one hand to point','举起一只手以移动光标');}
+        if(data.type==='ready'){
+          clearTimeout(watchdog);active=true;clearInteraction();$('gestureManual')?.setAttribute('aria-pressed','false');$('gestureStart').setAttribute('aria-pressed','true');raf=requestAnimationFrame(frame);
+          if(inputMode()==='eye'){gaze=new window.WebsiteGaze.GazeController();gaze.begin({width:innerWidth,height:innerHeight});handleEyes([],data.time||performance.now());}
+          else status('Show one hand to point','举起一只手以移动光标');
+        }
         else if(data.type==='hands'){clearTimeout(watchdog);busy=false;handle(data.hands,data.time);}
+        else if(data.type==='face'){clearTimeout(watchdog);busy=false;handleEyes(data.landmarks,data.time);}
         else if(data.type==='error')fail(new Error(data.message));
       };
       watchdog=setTimeout(()=>{if(token===generation)fail(new Error('Hand tracker initialization timed out'));},30000);
-      worker.postMessage({type:'init'});
+      worker.postMessage({type:'init',mode:inputMode()==='eye'?'face':'hand'});
     }catch(error){if(token===generation)fail(error);}
   }
   $('gestureStart').addEventListener('click',start);
   $('gestureManual')?.addEventListener('click',stop);
   $('gestureStop').addEventListener('click',stop);
   $('gesturePreviewToggle').addEventListener('click',()=>{preview.hidden=!preview.hidden;});
+  $('gazeEnable')?.addEventListener('click',()=>{
+    if(!gaze?.enable()) return;
+    syncGaze(null);
+    status('Eye control on. Hold a steady gaze for 1.2 seconds to select. Blinking does not select.','眼球控制已启用。稳定注视 1.2 秒确认选择，眨眼不确认。');
+  });
+  $('gazeRetry')?.addEventListener('click',()=>{
+    if(!active || inputMode()!=='eye' || !window.WebsiteGaze) return;
+    gaze=new window.WebsiteGaze.GazeController();
+    gaze.begin({width:innerWidth,height:innerHeight});
+    handleEyes([],performance.now());
+  });
+  window.addEventListener('website-gesture-mode',()=>{if(active||stream||$('gestureStart').disabled)stop();});
   window.addEventListener('keydown',e=>{if(e.key==='Escape' && (active||stream||$('gestureStart').disabled))stop();});
   window.addEventListener('pagehide',stop);
   document.addEventListener('visibilitychange',()=>{if(document.hidden && (active||stream||$('gestureStart').disabled))stop();});

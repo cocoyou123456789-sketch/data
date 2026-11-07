@@ -5,17 +5,20 @@ final class HandCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
   let session = AVCaptureSession()
   private let queue = DispatchQueue(label: "photon.camera", qos: .userInitiated)
   private let request = VNDetectHumanHandPoseRequest()
+  private let faceRequest = VNDetectFaceLandmarksRequest()
+  private var eyesEnabled = false
   private var configured = false, lastFrame = 0.0, run = 0, previousPalm: CGPoint?
-  var onFrame: ((HandFrame?, Double, Int) -> Void)?
+  var onFrame: ((HandFrame?, EyeFrame?, Double, Int) -> Void)?
   var onError: ((String, Int) -> Void)?
   override init() {
     super.init()
     request.maximumHandCount = 2
   }
-  func start(run: Int) {
+  func start(run: Int, eyes: Bool = false) {
     queue.async { [weak self] in
       guard let self else { return }
       self.run = run
+      self.eyesEnabled = eyes
       do {
         if !self.configured {
           guard let device = AVCaptureDevice.default(for: .video) else {
@@ -49,6 +52,10 @@ final class HandCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
           self.configured = true
         }
         self.lastFrame = 0
+        self.session.beginConfiguration()
+        let preset: AVCaptureSession.Preset = eyes ? .hd1280x720 : .vga640x480
+        if self.session.canSetSessionPreset(preset) { self.session.sessionPreset = preset }
+        self.session.commitConfiguration()
         self.previousPalm = nil
         self.session.startRunning()
       } catch { DispatchQueue.main.async { self.onError?(error.localizedDescription, run) } }
@@ -60,12 +67,22 @@ final class HandCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     from connection: AVCaptureConnection
   ) {
     let now = ProcessInfo.processInfo.systemUptime
-    guard now - lastFrame > 1.0 / 24, let buffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+    guard now - lastFrame > 1.0 / (eyesEnabled ? 15 : 24),
+      let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)
+    else {
       return
     }
     lastFrame = now
     do {
-      try VNImageRequestHandler(cvPixelBuffer: buffer, orientation: .up).perform([request])
+      let requests: [VNRequest] = eyesEnabled ? [request, faceRequest] : [request]
+      try VNImageRequestHandler(cvPixelBuffer: buffer, orientation: .up).perform(requests)
+      let face =
+        eyesEnabled
+        ? faceRequest.results?.max(by: {
+          $0.boundingBox.width * $0.boundingBox.height < $1.boundingBox.width
+            * $1.boundingBox.height
+        }) : nil
+      let eye = face.flatMap { EyeExtractor.frame($0) }
       let frames = (request.results ?? []).compactMap { obs -> HandFrame? in
         guard let joints = try? obs.recognizedPoints(.all) else { return nil }
         func p(_ key: VNHumanHandPoseObservation.JointName) -> CGPoint? {
@@ -92,10 +109,10 @@ final class HandCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
       }
       previousPalm = hand?.palm
       let run = self.run
-      DispatchQueue.main.async { self.onFrame?(hand, now, run) }
+      DispatchQueue.main.async { self.onFrame?(hand, eye, now, run) }
     } catch {
       let run = self.run
-      DispatchQueue.main.async { self.onFrame?(nil, now, run) }
+      DispatchQueue.main.async { self.onFrame?(nil, nil, now, run) }
     }
   }
 }

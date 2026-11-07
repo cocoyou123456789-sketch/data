@@ -4,8 +4,15 @@ import ApplicationServices
 import Carbon
 import SwiftUI
 
+enum InputMethod: String, CaseIterable {
+  case hand = "手势控制"
+  case eyePinch = "眼睛定位＋捏合点击"
+  case eyeDwell = "纯眼控：停留点击"
+}
+
 final class CursorView: NSView {
   var down = false
+  var progress = 0.0
   override func draw(_ dirtyRect: NSRect) {
     NSColor(calibratedRed: 0.4, green: 1, blue: 0.8, alpha: down ? 0.8 : 0.16).setFill()
     let circle = NSBezierPath(ovalIn: bounds.insetBy(dx: 5, dy: 5))
@@ -13,6 +20,14 @@ final class CursorView: NSView {
     NSColor(calibratedRed: 0.55, green: 1, blue: 0.85, alpha: 1).setStroke()
     circle.lineWidth = 2
     circle.stroke()
+    if progress > 0 {
+      let arc = NSBezierPath()
+      arc.appendArc(
+        withCenter: CGPoint(x: bounds.midX, y: bounds.midY), radius: 14, startAngle: 90,
+        endAngle: 90 - CGFloat(progress * 360), clockwise: true)
+      arc.lineWidth = 3
+      arc.stroke()
+    }
   }
 }
 
@@ -30,10 +45,21 @@ final class DesktopControl: NSObject, ObservableObject {
   @Published var invertScroll = false
   @Published var globalStopAvailable = true
   @Published var screenID: UInt32 = 0
+  @Published var inputMethod: InputMethod = .hand {
+    didSet { if oldValue != inputMethod { stop() } }
+  }
+  @Published var gazeInfo = "实验眼控需完成九点校准和五点独立验证"
+  @Published var gazeActive = false
   let camera = HandCamera()
   private var tracker = GestureTracker(), run = 0, pressed = false, clickCount: Int64 = 1
   private var scrollMotion = ScrollMotion()
   private var scrollCursor: CGPoint?
+  private var gazeSession: GazeCalibration?, gazeModel: GazeModel?, gazeFilter = OneEuroPoint(),
+    gazeDwell = GazeDwell()
+  private let calibrationOverlay = GazeCalibrationOverlay()
+  private var calibrationDesktop = CGRect.zero, calibrationLayout = ""
+  private var gazeDragHand: CGPoint?, gazeDragPixel: CGPoint?, gazeDragging = false,
+    rightGazePixel: CGPoint?
   private var point = CGPoint.zero, lastClick = 0.0, lastClickPoint = CGPoint.zero, lastFrame = 0.0
   private var timer: Timer?, statusItem: NSStatusItem?, hotKey: EventHotKeyRef?,
     hotKeyHandler: EventHandlerRef?
@@ -51,7 +77,7 @@ final class DesktopControl: NSObject, ObservableObject {
     hud.level = .statusBar
     hud.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
     hud.contentView = cursor
-    camera.onFrame = { [weak self] hand, time, run in
+    camera.onFrame = { [weak self] hand, eye, time, run in
       guard let self, self.running, self.run == run else { return }
       self.lastFrame = time
       guard AXIsProcessTrusted() else {
@@ -62,6 +88,10 @@ final class DesktopControl: NSObject, ObservableObject {
       self.tracker.mirrored = self.mirrored
       self.tracker.gain = self.gain
       self.tracker.scrollOnly = self.scrollOnly
+      if self.inputMethod != .hand {
+        self.processGaze(hand: hand, eye: eye, time: time)
+        return
+      }
       self.act(self.tracker.update(hand, time: time), time: time)
       if hand == nil {
         self.hud.orderOut(nil)
@@ -115,7 +145,11 @@ final class DesktopControl: NSObject, ObservableObject {
         guard result == noErr, id.signature == 0x5048_4F54 else {
           return OSStatus(eventNotHandledErr)
         }
-        if id.id == 2 { control.scrollOnly.toggle() } else { control.stop() }
+        if id.id == 2 {
+          if control.inputMethod == .hand { control.scrollOnly.toggle() }
+        } else {
+          control.stop()
+        }
         return noErr
       }, 1, &event, Unmanaged.passUnretained(self).toOpaque(), &hotKeyHandler)
     let id = EventHotKeyID(signature: 0x5048_4F54, id: 1)
@@ -165,7 +199,11 @@ final class DesktopControl: NSObject, ObservableObject {
         self.running = true
         self.lastFrame = ProcessInfo.processInfo.systemUptime
         self.status = "桌面控制已启动：移动、点击、拖动、双指滚动"
-        self.camera.start(run: token)
+        self.camera.start(run: token, eyes: self.inputMethod != .hand)
+        if self.inputMethod != .hand {
+          self.scrollOnly = false
+          self.beginGazeCalibration()
+        }
       }
     }
   }
@@ -179,6 +217,14 @@ final class DesktopControl: NSObject, ObservableObject {
     scrollCursor = nil
     camera.stop()
     hud.orderOut(nil)
+    calibrationOverlay.hide()
+    gazeSession = nil
+    gazeModel = nil
+    gazeActive = false
+    gazeFilter.reset()
+    gazeDwell.reset()
+    cursor.progress = 0
+    if inputMethod != .hand { gazeInfo = "眼控已停止，重新启动将重新校准" }
     status = "已停止，摄像头已关闭"
   }
   private func resetInteraction() {
@@ -204,7 +250,11 @@ final class DesktopControl: NSObject, ObservableObject {
       URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera")!)
   }
   private func position(_ normalized: CGPoint) -> CGPoint {
-    let bounds =
+    return DesktopMapping.position(normalized, displays: displayBounds())
+      ?? (CGEvent(source: nil)?.location ?? .zero)
+  }
+  private func displayBounds() -> [CGRect] {
+    return
       screenID == 0
       ? NSScreen.screens.compactMap { s -> CGRect? in
         guard
@@ -213,8 +263,160 @@ final class DesktopControl: NSObject, ObservableObject {
         else { return nil }
         return CGDisplayBounds(id)
       } : [CGDisplayBounds(screenID)]
-    return DesktopMapping.position(normalized, displays: bounds)
-      ?? (CGEvent(source: nil)?.location ?? .zero)
+  }
+  private func layoutKey() -> String {
+    displayBounds().map { "\($0.minX),\($0.minY),\($0.width),\($0.height)" }.sorted().joined(
+      separator: ";")
+  }
+  func beginGazeCalibration() {
+    guard running, inputMethod != .hand, let first = displayBounds().first else { return }
+    release()
+    tracker.reset()
+    gazeFilter.reset()
+    gazeDwell.reset()
+    gazeActive = false
+    gazeModel = nil
+    hud.orderOut(nil)
+    calibrationDesktop = displayBounds().dropFirst().reduce(first) { $0.union($1) }
+    calibrationLayout = layoutKey()
+    func actual(_ p: CGPoint) -> CGPoint {
+      let q = position(p)
+      return CGPoint(
+        x: (q.x - calibrationDesktop.minX) / max(1, calibrationDesktop.width - 1),
+        y: (q.y - calibrationDesktop.minY) / max(1, calibrationDesktop.height - 1))
+    }
+    let training = [0.18, 0.5, 0.82].flatMap { y in
+      [0.12, 0.5, 0.88].map { x in actual(CGPoint(x: x, y: y)) }
+    }
+    let validation = [
+      CGPoint(x: 0.25, y: 0.25), CGPoint(x: 0.75, y: 0.25), CGPoint(x: 0.5, y: 0.5),
+      CGPoint(x: 0.25, y: 0.75), CGPoint(x: 0.75, y: 0.75),
+    ].map(actual)
+    gazeSession = GazeCalibration(
+      training: training, validation: validation, desktopSize: calibrationDesktop.size)
+    calibrationOverlay.show(
+      desktop: calibrationDesktop, primary: CGDisplayBounds(CGMainDisplayID()),
+      cancel: { [weak self] in self?.stop() }, activate: { [weak self] in self?.enableGaze() },
+      retry: { [weak self] in self?.beginGazeCalibration() })
+    if let session = gazeSession {
+      calibrationOverlay.update(session, target: position(session.target), prediction: nil)
+    }
+    gazeInfo = "请看校准圆点，校准期间不控制桌面光标"
+  }
+  private func enableGaze() {
+    guard let session = gazeSession, session.phase == .ready, let model = session.model else {
+      return
+    }
+    gazeModel = model
+    gazeSession = nil
+    gazeActive = true
+    calibrationOverlay.hide()
+    tracker.reset()
+    gazeFilter.reset()
+    gazeDwell.reset()
+    gazeInfo = String(format: "实验眼控已启用 · 验证平均误差 %.0f 屏幕坐标点", session.meanError)
+  }
+  private func processGaze(hand: HandFrame?, eye: EyeFrame?, time: Double) {
+    guard layoutKey() == calibrationLayout else {
+      stop()
+      gazeInfo = "显示器布局改变，请重新校准"
+      return
+    }
+    if var session = gazeSession {
+      session.consume(eye, at: time)
+      gazeSession = session
+      gazeInfo = session.message
+      let preview = eye.flatMap { session.model?.predict($0) }.map(position)
+      calibrationOverlay.update(session, target: position(session.target), prediction: preview)
+      return
+    }
+    guard gazeActive, let eye, let prediction = gazeModel?.predict(eye) else {
+      release()
+      tracker.reset()
+      gazeDragHand = nil
+      gazeDragPixel = nil
+      rightGazePixel = nil
+      gazeDragging = false
+      _ = gazeDwell.update(nil, at: time)
+      cursor.progress = 0
+      hud.orderOut(nil)
+      status = "视线暂不可用；看向屏幕，保持姿势，必要时重新校准"
+      return
+    }
+    let gaze = position(gazeFilter.update(prediction, at: time))
+    if inputMethod == .eyeDwell {
+      mouse(.mouseMoved, gaze)
+      let dwell = gazeDwell.update(gaze, at: time)
+      cursor.progress = dwell.progress
+      cursor.needsDisplay = true
+      if dwell.click {
+        clickCount = 1
+        mouse(.leftMouseDown, gaze)
+        mouse(.leftMouseUp, gaze)
+      }
+      status = "纯眼控：稳定注视 1.2 秒点击；自然眨眼不点击"
+      return
+    }
+    cursor.progress = 0
+    let action = tracker.update(hand, time: time)
+    switch action {
+    case .stop: stop()
+    case .cancel:
+      release()
+      gazeDragHand = nil
+      gazeDragPixel = nil
+      rightGazePixel = nil
+      gazeDragging = false
+      mouse(.mouseMoved, gaze)
+    case .down(let p):
+      gazeDragHand = p
+      gazeDragPixel = point
+      gazeDragging = false
+      pressed = true
+      clickCount = 1
+      mouse(.leftMouseDown, point)
+    case .move(let p):
+      rightGazePixel = nil
+      if pressed, let handAnchor = gazeDragHand, let pixelAnchor = gazeDragPixel {
+        let dx = p.x - handAnchor.x
+        let dy = p.y - handAnchor.y
+        if hypot(dx, dy) > 0.04 { gazeDragging = true }
+        if gazeDragging {
+          let desired = CGPoint(
+            x: pixelAnchor.x + dx * calibrationDesktop.width,
+            y: pixelAnchor.y + dy * calibrationDesktop.height)
+          let normalized = CGPoint(
+            x: (desired.x - calibrationDesktop.minX) / max(1, calibrationDesktop.width - 1),
+            y: (desired.y - calibrationDesktop.minY) / max(1, calibrationDesktop.height - 1))
+          mouse(.leftMouseDragged, position(normalized))
+        }
+      } else {
+        mouse(.mouseMoved, gaze)
+      }
+    case .up:
+      pressed = false
+      mouse(.leftMouseUp, point)
+      gazeDragHand = nil
+      gazeDragPixel = nil
+      gazeDragging = false
+    case .holdRight:
+      if rightGazePixel == nil { rightGazePixel = point }
+    case .rightClick:
+      let target = rightGazePixel ?? point
+      release()
+      mouse(.rightMouseDown, target)
+      mouse(.rightMouseUp, target)
+      rightGazePixel = nil
+    case .scroll(_, let delta):
+      let pixels = Int32(max(-100, min(100, (invertScroll ? delta : -delta) * 1800 * scrollSpeed)))
+      if pixels != 0 {
+        CGEvent(
+          scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 1, wheel1: pixels, wheel2: 0,
+          wheel3: 0)?.post(tap: .cghidEventTap)
+      }
+    case .idle: mouse(.mouseMoved, gaze)
+    }
+    if running { status = pressed ? "手势拖动中，松开结束" : "眼睛移动光标 · 捏合点击 · 双指滚动" }
   }
   private func mouse(_ type: CGEventType, _ p: CGPoint) {
     guard
@@ -343,6 +545,13 @@ struct ControlView: View {
         }
         Spacer()
       }
+      Picker("输入方式", selection: $control.inputMethod) {
+        ForEach(InputMethod.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+      }.disabled(control.running || control.starting)
+      if control.inputMethod != .hand {
+        Text(control.gazeInfo).font(.caption).foregroundStyle(.secondary)
+        Button("重新进行九点校准") { control.beginGazeCalibration() }.disabled(!control.running)
+      }
       HStack {
         Label(
           control.accessible ? "辅助功能已允许" : "辅助功能待允许",
@@ -363,7 +572,7 @@ struct ControlView: View {
         .frame(maxWidth: .infinity, alignment: .leading).padding().background(
           .quaternary, in: RoundedRectangle(cornerRadius: 12))
       HStack {
-        Button(control.running || control.starting ? "停止控制" : "启动手势控制") {
+        Button(control.running || control.starting ? "停止控制" : "启动控制") {
           if control.running || control.starting { control.stop() } else { control.start() }
         }.buttonStyle(.borderedProminent).tint(.mint).controlSize(.large)
         Spacer()
@@ -374,7 +583,7 @@ struct ControlView: View {
       Picker("操作模式", selection: $control.scrollOnly) {
         Text("移动 / 点击 / 滚动").tag(false)
         Text("连续滚动 ⌃⌥S").tag(true)
-      }.pickerStyle(.segmented)
+      }.pickerStyle(.segmented).disabled(control.inputMethod != .hand)
       Picker("控制范围", selection: $control.screenID) {
         Text("整个桌面（所有显示器）").tag(UInt32(0))
         ForEach(NSScreen.screens.indices, id: \.self) { i in
@@ -401,7 +610,7 @@ struct ControlView: View {
       }
       Divider()
       VStack(alignment: .leading, spacing: 8) {
-        Text("食指移动  →  光标跟随")
+        Text(control.inputMethod == .hand ? "食指移动  →  光标跟随" : "先完成九点校准和五点验证，再按 Return 启用眼控")
         Text("拇指与食指捏合  →  点击；按住并移动  →  拖动")
         Text("拇指与中指捏合后松开  →  右键菜单")
         Text("快速捏合两次  →  双击")

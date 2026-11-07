@@ -76,7 +76,14 @@
     }
     handle(action) {
       const {document, window, cursor} = this;
-      if (action.kind === 'lost') { this.cancel(); return ['Show one hand to point', '举起一只手以移动光标']; }
+      if (action.kind === 'lost') {
+        this.cancel();
+        return action.en ? [action.en, action.zh] : ['Show one hand to point', '举起一只手以移动光标'];
+      }
+      if (action.kind === 'calibrating') {
+        this.cancel();
+        return [action.en || 'Look at the calibration dot. Calibration does not select.', action.zh || '请看校准圆点。校准期间不会选择。'];
+      }
       if (action.kind === 'zoom') {
         this.cancelPress(); this.scrollAnchor = null; cursor.hidden = true;
         this.hover?.classList.remove('gesture-hover'); this.hover = null;
@@ -97,7 +104,8 @@
       }
       this.scrollAnchor = null;
       const point = {x: action.point.x * window.innerWidth, y: action.point.y * window.innerHeight};
-      cursor.hidden = false; cursor.dataset.mode = 'pointer'; cursor.dataset.down = String(action.down);
+      cursor.hidden = false; cursor.dataset.mode = typeof action.dwell === 'number' ? 'gaze' : 'pointer'; cursor.dataset.down = String(action.down);
+      if (typeof action.dwell === 'number') cursor.style.setProperty?.('--dwell', String(action.dwell));
       cursor.style.left = `${point.x}px`; cursor.style.top = `${point.y}px`;
       const under = document.elementFromPoint(point.x, point.y);
       const candidate = under?.closest(clickable) || under?.closest('label')?.control;

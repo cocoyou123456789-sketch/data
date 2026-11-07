@@ -124,12 +124,26 @@ test('original login and five-tab navigation are preserved, with an optional sep
   const html = fs.readFileSync('github-pages/index.html', 'utf8');
   assert.ok(!html.includes('photonLabDialog')); assert.ok(!html.includes('data-photon-open'));
   assert.equal((html.match(/class="top-menu-btn[^\"]*"/g) || []).length, 5);
-  for (const asset of ['website-gesture.css', 'website-gesture-core.js', 'website-gesture.js', 'photon-gesture-core.js', 'photon-gesture.js']) assert.ok(html.includes(asset));
+  for (const asset of ['website-gesture.css', 'website-gaze-core.js', 'website-gesture-core.js', 'website-gesture.js', 'photon-gesture-core.js', 'photon-gesture.js']) assert.ok(html.includes(asset));
+  assert.ok(html.indexOf('website-gaze-core.js') < html.indexOf('website-gesture.js?'));
   assert.ok(html.indexOf('website-gesture.js?') < html.indexOf('src="photon-gesture.js?'));
   for (const line of html.split('\n').filter(line => line.includes('setPointerCapture'))) assert.match(line, /event\.isTrusted/);
   const ui = fs.readFileSync('github-pages/website-gesture.js', 'utf8');
   assert.match(ui, /document\.body\.appendChild\(widget\)/); assert.match(ui, /id="websiteGesturePanel"[^>]*hidden/);
+  assert.match(ui, /id="gestureModeEye"/); assert.match(ui, /眼球控制/); assert.match(ui, /1\.2/);
   assert.ok(!ui.includes('getUserMedia')); assert.ok(!ui.includes('localStorage'));
   const css = fs.readFileSync('github-pages/website-gesture.css', 'utf8');
   assert.match(css, /website-gesture-cursor[^}]*pointer-events:none/);
+});
+
+test('gaze calibration never clicks, and a dwell confirm does', () => {
+  const h = harness(), button = h.element({tagName: 'BUTTON', interactive: true});
+  h.setHit(button);
+  const calibrating = h.surface.handle({kind: 'calibrating', en: 'Look at the dot', zh: '请看圆点', target: {x: .2, y: .2}});
+  assert.equal(button.clicks, 0); assert.match(calibrating[1], /圆点/); assert.equal(h.cursor.hidden, true);
+  h.surface.handle({kind: 'pointer', phase: 'down', down: true, point: {x: .5, y: .4}, dwell: 1});
+  const confirmed = h.surface.handle({kind: 'pointer', phase: 'up', down: false, point: {x: .5, y: .4}, dwell: 0});
+  assert.equal(button.clicks, 1); assert.match(confirmed[1], /松开|注视|确认|点击/);
+  const lost = h.surface.handle({kind: 'lost', en: 'Gaze unavailable', zh: '视线暂不可用'});
+  assert.equal(lost[1], '视线暂不可用'); assert.equal(button.clicks, 1);
 });
